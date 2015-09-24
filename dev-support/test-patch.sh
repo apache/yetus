@@ -1038,7 +1038,7 @@ function find_buildfile_dir
       echo "${dir}"
       yetus_debug "Found: ${dir}"
       return 0
-    elif [[ ${dir} == "." ]]; then
+    elif [[ ${dir} == "." || ${dir} == "/" ]]; then
       yetus_debug "ERROR: ${buildfile} is not found."
       return 1
     else
@@ -1090,7 +1090,7 @@ function module_skipdir
         return 1
       fi
     done
-    if [[ ${dir} == "." ]]; then
+    if [[ ${dir} == "." || ${dir} == "/" ]]; then
       return 0
     else
       dir=$(dirname "${dir}")
