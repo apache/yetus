@@ -127,4 +127,3 @@ There is basic support for an autoindexer.  It will create two files that contai
 
   * index.md: a file suitable for conversion to HTML via mvn site
   * README.md: a file suitable for display on Github and other Markdown rendering websites
-

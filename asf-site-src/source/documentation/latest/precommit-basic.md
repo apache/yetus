@@ -219,5 +219,3 @@ This will do some preliminary setup and then re-execute itself inside a Docker c
 ## In Closing
 
 test-patch has many other features and command line options for the basic user.  Many of these are self-explanatory.  To see the list of options, run test-patch.sh without any options or with --help.
-
-

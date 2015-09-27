@@ -100,4 +100,3 @@ The basic workflow for many of the sub-items in individual phases are:
 1. Add the outcome(s) to the report generator
 
 As one can see, the modules list is one of the key inputs into what actually gets executed.  As a result, projects must full flexibility in either adding, modifying, or even removing modules from the test list.  If a personality removes the entire list of modules, then that test should just be ignored.
-
