@@ -48,6 +48,19 @@ function ant_parse_args
   fi
 }
 
+function ant_initialize
+{
+  # we need to do this before docker kicks in
+  if [[ -e "${HOME}/.ivy2"
+     && ! -d "${HOME}/.ivy2" ]]; then
+    yetus_error "ERROR: ${HOME}/.ivy2 is not a directory."
+    return 1
+  elif [[ ! -e "${HOME}/.ivy2" ]]; then
+    yetus_debug "Creating ${HOME}/.ivy2"
+    mkdir -p "${HOME}/.ivy2"
+  fi
+}
+
 function ant_buildfile
 {
   echo "build.xml"
@@ -180,4 +193,9 @@ function ant_builtin_personality_file_tests
   if [[ ${filename} =~ \.java$ ]]; then
     add_test findbugs
   fi
+}
+
+function ant_docker_support
+{
+  echo "-v ${HOME}/.ivy2:${HOME}/.ivy2" > "${PATCH_DIR}/buildtool-docker-params.txt"
 }

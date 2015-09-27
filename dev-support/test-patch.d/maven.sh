@@ -22,6 +22,9 @@ else
   MAVEN=${MAVEN_HOME}/bin/mvn
 fi
 
+MAVEN_CUSTOM_REPOS=false
+MAVEN_CUSTOM_REPOS_DIR="${HOME}/yetus-m2"
+
 add_plugin mvnsite
 add_plugin mvneclipse
 add_build_tool maven
@@ -29,7 +32,10 @@ add_build_tool maven
 function maven_usage
 {
   echo "maven specific:"
-  echo "--mvn-cmd=<cmd>        The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
+  echo "--mvn-cmd=<cmd>            The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
+  echo "--mvn-custom-repos         Use per-project maven repos"
+  echo "--mvn-custom-repos-dir=dir Location of repos, default is \'${MAVEN_CUSTOM_REPOS_DIR}\'"
+  echo "--mvn-settings=file        File to use for settings.xml"
 }
 
 function maven_parse_args
@@ -41,11 +47,107 @@ function maven_parse_args
       --mvn-cmd=*)
         MAVEN=${i#*=}
       ;;
+      --mvn-custom-repos)
+        MAVEN_CUSTOM_REPOS=true
+      ;;
+      --mvn-custom-repos-dir=*)
+        MAVEN_CUSTOM_REPOS_DIR=${i#*=}
+      ;;
+      --mvn-settings=*)
+        MAVEN_SETTINGS=${i#*=}
+        if [[ -f ${MAVEN_SETTINGS} ]]; then
+          MAVEN_ARGS=("${MAVEN_ARGS[@]}" "--settings=${MAVEN_SETTINGS}")
+        else
+          yetus_error "WARNING: ${MAVEN_SETTINGS} not found. Ignorning."
+        fi
+      ;;
     esac
   done
 
   if [[ ${OFFLINE} == "true" ]]; then
     MAVEN_ARGS=("${MAVEN_ARGS[@]}" --offline)
+  fi
+}
+
+function maven_initialize
+{
+  # we need to do this before docker does it as root
+
+  if [[ ! ${MAVEN_CUSTOM_REPOS_DIR} =~ ^/ ]]; then
+    yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."
+    return 1
+  fi
+
+  if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
+    MAVEN_LOCAL_REPO="${MAVEN_CUSTOM_REPOS_DIR}"
+    if [[ -e "${MAVEN_CUSTOM_REPOS_DIR}"
+       && ! -d "${MAVEN_CUSTOM_REPOS_DIR}" ]]; then
+      yetus_error "ERROR: ${MAVEN_CUSTOM_REPOS_DIR} is not a directory."
+      return 1
+    elif [[ ! -d "${MAVEN_CUSTOM_REPOS_DIR}" ]]; then
+      yetus_debug "Creating ${MAVEN_CUSTOM_REPOS_DIR}"
+      mkdir -p "${MAVEN_CUSTOM_REPOS_DIR}"
+    fi
+  fi
+
+  if [[ -e "${HOME}/.m2"
+     && ! -d "${HOME}/.m2" ]]; then
+    yetus_error "ERROR: ${HOME}/.m2 is not a directory."
+    return 1
+  elif [[ ! -e "${HOME}/.m2" ]]; then
+    yetus_debug "Creating ${HOME}/.m2"
+    mkdir -p "${HOME}/.m2"
+  fi
+}
+
+function maven_precheck
+{
+  declare logfile="${PATCH_DIR}/mvnrepoclean.log"
+  declare line
+
+  if [[ ! ${MAVEN_CUSTOM_REPOS_DIR} =~ ^/ ]]; then
+    yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."
+    return 1
+  fi
+
+  if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
+    MAVEN_LOCAL_REPO="${MAVEN_CUSTOM_REPOS_DIR}/${PROJECT_NAME}-${PATCH_BRANCH}-${INSTANCE}"
+    if [[ -e "${MAVEN_LOCAL_REPO}"
+       && ! -d "${MAVEN_LOCAL_REPO}" ]]; then
+      yetus_error "ERROR: ${MAVEN_LOCAL_REPO} is not a directory."
+      return 1
+    fi
+
+    if [[ ! -d "${MAVEN_LOCAL_REPO}" ]]; then
+      yetus_debug "Creating ${MAVEN_LOCAL_REPO}"
+      mkdir -p "${MAVEN_LOCAL_REPO}"
+      if [[ $? -ne 0 ]]; then
+        yetus_error "ERROR: Unable to create ${MAVEN_LOCAL_REPO}"
+        return 1
+      fi
+    fi
+    touch "${MAVEN_LOCAL_REPO}"
+
+    # if we have a local settings.xml file, we copy it.
+    if [[ -f "${HOME}/.m2/settings.xml" ]]; then
+      cp -p "${HOME}/.m2/settings.xml" "${MAVEN_LOCAL_REPO}"
+    fi
+    MAVEN_ARGS=("${MAVEN_ARGS[@]}" "-Dmaven.repo.local=${MAVEN_LOCAL_REPO}")
+
+    # let's do some cleanup while we're here
+
+    find "${MAVEN_CUSTOM_REPOS_DIR}" \
+      -name '*-*-*' \
+      -type d \
+      -mtime +30 \
+      -maxdepth 1 \
+      -print \
+        > "${logfile}"
+
+    while read -r line; do
+      echo "Removing old maven repo ${line}"
+      rm -rf "${line}"
+    done < "${logfile}"
   fi
 }
 
@@ -325,4 +427,14 @@ function maven_precompile
     return 1
   fi
   return 0
+}
+
+function maven_docker_support
+{
+  echo "-v ${HOME}/.m2:${HOME}/.m2" > "${PATCH_DIR}/buildtool-docker-params.txt"
+
+  if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
+    echo "-v ${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}" \
+      >> "${PATCH_DIR}/buildtool-docker-params.txt"
+  fi
 }

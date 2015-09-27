@@ -73,21 +73,47 @@ For example, the gradle build tool does not have a standard way to execute check
 
     - Certain language test plug-ins require assistance from the build tool to count problems in the compile log due to some tools having custom handling for those languages.  The test plug-in name should be in the (test) part of the function name.
 
+* pluginname\_docker\_support
+
+    - If this build tool requires extra settings on the `docker run` command line, this function should be defined and write those options into a file called `${PATCH_DIR}/buildtool-docker-params.txt`.  This is particularly useful for things like mounting volumes for repository caches.
+
+       **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that `pluginname_initialize` be used to create the necessary directories prior to be used in the `docker run` command.
+
 # Ant Specific
 
 ## Command Arguments
 
 test-patch always passes -noinput to Ant.  This forces ant to be non-interactive.
 
+## Docker Mode
+
+In Docker mode, the `${HOME}/.ivy2` directory is shared amongst all invocations.
+
 # Gradle Specific
 
 The gradle plug-in always rebuilds the gradlew file and uses gradlew as the method to execute commands.
+
+In Docker mode, the `${HOME}/.gradle` directory is shared amongst all invocations.
 
 # Maven Specific
 
 ## Command Arguments
 
 test-patch always passes --batch-mode to maven to force it into non-interactive mode.  Additionally, some tests will also force -fae in order to get all of messages/errors during that mode. Some tests are executed with -DskipTests.  Additional arguments should be handled via the personality.
+
+##  Per-instance Repositories
+
+Under many common configurations, maven (as of 3.3.3 and lower) may not properly handle being executed by multiple processes simultaneously, especially given that some tests require the `mvn install` command to be used.
+
+To assist, `test-patch` supports a `--mvn-custom-repo` option to set the `-Dmaven.repo.local` value to a per-instance repository directory keyed to the project and branch being used for the test.  If the `--jenkins` flag is also passed, the instance will be tied to the Jenkins `${EXECUTOR_NUMBER}` value.  Otherwise, the instance value will be randomly generated via `${RANDOM}`.  If the repository has not been used in 30 days, it will be automatically deleted when any test run for that project (regardless of branch!).
+
+By default, `test-patch` uses `${HOME}/yetus-m2` as the base directory to store these custom maven repositories.  That location may be changed via the `--mvn-custom-repos-dir` option.
+
+The location of the `settings.xml` may be changed via the `--mvn-settings` option.
+
+## Docker Mode
+
+In Docker mode, `${HOME}/.m2` is shared amongst all invocations.  If `--mvn-custom-repos` is used, all of `--mvn-custom-repos-dir` is shared with all invocations.  The per-instance directory will be calculated and configured after Docker has launched.
 
 ## Test Profile
 

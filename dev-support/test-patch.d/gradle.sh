@@ -55,6 +55,16 @@ function gradle_initialize
     # shellcheck disable=SC2034
     BUILDTOOLCWD=false
   fi
+
+  # we need to do this before docker kicks in
+  if [[ -e "${HOME}/.gradle"
+     && ! -d "${HOME}/.gradle" ]]; then
+    yetus_error "ERROR: ${HOME}/.gradle is not a directory."
+    return 1
+  elif [[ ! -e "${HOME}/.gradle" ]]; then
+    yetus_debug "Creating ${HOME}/.gradle"
+    mkdir -p "${HOME}/.gradle"
+  fi
 }
 
 function gradle_buildfile
@@ -245,4 +255,9 @@ function gradle_builtin_personality_file_tests
   if [[ ${filename} =~ \.java$ ]]; then
     add_test findbugs
   fi
+}
+
+function gradle_docker_support
+{
+  echo "-v ${HOME}/.gradle:${HOME}/.gradle" > "${PATCH_DIR}/buildtool-docker-params.txt"
 }

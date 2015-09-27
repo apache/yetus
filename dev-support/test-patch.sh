@@ -60,6 +60,7 @@ function setup_defaults
   DOCKERFILE="${BINDIR}/test-patch-docker/Dockerfile-startstub"
   HOW_TO_CONTRIBUTE="https://wiki.apache.org/hadoop/HowToContribute"
   JENKINS=false
+  INSTANCE=${RANDOM}
   BASEDIR=$(pwd)
   RELOCATE_PATCH_DIR=false
 
@@ -763,7 +764,7 @@ function testpatch_usage
 
   echo
   echo "Jenkins-only options:"
-  echo "--jenkins              Run by Jenkins (runs tests and posts results to JIRA)"
+  echo "--jenkins              Jenkins mode"
   echo "--build-url            Set the build location web page"
   echo "--mv-patch-dir         Move the patch-dir into the basedir during cleanup."
 
@@ -859,6 +860,7 @@ function parse_args
       --jenkins)
         JENKINS=true
         TEST_PARALLEL=${TEST_PARALLEL:-true}
+        INSTANCE=${EXECUTOR_NUMBER:-RANDOM}
       ;;
       --linecomments=*)
         BUGLINECOMMENTS=${i#*=}
@@ -937,6 +939,10 @@ function parse_args
       ;;
       --tpglobaltimer=*)
         GLOBALTIMER=${i#*=}
+      ;;
+      --tpinstance=*)
+        INSTANCE=${i#*=}
+        EXECUTOR_NUMBER=${INSTANCE}
       ;;
       --tpreexectimer=*)
         REEXECLAUNCHTIMER=${i#*=}
@@ -1734,6 +1740,7 @@ function check_reexec
   local copy=false
   local testdir
   local person
+  local debugflag
 
   if [[ ${REEXECED} == true ]]; then
     big_console_header "Re-exec mode detected. Continuing."
@@ -1791,6 +1798,10 @@ function check_reexec
     # if we are doing docker, then we re-exec, but underneath the
     # container
 
+    if declare -f ${BUILDTOOL}_docker_support >/dev/null; then
+      "${BUILDTOOL}_docker_support"
+    fi
+
     client=$(docker version | grep 'Client version' | cut -f2 -d: | tr -d ' ')
     server=$(docker version | grep 'Server version' | cut -f2 -d: | tr -d ' ')
 
@@ -1802,6 +1813,7 @@ function check_reexec
     fi
     TESTPATCHMODE="--tpglobaltimer=${GLOBALTIMER} ${TESTPATCHMODE}"
     TESTPATCHMODE="--tpreexectimer=${TIMER} ${TESTPATCHMODE}"
+    TESTPATCHMODE="--tpinstance=${INSTANCE} ${TESTPATCHMODE}"
     TESTPATCHMODE="--personality=\'${PERSONALITY}\' ${TESTPATCHMODE}"
     TESTPATCHMODE="--plugins=\'${USER_PLUGIN_DIR}\' ${TESTPATCHMODE}"
     TESTPATCHMODE=" ${TESTPATCHMODE}"
@@ -1809,9 +1821,14 @@ function check_reexec
 
     patchdir=$(relative_dir "${PATCH_DIR}")
 
+    if [[ ${TP_SHELL_SCRIPT_DEBUG} = true ]]; then
+      debugflag="--debug"
+    fi
+
     cd "${BASEDIR}"
     #shellcheck disable=SC2093
     exec bash "${PATCH_DIR}/precommit/test-patch-docker/test-patch-docker.sh" \
+       ${debugflag} \
        --dockerversion="${dockerversion}" \
        --java-home="${JAVA_HOME}" \
        --patch-dir="${patchdir}" \
@@ -1832,6 +1849,7 @@ function check_reexec
       --tpglobaltimer="${GLOBALTIMER}" \
       --tpreexectimer="${TIMER}" \
       --personality="${PERSONALITY}" \
+      --tpinstance="${INSTANCE}" \
       --plugins="${USER_PLUGIN_DIR}"
   fi
 }

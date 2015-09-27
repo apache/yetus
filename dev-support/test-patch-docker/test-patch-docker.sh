@@ -347,11 +347,17 @@ ENV HOME /home/${USER_NAME}
 USER ${USER_NAME}
 PatchSpecificDocker
 
+  if [[ -f "${PATCH_DIR}/buildtool-docker-params.txt" ]]; then
+    extraargs=$(cat "${PATCH_DIR}/buildtool-docker-params.txt")
+  else
+    extraargs=""
+  fi
+
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
     dockercmd run --rm=true -i \
+      ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -v "${PATCH_DIR}:/testptch/patchprocess" \
-      -v "${HOME}/.m2:${HOME}/.m2" \
       -u "${USER_NAME}" \
       -w "/testptch/${PROJECT_NAME}" \
       --env=BASEDIR="/testptch/${PROJECT_NAME}" \
@@ -363,8 +369,8 @@ PatchSpecificDocker
       "test-patch-tp-${PROJECT_NAME}-${DID}"
  else
     dockercmd run --rm=true -i \
+      ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
-      -v "${HOME}/.m2:${HOME}/.m2" \
       -u "${USER_NAME}" \
       -w "/testptch/${PROJECT_NAME}" \
       --env=BASEDIR="/testptch/${PROJECT_NAME}" \
