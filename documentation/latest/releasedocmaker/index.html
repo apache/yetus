@@ -1,0 +1,229 @@
+<!---
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		    <meta name="description" content="">
+		    <meta name="author" content="">
+
+		    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+		    <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
+                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+
+		    <!-- JS -->
+		    <script type="text/javascript" src="/assets/js/jquery-2.1.1.min.js"></script>
+		    <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+	</head>
+    <body>
+      <div class="navbar navbar-custom navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/documentation/latest/">Documentation</a>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="http://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<h1 id="releasedocmaker">releasedocmaker</h1>
+
+<ul>
+<li><a href="#Purpose">Purpose</a></li>
+<li><a href="#Basic_Usage">Basic Usage</a></li>
+<li><a href="#Changing_the_Header">Changing the Header</a></li>
+<li><a href="#Multiple_Versions">Multiple Versions</a></li>
+<li><a href="#Unreleased_Dates">Unreleased Dates</a></li>
+<li><a href="#Lint_Mode">Lint Mode</a></li>
+<li><a href="#Index_Mode">Index Mode</a></li>
+</ul>
+
+<h1 id="purpose">Purpose</h1>
+
+<p>Building changelog information in a form that is human digestible but still containing as much useful information is difficult.  Many attempts over the years have resulted in a variety of methods that projects use to solve this problem:</p>
+
+<ul>
+<li>JIRA-generated release notes from the &ldquo;Release Notes&rdquo; button</li>
+<li>Manually modified CHANGES file</li>
+<li>Processing git log information</li>
+</ul>
+
+<p>All of these methods have their pros and cons.  Some have issues with accuracy.  Some have issues with lack of details. None of these methods seem to cover all of the needs of many projects and are full of potential pitfalls.</p>
+
+<p>In order to solve these problems, releasedocmaker was written to automatically generate a changelog and release notes by querying Apache&rsquo;s JIRA instance.</p>
+
+<h1 id="basic-usage">Basic Usage</h1>
+
+<p>Minimally, the name of the JIRA project and a version registered in JIRA must be provided:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project <span class="o">(</span>project<span class="o">)</span> --version <span class="o">(</span>version<span class="o">)</span>
+</code></pre>
+
+<p>This will query Apache JIRA, generating two files in a directory named after the given version in an extended markdown format which can be processed by both mvn site and GitHub.</p>
+
+<ul>
+<li>CHANGES.(version).md</li>
+</ul>
+
+<p>This is similar to the JIRA &ldquo;Release Notes&rdquo; button but is in tabular format and includes the priority, component, reporter, and contributor fields.  It also highlights Incompatible Changes so that readers know what to look out for when upgrading. The top of the file also includes the date that the version was marked as released in JIRA.</p>
+
+<ul>
+<li>RELEASENOTES.(version).md</li>
+</ul>
+
+<p>If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGES log that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.</p>
+
+<p>For example, to build the release documentation for HBase v1.2.0&hellip;</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0
+</code></pre>
+
+<p>&hellip; will create a 1.2.0 directory and inside that directory will be CHANGES.1.2.0.md and RELEASENOTES.1.2.0.md .</p>
+
+<p>By default, release notes are expected to be in plain text.  However, you can write them in markdown if you include a header at the top of your release note:</p>
+<pre class="highlight xml"><code><span class="c">&lt;!-- markdown --&gt;</span>
+remaining text
+</code></pre>
+
+<h1 id="changing-the-header">Changing the Header</h1>
+
+<p>By default, it will use a header that matches the project name.  But that is kind of ugly and the case may be wrong.  Luckily, the title can be changed:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0 --projecttitle <span class="s2">"Apache HBase"</span>
+</code></pre>
+
+<p>Now instead of &ldquo;HBASE&rdquo;, it will use &ldquo;Apache HBASE&rdquo; for some titles and headers.</p>
+
+<h1 id="multiple-versions">Multiple Versions</h1>
+
+<p>The script can also generate multiple versions at once, by</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0
+</code></pre>
+
+<p>This will create the files for versions 1.0.0 and versions 1.2.0 in their own directories.</p>
+
+<p>But what if the version numbers are not known?  releasedocmaker can also generate version data based upon ranges:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0 --range
+</code></pre>
+
+<p>In this form, releasedocmaker will query JIRA, discover all versions that alphabetically appear to be between 1.0.0 and 1.2.0, inclusive, and generate all of the relative release documents.  This is especially useful when bootstrapping an existing project.</p>
+
+<h1 id="unreleased-dates">Unreleased Dates</h1>
+
+<p>For released versions, releasedocmaker will pull the date of the release from JIRA.  However, for unreleased versions it marks the release as &ldquo;Unreleased&rdquo;. This can be inconvenient when actually building a release and wanting to include it inside the source package.</p>
+
+<p>The &ndash;usetoday option can be used to signify that instead of using Unreleased, releasedocmaker should use today&rsquo;s date.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
+</code></pre>
+
+<p>After using this option and release, don&rsquo;t forget to change JIRA&rsquo;s release date to match!</p>
+
+<h1 id="lint-mode">Lint Mode</h1>
+
+<p>In order to ensure proper formatting while using mvn site, releasedocmaker puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.</p>
+
+<p>In order to help release managers from having to scan through potentially large documents, releasedocmaker features a lint mode, triggered via &ndash;lint:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --lint
+</code></pre>
+
+<p>This will do the normal JIRA querying, looking for items it considers problematic.  It will print the information to the screen and then exit with either success or failure, depending upon if any issues were discovered.</p>
+
+<h1 id="index-mode">Index Mode</h1>
+
+<p>There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor.micro-style version numbering system, where all fields are numeric.</p>
+
+<ul>
+<li>index.md: a file suitable for conversion to HTML via mvn site</li>
+<li>README.md: a file suitable for display on Github and other Markdown rendering websites</li>
+</ul>
+
+	  </div>
+      <div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+                            <div class="span12">
+                Copyright 2008-2015 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                            </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+	</body>
+</html>
