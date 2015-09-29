@@ -14,17 +14,18 @@
 
 <div class="masthead">
 	<div class="jumbotron">
+          <h1>Apache Yetus</h1>
 	  <div>
-	    <p class="lead">Apache Yetus is a collection of libraries and tools that enable contribution and release processes for software projects.</p>
+	    <p>... is a collection of libraries and tools that enable contribution and release processes for software projects.</p>
 	  </div>
 	</div>
 </div>
 
-Yetus provides:
+It provides:
 
-  * a robust system for automatically checking new contributions against a variety of community accepted requirements
-  * the means to document a well defined supported interface for downstream projects
-  * tooling to help release managers generate release documentation based on the information provided by community issue trackers and source repositories
+* a robust system for automatically checking new contributions against a variety of community accepted requirements
+* the means to document a well defined supported interface for downstream projects
+* tooling to help release managers generate release documentation based on the information provided by community issue trackers and source repositories
 
 Most of the software is written in shell and scripting languages.  In honor of the shell code, the project takes its name
 *[Yetus](http://www.marinespecies.org/aphia.php?p=taxdetails&id=385438)* from a synonym of the *Cymbium* genus

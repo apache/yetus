@@ -35,36 +35,50 @@ This is a modification to Hadoop's version of test-patch so that we may bring to
 
 # Pre-requisites
 
-test-patch has the following requirements:
+test-patch and smart-apply-patch are written in bash for maximum portability.  As such, it mostly assumes the locations of commands to be in the file path. However, in many cases, this assumption may be overridden via command line options.
+
+For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in /usr/xpg4/bin and the default location for the GNU binaries is /usr/gnu/bin.
+
+## Base Requirements
+
+test-patch requires these installed components to execute:
 
 * A project with a supported build tool (ant, gradle, maven, ...)
 * git-based project (and git 1.7.3 or higher installed)
 * bash v3.2 or higher
-* findbugs 3.x installed
-* shellcheck installed, preferably 0.3.6 or higher
-* pylint installed
 * GNU diff
 * GNU patch
 * POSIX awk
 * POSIX grep
 * POSIX sed
-* curl
+* [curl](http://curl.haxx.se/) command
 * file command
-* smart-apply-patch.sh (included!)
 
-Maven plug-ins requirements:
+## Optional Requirements
 
-* Apache RAT
-* Apache FindBugs
+Features are plug-in based. These are activated based upon tool availability, the languages being
+tested, etc.
 
-Optional:
+Bug Systems:
 
-* JIRA-based issue tracking
-* GitHub-based issue tracking
-* Some other supported bug system
+* [GitHub](https://github.com/)-based issue tracking
+* [JIRA](https://www.atlassian.com/software/jira)-based issue tracking
 
-The locations of these files are (mostly) assumed to be in the file path, but may be overridden via command line options.  For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in /usr/xpg4/bin and the default location for the GNU binaries is /usr/gnu/bin.
+Unit Test Formats:
 
+* [JUnit](http://junit.org/)
+* [TAP](https://testanything.org/)
+
+Language Support, Licensing, and more:
+
+* [Apache Creadur Rat](http://creadur.apache.org/rat/) entries in build system
+* [checkstyle](http://checkstyle.sourceforge.net/) entries in build system (ant and maven only)
+* [FindBugs](http://findbugs.sourceforge.net/) entries in build system and 3.x executables
+* [Perl::Critic](http://perlcritic.com/) installed
+* [pylint](http://www.pylint.org/) installed
+* [rubocop](http://batsov.com/rubocop/) installed
+* [ruby-lint](https://github.com/YorickPeterse/ruby-lint) installed
+* [shellcheck](https://github.com/koalaman/shellcheck) installed, preferably 0.3.6 or higher
 
 # Basic Usage
 
