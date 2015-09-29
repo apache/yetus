@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_plugin javac
-add_plugin javadoc
+add_test_type javac
+add_test_type javadoc
 
 function javac_initialize
 {

@@ -31,8 +31,6 @@ GLOBALTIMER=$(date +"%s")
 #shellcheck disable=SC2034
 QATESTMODE=false
 
-. "${BINDIR}/core.d/common.sh"
-
 # global arrays
 declare -a TP_HEADER
 declare -a TP_VOTE_TABLE
@@ -83,7 +81,6 @@ function setup_defaults
   ISSUE=""
   TIMER=$(date +"%s")
   BUILDTOOL=maven
-  TESTFORMATS=""
   JDK_TEST_LIST="compile javadoc unit"
 }
 
@@ -182,7 +179,7 @@ function generate_stack
 {
   declare frame
 
-  if [[ -n "${YETUS_SHELL_SCRIPT_DEBUG}" ]]; then
+  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
     while caller "${frame}"; do
       ((frame++));
     done
@@ -680,22 +677,23 @@ function yetus_usage
   echo "--dockerfile=<file>    Dockerfile fragment to use as the base"
   echo "--java-home=<path>     Set JAVA_HOME (In Docker mode, this should be local to the image)"
   echo "--linecomments=<bug>   Only write line comments to this comma delimited list (defaults to bugcomments)"
+  echo "--list-plugins         List all installed plug-ins and then exit"
   echo "--multijdkdirs=<paths> Comma delimited lists of JDK paths to use for multi-JDK tests"
   echo "--multijdktests=<list> Comma delimited tests to use when multijdkdirs is used. (default: javac,javadoc,unit)"
   echo "--modulelist=<list>    Specify additional modules to test (comma delimited)"
   echo "--offline              Avoid connecting to the Internet"
   echo "--patch-dir=<dir>      The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
   echo "--personality=<file>   The personality file to load"
-  echo "--plugins=<dir>        A directory of user provided plugins. see test-patch.d for examples (default empty)"
   echo "--project=<name>       The short name for project currently using test-patch (default 'yetus')"
+  echo "--plugins=<list>       Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
   echo "--resetrepo            Forcibly clean the repo"
   echo "--run-tests            Run all relevant tests below the base directory"
   echo "--skip-dirs=<list>     Skip following directories for module finding"
   echo "--skip-system-plugins  Do not load plugins from ${BINDIR}/test-patch.d"
   echo "--summarize=<bool>     Allow tests to summarize results"
-  echo "--testlist=<list>      Specify which subsystem tests to use (comma delimited)"
   echo "--test-parallel=<bool> Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   echo "--test-threads=<int>   Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
+  echo "--user-plugins=<dir>   A directory of user provided plugins. see test-patch.d for examples (default empty)"
   echo ""
   echo "Shell binary overrides:"
   echo "--awk-cmd=<cmd>        The 'awk' command to use (default 'awk')"
@@ -715,7 +713,7 @@ function yetus_usage
 
   importplugins
 
-  for plugin in ${BUILDTOOLS} ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS}; do
+  for plugin in ${BUILDTOOLS} ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS}; do
     if declare -f ${plugin}_usage >/dev/null 2>&1; then
       echo
       "${plugin}_usage"
@@ -733,7 +731,6 @@ function parse_args
 {
   local i
   local j
-  local testlist
 
   common_args "$@"
 
@@ -779,6 +776,11 @@ function parse_args
         BUGLINECOMMENTS=${i#*=}
         BUGLINECOMMENTS=${BUGLINECOMMENTS//,/ }
       ;;
+      --modulelist=*)
+        USER_MODULE_LIST=${i#*=}
+        USER_MODULE_LIST=${USER_MODULE_LIST//,/ }
+        yetus_debug "Manually forcing modules ${USER_MODULE_LIST}"
+      ;;
       --multijdkdirs=*)
         JDK_DIR_LIST=${i#*=}
         JDK_DIR_LIST=${JDK_DIR_LIST//,/ }
@@ -811,14 +813,6 @@ function parse_args
       ;;
       --summarize=*)
         ALLOWSUMMARIES=${i#*=}
-      ;;
-      --testlist=*)
-        testlist=${i#*=}
-        testlist=${testlist//,/ }
-        for j in ${testlist}; do
-          yetus_debug "Manually adding patch test subsystem ${j}"
-          add_test "${j}"
-        done
       ;;
       --test-parallel=*)
         TEST_PARALLEL=${i#*=}
@@ -1319,60 +1313,6 @@ function determine_issue
   return 1
 }
 
-## @description  Add the given test type
-## @audience     public
-## @stability    stable
-## @replaceable  yes
-## @param        test
-function add_test
-{
-  local testname=$1
-
-  yetus_debug "Testing against ${testname}"
-
-  if [[ -z ${NEEDED_TESTS} ]]; then
-    yetus_debug "Setting tests to ${testname}"
-    NEEDED_TESTS=${testname}
-  elif [[ ! ${NEEDED_TESTS} =~ ${testname} ]] ; then
-    yetus_debug "Adding ${testname}"
-    NEEDED_TESTS="${NEEDED_TESTS} ${testname} "
-  fi
-}
-
-## @description  Remove the given test type
-## @audience     public
-## @stability    stable
-## @replaceable  yes
-## @param        test
-function delete_test
-{
-  local testname=$1
-
-  yetus_debug "Testing against ${testname}"
-
-  if [[ ${NEEDED_TESTS} =~ ${testname} ]] ; then
-    yetus_debug "Removing ${testname}"
-    NEEDED_TESTS="${NEEDED_TESTS// ${testname} }"
-  fi
-}
-
-## @description  Verify if a given test was requested
-## @audience     public
-## @stability    stable
-## @replaceable  yes
-## @param        test
-## @return       1 = yes
-## @return       0 = no
-function verify_needed_test
-{
-  local i=$1
-
-  if [[ ${NEEDED_TESTS} =~ $i ]]; then
-    return 1
-  fi
-  return 0
-}
-
 ## @description  Use some heuristics to determine which long running
 ## @description  tests to run
 ## @audience     private
@@ -1387,7 +1327,7 @@ function determine_needed_tests
     yetus_debug "Determining needed tests for ${i}"
     personality_file_tests "${i}"
 
-    for plugin in ${PLUGINS}; do
+    for plugin in ${TESTTYPES}; do
       if declare -f ${plugin}_filefilter >/dev/null 2>&1; then
         "${plugin}_filefilter" "${i}"
       fi
@@ -1397,7 +1337,7 @@ function determine_needed_tests
   add_footer_table "Optional Tests" "${NEEDED_TESTS}"
 }
 
-## @description  Given ${PATCH_DIR}/patch, apply the patch using ${BINDIR}/smart-apply-patch.sh
+## @description  Given ${PATCH_DIR}/patch, apply the patch
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -2113,7 +2053,7 @@ function runtests
     (( RESULT = RESULT + $? ))
   fi
 
-  for plugin in ${PLUGINS}; do
+  for plugin in ${TESTTYPES}; do
     verify_patchdir_still_exists
     if declare -f ${plugin}_tests >/dev/null 2>&1; then
       modules_reset
@@ -2424,7 +2364,7 @@ function compile
     "${BUILDTOOL}_modules_worker" "${codebase}" compile
     modules_messages "${codebase}" compile true
 
-    for plugin in ${PLUGINS}; do
+    for plugin in ${TESTTYPES}; do
       verify_patchdir_still_exists
       if declare -f ${plugin}_compile >/dev/null 2>&1; then
         yetus_debug "Running ${plugin}_compile ${codebase} ${multijdkmode}"
@@ -2458,7 +2398,7 @@ function compile_cycle
 
   find_changed_modules
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${PLUGINS} ${TESTFORMATS}; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_precompile >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_precompile"
       #shellcheck disable=SC2086
@@ -2471,7 +2411,7 @@ function compile_cycle
 
   compile "${codebase}"
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${PLUGINS} ${TESTFORMATS}; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_postcompile >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_postcompile"
       #shellcheck disable=SC2086
@@ -2482,7 +2422,7 @@ function compile_cycle
     fi
   done
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${PLUGINS} ${TESTFORMATS}; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_rebuild >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_rebuild"
       #shellcheck disable=SC2086
@@ -2512,7 +2452,7 @@ function patchfiletests
   declare plugin
   declare result=0
 
-  for plugin in ${BUILDTOOL} ${PLUGINS} ${TESTFORMATS}; do
+  for plugin in ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_patchfile >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_patchfile"
       #shellcheck disable=SC2086
@@ -2543,7 +2483,7 @@ function distclean
 
   personality_modules branch distclean
 
-  for plugin in ${PLUGINS} ${TESTFORMATS}; do
+  for plugin in ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_clean >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_distclean"
       #shellcheck disable=SC2086
@@ -2576,6 +2516,13 @@ function initialize
   importplugins
 
   parse_args_plugins "$@"
+
+  BUGCOMMENTS=${BUGCOMMENTS:-${BUGSYSTEMS}}
+  if [[ ! ${BUGCOMMENTS} =~ console ]]; then
+    BUGCOMMENTS="${BUGCOMMENTS} console"
+  fi
+
+  BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
 
   plugins_initialize
 
@@ -2618,7 +2565,7 @@ function prechecks
   declare plugin
   declare result=0
 
-  for plugin in ${BUILDTOOL} ${PLUGINS} ${TESTFORMATS}; do
+  for plugin in ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     verify_patchdir_still_exists
 
     if declare -f ${plugin}_precheck >/dev/null 2>&1; then
@@ -2636,9 +2583,26 @@ function prechecks
   done
 }
 
+## @description import core library routines
+## @audience private
+## @stability evolving
+function import_core
+{
+  declare filename
+
+  for filename in "${BINDIR}/core.d"/*; do
+    # shellcheck disable=SC1091
+    # shellcheck source=core.d/00-yetuslib.sh
+    # shellcheck source=core.d/01-common.sh
+    . "${filename}"
+  done
+}
+
 ###############################################################################
 ###############################################################################
 ###############################################################################
+
+import_core
 
 initialize "$@"
 

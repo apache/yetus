@@ -14,11 +14,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#shellcheck disable=SC2034
-PATCH_BRANCH_DEFAULT=master
-#shellcheck disable=SC2034
-JIRA_ISSUE_RE='^TEZ-[0-9]+$'
-#shellcheck disable=SC2034
-GITHUB_REPO="apache/tez"
-#shellcheck disable=SC2034
-HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/TEZ/How+to+Contribute+to+Tez"
+personality_plugins "all"
+
+function personality_globals
+{
+  #shellcheck disable=SC2034
+  PATCH_BRANCH_DEFAULT=master
+  #shellcheck disable=SC2034
+  JIRA_ISSUE_RE='^TEZ-[0-9]+$'
+  #shellcheck disable=SC2034
+  GITHUB_REPO="apache/tez"
+  #shellcheck disable=SC2034
+  HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/TEZ/How+to+Contribute+to+Tez"
+}

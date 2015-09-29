@@ -19,28 +19,6 @@
 
 add_bugsystem console
 
-# we always call this one last
-
-function generic_locate_patch
-{
-  declare input=$1
-  declare output=$2
-
-  if [[ "${OFFLINE}" == true ]]; then
-    yetus_debug "generic_locate_patch: offline, skipping"
-    return 1
-  fi
-
-  ${CURL} --silent \
-          --output "${output}" \
-         "${input}"
-  if [[ $? != 0 ]]; then
-    yetus_debug "generic_locate_patch: failed to download the patch."
-    return 1
-  fi
-  return 0
-}
-
 ## @description  Print out the finished details on the console
 ## @audience     private
 ## @stability    evolving
@@ -137,7 +115,7 @@ function console_finalreport
 
     printf "| %4s | %*s | %-10s |%-s\n" "${vote}" ${seccoladj} \
       "${subs}" "${ela}" "${normaltop}"
-    while read line; do
+    while read -r line; do
       printf "|      | %*s |            | %-s\n" ${seccoladj} " " "${line}"
     done < "${commentfile2}"
 

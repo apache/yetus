@@ -14,190 +14,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## @description  Setup the default global variables
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function common_defaults
+## @description Use curl to download the patch as a last resort
+## @audience    private
+## @stability   evolving
+## @param       patchloc
+## @param       output
+## @return      0 got something
+## @return      1 error
+function generic_locate_patch
 {
-  #shellcheck disable=SC2034
-  BASEDIR=$(pwd)
-  LOAD_SYSTEM_PLUGINS=true
-  #shellcheck disable=SC2034
-  JENKINS=false
-  #shellcheck disable=SC2034
-  OFFLINE=false
-  OSTYPE=$(uname -s)
-  #shellcheck disable=SC2034
-  PATCH_BRANCH=""
-  PATCH_BRANCH_DEFAULT="master"
-  #shellcheck disable=SC2034
-  PATCH_DRYRUNMODE=false
-  PATCH_DIR=/tmp
-  while [[ -e ${PATCH_DIR} ]]; do
-    PATCH_DIR=/tmp/yetus-${RANDOM}.${RANDOM}
-  done
-  PATCH_METHOD=""
-  PATCH_METHODS=("gitapply" "patchcmd")
-  PATCH_LEVEL=0
-  PROJECT_NAME=yetus
-  RESULT=0
-  USER_PLUGIN_DIR=""
-  #shellcheck disable=SC2034
-  YETUS_SHELL_SCRIPT_DEBUG=false
+  declare input=$1
+  declare output=$2
 
-  # Solaris needs POSIX and GNU, not SVID
-  case ${OSTYPE} in
-    SunOS)
-      AWK=${AWK:-/usr/xpg4/bin/awk}
-      CURL=${CURL:-curl}
-      DIFF=${DIFF:-/usr/gnu/bin/diff}
-      FILE=${FILE:-file}
-      GIT=${GIT:-git}
-      GREP=${GREP:-/usr/xpg4/bin/grep}
-      PATCH=${PATCH:-/usr/gnu/bin/patch}
-      SED=${SED:-/usr/xpg4/bin/sed}
-    ;;
-    *)
-      AWK=${AWK:-awk}
-      CURL=${CURL:-curl}
-      DIFF=${DIFF:-diff}
-      FILE=${FILE:-file}
-      GIT=${GIT:-git}
-      GREP=${GREP:-grep}
-      PATCH=${PATCH:-patch}
-      SED=${SED:-sed}
-    ;;
-  esac
-}
-
-## @description  Interpret the common command line parameters used by test-patch,
-## @description  smart-apply-patch, and the bug system plugins
-## @audience     private
-## @stability    stable
-## @replaceable  no
-## @params       $@
-## @return       May exit on failure
-function common_args
-{
-  declare i
-
-  for i in "$@"; do
-    case ${i} in
-      --awk-cmd=*)
-        AWK=${i#*=}
-      ;;
-      --basedir=*)
-        #shellcheck disable=SC2034
-        BASEDIR=${i#*=}
-      ;;
-      --branch=*)
-        #shellcheck disable=SC2034
-        PATCH_BRANCH=${i#*=}
-      ;;
-      --branch-default=*)
-        #shellcheck disable=SC2034
-        PATCH_BRANCH_DEFAULT=${i#*=}
-      ;;
-      --curl-cmd=*)
-        CURL=${i#*=}
-      ;;
-      --debug)
-        #shellcheck disable=SC2034
-        YETUS_SHELL_SCRIPT_DEBUG=true
-      ;;
-      --diff-cmd=*)
-        DIFF=${i#*=}
-      ;;
-      --file-cmd=*)
-        FILE=${i#*=}
-      ;;
-      --git-cmd=*)
-        GIT=${i#*=}
-      ;;
-      --grep-cmd=*)
-        GREP=${i#*=}
-      ;;
-      --help|-help|-h|help|--h|--\?|-\?|\?)
-        yetus_usage
-        exit 0
-      ;;
-      --modulelist=*)
-        USER_MODULE_LIST=${i#*=}
-        USER_MODULE_LIST=${USER_MODULE_LIST//,/ }
-        yetus_debug "Manually forcing modules ${USER_MODULE_LIST}"
-      ;;
-      --offline)
-        #shellcheck disable=SC2034
-        OFFLINE=true
-      ;;
-      --patch-cmd=*)
-        PATCH=${i#*=}
-      ;;
-      --patch-dir=*)
-        PATCH_DIR=${i#*=}
-      ;;
-      --plugins=*)
-        USER_PLUGIN_DIR=${i#*=}
-      ;;
-      --project=*)
-        PROJECT_NAME=${i#*=}
-      ;;
-      --skip-system-plugins)
-        LOAD_SYSTEM_PLUGINS=false
-      ;;
-      --sed-cmd=*)
-        SED=${i#*=}
-      ;;
-      *)
-      ;;
-    esac
-  done
-}
-
-## @description  Print a message to stderr
-## @audience     public
-## @stability    stable
-## @replaceable  no
-## @param        string
-function yetus_error
-{
-  echo "$*" 1>&2
-}
-
-## @description  Print a message to stderr if --debug is turned on
-## @audience     public
-## @stability    stable
-## @replaceable  no
-## @param        string
-function yetus_debug
-{
-  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
-    echo "[$(date) DEBUG]: $*" 1>&2
+  if [[ "${OFFLINE}" == true ]]; then
+    yetus_debug "generic_locate_patch: offline, skipping"
+    return 1
   fi
-}
 
-## @description  run the command, sending stdout and stderr to the given filename
-## @audience     public
-## @stability    stable
-## @param        filename
-## @param        command
-## @param        [..]
-## @replaceable  no
-## @returns      $?
-function yetus_run_and_redirect
-{
-  declare logfile=$1
-  shift
-
-  # to the log
-  {
-    date
-    echo "cd $(pwd)"
-    echo "${*}"
-  } >> "${logfile}"
-  # run the actual command
-  "${@}" >> "${logfile}" 2>&1
+  ${CURL} --silent \
+          --output "${output}" \
+         "${input}"
+  if [[ $? != 0 ]]; then
+    yetus_debug "generic_locate_patch: failed to download the patch."
+    return 1
+  fi
+  return 0
 }
 
 ## @description Given a possible patch file, guess if it's a patch file
@@ -247,6 +88,12 @@ function locate_patch
 
   yetus_debug "locate patch"
 
+  if [[ -z "${PATCH_OR_ISSUE}" ]]; then
+    yetus_error "ERROR: No patch provided."
+    cleanup_and_exit 1
+  fi
+
+  echo "Processing: ${PATCH_OR_ISSUE}"
   # it's a declarely provided file
   if [[ -f ${PATCH_OR_ISSUE} ]]; then
     patchfile="${PATCH_OR_ISSUE}"
@@ -280,130 +127,6 @@ function locate_patch
       yetus_error "ERROR: Could not copy ${patchfile} to ${PATCH_DIR}"
       cleanup_and_exit 1
     fi
-  fi
-}
-
-## @description  Let plugins also get a copy of the arguments
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function parse_args_plugins
-{
-  for plugin in ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
-    if declare -f ${plugin}_parse_args >/dev/null 2>&1; then
-      yetus_debug "Running ${plugin}_parse_args"
-      #shellcheck disable=SC2086
-      ${plugin}_parse_args "$@"
-      (( RESULT = RESULT + $? ))
-    fi
-  done
-
-  BUGCOMMENTS=${BUGCOMMENTS:-${BUGSYSTEMS}}
-  if [[ ! ${BUGCOMMENTS} =~ console ]]; then
-    BUGCOMMENTS="${BUGCOMMENTS} console"
-  fi
-
-  BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
-}
-
-## @description  Let plugins also get a copy of the arguments
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function plugins_initialize
-{
-  declare plugin
-
-  for plugin in ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
-    if declare -f ${plugin}_initialize >/dev/null 2>&1; then
-      yetus_debug "Running ${plugin}_initialize"
-      #shellcheck disable=SC2086
-      ${plugin}_initialize
-      (( RESULT = RESULT + $? ))
-    fi
-  done
-}
-
-## @description  Register test-patch.d plugins
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_plugin
-{
-  PLUGINS="${PLUGINS} $1"
-}
-
-## @description  Register test-patch.d bugsystems
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_bugsystem
-{
-  BUGSYSTEMS="${BUGSYSTEMS} $1"
-}
-
-## @description  Register test-patch.d test output formats
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_test_format
-{
-  TESTFORMATS="${TESTFORMATS} $1"
-}
-
-## @description  Register test-patch.d build tools
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_build_tool
-{
-  BUILDTOOLS="${BUILDTOOLS} $1"
-}
-
-## @description  Import content from test-patch.d and optionally
-## @description  from user provided plugin directory
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function importplugins
-{
-  declare i
-  declare files=()
-
-  if [[ ${LOAD_SYSTEM_PLUGINS} == "true" ]]; then
-    if [[ -d "${BINDIR}/test-patch.d" ]]; then
-      files=(${BINDIR}/test-patch.d/*.sh)
-    fi
-  fi
-
-  if [[ -n "${USER_PLUGIN_DIR}" && -d "${USER_PLUGIN_DIR}" ]]; then
-    yetus_debug "Loading user provided plugins from ${USER_PLUGIN_DIR}"
-    files=("${files[@]}" ${USER_PLUGIN_DIR}/*.sh)
-  fi
-
-  for i in "${files[@]}"; do
-    if [[ -f ${i} ]]; then
-      yetus_debug "Importing ${i}"
-      . "${i}"
-    fi
-  done
-
-  if [[ -z ${PERSONALITY}
-      && -f "${BINDIR}/personality/${PROJECT_NAME}.sh" ]]; then
-    PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-  fi
-
-  if [[ -n ${PERSONALITY} ]]; then
-    if [[ ! -f ${PERSONALITY} ]]; then
-      if [[ -f "${BINDIR}/personality/${PROJECT_NAME}.sh" ]]; then
-        PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-      else
-        yetus_debug "Can't find ${PERSONALITY} to import."
-        return
-      fi
-    fi
-    yetus_debug "Importing ${PERSONALITY}"
-    . "${PERSONALITY}"
   fi
 }
 
@@ -503,6 +226,7 @@ function patchcmd_dryrun
 
   while [[ ${prefixsize} -lt 4
     && -z ${PATCH_METHOD} ]]; do
+    # shellcheck disable=SC2153
     yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
       "${PATCH}" "-p${prefixsize}" -E --dry-run < "${patchfile}"
     if [[ $? == 0 ]]; then
@@ -532,6 +256,7 @@ function patchfile_dryrun_driver
   declare patchfile=$1
   declare method
 
+  #shellcheck disable=SC2153
   for method in "${PATCH_METHODS[@]}"; do
     if declare -f ${method}_dryrun >/dev/null; then
       "${method}_dryrun" "${patchfile}"
@@ -562,10 +287,9 @@ function gitapply_apply
 
   echo "Applying the patch:"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-apply.log" \
-    "${GIT}" apply --binary -v --stat --apply "-p${PATCH_LEVEL}" "${patchfile}"
+    "${GIT}" apply --binary ${extraopts} -v --stat --apply "-p${PATCH_LEVEL}" "${patchfile}"
   ${GREP} -v "^Checking" "${PATCH_DIR}/apply-patch-git-apply.log"
 }
-
 
 ## @description  patch patch apply
 ## @replaceable  no

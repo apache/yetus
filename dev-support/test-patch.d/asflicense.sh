@@ -15,7 +15,7 @@
 # limitations under the License.
 
 
-add_plugin asflicense
+add_test_type asflicense
 add_test asflicense
 
 ## @description  Verify all files have an Apache License

@@ -14,20 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#shellcheck disable=SC2034
-PATCH_BRANCH_DEFAULT=master
-#shellcheck disable=SC2034
-JIRA_ISSUE_RE='^HBASE-[0-9]+$'
-#shellcheck disable=SC2034
-GITHUB_REPO="apache/hbase"
-#shellcheck disable=SC2034
-HOW_TO_CONTRIBUTE=""
+personality_plugins "all"
 
-# All supported Hadoop versions that we want to test the compilation with
-HBASE_HADOOP_VERSIONS="2.4.1 2.5.2 2.6.0"
+function personality_globals
+{
+  #shellcheck disable=SC2034
+  PATCH_BRANCH_DEFAULT=master
+  #shellcheck disable=SC2034
+  JIRA_ISSUE_RE='^HBASE-[0-9]+$'
+  #shellcheck disable=SC2034
+  GITHUB_REPO="apache/hbase"
+  #shellcheck disable=SC2034
+  HOW_TO_CONTRIBUTE=""
 
-# Override the maven options
-MAVEN_OPTS="${MAVEN_OPTS:-"-Xmx3100M"}"
+  # All supported Hadoop versions that we want to test the compilation with
+  HBASE_HADOOP_VERSIONS="2.4.1 2.5.2 2.6.0"
+
+  # Override the maven options
+  MAVEN_OPTS="${MAVEN_OPTS:-"-Xmx3100M"}"
+}
 
 function personality_modules
 {
@@ -68,7 +73,7 @@ function personality_modules
 
 ###################################################
 
-add_plugin hadoopcheck
+add_test_type hadoopcheck
 
 function hadoopcheck_filefilter
 {
@@ -117,7 +122,7 @@ function hadoopcheck_rebuild
 
 ######################################
 
-add_plugin hbaseprotoc
+add_test_type hbaseprotoc
 
 function hbaseprotoc_filefilter
 {
@@ -184,7 +189,7 @@ function hbaseprotoc_rebuild
 
 ######################################
 
-add_plugin hbaseanti
+add_test_type hbaseanti
 
 function hbaseanti_filefilter
 {

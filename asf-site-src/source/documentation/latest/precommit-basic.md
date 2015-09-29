@@ -62,8 +62,7 @@ test-patch requires these installed components to execute:
 
 ## Optional Requirements
 
-Features are plug-in based. These are activated based upon tool availability, the languages being
-tested, etc.
+Features are plug-in based and enabled either individually or collectively on the command line. From there, these are activated based upon tool availability, the languages being tested, etc.  The external dependencies of plug-ins may have different licensing requirements than Apache Yetus.
 
 Bug Systems:
 
@@ -88,11 +87,39 @@ Language Support, Licensing, and more:
 
 # Basic Usage
 
+The first step for a successful deployment is determining which features/plug-ins to enable:
+
+```bash
+$ test-patch.sh --list-plugins
+```
+
+This option will list all of the available plug-ins that are installed in the default location.  From this list, the specific plug-ins can be enabled:
+
+```bash
+$ test-patch.sh --plugins="ant,maven,shellcheck,xml" <other options>
+```
+
+As a short-cut, every plug-in may be enabled via the special 'all' type:
+
+```bash
+$ test-patch.sh --plugins="all" <other options>
+```
+
+`--plugins` also allows some basic "arithmetic":
+
+```bash
+$ test-patch.sh --plugins="all,-checkstyle,-findbugs" <other options>
+```
+
+This will enable all plug-ins for potential usage, except for checkstyle and findbugs.
+
+**NOTE: The examples in this section will assume that the necessary `--plugins` option has been set on the command line as approriate for your particular installation.**
+
 This command will execute basic patch testing against a patch file stored in "filename":
 
 ```bash
 $ cd <your repo>
-$ dev-support/test-patch.sh --dirty-workspace --project=projectname <filename>
+$ test-patch.sh --dirty-workspace --project=projectname <filename>
 ```
 
 The `--dirty-workspace` flag tells test-patch that the repository is not clean and it is ok to continue.  By default, unit tests are not run since they may take a significant amount of time.
@@ -102,7 +129,7 @@ To do turn them on, we need to provide the --run-tests option:
 
 ```bash
 $ cd <your repo>
-$ dev-support/test-patch.sh --dirty-workspace --run-tests <filename>
+$ test-patch.sh --dirty-workspace --run-tests <filename>
 ```
 
 This is the same command, but now runs the unit tests.
@@ -113,7 +140,7 @@ A typical configuration is to have two repositories.  One with the code you are 
 $ cd <workrepo>
 $ git diff master > /tmp/patchfile
 $ cd ../<testrepo>
-$ <workrepo>/dev-support/test-patch.sh --basedir=<testrepo> --resetrepo /tmp/patchfile
+$ test-patch.sh --basedir=<testrepo> --resetrepo /tmp/patchfile
 ```
 
 We used two new options here.  --basedir sets the location of the repository to use for testing.  --resetrepo tells test patch that it can go into **destructive** mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!

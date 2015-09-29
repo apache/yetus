@@ -18,7 +18,7 @@
 FINDBUGS_HOME=${FINDBUGS_HOME:-}
 FINDBUGS_WARNINGS_FAIL_PRECHECK=false
 
-add_plugin findbugs
+add_test_type findbugs
 
 function findbugs_filefilter
 {
@@ -64,12 +64,20 @@ function findbugs_parse_args
 ## @return       1 findbugs is missing some component
 function findbugs_is_installed
 {
-  if [[ ! -x "${FINDBUGS_HOME}/bin/findbugs" ]]; then
-    printf "\n\n%s is not executable.\n\n" "${FINDBUGS_HOME}/bin/findbugs"
-    add_vote_table -1 findbugs "Findbugs is not installed."
-    return 1
-  fi
-  return 0
+  declare exec
+  declare status=0
+
+  for exec in findbugs \
+              computeBugHistory \
+              convertXmlToText \
+              filterBugs \
+              setBugDatabaseInfo; do
+    if [[ ! -x "${FINDBUGS_HOME}/bin/${exec}"  ]]; then
+      yetus_error "ERROR: ${FINDBUGS_HOME}/bin/${exec} is not executable."
+      status=1
+    fi
+  done
+  return ${status}
 }
 
 ## @description  Run the maven findbugs plugin and record found issues in a bug database
@@ -191,7 +199,8 @@ function findbugs_preapply
 
   findbugs_is_installed
   if [[ $? != 0 ]]; then
-    return 1
+    add_vote_table 0 findbugs "findbugs executables are not available."
+    return 0
   fi
 
   big_console_header "Pre-patch findbugs detection"
@@ -269,12 +278,12 @@ function findbugs_postinstall
     return 0
   fi
 
-  big_console_header "Patch findbugs detection"
-
   findbugs_is_installed
   if [[ $? != 0 ]]; then
-    return 1
+    return 0
   fi
+
+  big_console_header "Patch findbugs detection"
 
   findbugs_runner patch
 

@@ -14,13 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#shellcheck disable=SC2034
-PATCH_BRANCH_DEFAULT=master
-#shellcheck disable=SC2034
-JIRA_ISSUE_RE='^SAMZA-[0-9]+$'
-#shellcheck disable=SC2034
-HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/SAMZA/Contributor's+Corner"
-# shellcheck disable=SC2034
-BUILDTOOL=gradle
-#shellcheck disable=SC2034
-GITHUB_REPO="apache/samza"
+
+personality_plugins "all,-checkstyle"
+
+function personality_globals
+{
+  #shellcheck disable=SC2034
+  PATCH_BRANCH_DEFAULT=master
+  #shellcheck disable=SC2034
+  JIRA_ISSUE_RE='^SAMZA-[0-9]+$'
+  #shellcheck disable=SC2034
+  HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/SAMZA/Contributor's+Corner"
+  # shellcheck disable=SC2034
+  BUILDTOOL=gradle
+  #shellcheck disable=SC2034
+  GITHUB_REPO="apache/samza"
+}

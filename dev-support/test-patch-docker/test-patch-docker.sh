@@ -23,7 +23,7 @@ DID=${RANDOM}
 ## @param        string
 function yetus_debug
 {
-  if [[ -n "${YETUS_SHELL_SCRIPT_DEBUG}" ]]; then
+  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
     echo "[$(date) DEBUG]: $*" 1>&2
   fi
 }

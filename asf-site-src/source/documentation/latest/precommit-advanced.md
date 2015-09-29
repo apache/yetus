@@ -22,7 +22,7 @@ test-patch
 
 * [Docker Support](#Docker_Support)
 * [Plug-ins](#Plug-ins)
-* [Configuring for Other Projects](#Configuring_for_Other_Projects)
+* [Personalities](#Personalities)
 * [Important Variables](#Important_Variables)
 
 # Docker Support
@@ -38,17 +38,17 @@ Dockerfile images will be named with a test-patch prefix and suffix with either 
 
 # Plug-ins
 
-test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d off of the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions as well as test functions are covered.  See other documentat for pertinent information for the other plug-in types.
+test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d off of the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
 
 ## Common Plug-in Functions
 
 Every plug-in must have one line in order to be recognized, usually an 'add' statement.  Test plug-ins, for example, have this statement:
 
 ```bash
-add_plugin <pluginname>
+add_test_type <pluginname>
 ```
 
-This function call registers the `pluginname` so that test-patch knows that it exists.  The `pluginname` also acts as the key to the custom functions that you can define. For example:
+This function call registers the `pluginname` so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the 'all' plug-in is reserved.  The `pluginname` also acts as the key to the custom functions that you can define. For example:
 
 ```bash
 function pluginname_filefilter
@@ -84,14 +84,26 @@ Similarly, there are other functions that may be defined during the test-patch r
 * pluginname\_rebuild
     - Any non-unit tests that require the source to be rebuilt in a destructive way should be run here.
 
-Test Plug-ins
-=============
 
-Plugins geared towards independent tests are registed via:
+## Plug-in Importation
+
+Plug-ins are imported from several key directories:
+
+* core.d is an internal-to-Yetus directory that first loads the basic Yetus library, followed by the common routines used by all of the precommit shell code.  This order is dictated by prefixing the plug-in files with a number.  Other files in this directory are loaded in shell collated order.
+
+* personality contains bundled personalities for various projects.  These will be imported individually based upon either a project name or if specifically identified with the `--personality` flag.
+
+* test-patch.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.
+
+If the `--skip-system-plugins` flag is passed, then only core.d is imported.
+
+## Test Plug-ins
+
+Plug-ins geared towards independent tests are registed via:
 
 
 ```bash
-add_plugin <pluginname>
+add_test_type <pluginname>
 ```
 
 + pluginname\_filefilter
@@ -101,13 +113,27 @@ add_plugin <pluginname>
     - executed after the unit tests have completed.
 
 
-# Configuring for Other Projects
+# Personalities
+
+## Configuring for Other Projects
 
 It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project `personality` should be added that enacts these custom rules.
 
 A personality consists of two functions. One that determines which test types to run and another that allows a project to dictate ordering rules, flags, and profiles on a per-module, per-test run.
 
 There can be only **one** of each personality function defined.
+
+## Global Definitions
+
+Globals for personalities should be defined in the `personality_globals` function.  This function is called *after* the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:
+
+```bash
+funciton personality_globals
+{
+  PATCH_BRANCH_DEFAULT=master
+  GITHUB_REPO="apache/yetus"
+}
+```
 
 ## Test Determination
 
@@ -179,6 +205,16 @@ function personality_modules
 ```
 
 This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.
+
+## Enabling Plug-ins
+
+Personalities can set the base list of plug-ins to enable and disable for their project via the `personality_plugins` function. Just call it with the same pattern as the `--plugins` command line option:
+
+```bash
+personality_plugins "all,-checkstyle,-findbugs,-asflicense"
+```
+
+This list is used if the user does not provide a list of plug-ins.
 
 # Important Variables
 

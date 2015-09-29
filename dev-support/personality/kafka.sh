@@ -14,16 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#shellcheck disable=SC2034
-PATCH_BRANCH_DEFAULT=trunk
-#shellcheck disable=SC2034
-JIRA_ISSUE_RE='^KAFKA-[0-9]+$'
-#shellcheck disable=SC2034
-HOW_TO_CONTRIBUTE="http://kafka.apache.org/contributing.html"
-# shellcheck disable=SC2034
-BUILDTOOL=gradle
-#shellcheck disable=SC2034
-GITHUB_REPO="apache/kafka"
+personality_plugins "all,-checkstyle,-asflicense"
+
+function personality_globals
+{
+  #shellcheck disable=SC2034
+  PATCH_BRANCH_DEFAULT=trunk
+  #shellcheck disable=SC2034
+  JIRA_ISSUE_RE='^KAFKA-[0-9]+$'
+  #shellcheck disable=SC2034
+  HOW_TO_CONTRIBUTE="http://kafka.apache.org/contributing.html"
+  # shellcheck disable=SC2034
+  BUILDTOOL=gradle
+  #shellcheck disable=SC2034
+  GITHUB_REPO="apache/kafka"
+}
 
 function personality_modules
 {

@@ -14,20 +14,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# shellcheck disable=SC2034
-PATCH_BRANCH_DEFAULT=master
-# shellcheck disable=SC2034
-JIRA_ISSUE_RE='^BIGTOP-[0-9]+$'
-# shellcheck disable=SC2034
-HOW_TO_CONTRIBUTE=""
-# shellcheck disable=SC2034
-BUILDTOOL=gradle
-# shellcheck disable=SC2034
-GITHUB_REPO="apache/bigtop"
-# shellcheck disable=SC2034
-BIGTOP_PUPPETSETUP=false
+personality_plugins "all,-checkstyle,-findbugs"
 
-add_plugin bigtop
+function personality_globals
+{
+  # shellcheck disable=SC2034
+  PATCH_BRANCH_DEFAULT=master
+  # shellcheck disable=SC2034
+  JIRA_ISSUE_RE='^BIGTOP-[0-9]+$'
+  # shellcheck disable=SC2034
+  HOW_TO_CONTRIBUTE=""
+  # shellcheck disable=SC2034
+  BUILDTOOL=gradle
+  # shellcheck disable=SC2034
+  GITHUB_REPO="apache/bigtop"
+  # shellcheck disable=SC2034
+  BIGTOP_PUPPETSETUP=false
+}
+
+add_test_type bigtop
 
 function bigtop_usage
 {

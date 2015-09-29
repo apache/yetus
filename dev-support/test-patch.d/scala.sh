@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_plugin scalac
-add_plugin scaladoc
+add_test_type scalac
+add_test_type scaladoc
 
 function scalac_filefilter
 {

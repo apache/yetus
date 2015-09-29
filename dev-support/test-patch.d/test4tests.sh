@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_plugin test4tests
+add_test_type test4tests
 
 ## @description  Check the patch file for changed/new tests
 ## @audience     private

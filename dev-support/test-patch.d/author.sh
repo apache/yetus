@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_plugin author
+add_test_type author
 
 ## @description  Check the current directory for @author tags
 ## @audience     private

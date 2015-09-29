@@ -28,8 +28,6 @@ BINDIR=$(cd -P -- "$(dirname -- "${this}")" >/dev/null && pwd -P)
 #shellcheck disable=SC2034
 QATESTMODE=false
 
-. "${BINDIR}/core.d/common.sh"
-
 # dummy functions
 function add_vote_table
 {
@@ -84,16 +82,20 @@ function setup_defaults
 ## @replaceable  no
 function yetus_usage
 {
-  echo "Usage: apply-patch.sh [options] patch-file | issue-number | http"
+  echo "Usage: smart-apply-patch.sh [options] patch"
   echo
   echo "--committer            Apply patches like a boss."
   echo "--debug                If set, then output some extra stuff to stderr"
   echo "--dry-run              Check for patch viability without applying"
+  echo "--list-plugins         List all installed plug-ins and then exit"
   echo "--modulelist=<list>    Specify additional modules to test (comma delimited)"
   echo "--offline              Avoid connecting to the Internet"
   echo "--patch-dir=<dir>      The directory for working and output files (default '/tmp/yetus-(random))"
-  echo "--plugins=<dir>        A directory of user provided plugins. see test-patch.d for examples (default empty)"
+  echo "--personality=<file>   The personality file to load"
+  echo "--plugins=<list>       Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
+  echo "--project=<name>       The short name for project currently using test-patch (default 'yetus')"
   echo "--skip-system-plugins  Do not load plugins from ${BINDIR}/test-patch.d"
+  echo "--user-plugins=<dir>   A directory of user provided plugins. see test-patch.d for examples (default empty)"
   echo ""
   echo "Shell binary overrides:"
   echo "--awk-cmd=<cmd>        The 'awk' command to use (default 'awk')"
@@ -170,7 +172,7 @@ function gitam_dryrun
   # use apply instead.
   gitapply_dryrun "$@"
 
-  if [[ -n ${PATCH_METHOD}="gitapply" ]]; then
+  if [[ ${PATCH_METHOD} = "gitapply" ]]; then
     PATCH_METHOD="gitam"
   fi
 }
@@ -189,7 +191,23 @@ function gitam_apply
   ${GREP} -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
 }
 
+## @description import core library routines
+## @audience private
+## @stability evolving
+function import_core
+{
+  declare filename
+
+  for filename in "${BINDIR}/core.d"/*; do
+    # shellcheck disable=SC1091
+    # shellcheck source=core.d/01-common.sh
+    . "${filename}"
+  done
+}
+
 trap "cleanup_and_exit 1" HUP INT QUIT TERM
+
+import_core
 
 setup_defaults
 

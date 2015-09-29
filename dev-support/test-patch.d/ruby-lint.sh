@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_plugin ruby_lint
+add_test_type ruby_lint
 
 RUBY_LINT_TIMER=0
 

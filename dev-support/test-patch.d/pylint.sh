@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_plugin pylint
+add_test_type pylint
 
 PYLINT_TIMER=0
 

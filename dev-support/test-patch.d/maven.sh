@@ -25,8 +25,8 @@ fi
 MAVEN_CUSTOM_REPOS=false
 MAVEN_CUSTOM_REPOS_DIR="${HOME}/yetus-m2"
 
-add_plugin mvnsite
-add_plugin mvneclipse
+add_test_type mvnsite
+add_test_type mvneclipse
 add_build_tool maven
 
 function maven_usage

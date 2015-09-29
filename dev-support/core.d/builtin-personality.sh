@@ -16,10 +16,14 @@
 
 function personality_modules
 {
-  "${BUILDTOOL}_builtin_personality_modules" "$@"
+  if declare -f "${BUILDTOOL}_builtin_personality_modules" >/dev/null; then
+    "${BUILDTOOL}_builtin_personality_modules" "$@"
+  fi
 }
 
 function personality_file_tests
 {
-  "${BUILDTOOL}_builtin_personality_file_tests" "$@"
+  if declare -f "${BUILDTOOL}_builtin_personality_file_tests" >/dev/null; then
+    "${BUILDTOOL}_builtin_personality_file_tests" "$@"
+  fi
 }
