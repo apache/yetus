@@ -158,6 +158,8 @@ function github_find_jira_title
   if [[ ${retval} == 0 ]]; then
     return 0
   fi
+
+  return 1
 }
 
 function github_determine_issue
