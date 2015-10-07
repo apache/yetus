@@ -27,6 +27,7 @@ add_test asflicense
 function asflicense_tests
 {
   local numpatch
+  local btfails=true
 
   big_console_header "Determining number of patched ASF License errors"
 
@@ -38,6 +39,7 @@ function asflicense_tests
       modules_workers patch asflicense releaseaudit
     ;;
     gradle)
+      btfails=false
       modules_workers patch asflicense rat
     ;;
     maven)
@@ -50,7 +52,7 @@ function asflicense_tests
 
   # RAT fails the build if there are license problems.
   # so let's take advantage of that a bit.
-  if [[ $? == 0 ]]; then
+  if [[ $? == 0 && ${btfails} = true ]]; then
     add_vote_table 1 asflicense "Patch does not generate ASF License warnings."
     return 0
   fi
@@ -61,27 +63,34 @@ function asflicense_tests
         -o -name rat-report.txt \
     | xargs cat > "${PATCH_DIR}/patch-asflicense.txt"
 
-  if [[ -s "${PATCH_DIR}/patch-asflicense.txt" ]] ; then
-    numpatch=$("${GREP}" -c '\!?????' "${PATCH_DIR}/patch-asflicense.txt")
-    echo ""
-    echo ""
-    echo "There appear to be ${numpatch} ASF License warnings after applying the patch."
-    if [[ -n ${numpatch}
-       && ${numpatch} -gt 0 ]] ; then
-      add_vote_table -1 asflicense "Patch generated ${numpatch} ASF License warnings."
-
-      echo "Lines that start with ????? in the ASF License "\
-          "report indicate files that do not have an Apache license header:" \
-            > "${PATCH_DIR}/patch-asflicense-problems.txt"
-
-      ${GREP} '\!?????' "${PATCH_DIR}/patch-asflicense.txt" \
-      >>  "${PATCH_DIR}/patch-asflicense-problems.txt"
-
-      add_footer_table asflicense "@@BASE@@/patch-asflicense-problems.txt"
+  if [[ ! -s "${PATCH_DIR}/patch-asflicense.txt" ]]; then
+    if [[ ${btfails} = true ]]; then
+      # if we're here, then build actually failed
+      modules_messages patch asflicense true
+    else
+      add_vote_table 0 asflicense "ASF License check generated no output?"
+      return 0
     fi
-  else
-    # if we're here, then build actually failed
-    modules_messages patch asflicense true
   fi
-  return 1
+
+  numpatch=$("${GREP}" -c '\!?????' "${PATCH_DIR}/patch-asflicense.txt")
+  echo ""
+  echo ""
+  echo "There appear to be ${numpatch} ASF License warnings after applying the patch."
+  if [[ -n ${numpatch}
+     && ${numpatch} -gt 0 ]] ; then
+    add_vote_table -1 asflicense "Patch generated ${numpatch} ASF License warnings."
+
+    echo "Lines that start with ????? in the ASF License "\
+        "report indicate files that do not have an Apache license header:" \
+          > "${PATCH_DIR}/patch-asflicense-problems.txt"
+
+    ${GREP} '\!?????' "${PATCH_DIR}/patch-asflicense.txt" \
+    >>  "${PATCH_DIR}/patch-asflicense-problems.txt"
+
+    add_footer_table asflicense "@@BASE@@/patch-asflicense-problems.txt"
+    return 1
+  fi
+  add_vote_table 1 asflicense "Patch does not generate ASF License warnings."
+  return 0
 }
