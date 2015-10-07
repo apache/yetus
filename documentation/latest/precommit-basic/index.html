@@ -25,11 +25,11 @@
                     <link href="/assets/css/font-awesome.css" rel="stylesheet">
 
 		    <!-- JS -->
-		    <script type="text/javascript" src="/assets/js/jquery-2.1.1.min.js"></script>
+		    <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
 		    <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
 	</head>
     <body>
-      <div class="navbar navbar-custom navbar-static-top" role="navigation">
+      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -39,11 +39,12 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
                 <li><a href="/documentation/latest/">Documentation</a>
                 </li>
                 <li class="dropdown">
@@ -124,41 +125,58 @@
 
 <h1 id="pre-requisites">Pre-requisites</h1>
 
-<p>test-patch has the following requirements:</p>
+<p>test-patch and smart-apply-patch are written in bash for maximum portability.  As such, it mostly assumes the locations of commands to be in the file path. However, in many cases, this assumption may be overridden via command line options.</p>
+
+<p>For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in /usr/xpg4/bin and the default location for the GNU binaries is /usr/gnu/bin.</p>
+
+<h2 id="base-requirements">Base Requirements</h2>
+
+<p>test-patch requires these installed components to execute:</p>
 
 <ul>
 <li>A project with a supported build tool (ant, gradle, maven, &hellip;)</li>
 <li>git-based project (and git 1.7.3 or higher installed)</li>
 <li>bash v3.2 or higher</li>
-<li>findbugs 3.x installed</li>
-<li>shellcheck installed, preferably 0.3.6 or higher</li>
-<li>pylint installed</li>
 <li>GNU diff</li>
 <li>GNU patch</li>
 <li>POSIX awk</li>
 <li>POSIX grep</li>
 <li>POSIX sed</li>
-<li>curl</li>
+<li><a href="http://curl.haxx.se/">curl</a> command</li>
 <li>file command</li>
-<li>smart-apply-patch.sh (included!)</li>
 </ul>
 
-<p>Maven plug-ins requirements:</p>
+<h2 id="optional-requirements">Optional Requirements</h2>
+
+<p>Features are plug-in based. These are activated based upon tool availability, the languages being
+tested, etc.</p>
+
+<p>Bug Systems:</p>
 
 <ul>
-<li>Apache RAT</li>
-<li>Apache FindBugs</li>
+<li><a href="https://github.com/">GitHub</a>-based issue tracking</li>
+<li><a href="https://www.atlassian.com/software/jira">JIRA</a>-based issue tracking</li>
 </ul>
 
-<p>Optional:</p>
+<p>Unit Test Formats:</p>
 
 <ul>
-<li>JIRA-based issue tracking</li>
-<li>GitHub-based issue tracking</li>
-<li>Some other supported bug system</li>
+<li><a href="http://junit.org/">JUnit</a></li>
+<li><a href="https://testanything.org/">TAP</a></li>
 </ul>
 
-<p>The locations of these files are (mostly) assumed to be in the file path, but may be overridden via command line options.  For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in /usr/xpg4/bin and the default location for the GNU binaries is /usr/gnu/bin.</p>
+<p>Language Support, Licensing, and more:</p>
+
+<ul>
+<li><a href="http://creadur.apache.org/rat/">Apache Creadur Rat</a> entries in build system</li>
+<li><a href="http://checkstyle.sourceforge.net/">checkstyle</a> entries in build system (ant and maven only)</li>
+<li><a href="http://findbugs.sourceforge.net/">FindBugs</a> entries in build system and 3.x executables</li>
+<li><a href="http://perlcritic.com/">Perl::Critic</a> installed</li>
+<li><a href="http://www.pylint.org/">pylint</a> installed</li>
+<li><a href="http://batsov.com/rubocop/">rubocop</a> installed</li>
+<li><a href="https://github.com/YorickPeterse/ruby-lint">ruby-lint</a> installed</li>
+<li><a href="https://github.com/koalaman/shellcheck">shellcheck</a> installed, preferably 0.3.6 or higher</li>
+</ul>
 
 <h1 id="basic-usage">Basic Usage</h1>
 
