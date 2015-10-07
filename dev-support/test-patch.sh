@@ -23,8 +23,6 @@ if [[ -z "${BASH_VERSINFO}" ]] \
   exit 1
 fi
 
-### BUILD_URL is set by Hudson if it is run by patch process
-
 this="${BASH_SOURCE-$0}"
 BINDIR=$(cd -P -- "$(dirname -- "${this}")" >/dev/null && pwd -P)
 STARTINGDIR=$(pwd)
@@ -32,6 +30,8 @@ USER_PARAMS=("$@")
 GLOBALTIMER=$(date +"%s")
 #shellcheck disable=SC2034
 QATESTMODE=false
+
+. "${BINDIR}/core.d/common.sh"
 
 # global arrays
 declare -a TP_HEADER
@@ -56,22 +56,18 @@ TP_FOOTER_COUNTER=0
 ## @replaceable  no
 function setup_defaults
 {
-  PROJECT_NAME=yetus
+  common_defaults
+
   DOCKERFILE="${BINDIR}/test-patch-docker/Dockerfile-startstub"
   HOW_TO_CONTRIBUTE="https://wiki.apache.org/hadoop/HowToContribute"
-  JENKINS=false
   INSTANCE=${RANDOM}
-  BASEDIR=$(pwd)
   RELOCATE_PATCH_DIR=false
 
-  USER_PLUGIN_DIR=""
-  LOAD_SYSTEM_PLUGINS=true
   ALLOWSUMMARIES=true
 
   DOCKERSUPPORT=false
   BUILD_NATIVE=${BUILD_NATIVE:-true}
-  PATCH_BRANCH=""
-  PATCH_BRANCH_DEFAULT="master"
+
   BUILDTOOLCWD=true
 
   # shellcheck disable=SC2034
@@ -81,64 +77,14 @@ function setup_defaults
   # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
   USER_MODULE_LIST=""
-  OFFLINE=false
   CHANGED_FILES=""
   REEXECED=false
   RESETREPO=false
   ISSUE=""
   TIMER=$(date +"%s")
-  OSTYPE=$(uname -s)
   BUILDTOOL=maven
   TESTFORMATS=""
   JDK_TEST_LIST="compile javadoc unit"
-
-  # Solaris needs POSIX, not SVID
-  case ${OSTYPE} in
-    SunOS)
-      AWK=${AWK:-/usr/xpg4/bin/awk}
-      SED=${SED:-/usr/xpg4/bin/sed}
-      CURL=${CURL:-curl}
-      GIT=${GIT:-git}
-      GREP=${GREP:-/usr/xpg4/bin/grep}
-      PATCH=${PATCH:-/usr/gnu/bin/patch}
-      DIFF=${DIFF:-/usr/gnu/bin/diff}
-      FILE=${FILE:-file}
-    ;;
-    *)
-      AWK=${AWK:-awk}
-      SED=${SED:-sed}
-      CURL=${CURL:-curl}
-      GIT=${GIT:-git}
-      GREP=${GREP:-grep}
-      PATCH=${PATCH:-patch}
-      DIFF=${DIFF:-diff}
-      FILE=${FILE:-file}
-    ;;
-  esac
-
-  RESULT=0
-}
-
-## @description  Print a message to stderr
-## @audience     public
-## @stability    stable
-## @replaceable  no
-## @param        string
-function yetus_error
-{
-  echo "$*" 1>&2
-}
-
-## @description  Print a message to stderr if --debug is turned on
-## @audience     public
-## @stability    stable
-## @replaceable  no
-## @param        string
-function yetus_debug
-{
-  if [[ -n "${TP_SHELL_SCRIPT_DEBUG}" ]]; then
-    echo "[$(date) DEBUG]: $*" 1>&2
-  fi
 }
 
 ## @description  Convert the given module name to a file fragment
@@ -236,7 +182,7 @@ function generate_stack
 {
   declare frame
 
-  if [[ -n "${TP_SHELL_SCRIPT_DEBUG}" ]]; then
+  if [[ -n "${YETUS_SHELL_SCRIPT_DEBUG}" ]]; then
     while caller "${frame}"; do
       ((frame++));
     done
@@ -349,6 +295,10 @@ function prepopulate_footer
   if [[ -n ${PERSONALITY} ]]; then
     add_footer_table "Personality" "${PERSONALITY}"
   fi
+
+  gitrev=$(${GIT} rev-parse --verify --short HEAD)
+
+  add_footer_table "git revision" "${PATCH_BRANCH} / ${gitrev}"
 }
 
 ## @description  Put docker stats in various tables
@@ -528,7 +478,7 @@ function verify_patchdir_still_exists
     fi
 
     rm "${commentfile}"
-    cleanup_and_exit ${RESULT}
+    cleanup_and_exit "${RESULT}"
   fi
 }
 
@@ -679,11 +629,7 @@ function echo_and_redirect
   # to the screen
   echo "cd $(pwd)"
   echo "${*} > ${logfile} 2>&1"
-  # to the log
-  echo "cd $(pwd)" > "${logfile}"
-  echo "${*}" >> "${logfile}"
-  # run the actual command
-  "${@}" >> "${logfile}" 2>&1
+  yetus_run_and_redirect "${logfile}" "${@}"
 }
 
 ## @description is a given directory relative to BASEDIR?
@@ -710,9 +656,9 @@ function relative_dir
 ## @audience     public
 ## @stability    stable
 ## @replaceable  no
-function testpatch_usage
+function yetus_usage
 {
-  local -r up=$(echo ${PROJECT_NAME} | tr '[:lower:]' '[:upper:]')
+  local -r up=$(echo "${PROJECT_NAME}" | tr '[:lower:]' '[:upper:]')
 
   echo "Usage: test-patch.sh [options] patch-file | issue-number | http"
   echo
@@ -726,6 +672,7 @@ function testpatch_usage
   echo "--branch=<ref>         Forcibly set the branch"
   echo "--branch-default=<ref> If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
   echo "--build-native=<bool>  If true, then build native components (default 'true')"
+  # shellcheck disable=SC2153
   echo "--build-tool=<tool>    Pick which build tool to focus around (${BUILDTOOLS})"
   echo "--bugcomments=<bug>    Only write comments to the screen and this comma delimited list (${BUGSYSTEMS})"
   echo "--contrib-guide=<url>  URL to point new users towards project conventions. (default: ${HOW_TO_CONTRIBUTE} )"
@@ -790,20 +737,10 @@ function parse_args
   local j
   local testlist
 
+  common_args "$@"
+
   for i in "$@"; do
     case ${i} in
-      --awk-cmd=*)
-        AWK=${i#*=}
-      ;;
-      --basedir=*)
-        BASEDIR=${i#*=}
-      ;;
-      --branch=*)
-        PATCH_BRANCH=${i#*=}
-      ;;
-      --branch-default=*)
-        PATCH_BRANCH_DEFAULT=${i#*=}
-      ;;
       --bugcomments=*)
         BUGCOMMENTS=${i#*=}
         BUGCOMMENTS=${BUGCOMMENTS//,/ }
@@ -820,15 +757,6 @@ function parse_args
       --contrib-guide=*)
         HOW_TO_CONTRIBUTE=${i#*=}
       ;;
-      --curl-cmd=*)
-        CURL=${i#*=}
-      ;;
-      --debug)
-        TP_SHELL_SCRIPT_DEBUG=true
-      ;;
-      --diff-cmd=*)
-        DIFF=${i#*=}
-      ;;
       --dirty-workspace)
         DIRTY_WORKSPACE=true
       ;;
@@ -841,19 +769,6 @@ function parse_args
       --dockermode)
         DOCKERMODE=true
       ;;
-      --file-cmd=*)
-        FILE=${i#*=}
-      ;;
-      --git-cmd=*)
-        GIT=${i#*=}
-      ;;
-      --grep-cmd=*)
-        GREP=${i#*=}
-      ;;
-      --help|-help|-h|help|--h|--\?|-\?|\?)
-        testpatch_usage
-        exit 0
-      ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
       ;;
@@ -865,11 +780,6 @@ function parse_args
       --linecomments=*)
         BUGLINECOMMENTS=${i#*=}
         BUGLINECOMMENTS=${BUGLINECOMMENTS//,/ }
-      ;;
-      --modulelist=*)
-        USER_MODULE_LIST=${i#*=}
-        USER_MODULE_LIST=${USER_MODULE_LIST//,/ }
-        yetus_debug "Manually forcing modules ${USER_MODULE_LIST}"
       ;;
       --multijdkdirs=*)
         JDK_DIR_LIST=${i#*=}
@@ -884,23 +794,8 @@ function parse_args
       --mv-patch-dir)
         RELOCATE_PATCH_DIR=true;
       ;;
-      --offline)
-        OFFLINE=true
-      ;;
-      --patch-cmd=*)
-        PATCH=${i#*=}
-      ;;
-      --patch-dir=*)
-        USER_PATCH_DIR=${i#*=}
-      ;;
       --personality=*)
         PERSONALITY=${i#*=}
-      ;;
-      --plugins=*)
-        USER_PLUGIN_DIR=${i#*=}
-      ;;
-      --project=*)
-        PROJECT_NAME=${i#*=}
       ;;
       --reexec)
         REEXECED=true
@@ -915,9 +810,6 @@ function parse_args
         MODULE_SKIPDIRS=${i#*=}
         MODULE_SKIPDIRS=${MODULE_SKIPDIRS//,/ }
         yetus_debug "Setting skipdirs to ${MODULE_SKIPDIRS}"
-      ;;
-      --skip-system-plugins)
-        LOAD_SYSTEM_PLUGINS=false
       ;;
       --summarize=*)
         ALLOWSUMMARIES=${i#*=}
@@ -974,7 +866,7 @@ function parse_args
   fi
 
   if [[ -z "${PATCH_OR_ISSUE}" ]]; then
-    testpatch_usage
+    yetus_usage
     exit 1
   fi
 
@@ -984,8 +876,6 @@ function parse_args
 
   if [[ -n ${USER_PATCH_DIR} ]]; then
     PATCH_DIR="${USER_PATCH_DIR}"
-  else
-    PATCH_DIR=/tmp/test-patch-${PROJECT_NAME}/$$
   fi
 
   cd "${STARTINGDIR}"
@@ -1212,7 +1102,7 @@ function find_changed_modules
 }
 
 ## @description  git checkout the appropriate branch to test.  Additionally, this calls
-## @description  'determine_issue' and 'determine_branch' based upon the context provided
+## @description  'determine_branch' based upon the context provided
 ## @description  in ${PATCH_DIR} and in git after checkout.
 ## @audience     private
 ## @stability    stable
@@ -1318,18 +1208,6 @@ function git_checkout
     fi
   fi
 
-  determine_issue
-
-  GIT_REVISION=$(${GIT} rev-parse --verify --short HEAD)
-
-  if [[ "${ISSUE}" == 'Unknown' ]]; then
-    echo "Testing patch on ${PATCH_BRANCH}."
-  else
-    echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
-  fi
-
-  add_footer_table "git revision" "${PATCH_BRANCH} / ${GIT_REVISION}"
-
   return 0
 }
 
@@ -1427,7 +1305,7 @@ function determine_branch
 ## @return       1 on failure, with ISSUE updated to "Unknown"
 function determine_issue
 {
-  local bugsys
+  declare bugsys
 
   yetus_debug "Determine issue"
 
@@ -1521,114 +1399,6 @@ function determine_needed_tests
   add_footer_table "Optional Tests" "${NEEDED_TESTS}"
 }
 
-## @description  Given ${PATCH_ISSUE}, determine what type of patch file is in use, and do the
-## @description  necessary work to place it into ${PATCH_DIR}/patch.
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @return       0 on success
-## @return       1 on failure, may exit
-function locate_patch
-{
-  local bugsys
-  local patchfile=""
-  local gotit=false
-
-  yetus_debug "locate patch"
-
-  # it's a locally provided file
-  if [[ -f ${PATCH_OR_ISSUE} ]]; then
-    patchfile="${PATCH_OR_ISSUE}"
-  else
-    # run through the bug systems.  maybe they know?
-    for bugsys in ${BUGSYSTEMS}; do
-      if declare -f ${bugsys}_locate_patch >/dev/null 2>&1; then
-        "${bugsys}_locate_patch" "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"
-        if [[ $? == 0 ]]; then
-          guess_patch_file "${PATCH_DIR}/patch"
-          if [[ $? == 0 ]]; then
-            gotit=true
-            break;
-          fi
-        fi
-      fi
-    done
-
-    # ok, none of the bug systems know. let's see how smart we are
-    if [[ ${gotit} == false ]]; then
-      generic_locate_patch "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"
-    fi
-  fi
-
-  if [[ ! -f "${PATCH_DIR}/patch"
-      && -f "${patchfile}" ]]; then
-    cp "${patchfile}" "${PATCH_DIR}/patch"
-    if [[ $? == 0 ]] ; then
-      echo "Patch file ${patchfile} copied to ${PATCH_DIR}"
-    else
-      yetus_error "ERROR: Could not copy ${patchfile} to ${PATCH_DIR}"
-      cleanup_and_exit 1
-    fi
-  fi
-
-  guess_patch_file "${PATCH_DIR}/patch"
-  if [[ $? != 0 ]]; then
-    yetus_error "ERROR: Unsure how to process ${PATCH_OR_ISSUE}."
-    cleanup_and_exit 1
-  fi
-}
-
-## @description Given a possible patch file, guess if it's a patch file without using smart-apply-patch
-## @audience private
-## @stability evolving
-## @param path to patch file to test
-## @return 0 we think it's a patch file
-## @return 1 we think it's not a patch file
-function guess_patch_file
-{
-  local patch=$1
-  local fileOutput
-
-  if [[ ! -f ${patch} ]]; then
-    return 1
-  fi
-
-  yetus_debug "Trying to guess is ${patch} is a patch file."
-  fileOutput=$("${FILE}" "${patch}")
-  if [[ $fileOutput =~ \ diff\  ]]; then
-    yetus_debug "file magic says it's a diff."
-    return 0
-  fi
-  fileOutput=$(head -n 1 "${patch}" | "${GREP}" -E "^(From [a-z0-9]* Mon Sep 17 00:00:00 2001)|(diff .*)|(Index: .*)$")
-  if [[ $? == 0 ]]; then
-    yetus_debug "first line looks like a patch file."
-    return 0
-  fi
-  return 1
-}
-
-## @description  Given ${PATCH_DIR}/patch, verify the patch is good using ${BINDIR}/smart-apply-patch.sh
-## @description  in dryrun mode.
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @return       0 on success
-## @return       1 on failure
-function verify_patch_file
-{
-  # Before building, check to make sure that the patch is valid
-  export PATCH
-
-  "${BINDIR}/smart-apply-patch.sh" --dry-run "${PATCH_DIR}/patch"
-  if [[ $? != 0 ]] ; then
-    echo "PATCH APPLICATION FAILED"
-    add_vote_table -1 patch "The patch command could not apply the patch during dryrun."
-    return 1
-  else
-    return 0
-  fi
-}
-
 ## @description  Given ${PATCH_DIR}/patch, apply the patch using ${BINDIR}/smart-apply-patch.sh
 ## @audience     private
 ## @stability    evolving
@@ -1639,8 +1409,7 @@ function apply_patch_file
 {
   big_console_header "Applying patch to ${PATCH_BRANCH}"
 
-  export PATCH
-  "${BINDIR}/smart-apply-patch.sh" "${PATCH_DIR}/patch"
+  patchfile_apply_driver "${PATCH_DIR}/patch"
   if [[ $? != 0 ]] ; then
     echo "PATCH APPLICATION FAILED"
     ((RESULT = RESULT + 1))
@@ -1788,7 +1557,6 @@ function check_reexec
   if [[ ${DOCKERSUPPORT} == true
       && ${copy} == false ]]; then
     big_console_header "Re-execing under Docker"
-
   fi
 
   # copy our universe
@@ -2357,130 +2125,6 @@ function runtests
   done
 }
 
-## @description  Import content from test-patch.d and optionally
-## @description  from user provided plugin directory
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function importplugins
-{
-  local i
-  local files=()
-
-  if [[ ${LOAD_SYSTEM_PLUGINS} == "true" ]]; then
-    if [[ -d "${BINDIR}/test-patch.d" ]]; then
-      files=(${BINDIR}/test-patch.d/*.sh)
-    fi
-  fi
-
-  if [[ -n "${USER_PLUGIN_DIR}" && -d "${USER_PLUGIN_DIR}" ]]; then
-    yetus_debug "Loading user provided plugins from ${USER_PLUGIN_DIR}"
-    files=("${files[@]}" ${USER_PLUGIN_DIR}/*.sh)
-  fi
-
-  for i in "${files[@]}"; do
-    if [[ -f ${i} ]]; then
-      yetus_debug "Importing ${i}"
-      . "${i}"
-    fi
-  done
-
-  if [[ -z ${PERSONALITY}
-      && -f "${BINDIR}/personality/${PROJECT_NAME}.sh" ]]; then
-    PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-  fi
-
-  if [[ -n ${PERSONALITY} ]]; then
-    if [[ ! -f ${PERSONALITY} ]]; then
-      if [[ -f "${BINDIR}/personality/${PROJECT_NAME}.sh" ]]; then
-        PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-      else
-        yetus_debug "Can't find ${PERSONALITY} to import."
-        return
-      fi
-    fi
-    yetus_debug "Importing ${PERSONALITY}"
-    . "${PERSONALITY}"
-  fi
-}
-
-## @description  Let plugins also get a copy of the arguments
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function parse_args_plugins
-{
-  for plugin in ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
-    if declare -f ${plugin}_parse_args >/dev/null 2>&1; then
-      yetus_debug "Running ${plugin}_parse_args"
-      #shellcheck disable=SC2086
-      ${plugin}_parse_args "$@"
-      (( RESULT = RESULT + $? ))
-    fi
-  done
-
-  BUGCOMMENTS=${BUGCOMMENTS:-${BUGSYSTEMS}}
-  if [[ ! ${BUGCOMMENTS} =~ console ]]; then
-    BUGCOMMENTS="${BUGCOMMENTS} console"
-  fi
-
-  BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
-}
-
-## @description  Let plugins also get a copy of the arguments
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function plugins_initialize
-{
-  declare plugin
-
-  for plugin in ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
-    if declare -f ${plugin}_initialize >/dev/null 2>&1; then
-      yetus_debug "Running ${plugin}_initialize"
-      #shellcheck disable=SC2086
-      ${plugin}_initialize
-      (( RESULT = RESULT + $? ))
-    fi
-  done
-}
-
-## @description  Register test-patch.d plugins
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_plugin
-{
-  PLUGINS="${PLUGINS} $1"
-}
-
-## @description  Register test-patch.d bugsystems
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_bugsystem
-{
-  BUGSYSTEMS="${BUGSYSTEMS} $1"
-}
-
-## @description  Register test-patch.d test output formats
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_test_format
-{
-  TESTFORMATS="${TESTFORMATS} $1"
-}
-
-## @description  Register test-patch.d build tools
-## @audience     public
-## @stability    stable
-## @replaceable  no
-function add_build_tool
-{
-  BUILDTOOLS="${BUILDTOOLS} $1"
-}
-
 ## @description  Calculate the differences between the specified files
 ## @description  and output it to stdout.
 ## @audience     public
@@ -2518,6 +2162,7 @@ function calcdiffs
 
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
+
 
 ## @description  Helper routine for plugins to ask projects, etc
 ## @description  to count problems in a log file
@@ -2941,11 +2586,18 @@ function initialize
   # from here on out, we'll be in ${BASEDIR} for cwd
   # plugins need to pushd/popd if they change.
   git_checkout
-  RESULT=$?
-  if [[ ${JENKINS} == "true" ]] ; then
-    if [[ ${RESULT} != 0 ]] ; then
-      exit 1
-    fi
+
+  patchfile_dryrun_driver "${PATCH_DIR}/patch"
+  if [[ $? != 0 ]]; then
+    yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
+    cleanup_and_exit 1
+  fi
+
+  determine_issue
+  if [[ "${ISSUE}" == 'Unknown' ]]; then
+    echo "Testing patch on ${PATCH_BRANCH}."
+  else
+    echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
   fi
 
   find_changed_files
@@ -2965,13 +2617,6 @@ function prechecks
 {
   declare plugin
   declare result=0
-
-  verify_patch_file
-  (( result = result + $? ))
-  if [[ ${result} != 0 ]] ; then
-    bugsystem_finalreport 1
-    cleanup_and_exit 1
-  fi
 
   for plugin in ${BUILDTOOL} ${PLUGINS} ${TESTFORMATS}; do
     verify_patchdir_still_exists

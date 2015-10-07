@@ -24,7 +24,7 @@ DID=${RANDOM}
 ## @param        string
 function yetus_debug
 {
-  if [[ -n "${TP_SHELL_SCRIPT_DEBUG}" ]]; then
+  if [[ -n "${YETUS_SHELL_SCRIPT_DEBUG}" ]]; then
     echo "[$(date) DEBUG]: $*" 1>&2
   fi
 }
@@ -53,7 +53,7 @@ function parse_args
   for i in "$@"; do
     case ${i} in
       --debug)
-        TP_SHELL_SCRIPT_DEBUG=true
+        YETUS_SHELL_SCRIPT_DEBUG=true
       ;;
       --dockerversion=*)
         DOCKER_VERSION=${i#*=}
