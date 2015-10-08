@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
-#   Licensed under the Apache License, Version 2.0 (the "License");
-#   you may not use this file except in compliance with the License.
-#   You may obtain a copy of the License at
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
 #
-#       http://www.apache.org/licenses/LICENSE-2.0
+#     http://www.apache.org/licenses/LICENSE-2.0
 #
-#   Unless required by applicable law or agreed to in writing, software
-#   distributed under the License is distributed on an "AS IS" BASIS,
-#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#   See the License for the specific language governing permissions and
-#   limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 # Make sure that bash version meets the pre-requisite
 
@@ -83,6 +86,7 @@ function yetus_usage
 {
   echo "Usage: apply-patch.sh [options] patch-file | issue-number | http"
   echo
+  echo "--committer            Apply patches like a boss."
   echo "--debug                If set, then output some extra stuff to stderr"
   echo "--dry-run              Check for patch viability without applying"
   echo "--modulelist=<list>    Specify additional modules to test (comma delimited)"
@@ -129,6 +133,9 @@ function parse_args
 
   for i in "$@"; do
     case ${i} in
+      --committer)
+        COMMITMODE=true
+      ;;
       --dry-run)
         PATCH_DRYRUNMODE=true
       ;;
@@ -152,6 +159,36 @@ function parse_args
   fi
 }
 
+## @description  git am dryrun
+## @replaceable  no
+## @audience     private
+## @stability    evolving
+function gitam_dryrun
+{
+
+  # there is no dryrun method for git-am, so just
+  # use apply instead.
+  gitapply_dryrun "$@"
+
+  if [[ -n ${PATCH_METHOD}="gitapply" ]]; then
+    PATCH_METHOD="gitam"
+  fi
+}
+
+## @description  git am signoff
+## @replaceable  no
+## @audience     private
+## @stability    evolving
+function gitam_apply
+{
+  declare patchfile=$1
+
+  echo "Applying the patch:"
+  yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am.log" \
+    "${GIT}" am --signoff --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
+  ${GREP} -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
+}
+
 trap "cleanup_and_exit 1" HUP INT QUIT TERM
 
 setup_defaults
@@ -170,6 +207,10 @@ plugins_initialize
 
 locate_patch
 
+if [[ ${COMMITMODE} = true ]]; then
+  PATCH_METHODS=("gitam" "${PATCH_METHODS[@]}")
+fi
+
 patchfile_dryrun_driver "${PATCH_DIR}/patch"
 RESULT=$?
 
@@ -181,6 +222,12 @@ fi
 if [[ ${PATCH_DRYRUNMODE} == false ]]; then
   patchfile_apply_driver "${PATCH_DIR}/patch"
   RESULT=$?
+fi
+
+if [[ ${COMMITMODE} = true
+   && ${PATCH_METHOD} != "gitam" ]]; then
+  yetus_debug "Running git add -A"
+  git add -A
 fi
 
 cleanup_and_exit ${RESULT}

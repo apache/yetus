@@ -172,7 +172,7 @@ function yetus_error
 ## @param        string
 function yetus_debug
 {
-  if [[ -n "${YETUS_SHELL_SCRIPT_DEBUG}" ]]; then
+  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
     echo "[$(date) DEBUG]: $*" 1>&2
   fi
 }
@@ -423,7 +423,7 @@ function patchfile_verify_zero
   declare dir
   declare changed_files1
   declare changed_files2
-  declare $filename
+  declare filename
 
   # don't return /dev/null
   # shellcheck disable=SC2016
@@ -554,6 +554,11 @@ function patchfile_dryrun_driver
 function gitapply_apply
 {
   declare patchfile=$1
+  declare extraopts
+
+  if [[ "${COMMITMODE}" = true ]]; then
+    extraopts="--whitespace=fix"
+  fi
 
   echo "Applying the patch:"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-apply.log" \
