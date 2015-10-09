@@ -67,25 +67,33 @@ function console_finalreport
 
   if [[ ${result} == 0 ]]; then
     if [[ ${JENKINS} == false ]]; then
-      {
-        printf "IF9fX19fX19fX18gCjwgU3VjY2VzcyEgPgogLS0tLS0tLS0tLSAKIFwgICAg";
-        printf "IC9cICBfX18gIC9cCiAgXCAgIC8vIFwvICAgXC8gXFwKICAgICAoKCAgICBP";
-        printf "IE8gICAgKSkKICAgICAgXFwgLyAgICAgXCAvLwogICAgICAgXC8gIHwgfCAg";
-        printf "XC8gCiAgICAgICAgfCAgfCB8ICB8ICAKICAgICAgICB8ICB8IHwgIHwgIAog";
-        printf "ICAgICAgIHwgICBvICAgfCAgCiAgICAgICAgfCB8ICAgfCB8ICAKICAgICAg";
-        printf "ICB8bXwgICB8bXwgIAo"
-      } > "${spcfx}"
+      if declare -f ${PROJECT_NAME}_console_success >/dev/null; then
+        ${PROJECT_NAME}_console_success > "${spcfx}"
+      else
+        {
+          printf "IF9fX18gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfIAovIF9fX3wg";
+          printf "XyAgIF8gIF9fXyBfX18gX19fICBfX18gX19ffCB8ClxfX18gXHwgfCB8IHwv";
+          printf "IF9fLyBfXy8gXyBcLyBfXy8gX198IHwKIF9fXykgfCB8X3wgfCAoX3wgKF98";
+          printf "ICBfXy9cX18gXF9fIFxffAp8X19fXy8gXF9fLF98XF9fX1xfX19cX19ffHxf";
+          printf "X18vX19fKF8pCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg";
+          printf "ICAK";
+        } > "${spcfx}"
+      fi
     fi
     printf "\n\n+1 overall\n\n"
   else
     if [[ ${JENKINS} == false ]]; then
-      {
-        printf "IF9fX19fICAgICBfIF8gICAgICAgICAgICAgICAgXyAKfCAgX19ffF8gXyhf";
-        printf "KSB8XyAgIF8gXyBfXyBfX198IHwKfCB8XyAvIF9gIHwgfCB8IHwgfCB8ICdf";
-        printf "Xy8gXyBcIHwKfCAgX3wgKF98IHwgfCB8IHxffCB8IHwgfCAgX18vX3wKfF98";
-        printf "ICBcX18sX3xffF98XF9fLF98X3wgIFxfX18oXykKICAgICAgICAgICAgICAg";
-        printf "ICAgICAgICAgICAgICAgICAK"
-      } > "${spcfx}"
+      if declare -f ${PROJECT_NAME}_console_failure >/dev/null; then
+        ${PROJECT_NAME}_console_failure > "${spcfx}"
+      else
+        {
+          printf "IF9fX19fICAgICBfIF8gICAgICAgICAgICAgICAgXyAKfCAgX19ffF8gXyhf";
+          printf "KSB8XyAgIF8gXyBfXyBfX198IHwKfCB8XyAvIF9gIHwgfCB8IHwgfCB8ICdf";
+          printf "Xy8gXyBcIHwKfCAgX3wgKF98IHwgfCB8IHxffCB8IHwgfCAgX18vX3wKfF98";
+          printf "ICBcX18sX3xffF98XF9fLF98X3wgIFxfX18oXykKICAgICAgICAgICAgICAg";
+          printf "ICAgICAgICAgICAgICAgICAK"
+        } > "${spcfx}"
+      fi
     fi
     printf "\n\n-1 overall\n\n"
   fi

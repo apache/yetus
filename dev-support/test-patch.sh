@@ -59,7 +59,7 @@ function setup_defaults
   common_defaults
 
   DOCKERFILE="${BINDIR}/test-patch-docker/Dockerfile-startstub"
-  HOW_TO_CONTRIBUTE="https://wiki.apache.org/hadoop/HowToContribute"
+  HOW_TO_CONTRIBUTE="https://yetus.apache.org/documentation/latest/precommit-patchnames"
   INSTANCE=${RANDOM}
   RELOCATE_PATCH_DIR=false
 
@@ -660,12 +660,10 @@ function yetus_usage
 {
   local -r up=$(echo "${PROJECT_NAME}" | tr '[:lower:]' '[:upper:]')
 
-  echo "Usage: test-patch.sh [options] patch-file | issue-number | http"
+  echo "Usage: test-patch.sh [options] patch"
   echo
   echo "Where:"
-  echo "  patch-file is a local patch file containing the changes to test"
-  echo "  issue-number is a 'Patch Available' JIRA defect number (e.g. '${up}-9902') to test"
-  echo "  http is an HTTP address to download the patch file"
+  echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"
   echo
   echo "Options:"
   echo "--basedir=<dir>        The directory to apply the patch to (default current directory)"
@@ -2062,6 +2060,8 @@ function bugsystem_finalreport
 {
   declare bugs
 
+  add_footer_table "Powered by" "Apache Yetus   http://yetus.apache.org"
+
   for bugs in ${BUGCOMMENTS}; do
     if declare -f ${bugs}_finalreport >/dev/null;then
       "${bugs}_finalreport" "${@}"
@@ -2176,8 +2176,8 @@ function generic_count_probs
   declare testtype=$1
   declare input=$2
 
-  if declare -f ${PROJECT}_${testtype}_count_probs >/dev/null; then
-    "${PROJECT}_${testtype}_count_probs" "${input}"
+  if declare -f ${PROJECT_NAME}_${testtype}_count_probs >/dev/null; then
+    "${PROJECT_NAME}_${testtype}_count_probs" "${input}"
   elif declare -f ${BUILDTOOL}_${testtype}_count_probs >/dev/null; then
     "${BUILDTOOL}_${testtype}_count_probs" "${input}"
   else

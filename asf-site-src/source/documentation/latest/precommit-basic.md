@@ -26,11 +26,12 @@ test-patch
 
 # Purpose
 
-As part of Hadoop's commit process, all patches to the source base go through a precommit test that does some (relatively) light checking to make sure the proposed change does not break unit tests and/or passes some other prerequisites such as code formatting guidelines.  This is meant as a preliminary check for committers so that the basic patch is in a known state and for contributors to know if they have followed the project's guidelines.  This check, called test-patch, may also be used by individual developers to verify a patch prior to sending to the Hadoop QA systems.
+As part of Apache Hadoop's commit process, all patches to the source base go through a precommit test that does some (relatively) light checking to make sure the proposed change does not break unit tests and/or passes some other prerequisites such as code formatting guidelines.  This is meant as a preliminary check for committers so that the basic patch is in a known state and for contributors to know if they have followed the project's guidelines.  This check, called test-patch, along with a helper program, called smart-apply-patch, may also be used by individual developers to verify a patch prior to sending to the Apache Hadoop QA systems.
 
-Other projects have adopted a similar methodology after seeing great success in the Hadoop model.  Some have even gone as far as forking Hadoop's precommit code and modifying it to meet their project's needs.
+Other projects have adopted a similar methodology after seeing great success in the Apache Hadoop model.  Some have even gone as far as forking Apache Hadoop's precommit code and modifying it to meet their project's needs.
 
-This is a modification to Hadoop's version of test-patch so that we may bring together all of these forks under a common code base to help the community as a whole.
+One of the key facets of Apache Yetus is to bring together all of these forks under a common code base to help software development
+as a whole.
 
 
 # Pre-requisites
