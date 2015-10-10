@@ -52,7 +52,7 @@ function gradle_initialize
 {
   if [[ "${BUILDTOOL}" = gradle ]]; then
     # shellcheck disable=SC2034
-    BUILDTOOLCWD=false
+    BUILDTOOLCWD=basedir
   fi
 
   # we need to do this before docker kicks in

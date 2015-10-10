@@ -78,7 +78,7 @@ function setup_defaults
   DOCKER_ENABLE_PRIVILEGED=true
   BUILD_NATIVE=${BUILD_NATIVE:-true}
 
-  BUILDTOOLCWD=true
+  BUILDTOOLCWD=module
 
   # shellcheck disable=SC2034
   CHANGED_MODULES=""
@@ -92,6 +92,7 @@ function setup_defaults
   ISSUE=""
   TIMER=$(date +"%s")
   BUILDTOOL=maven
+  JVM_REQUIRED=true
   JDK_TEST_LIST="compile javadoc unit"
 }
 
@@ -1041,7 +1042,6 @@ function find_changed_modules
   local builddirs
   local builddir
   local module
-  local buildmods
   local prev_builddir
   local i=1
   local dir
@@ -1059,7 +1059,7 @@ function find_changed_modules
 
   #  Empty string indicates the build system wants to disable module detection
   if [[ -z ${buildfile} ]]; then
-    buiddirs="."
+    builddirs="."
   else
     # Now find all the modules that were changed
     for i in ${changed_dirs}; do
@@ -1081,6 +1081,7 @@ function find_changed_modules
 
   #shellcheck disable=SC2086,SC2034
   CHANGED_MODULES=$(echo ${builddirs} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
+  #shellcheck disable=SC2086,SC2034
   CHANGED_MODULES=$(echo ${CHANGED_MODULES} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
 
   # turn it back into a list so that anyone printing doesn't
@@ -1095,6 +1096,12 @@ function find_changed_modules
     yetus_debug "Only one entry, so keeping it ${CHANGED_MODULES}"
     # shellcheck disable=SC2034
     CHANGED_UNION_MODULES=${CHANGED_MODULES}
+
+    # some build tools may want to change these and/or
+    # make other changes based upon these results
+    if declare -f "${BUILDTOOL}_changed_modules" >/dev/null; then
+      "${BUILDTOOL}_changed_modules"
+    fi
     return
   fi
 
@@ -1123,6 +1130,8 @@ function find_changed_modules
   #shellcheck disable=SC2034
   CHANGED_UNION_MODULES="${builddir}"
 
+  # some build tools may want to change these and/or
+  # make other changes based upon these results
   if declare -f ${BUILDTOOL}_reorder_modules >/dev/null; then
     "${BUILDTOOL}_reorder_modules" "${repostatus}"
   fi
@@ -1482,6 +1491,40 @@ function copytpbits
   popd >/dev/null
 }
 
+## @description  change the working directory to execute the buildtool
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        MODULE_ index
+function buildtool_cwd
+{
+  declare modindex=$1
+
+  BUILDTOOLCWD="${BUILDTOOLCWD//@@@BASEDIR@@@/${BASEDIR}}"
+  BUILDTOOLCWD="${BUILDTOOLCWD//@@@MODULEDIR@@@/${BASEDIR}/${MODULE[${modindex}]}}"
+
+  if [[ "${BUILDTOOLCWD}" =~ ^/ ]]; then
+    yetus_debug "buildtool_cwd: ${BUILDTOOLCWD}"
+    if [[ ! -e "${BUILDTOOLCWD}" ]]; then
+      mkdir -p "${BUILDTOOLCWD}"
+    fi
+    pushd "${BUILDTOOLCWD}" >/dev/null
+    return $?
+  fi
+
+  case "${BUILDTOOLCWD}" in
+    basedir)
+      pushd "${BASEDIR}" >/dev/null
+    ;;
+    module)
+      pushd "${BASEDIR}/${MODULE[${modindex}]}" >/dev/null
+    ;;
+    *)
+      pushd "$(pwd)"
+    ;;
+  esac
+}
+
 ## @description  If this patches actually patches test-patch.sh, then
 ## @description  run with the patched version for the test.
 ## @audience     private
@@ -1735,19 +1778,20 @@ function module_status
 ## @param        mvncmdline
 function modules_workers
 {
-  local repostatus=$1
-  local testtype=$2
+  declare repostatus=$1
+  declare testtype=$2
   shift 2
-  local modindex=0
-  local fn
-  local savestart=${TIMER}
-  local savestop
-  local repo
-  local modulesuffix
-  local jdk=""
-  local jdkindex=0
-  local statusjdk
-  local result=0
+  declare modindex=0
+  declare fn
+  declare savestart=${TIMER}
+  declare savestop
+  declare repo
+  declare modulesuffix
+  declare jdk=""
+  declare jdkindex=0
+  declare statusjdk
+  declare result=0
+  declare argv
 
   if [[ ${repostatus} == branch ]]; then
     repo=${PATCH_BRANCH}
@@ -1772,9 +1816,7 @@ function modules_workers
     fn=$(module_file_fragment "${MODULE[${modindex}]}")
     fn="${fn}${jdk}"
     modulesuffix=$(basename "${MODULE[${modindex}]}")
-    if [[ ${BUILDTOOLCWD} == true ]]; then
-      pushd "${BASEDIR}/${MODULE[${modindex}]}" >/dev/null
-    fi
+    buildtool_cwd "${modindex}"
 
     if [[ ${modulesuffix} == . ]]; then
       modulesuffix="root"
@@ -1786,11 +1828,14 @@ function modules_workers
       continue
     fi
 
+    argv=("${@//@@@MODULEFN@@@/${fn}}")
+    argv=("${argv[@]//@@@MODULEDIR@@@/${BASEDIR}/${MODULE[${modindex}]}}")
+
     # shellcheck disable=2086,2046
     echo_and_redirect "${PATCH_DIR}/${repostatus}-${testtype}-${fn}.txt" \
-      $("${BUILDTOOL}_executor") \
+      $("${BUILDTOOL}_executor" "${testtype}") \
       ${MODULEEXTRAPARAM[${modindex}]//@@@MODULEFN@@@/${fn}} \
-      "${@//@@@MODULEFN@@@/${fn}}"
+      "${argv[@]}"
 
     if [[ $? == 0 ]] ; then
       module_status \
@@ -1817,9 +1862,7 @@ function modules_workers
     MODULE_STATUS_TIMER[${modindex}]=${savestop}
     # shellcheck disable=SC2086
     echo "Elapsed: $(clock_display ${savestop})"
-    if [[ ${BUILDTOOLCWD} == true ]]; then
-      popd >/dev/null
-    fi
+    popd >/dev/null
     ((modindex=modindex+1))
   done
 
@@ -1968,9 +2011,7 @@ function check_unittests
       fn="${fn}${jdk}"
       test_logfile="${PATCH_DIR}/patch-unit-${fn}.txt"
 
-      if [[ ${BUILDTOOLCWD} == true ]]; then
-        pushd "${MODULE[${i}]}" >/dev/null
-      fi
+      buildtool_cwd "${i}"
 
       needlog=0
       for testsys in ${TESTFORMATS}; do
@@ -1989,9 +2030,7 @@ function check_unittests
         unitlogs="${unitlogs} @@BASE@@/patch-unit-${fn}.txt"
       fi
 
-      if [[ ${BUILDTOOLCWD} == true ]]; then
-        popd >/dev/null
-      fi
+      popd >/dev/null
 
       ((i=i+1))
     done
@@ -2519,13 +2558,81 @@ function generic_post_handler
 ## @param        branch|patch
 ## @return       0 on success
 ## @return       1 on failure
-function compile
+function compile_jvm
 {
   declare codebase=$1
   declare result=0
   declare -r savejavahome=${JAVA_HOME}
   declare multijdkmode=false
   declare jdkindex=0
+
+  verify_multijdk_test compile
+  if [[ $? == 1 ]]; then
+    multijdkmode=true
+  fi
+
+  for jdkindex in ${JDK_DIR_LIST}; do
+    if [[ ${multijdkmode} == true ]]; then
+      JAVA_HOME=${jdkindex}
+    fi
+
+    compile_nonjvm "${codebase}" "${multijdkmode}"
+
+  done
+  JAVA_HOME=${savejavahome}
+
+  if [[ ${result} -gt 0 ]]; then
+    return 1
+  fi
+  return 0
+}
+
+## @description  Execute the compile phase. This will callout
+## @description  to _compile
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        branch|patch
+## @return       0 on success
+## @return       1 on failure
+function compile_nonjvm
+{
+  declare codebase=$1
+  declare result=0
+  declare -r savejavahome=${JAVA_HOME}
+  declare multijdkmode=${2:-false}
+  declare jdkindex=0
+
+  personality_modules "${codebase}" compile
+  "${BUILDTOOL}_modules_worker" "${codebase}" compile
+  modules_messages "${codebase}" compile true
+
+  for plugin in ${TESTTYPES}; do
+    verify_patchdir_still_exists
+    if declare -f ${plugin}_compile >/dev/null 2>&1; then
+      yetus_debug "Running ${plugin}_compile ${codebase} ${multijdkmode}"
+      "${plugin}_compile" "${codebase}" "${multijdkmode}"
+      ((result = result + $?))
+    fi
+  done
+
+  if [[ ${result} -gt 0 ]]; then
+    return 1
+  fi
+  return 0
+}
+
+## @description  Execute the compile phase. This will callout
+## @description  to _compile
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        branch|patch
+## @return       0 on success
+## @return       1 on failure
+function compile
+{
+  declare codebase=$1
 
   verify_needed_test compile
   if [[ $? == 0 ]]; then
@@ -2538,36 +2645,12 @@ function compile
     big_console_header "Patch compilation"
   fi
 
-  verify_multijdk_test compile
-  if [[ $? == 1 ]]; then
-    multijdkmode=true
+  yetus_debug "Is JVM Required? ${JVM_REQUIRED}"
+  if [[ "${JVM_REQUIRED}" = true ]]; then
+    compile_jvm "${codebase}"
+  else
+    compile_nonjvm "${codebase}"
   fi
-
-  for jdkindex in ${JDK_DIR_LIST}; do
-    if [[ ${multijdkmode} == true ]]; then
-      JAVA_HOME=${jdkindex}
-    fi
-
-    personality_modules "${codebase}" compile
-    "${BUILDTOOL}_modules_worker" "${codebase}" compile
-    modules_messages "${codebase}" compile true
-
-    for plugin in ${TESTTYPES}; do
-      verify_patchdir_still_exists
-      if declare -f ${plugin}_compile >/dev/null 2>&1; then
-        yetus_debug "Running ${plugin}_compile ${codebase} ${multijdkmode}"
-        "${plugin}_compile" "${codebase}" "${multijdkmode}"
-        ((result = result + $?))
-      fi
-    done
-
-  done
-  JAVA_HOME=${savejavahome}
-
-  if [[ ${result} -gt 0 ]]; then
-    return 1
-  fi
-  return 0
 }
 
 ## @description  Execute the static analysis test cycle.
@@ -2669,8 +2752,7 @@ function distclean
   declare result=0
   declare plugin
 
-  personality_modules branch distclean
-  "${BUILDTOOL}_modules_worker" branch distclean
+  big_console_header "Cleaning the source tree"
 
   for plugin in ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_clean >/dev/null 2>&1; then
@@ -2682,6 +2764,10 @@ function distclean
       fi
     fi
   done
+
+  personality_modules branch distclean
+  "${BUILDTOOL}_modules_worker" branch distclean
+  (( result = result + $? ))
 
   if [[ ${result} -gt 0 ]]; then
     return 1
@@ -2723,6 +2809,9 @@ function initialize
   fi
 
   plugins_initialize
+  if [[ ${RESULT} != 0 ]]; then
+    cleanup_and_exit 1
+  fi
 
   locate_patch
 

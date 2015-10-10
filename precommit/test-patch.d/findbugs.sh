@@ -339,9 +339,7 @@ function findbugs_postinstall
     offset_clock "${MODULE_STATUS_TIMER[${i}]}"
     module="${MODULE[${i}]}"
 
-    if [[ ${BUILDTOOLCWD} == true ]]; then
-      pushd "${module}" >/dev/null
-    fi
+    buildtool_cwd "${i}"
 
     fn=$(module_file_fragment "${module}")
 
@@ -368,9 +366,7 @@ function findbugs_postinstall
             "${branchxml}" \
             "${patchxml}"
     if [[ $? != 0 ]]; then
-      if [[ ${BUILDTOOLCWD} == true ]]; then
-        popd >/dev/null
-      fi
+      popd >/dev/null
       module_status ${i} -1 "" "${module} cannot run computeBugHistory from findbugs"
       ((result=result+1))
       savestop=$(stop_clock)

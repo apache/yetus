@@ -110,23 +110,22 @@ function checkstyle_calcdiffs
 ## @replaceable no
 function checkstyle_runner
 {
-  local repostatus=$1
-  local tmp=${PATCH_DIR}/$$.${RANDOM}
-  local j
-  local i=0
-  local fn
-  local savestart=${TIMER}
-  local savestop
-  local output
-  local logfile
-  local repo
-  local modulesuffix
-  local cmd
-  local logline
-  local text
-  local linenum
-  local codeline
-
+  declare repostatus=$1
+  declare tmp=${PATCH_DIR}/$$.${RANDOM}
+  declare j
+  declare i=0
+  declare fn
+  declare savestart=${TIMER}
+  declare savestop
+  declare output
+  declare logfile
+  declare repo
+  declare modulesuffix
+  declare cmd
+  declare logline
+  declare text
+  declare linenum
+  declare codeline
 
   # first, let's clear out any previous run information
   modules_reset
@@ -148,10 +147,7 @@ function checkstyle_runner
     output="${PATCH_DIR}/${repostatus}-checkstyle-${fn}.txt"
     logfile="${PATCH_DIR}/maven-${repostatus}-checkstyle-${fn}.txt"
 
-    # set up the command line, etc, to build...
-    if [[ ${BUILDTOOLCWD} == true ]]; then
-      pushd "${BASEDIR}/${MODULE[${i}]}" >/dev/null
-    fi
+    buildtool_cwd
 
     case ${BUILDTOOL} in
       ant)
@@ -177,13 +173,10 @@ function checkstyle_runner
     # almost certainly checkstyle output
 
     #shellcheck disable=SC2086
-    echo ${cmd} "> ${logfile}"
-    #shellcheck disable=SC2086
-    ${cmd}  2>&1 \
-            | tee "${logfile}" \
-            | ${GREP} ^/ \
-            | ${SED} -e "s,${BASEDIR},.,g" \
-                > "${tmp}"
+    echo_and_redirect "${logfile}" ${cmd}
+    ${GREP} ^/ "${logfile}" \
+      | ${SED} -e "s,${BASEDIR},.,g" \
+      > "${tmp}"
 
     if [[ $? == 0 ]] ; then
       module_status ${i} +1 "${logfile}" "${modulesuffix} in ${repo} passed checkstyle"
@@ -243,9 +236,7 @@ function checkstyle_runner
     #shellcheck disable=SC2034
     MODULE_STATUS_TIMER[${i}]=${savestop}
 
-    if [[ ${BUILDTOOLCWD} == true ]]; then
-      popd >/dev/null
-    fi
+    popd >/dev/null
     ((i=i+1))
   done
 

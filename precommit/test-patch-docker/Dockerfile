@@ -24,17 +24,11 @@ WORKDIR /root
 ######
 RUN apt-get update && apt-get install --no-install-recommends -y \
     git curl ant make maven \
-    cmake gcc g++ protobuf-compiler \
+    cmake gcc g++ pkg-config \
     build-essential libtool \
-    zlib1g-dev pkg-config libssl-dev \
-    snappy libsnappy-dev \
-    bzip2 libbz2-dev \
-    libjansson-dev \
-    fuse libfuse-dev \
-    libcurl4-openssl-dev \
+    autoconf automake \
     python python2.7 pylint \
-    ruby \
-    openjdk-7-jdk \
+    ruby openjdk-7-jdk \
     libperl-critic-perl
 
 # Fixing the Apache commons / Maven dependency problem under Ubuntu:

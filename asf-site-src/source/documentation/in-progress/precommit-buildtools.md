@@ -30,7 +30,21 @@ add_build_tool <pluginname>
 
 * BUILDTOOLCWD
 
-    - If the build tool does not always run from the ${BASEDIR} and instead needs to change the current working directory to work on a specific module, then set this to true.  The default is false.
+    - This variable determines where the build tool's command (as returned by pluginname\_executor) should actually execute.  It should be one of three values:
+
+    * basedir  - always execute at the root of the source tree
+    * module   - switch to the directory as given by the module being processed
+    * /(path)  - change to the directory as given by this absolute path. If the path does not exist, it will be created.
+
+  If /(path) is used, two special substitutions may be made:
+
+  * @@@BASEDIR@@@ will be replaced with the root of the source tree
+  * @@@MODULEDIR@@@ will be replaced with the module name
+
+  This allows for custom directories to be created and used as necessary.
+
+
+    The default is module.
 
 * UNSUPPORTED\_TEST
 
@@ -76,7 +90,7 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_reorder\_modules
 
-    - This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED_MODULES already contains all changed modules. It must be altered to have an effect.
+    - This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED\_MODULES already contains all changed modules. It must be altered to have an effect.
 
 * pluginname\_(test)\_logfilter
 
@@ -102,11 +116,27 @@ test-patch always passes -noinput to Ant.  This forces ant to be non-interactive
 
 In Docker mode, the `${HOME}/.ivy2` directory is shared amongst all invocations.
 
+# autoconf Specific
+
+autoconf requires make to be enabled.  autoreconf is always used to rebuild the configure scripte.
+
+## Command Arguments
+
+autoconf will always run configure with prefix set to a directory in the patch processing directory.  To configure other flags, set the AUTCONF_CONF_FLAGS environment variable.
+
+# CMAKE Specific
+
+By default, cmake will create a 'build' directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.
+
 # Gradle Specific
 
 The gradle plug-in always rebuilds the gradlew file and uses gradlew as the method to execute commands.
 
 In Docker mode, the `${HOME}/.gradle` directory is shared amongst all invocations.
+
+# Make Specific
+
+No notes.
 
 # Maven Specific
 
