@@ -122,7 +122,9 @@ function shellcheck_postapply
   echo "Running shellcheck against all identifiable shell scripts"
   # we re-check this in case one has been added
   for i in $(shellcheck_private_findbash); do
-    ${SHELLCHECK} -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
+    if [[ -f ${i} ]]; then
+      ${SHELLCHECK} -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
+    fi
   done
 
   if [[ ! -f "${PATCH_DIR}/branch-shellcheck-result.txt" ]]; then
