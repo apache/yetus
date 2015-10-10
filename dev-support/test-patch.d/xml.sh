@@ -53,12 +53,11 @@ function xml_postcompile
 
   pushd "${BASEDIR}" >/dev/null
   for i in ${CHANGED_FILES}; do
-    if [[ ! ${i} =~ \.xml$ ]]; then
-      continue
-    fi
-    ${js} -e "XMLDocument(arguments[0])" "${i}" >> "${PATCH_DIR}/xml.txt" 2>&1
-    if [[ $? != 0 ]]; then
-      ((count=count+1))
+    if [[ ${i} =~ \.xml$ && -f ${i} ]]; then
+      ${js} -e "XMLDocument(arguments[0])" "${i}" >> "${PATCH_DIR}/xml.txt" 2>&1
+      if [[ $? != 0 ]]; then
+        ((count=count+1))
+      fi
     fi
   done
 
