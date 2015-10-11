@@ -15,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.classification;
+package org.apache.yetus.audience;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.apache.hadoop.classification.InterfaceAudience.LimitedPrivate;
-import org.apache.hadoop.classification.InterfaceAudience.Private;
-import org.apache.hadoop.classification.InterfaceAudience.Public;
+import org.apache.yetus.audience.InterfaceAudience.LimitedPrivate;
+import org.apache.yetus.audience.InterfaceAudience.Private;
+import org.apache.yetus.audience.InterfaceAudience.Public;
 
 /**
  * Annotation to inform users of how much to rely on a particular package,

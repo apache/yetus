@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.classification;
+package org.apache.yetus.audience;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -34,8 +34,9 @@ import java.lang.annotation.RetentionPolicy;
  * {@link Public}. Avoid using non public classes as these classes
  * could be removed or change in incompatible ways.</li>
  * 
- * <li>Hadoop projects must only use classes that are marked
- * {@link LimitedPrivate} or {@link Public}</li>
+ * <li>Some projects may choose to give special consideration to related
+ * projects. Such consideration can be done by using the {@link LimitedPrivate}
+ * annotation with a named set of projects.</li>
  * 
  * <li> Methods may have a different annotation that it is more restrictive
  * compared to the audience classification of the class. Example: A class 
@@ -54,7 +55,7 @@ public class InterfaceAudience {
   
   /**
    * Intended only for the project(s) specified in the annotation.
-   * For example, "Common", "HDFS", "MapReduce", "ZooKeeper", "HBase".
+   * For example, "Hadoop Common", "HDFS", "MapReduce", "ZooKeeper", "HBase".
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
@@ -63,7 +64,7 @@ public class InterfaceAudience {
   };
   
   /**
-   * Intended for use only within Hadoop itself.
+   * Intended for use only within a given project.
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)

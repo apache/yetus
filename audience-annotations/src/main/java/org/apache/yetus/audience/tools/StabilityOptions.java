@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.classification.tools;
+package org.apache.yetus.audience.tools;
 
 import com.sun.javadoc.DocErrorReporter;
 

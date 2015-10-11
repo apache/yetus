@@ -15,20 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.hadoop.classification.tools;
+package org.apache.yetus.audience.tools;
 
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 import com.sun.tools.doclets.standard.Standard;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.yetus.audience.InterfaceStability;
+
 /**
  * A <a href="http://java.sun.com/javase/6/docs/jdk/api/javadoc/doclet/">Doclet</a>
  * for excluding elements that are annotated with
- * {@link org.apache.hadoop.classification.InterfaceAudience.Private} or
- * {@link org.apache.hadoop.classification.InterfaceAudience.LimitedPrivate}.
+ * {@link org.apache.yetus.audience.InterfaceAudience.Private} or
+ * {@link org.apache.yetus.audience.InterfaceAudience.LimitedPrivate}.
  * It delegates to the Standard Doclet, and takes the same options.
  */
+@InterfaceAudience.Public
+@InterfaceStability.Evolving
 public class ExcludePrivateAnnotationsStandardDoclet {
   
   public static LanguageVersion languageVersion() {
