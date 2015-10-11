@@ -112,23 +112,26 @@
   under the License.
 -->
 
-<h1 id="yetus-precommit">Yetus Precommit</h1>
+<p>We use Apache Yetus to process your patch. It supports the following patterns and
+procedures for patch file names:</p>
 
-<p>The Yetus Precommit Patch Tester allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.</p>
+<p>JIRA:</p>
+
+<p>If JIRA support is configured, attach the patch to the given ISSUE and
+click &lsquo;Submit Patch&rsquo;.  The patch file should be named one of:</p>
 
 <ul>
-<li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we&rsquo;ll use as terminology specific to this project.</li>
-<li>For an overview of Yetus&rsquo; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
-<li>To get started on your project, including an explanation of what we&rsquo;ll expect in a runtime environment and what optional utilities we&rsquo;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
-<li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&rsquo;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
+<li>ISSUE.patch</li>
+<li>ISSUE.###.patch</li>
+<li>ISSUE.branch.###.patch</li>
+<li>ISSUE-branch-###.patch</li>
+<li>ISSUE.##.branch.patch</li>
+<li>ISSUE-branch.##.patch</li>
 </ul>
 
-<p>There is also documentation on <a href="precommit-buildtools">build systems</a> and <a href="precommit-bugsystems">bug systems</a></p>
-
-<h1 id="yetus-release-doc-maker">Yetus Release Doc Maker</h1>
-
-<p>The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
-documenation <a href="releasedocmaker">here</a>.</p>
+<p>If Github support is also configured, a comment that contains a link to a Pull Request&rsquo;s
+patch file (e.g., <a href="https://github.com/user/repo/pull/1.patch">https://github.com/user/repo/pull/1.patch</a>) will pull the patch from
+the given Github PR.</p>
 
 	  </div>
       <div class="container">

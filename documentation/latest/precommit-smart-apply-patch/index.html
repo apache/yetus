@@ -112,23 +112,33 @@
   under the License.
 -->
 
-<h1 id="yetus-precommit">Yetus Precommit</h1>
+<h1 id="smart-apply-patch">smart-apply-patch</h1>
 
-<p>The Yetus Precommit Patch Tester allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.</p>
+<p><code>smart-apply-patch</code> is a command to help apply patches easily.  It uses the same plug-ins and many of the same options as test-patch.  This means that it can, for example, fetch patches from JIRA and apply them to a local source tree.</p>
+
+<h1 id="usage">Usage</h1>
+
+<p>Its simpliest form is used when a patch is stored in a local file:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch patch
+</code></pre>
+
+<p>This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.</p>
+
+<p>Perhaps you just want to see if the patch even applies without changing your local repo.  The <code>--dry-run</code> option will just test for applicability:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --dry-run patch
+</code></pre>
+
+<p>For committers of projects, there is a special mode:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --committer patch
+</code></pre>
+
+<p>that in addition to applying the patch will also attempt to:</p>
 
 <ul>
-<li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we&rsquo;ll use as terminology specific to this project.</li>
-<li>For an overview of Yetus&rsquo; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
-<li>To get started on your project, including an explanation of what we&rsquo;ll expect in a runtime environment and what optional utilities we&rsquo;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
-<li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&rsquo;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
+<li>use <code>--whitespace=fix</code> mode</li>
+<li>add all newly created files in the repo</li>
+<li>use <code>--signoff</code> and commit the change via git-am</li>
 </ul>
-
-<p>There is also documentation on <a href="precommit-buildtools">build systems</a> and <a href="precommit-bugsystems">bug systems</a></p>
-
-<h1 id="yetus-release-doc-maker">Yetus Release Doc Maker</h1>
-
-<p>The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
-documenation <a href="releasedocmaker">here</a>.</p>
 
 	  </div>
       <div class="container">
