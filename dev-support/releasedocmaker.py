@@ -193,6 +193,7 @@ class Jira(object):
         self.notes = None
         self.incompat = None
         self.reviewed = None
+        self.important = None
 
     def get_id(self):
         return mstr(self.key)
@@ -279,6 +280,17 @@ class Jira(object):
                         if flag['value'] == "Reviewed":
                             self.reviewed = True
         return self.incompat
+
+    def get_important(self):
+        if self.important is None:
+            field = self.parent.field_id_map['Flags']
+            self.important = False
+            if self.fields.has_key(field):
+                if self.fields[field]:
+                    for flag in self.fields[field]:
+                        if flag['value'] == "Important":
+                            self.important = True
+        return self.important
 
     def check_missing_component(self):
         if len(self.fields['components']) > 0:
@@ -479,7 +491,7 @@ def main():
 
         relhead = '# %(title)s %(key)s %(ver)s Release Notes\n\n' \
                   'These release notes cover new developer and user-facing ' \
-                  'incompatibilities, features, and major improvements.\n\n'
+                  'incompatibilities, important issues, features, and major improvements.\n\n'
         chhead = '# %(title)s Changelog\n\n' \
                  '## Release %(ver)s - %(date)s\n'\
                  '\n'
@@ -490,6 +502,7 @@ def main():
         warning_count = 0
         lint_message = ""
         incompatlist = []
+        importantlist = []
         buglist = []
         improvementlist = []
         newfeaturelist = []
@@ -501,6 +514,8 @@ def main():
         for jira in sorted(jlist):
             if jira.get_incompatible_change():
                 incompatlist.append(jira)
+            elif jira.get_important():
+                importantlist.append(jira)
             elif jira.get_type() == "Bug":
                 buglist.append(jira)
             elif jira.get_type() == "Improvement":
@@ -526,6 +541,15 @@ def main():
                 reloutputs.write_key_raw(jira.get_project(), line)
                 line = '\n**WARNING: No release note provided for this incompatible change.**\n\n'
                 lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
+                                (notableclean(jira.get_id()))
+                reloutputs.write_key_raw(jira.get_project(), line)
+
+            if jira.get_important() and len(jira.get_release_note()) == 0:
+                warning_count += 1
+                reloutputs.write_key_raw(jira.get_project(), "\n---\n\n")
+                reloutputs.write_key_raw(jira.get_project(), line)
+                line = '\n**WARNING: No release note provided for this important issue.**\n\n'
+                lint_message += "\nWARNING: important issue %s lacks release notes." % \
                                 (notableclean(jira.get_id()))
                 reloutputs.write_key_raw(jira.get_project(), line)
 
@@ -565,6 +589,11 @@ def main():
         choutputs.write_all("| JIRA | Summary | Priority | Component | Reporter | Contributor |\n")
         choutputs.write_all("|:---- |:---- | :--- |:---- |:---- |:---- |\n")
         choutputs.write_list(incompatlist)
+
+        choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
+        choutputs.write_all("| JIRA | Summary | Priority | Component | Reporter | Contributor |\n")
+        choutputs.write_all("|:---- |:---- | :--- |:---- |:---- |:---- |\n")
+        choutputs.write_list(importantlist)
 
         choutputs.write_all("\n\n### NEW FEATURES:\n\n")
         choutputs.write_all("| JIRA | Summary | Priority | Component | Reporter | Contributor |\n")
