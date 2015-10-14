@@ -1436,7 +1436,7 @@ function copytpbits
   # do about that, I don't think.
 
   # if we've already copied, then don't bother doing it again
-  if [[ ${STARTDIR} == ${PATCH_DIR}/precommit ]]; then
+  if [[ ${STARTINGDIR} == ${PATCH_DIR}/precommit ]]; then
     yetus_debug "Skipping copytpbits; already copied once"
     return
   fi
