@@ -64,6 +64,26 @@ function cmake_initialize
     yetus_error "ERROR: cmake requires make to be enabled."
     return 1
   fi
+
+}
+
+## @description  cmake module manipulation
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function cmake_reorder_modules
+{
+  if [[ "${CMAKE_ROOT_BUILD}" = true ]]; then
+    #shellcheck disable=SC2034
+    BUILDTOOLCWD="@@@BASEDIR@@@/${CMAKE_BUILD_DIR}"
+    #shellcheck disable=SC2034
+    CHANGED_MODULES="."
+    #shellcheck disable=SC2034
+    CHANGED_UNION_MODULES="."
+  else
+    #shellcheck disable=SC2034
+    BUILDTOOLCWD="@@@MODULEDIR@@@/${CMAKE_BUILD_DIR}"
+  fi
 }
 
 ## @description  get the name of the cmake build filename
@@ -134,25 +154,6 @@ function cmake_precompile
 function cmake_modules_worker
 {
   make_modules_worker "$@"
-}
-
-## @description  cmake module manipulator
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function cmake_reorder_modules
-{
-  if [[ "${CMAKE_ROOT_BUILD}" = true ]]; then
-    #shellcheck disable=SC2034
-    BUILDTOOLCWD="@@@BASEDIR@@@/${CMAKE_BUILD_DIR}"
-    #shellcheck disable=SC2034
-    CHANGED_MODULES="."
-    #shellcheck disable=SC2034
-    CHANGED_UNION_MODULES="."
-  else
-    #shellcheck disable=SC2034
-    BUILDTOOLCWD="@@@MODULEDIR@@@/${CMAKE_BUILD_DIR}"
-  fi
 }
 
 ## @description  cmake module queuer

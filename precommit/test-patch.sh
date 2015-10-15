@@ -1097,38 +1097,33 @@ function find_changed_modules
     # shellcheck disable=SC2034
     CHANGED_UNION_MODULES=${CHANGED_MODULES}
 
-    # some build tools may want to change these and/or
-    # make other changes based upon these results
-    if declare -f "${BUILDTOOL}_changed_modules" >/dev/null; then
-      "${BUILDTOOL}_changed_modules"
+  else
+
+    i=1
+    while [[ ${i} -lt 100 ]]
+    do
+      module=$(echo "${CHANGED_MODULES}" | tr ' ' '\n' | cut -f1-${i} -d/ | uniq)
+      count=$(echo "${module}" | wc -w)
+      if [[ ${count} -eq 1
+        && -f ${module}/${buildfile} ]]; then
+        prev_builddir=${module}
+      elif [[ ${count} -gt 1 ]]; then
+        builddir=${prev_builddir}
+        break
+      fi
+      ((i=i+1))
+    done
+
+    if [[ -z ${builddir} ]]; then
+      builddir="."
     fi
-    return
+
+    yetus_debug "Finding union of ${builddir}"
+    builddir=$(find_buildfile_dir "${buildfile}" "${builddir}" || true)
+
+    #shellcheck disable=SC2034
+    CHANGED_UNION_MODULES="${builddir}"
   fi
-
-  i=1
-  while [[ ${i} -lt 100 ]]
-  do
-    module=$(echo "${CHANGED_MODULES}" | tr ' ' '\n' | cut -f1-${i} -d/ | uniq)
-    count=$(echo "${module}" | wc -w)
-    if [[ ${count} -eq 1
-      && -f ${module}/${buildfile} ]]; then
-      prev_builddir=${module}
-    elif [[ ${count} -gt 1 ]]; then
-      builddir=${prev_builddir}
-      break
-    fi
-    ((i=i+1))
-  done
-
-  if [[ -z ${builddir} ]]; then
-    builddir="."
-  fi
-
-  yetus_debug "Finding union of ${builddir}"
-  builddir=$(find_buildfile_dir "${buildfile}" "${builddir}" || true)
-
-  #shellcheck disable=SC2034
-  CHANGED_UNION_MODULES="${builddir}"
 
   # some build tools may want to change these and/or
   # make other changes based upon these results
