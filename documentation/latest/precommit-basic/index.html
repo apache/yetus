@@ -159,8 +159,7 @@ as a whole.</p>
 
 <h2 id="optional-requirements">Optional Requirements</h2>
 
-<p>Features are plug-in based. These are activated based upon tool availability, the languages being
-tested, etc.</p>
+<p>Features are plug-in based and enabled either individually or collectively on the command line. From there, these are activated based upon tool availability, the languages being tested, etc.  The external dependencies of plug-ins may have different licensing requirements than Apache Yetus.</p>
 
 <p>Bug Systems:</p>
 
@@ -191,16 +190,36 @@ tested, etc.</p>
 
 <h1 id="basic-usage">Basic Usage</h1>
 
+<p>The first step for a successful deployment is determining which features/plug-ins to enable:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --list-plugins
+</code></pre>
+
+<p>This option will list all of the available plug-ins that are installed in the default location.  From this list, the specific plug-ins can be enabled:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --plugins<span class="o">=</span><span class="s2">"ant,maven,shellcheck,xml"</span> &lt;other options&gt;
+</code></pre>
+
+<p>As a short-cut, every plug-in may be enabled via the special &lsquo;all&rsquo; type:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --plugins<span class="o">=</span><span class="s2">"all"</span> &lt;other options&gt;
+</code></pre>
+
+<p><code>--plugins</code> also allows some basic &ldquo;arithmetic&rdquo;:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --plugins<span class="o">=</span><span class="s2">"all,-checkstyle,-findbugs"</span> &lt;other options&gt;
+</code></pre>
+
+<p>This will enable all plug-ins for potential usage, except for checkstyle and findbugs.</p>
+
+<p><strong>NOTE: The examples in this section will assume that the necessary <code>--plugins</code> option has been set on the command line as approriate for your particular installation.</strong></p>
+
 <p>This command will execute basic patch testing against a patch file stored in &ldquo;filename&rdquo;:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">cd</span> &lt;your repo&gt;
-<span class="gp">$ </span>dev-support/test-patch.sh --dirty-workspace --project<span class="o">=</span>projectname &lt;filename&gt;
+<span class="gp">$ </span><span class="nb">test</span>-patch.sh --dirty-workspace --project<span class="o">=</span>projectname &lt;filename&gt;
 </code></pre>
 
 <p>The <code>--dirty-workspace</code> flag tells test-patch that the repository is not clean and it is ok to continue.  By default, unit tests are not run since they may take a significant amount of time.</p>
 
 <p>To do turn them on, we need to provide the &ndash;run-tests option:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">cd</span> &lt;your repo&gt;
-<span class="gp">$ </span>dev-support/test-patch.sh --dirty-workspace --run-tests &lt;filename&gt;
+<span class="gp">$ </span><span class="nb">test</span>-patch.sh --dirty-workspace --run-tests &lt;filename&gt;
 </code></pre>
 
 <p>This is the same command, but now runs the unit tests.</p>
@@ -209,7 +228,7 @@ tested, etc.</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">cd</span> &lt;workrepo&gt;
 <span class="gp">$ </span>git diff master &gt; /tmp/patchfile
 <span class="gp">$ </span><span class="nb">cd</span> ../&lt;testrepo&gt;
-<span class="gp">$ </span>&lt;workrepo&gt;/dev-support/test-patch.sh --basedir<span class="o">=</span>&lt;testrepo&gt; --resetrepo /tmp/patchfile
+<span class="gp">$ </span><span class="nb">test</span>-patch.sh --basedir<span class="o">=</span>&lt;testrepo&gt; --resetrepo /tmp/patchfile
 </code></pre>
 
 <p>We used two new options here.  &ndash;basedir sets the location of the repository to use for testing.  &ndash;resetrepo tells test patch that it can go into <strong>destructive</strong> mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!</p>

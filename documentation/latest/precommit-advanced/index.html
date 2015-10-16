@@ -117,7 +117,7 @@
 <ul>
 <li><a href="#Docker_Support">Docker Support</a></li>
 <li><a href="#Plug-ins">Plug-ins</a></li>
-<li><a href="#Configuring_for_Other_Projects">Configuring for Other Projects</a></li>
+<li><a href="#Personalities">Personalities</a></li>
 <li><a href="#Important_Variables">Important Variables</a></li>
 </ul>
 
@@ -133,15 +133,15 @@
 
 <h1 id="plug-ins">Plug-ins</h1>
 
-<p>test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d off of the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions as well as test functions are covered.  See other documentat for pertinent information for the other plug-in types.</p>
+<p>test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d off of the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.</p>
 
 <h2 id="common-plug-in-functions">Common Plug-in Functions</h2>
 
 <p>Every plug-in must have one line in order to be recognized, usually an &lsquo;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
-<pre class="highlight shell"><code>add_plugin &lt;pluginname&gt;
+<pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
 
-<p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
+<p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the &#39;all&rsquo; plug-in is reserved.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
 <pre class="highlight shell"><code><span class="k">function </span>pluginname_filefilter
 </code></pre>
 
@@ -194,10 +194,22 @@
 </ul></li>
 </ul>
 
-<h1 id="test-plug-ins">Test Plug-ins</h1>
+<h2 id="plug-in-importation">Plug-in Importation</h2>
 
-<p>Plugins geared towards independent tests are registed via:</p>
-<pre class="highlight shell"><code>add_plugin &lt;pluginname&gt;
+<p>Plug-ins are imported from several key directories:</p>
+
+<ul>
+<li><p>core.d is an internal-to-Yetus directory that first loads the basic Yetus library, followed by the common routines used by all of the precommit shell code.  This order is dictated by prefixing the plug-in files with a number.  Other files in this directory are loaded in shell collated order.</p></li>
+<li><p>personality contains bundled personalities for various projects.  These will be imported individually based upon either a project name or if specifically identified with the <code>--personality</code> flag.</p></li>
+<li><p>test-patch.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.</p></li>
+</ul>
+
+<p>If the <code>--skip-system-plugins</code> flag is passed, then only core.d is imported.</p>
+
+<h2 id="test-plug-ins">Test Plug-ins</h2>
+
+<p>Plug-ins geared towards independent tests are registed via:</p>
+<pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
 
 <ul>
@@ -213,13 +225,25 @@
 </ul></li>
 </ul>
 
-<h1 id="configuring-for-other-projects">Configuring for Other Projects</h1>
+<h1 id="personalities">Personalities</h1>
+
+<h2 id="configuring-for-other-projects">Configuring for Other Projects</h2>
 
 <p>It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project <code>personality</code> should be added that enacts these custom rules.</p>
 
 <p>A personality consists of two functions. One that determines which test types to run and another that allows a project to dictate ordering rules, flags, and profiles on a per-module, per-test run.</p>
 
 <p>There can be only <strong>one</strong> of each personality function defined.</p>
+
+<h2 id="global-definitions">Global Definitions</h2>
+
+<p>Globals for personalities should be defined in the <code>personality_globals</code> function.  This function is called <em>after</em> the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:</p>
+<pre class="highlight shell"><code>funciton personality_globals
+<span class="o">{</span>
+  <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>master
+  <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
+<span class="o">}</span>
+</code></pre>
 
 <h2 id="test-determination">Test Determination</h2>
 
@@ -285,6 +309,14 @@
 </code></pre>
 
 <p>This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.</p>
+
+<h2 id="enabling-plug-ins">Enabling Plug-ins</h2>
+
+<p>Personalities can set the base list of plug-ins to enable and disable for their project via the <code>personality_plugins</code> function. Just call it with the same pattern as the <code>--plugins</code> command line option:</p>
+<pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-findbugs,-asflicense"</span>
+</code></pre>
+
+<p>This list is used if the user does not provide a list of plug-ins.</p>
 
 <h1 id="important-variables">Important Variables</h1>
 
