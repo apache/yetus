@@ -206,8 +206,10 @@ class Jira(object):
             field = self.parent.field_id_map['Release Note']
             if self.fields.has_key(field):
                 self.notes = mstr(self.fields[field])
-            else:
+            elif self.get_incompatible_change() or self.get_important():
                 self.notes = self.get_description()
+            else:
+                self.notes = ""
         return self.notes
 
     def get_priority(self):
