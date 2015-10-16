@@ -280,6 +280,7 @@ function personality_plugins
 {
   if [[ -z "${ENABLED_PLUGINS}" ]]; then
     ENABLED_PLUGINS="$1"
+    ENABLED_PLUGINS=${ENABLED_PLUGINS//,/ }
     yetus_debug "Using personality plug-in list: ${ENABLED_PLUGINS}"
   fi
 }
