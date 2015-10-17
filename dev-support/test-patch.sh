@@ -2121,6 +2121,8 @@ function generic_count_probs
     "${PROJECT_NAME}_${testtype}_count_probs" "${input}"
   elif declare -f ${BUILDTOOL}_${testtype}_count_probs >/dev/null; then
     "${BUILDTOOL}_${testtype}_count_probs" "${input}"
+  elif declare -f ${testtype}_count_probs >/dev/null; then
+    "${testtype}_count_probs" "${input}"
   else
     yetus_error "ERROR: ${testtype}: No function defined to count problems."
     echo 0
