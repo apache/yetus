@@ -110,7 +110,7 @@ function yetus_usage
   importplugins
 
   unset TESTFORMATS
-  unset PLUGINS
+  unset TESTTYPES
   unset BUILDTOOLS
 
   for plugin in ${BUGSYSTEMS}; do
@@ -214,9 +214,9 @@ setup_defaults
 parse_args "$@"
 
 importplugins
-yetus_debug "Removing BUILDTOOLS, PLUGINS, and TESTFORMATS from installed plug list"
+yetus_debug "Removing BUILDTOOLS, TESTTYPES, and TESTFORMATS from installed plug-in list"
 unset BUILDTOOLS
-unset PLUGINS
+unset TESTTYPES
 unset TESTFORMATS
 
 parse_args_plugins "$@"

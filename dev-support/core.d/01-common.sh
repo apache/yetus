@@ -198,7 +198,7 @@ function parse_args_plugins
 {
   declare plugin
 
-  for plugin in ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
+  for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
     if declare -f ${plugin}_parse_args >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_parse_args"
       #shellcheck disable=SC2086
@@ -216,7 +216,7 @@ function plugins_initialize
 {
   declare plugin
 
-  for plugin in ${PLUGINS} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
+  for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
     if declare -f ${plugin}_initialize >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_initialize"
       #shellcheck disable=SC2086
