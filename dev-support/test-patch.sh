@@ -289,7 +289,9 @@ function prepopulate_footer
   add_footer_table "uname" "${unamea}"
   add_footer_table "Build tool" "${BUILDTOOL}"
 
-  if [[ -n ${PERSONALITY} ]]; then
+  if [[ -n ${REEXECPERSONALITY} ]]; then
+    add_footer_table "Personality" "${REEXECPERSONALITY}"
+  elif [[ -n ${PERSONALITY} ]]; then
     add_footer_table "Personality" "${PERSONALITY}"
   fi
 
@@ -827,6 +829,9 @@ function parse_args
       --tpinstance=*)
         INSTANCE=${i#*=}
         EXECUTOR_NUMBER=${INSTANCE}
+      ;;
+      --tpperson=*)
+        REEXECPERSONALITY=${i#*=}
       ;;
       --tpreexectimer=*)
         REEXECLAUNCHTIMER=${i#*=}
@@ -1399,11 +1404,7 @@ function copytpbits
 
   if [[ -n ${PERSONALITY}
     && -f ${PERSONALITY} ]]; then
-    cp -pr "${PERSONALITY}" "${PATCH_DIR}/precommit/personality"
-    person=$(basename "${PERSONALITY}")
-
-    # Set to be relative to ${PATCH_DIR}/precommit
-    PERSONALITY="${PATCH_DIR}/precommit/personality/${person}"
+    cp -pr "${PERSONALITY}" "${PATCH_DIR}/precommit/personality/provided.sh"
   fi
 
   if [[ -n ${DOCKERFILE}
@@ -1520,8 +1521,8 @@ function check_reexec
     TESTPATCHMODE="--tpglobaltimer=${GLOBALTIMER} ${TESTPATCHMODE}"
     TESTPATCHMODE="--tpreexectimer=${TIMER} ${TESTPATCHMODE}"
     TESTPATCHMODE="--tpinstance=${INSTANCE} ${TESTPATCHMODE}"
-    TESTPATCHMODE="--personality=\'${PERSONALITY}\' ${TESTPATCHMODE}"
-    TESTPATCHMODE="--plugins=\'${USER_PLUGIN_DIR}\' ${TESTPATCHMODE}"
+    TESTPATCHMODE="--tpperson=${PERSONALITY} ${TESTPATCHMODE}"
+    TESTPATCHMODE="--plugins=${ENABLED_PLUGINS// /,} ${TESTPATCHMODE}"
     TESTPATCHMODE=" ${TESTPATCHMODE}"
     export TESTPATCHMODE
 

@@ -46,5 +46,5 @@ cd "${PATCH_DIR}/precommit/"
    --basedir="${BASEDIR}" \
    --patch-dir="${PATCH_DIR}" \
    --java-home="${JAVA_HOME}" \
-   --plugins="${PATCH_DIR}/precommit/user-plugins" \
-   --jira-cmd=/opt/jiracli/jira-cli-2.2.0/jira.sh
+   --personality="${PATCH_DIR}/precommit/personality/provided.sh" \
+   --user-plugins="${PATCH_DIR}/precommit/user-plugins"
