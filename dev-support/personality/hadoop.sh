@@ -263,14 +263,12 @@ function personality_modules
       fi
       ;;
     unit)
-      # As soon as HADOOP-11984 gets committed,
-      # this code should get uncommented
-      #if [[ ${TEST_PARALLEL} = "true" ]] ; then
-      #  extra="-Pparallel-tests"
-      #  if [[ -n ${TEST_THREADS:-} ]]; then
-      #    extra="${extra} -DtestsThreadCount=${TEST_THREADS}"
-      #  fi
-      #fi
+      if [[ ${TEST_PARALLEL} = "true" ]] ; then
+        extra="-Pparallel-tests"
+        if [[ -n ${TEST_THREADS:-} ]]; then
+          extra="${extra} -DtestsThreadCount=${TEST_THREADS}"
+        fi
+      fi
       needflags=true
       hadoop_unittest_prereqs
 
