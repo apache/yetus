@@ -19,7 +19,7 @@ add_test_format tap
 TAP_FAILED_TESTS=""
 TAP_LOG_DIR="target/tap"
 
-function tap_process_args
+function tap_parse_args
 {
   declare i
 
@@ -49,7 +49,9 @@ function tap_process_tests
   declare module_failed_tests
   declare filenames
 
-  filenames=$(find "${TAP_LOG_DIR}" -type f -exec "${GREP}" -l -E "^not ok" {} \;)
+  if [[ -d "${TAP_LOG_DIR}" ]]; then
+    filenames=$(find "${TAP_LOG_DIR}" -type f -exec "${GREP}" -l -E "^not ok" {} \;)
+  fi
 
   if [[ -n "${filenames}" ]]; then
     module_failed_tests=$(echo "${filenames}" \
