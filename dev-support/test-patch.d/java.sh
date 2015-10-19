@@ -23,6 +23,12 @@ function javac_initialize
   local jdkdir
   local tmplist
 
+  # if we are in pre-docker mode, don't do any of
+  # this work since it's all going to be wrong anyway
+  if [[ "${DOCKERSUPPORT}" = "true" ]]; then
+    return 0
+  fi
+
   if [[ -z ${JAVA_HOME:-} ]]; then
     case ${OSTYPE} in
       Darwin)
@@ -47,9 +53,13 @@ function javac_initialize
   JAVA_HOME=$(cd -P -- "${JAVA_HOME}" >/dev/null && pwd -P)
 
   for i in ${JDK_DIR_LIST}; do
-    jdkdir=$(cd -P -- "${i}" >/dev/null && pwd -P)
-    if [[ ${jdkdir} != "${JAVA_HOME}" ]]; then
-      tmplist="${tmplist} ${jdkdir}"
+    if [[ -d "${i}" ]]; then
+      jdkdir=$(cd -P -- "${i}" >/dev/null && pwd -P)
+      if [[ ${jdkdir} != "${JAVA_HOME}" ]]; then
+        tmplist="${tmplist} ${jdkdir}"
+      fi
+    else
+      yetus_error "WARNING: Cannot locate JDK directory ${i}: ignoring"
     fi
   done
 
