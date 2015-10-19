@@ -83,3 +83,9 @@ RUN gem install rubocop
 ###
 RUN gem install ruby-lint
 
+####
+# Install bats
+####
+RUN add-apt-repository -y ppa:duggan/bats
+RUN apt-get update
+RUN apt-get install -y bats
