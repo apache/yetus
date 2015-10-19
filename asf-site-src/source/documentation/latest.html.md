@@ -26,7 +26,7 @@ The Yetus Precommit Patch Tester allows projects to codify their patch acceptanc
 * To get started on your project, including an explanation of what we'll expect in a runtime environment and what optional utilities we'll leverage, read through the [basic usage guide](precommit-basic).
 * If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you'll need to use our [advanced usage guide](precommit-advanced).
 
-There is also documentation on [build systems](precommit-buildtools) and [bug systems](precommit-bugsystems)
+There is also documentation on [build systems](precommit-buildtools), [bug systems](precommit-bugsystems) and [test formats](precommit-testformats).
 
 # Yetus Release Doc Maker
 
