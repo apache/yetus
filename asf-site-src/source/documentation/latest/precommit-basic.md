@@ -113,7 +113,7 @@ $ test-patch.sh --plugins="all,-checkstyle,-findbugs" <other options>
 
 This will enable all plug-ins for potential usage, except for checkstyle and findbugs.
 
-**NOTE: The examples in this section will assume that the necessary `--plugins` option has been set on the command line as approriate for your particular installation.**
+**NOTE: The examples in this section will assume that the necessary `--plugins` option has been set on the command line as appropriate for your particular installation.**
 
 This command will execute basic patch testing against a patch file stored in "filename":
 
