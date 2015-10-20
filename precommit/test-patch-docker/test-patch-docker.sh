@@ -94,7 +94,7 @@ function stop_exited_containers
 
   # stop *all* containers that are in exit state for
   # more than > 8 hours
-  while read line; do
+  while read -r line; do
      id=$(echo "${line}" | cut -f1 -d' ')
      value=$(echo "${line}" | cut -f2 -d' ')
      size=$(echo "${line}" | cut -f3 -d' ')
@@ -127,15 +127,21 @@ function stop_exited_containers
 ## @param        args
 function rm_old_containers
 {
-  local line
-  local id
-  local value
-  local size
+  declare line
+  declare id
+  declare value
+  declare size
+  declare running
 
-  while read line; do
+  while read -r line; do
     id=$(echo "${line}" | cut -f1 -d, )
-    state=$(echo "${line}" | cut -f2 -d, )
+    running=$(echo "${line}" | cut -f2 -d, )
     stoptime=$(echo "${line}" | cut -f3 -d, | cut -f1 -d. )
+
+    if [[ ${running} = true ]]; then
+      yetus_debug "${id} is still running, skipping."
+      continue
+    fi
 
     # believe it or not, date is not even close to standardized...
     if [[ $(uname -s) == Linux ]]; then
@@ -148,13 +154,11 @@ function rm_old_containers
       stoptime=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${stoptime}" "+%s")
     fi
 
-    if [[ ${state} == false ]]; then
-      curtime=$(date "+%s")
-      ((difftime = curtime - stoptime))
-      if [[ ${difftime} -gt 86400 ]]; then
-        echo "Removing docker ${id}"
-        dockercmd rm "${id}"
-      fi
+    curtime=$(date "+%s")
+    ((difftime = curtime - stoptime))
+    if [[ ${difftime} -gt 86400 ]]; then
+      echo "Removing docker ${id}"
+      dockercmd rm "${id}"
     fi
   done < <(
    # see https://github.com/koalaman/shellcheck/issues/375
@@ -187,7 +191,7 @@ function remove_old_tagged_images
   local id
   local created
 
-  while read line; do
+  while read -r line; do
     id=$(echo "${line}" | awk '{print $1}')
     created=$(echo "${line}" | awk '{print $5}')
 
