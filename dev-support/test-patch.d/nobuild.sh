@@ -30,7 +30,7 @@ function nobuild_modules_worker
 {
   local status=$1
   local testtype=$2
-  module_workers "${status}" "${testtype}"
+  modules_workers "${status}" "${testtype}"
 }
 
 function nobuild_builtin_personality_modules
