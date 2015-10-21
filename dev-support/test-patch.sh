@@ -1397,10 +1397,12 @@ function copytpbits
   mkdir -p "${PATCH_DIR}/precommit/test-patch-docker"
 
   # copy our entire universe, preserving links, etc.
+  yetus_debug "copying '${BINDIR}' over to '${PATCH_DIR}/precommit'"
   (cd "${BINDIR}"; tar cpf - . ) | (cd "${PATCH_DIR}/precommit"; tar xpf - )
 
   if [[ -n "${USER_PLUGIN_DIR}"
     && -d "${USER_PLUGIN_DIR}"  ]]; then
+    yetus_debug "copying '${USER_PLUGIN_DIR}' over to ${PATCH_DIR}/precommit/user-plugins"
     cp -pr "${USER_PLUGIN_DIR}/*" \
       "${PATCH_DIR}/precommit/user-plugins"
   fi
@@ -1409,11 +1411,13 @@ function copytpbits
 
   if [[ -n ${PERSONALITY}
     && -f ${PERSONALITY} ]]; then
+    yetus_debug "copying '${PERSONALITY}' over to '${PATCH_DIR}/precommit/personality/provided.sh'"
     cp -pr "${PERSONALITY}" "${PATCH_DIR}/precommit/personality/provided.sh"
   fi
 
   if [[ -n ${DOCKERFILE}
       && -f ${DOCKERFILE} ]]; then
+    yetus_debug "copying '${DOCKERFILE}' over to '${PATCH_DIR}/precommit/test-patch-docker/Dockerfile'"
     dockerdir=$(dirname "${DOCKERFILE}")
     dockfile=$(basename "${DOCKERFILE}")
     pushd "${dockerdir}" >/dev/null
@@ -1562,7 +1566,7 @@ function check_reexec
       --tpreexectimer="${TIMER}" \
       --personality="${PERSONALITY}" \
       --tpinstance="${INSTANCE}" \
-      --plugins="${USER_PLUGIN_DIR}"
+      --user-plugins="${USER_PLUGIN_DIR}"
   fi
 }
 
