@@ -42,7 +42,7 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_buildfile
 
-    - This should be an echo of the file that controls the build system.  This is used for module determination.
+    - This should be an echo of the file that controls the build system.  This is used for module determination. If the build system wishes to disable module determination, it should echo with no args.
 
 * pluginname\_executor
 

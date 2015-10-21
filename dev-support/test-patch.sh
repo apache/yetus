@@ -1020,22 +1020,27 @@ function find_changed_modules
 
   changed_dirs=$(for i in ${CHANGED_FILES}; do dirname "${i}"; done | sort -u)
 
-  # Now find all the modules that were changed
-  for i in ${changed_dirs}; do
+  #  Empty string indicates the build system wants to disable module detection
+  if [[ -z ${buildfile} ]]; then
+    buiddirs="."
+  else
+    # Now find all the modules that were changed
+    for i in ${changed_dirs}; do
 
-    module_skipdir "${i}"
-    if [[ $? != 0 ]]; then
-      continue
-    fi
+      module_skipdir "${i}"
+      if [[ $? != 0 ]]; then
+        continue
+      fi
 
-    builddir=$(find_buildfile_dir "${buildfile}" "${i}")
-    if [[ -z ${builddir} ]]; then
-      yetus_error "ERROR: ${buildfile} is not found. Make sure the target is a ${BUILDTOOL}-based project."
-      bugsystem_finalreport 1
-      cleanup_and_exit 1
-    fi
-    builddirs="${builddirs} ${builddir}"
-  done
+      builddir=$(find_buildfile_dir "${buildfile}" "${i}")
+      if [[ -z ${builddir} ]]; then
+        yetus_error "ERROR: ${buildfile} is not found. Make sure the target is a ${BUILDTOOL}-based project."
+        bugsystem_finalreport 1
+        cleanup_and_exit 1
+      fi
+      builddirs="${builddirs} ${builddir}"
+    done
+  fi
 
   #shellcheck disable=SC2086,SC2034
   CHANGED_UNFILTERED_MODULES=$(echo ${builddirs} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
