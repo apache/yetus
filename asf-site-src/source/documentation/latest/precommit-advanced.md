@@ -107,7 +107,7 @@ add_test_type <pluginname>
 ```
 
 + pluginname\_filefilter
-    - executed while determine which files trigger which tests.  This function should use 'add_test pluginname' to add the plug-in to the test list.
+    - executed while determine which files trigger which tests.  This function should use `add_test pluginname` to add the plug-in to the test list.
 
 * pluginname\_tests
     - executed after the unit tests have completed.
@@ -182,7 +182,7 @@ The `testtype` state tells the personality exactly which test is about to be exe
 
 In order to communicate back to test-patch, there are two functions for the personality to use.
 
-The first is `clear_personality_queue`. This removes the previous test's configuration so that a new module queue may be built. Custom personality_modules will almost always want to do this as the first action.
+The first is `clear_personality_queue`. This removes the previous test's configuration so that a new module queue may be built. Custom `personality_modules` will almost always want to do this as the first action.
 
 The second is `personality_enqueue_module`.  This function takes two parameters.  The first parameter is the name of the module to add to this test's queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. `personality_enqueue_module` may be called as many times as necessary for your project.
 

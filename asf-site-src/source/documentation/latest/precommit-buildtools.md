@@ -32,11 +32,11 @@ add_build_tool <pluginname>
 
     - If the build tool does not always run from the ${BASEDIR} and instead needs to change the current working directory to work on a specific module, then set this to true.  The default is false.
 
-* UNSUPPORTED_TEST
+* UNSUPPORTED\_TEST
 
-    - If pluginname\_modules\_worker is given a test type that is not supported by the build system, set UNSUPPORTED_TEST=true.  If it is supported, set UNSUPPORTED_TEST=false.
+    - If pluginname\_modules\_worker is given a test type that is not supported by the build system, set UNSUPPORTED\_TEST=true.  If it is supported, set UNSUPPORTED\_TEST=false.
 
-For example, the gradle build tool does not have a standard way to execute checkstyle. So when checkstyle is requested, gradle\_modules\_worker sets UNSUPPORTED_TEST to true and returns out of the routine.
+For example, the gradle build tool does not have a standard way to execute checkstyle. So when checkstyle is requested, gradle\_modules\_worker sets UNSUPPORTED\_TEST to true and returns out of the routine.
 
 # Required Functions
 
@@ -50,7 +50,7 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_modules\_worker
 
-    - Input is the branch and the test being run.  This should call modules_workers with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then module_workers should be called with 'test' appended onto its normal parameters.
+    - Input is the branch and the test being run.  This should call `modules_workers` with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then `module_workers` should be called with 'test' appended onto its normal parameters.
 
 * pluginname\_builtin_personality\_modules
 
