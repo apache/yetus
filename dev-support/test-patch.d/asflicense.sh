@@ -18,6 +18,33 @@
 add_test_type asflicense
 add_test asflicense
 
+function asflicense_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --asflicense-rat-excludes=*)
+        ASFLICENSE_RAT_EXCLUDES=${i#*=}
+      ;;
+      --asflicense-rat-jar=*)
+        ASFLICENSE_RAT_JAR=${i#*=}
+      ;;
+    esac
+  done
+
+  case ${BUILDTOOL} in
+    ant|gradle|maven)
+      add_test asflicense
+    ;;
+    *)
+      if [[ -f "${ASFLICENSE_RAT_JAR}" ]]; then
+        add_test asflicense
+      fi
+    ;;
+  esac
+}
+
 ## @description  Verify all files have an Apache License
 ## @audience     private
 ## @stability    evolving
@@ -28,6 +55,7 @@ function asflicense_tests
 {
   local numpatch
   local btfails=true
+  local asfex
 
   big_console_header "Determining number of patched ASF License errors"
 
@@ -46,8 +74,23 @@ function asflicense_tests
       modules_workers patch asflicense apache-rat:check
     ;;
     *)
-      return 0
-    ;;
+      if [[ -z "${ASFLICENSE_RAT_JAR}" ]]; then
+        return 0
+      fi
+
+      if [[ -f ${ASFLICENSE_RAT_EXCLUDES} ]]; then
+        asfex="-E ${ASFLICENSE_RAT_EXCLUDES} -d ${BASEDIR}"
+      else
+        asfex="${BASEDIR}"
+      fi
+
+      asflicense_writexsl "${PATCH_DIR}/asf.xsl"
+      echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
+      "${JAVA_HOME}/bin/java" \
+          -jar "${ASFLICENSE_RAT_JAR}" \
+          -s "${PATCH_DIR}/asf.xsl" \
+          "${asfex}"
+        ;;
   esac
 
   # RAT fails the build if there are license problems.
@@ -57,11 +100,13 @@ function asflicense_tests
     return 0
   fi
 
-  #shellcheck disable=SC2038
-  find "${BASEDIR}" -name rat.txt \
-        -o -name releaseaudit_report.txt \
-        -o -name rat-report.txt \
-    | xargs cat > "${PATCH_DIR}/patch-asflicense.txt"
+  if [[ ! -f "${PATCH_DIR}/patch-asflicense.txt" ]]; then
+    #shellcheck disable=SC2038
+    find "${BASEDIR}" -name rat.txt \
+          -o -name releaseaudit_report.txt \
+          -o -name rat-report.txt \
+      | xargs cat > "${PATCH_DIR}/patch-asflicense.txt"
+  fi
 
   if [[ ! -s "${PATCH_DIR}/patch-asflicense.txt" ]]; then
     if [[ ${btfails} = true ]]; then
@@ -93,4 +138,57 @@ function asflicense_tests
   fi
   add_vote_table 1 asflicense "Patch does not generate ASF License warnings."
   return 0
+}
+
+function asflicense_writexsl
+{
+cat > "${1}" << EOF
+<?xml version='1.0' ?>
+<!--
+ Licensed to the Apache Software Foundation (ASF) under one   *
+ or more contributor license agreements.  See the NOTICE file *
+ distributed with this work for additional information        *
+ regarding copyright ownership.  The ASF licenses this file   *
+ to you under the Apache License, Version 2.0 (the            *
+ "License"); you may not use this file except in compliance   *
+ with the License.  You may obtain a copy of the License at   *
+                                                              *
+   http://www.apache.org/licenses/LICENSE-2.0                 *
+                                                              *
+ Unless required by applicable law or agreed to in writing,   *
+ software distributed under the License is distributed on an  *
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY       *
+ KIND, either express or implied.  See the License for the    *
+ specific language governing permissions and limitations      *
+ under the License.                                           *
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:output method='text'/>
+<xsl:template match='/'>
+  Files with Apache License headers will be marked AL
+  Binary files (which do not require any license headers) will be marked B
+  Compressed archives will be marked A
+  Notices, licenses etc. will be marked N
+
+ <xsl:for-each select='descendant::resource'>
+  <xsl:choose>
+     <xsl:when test='license-approval/@name="false"'>!</xsl:when>
+     <xsl:otherwise><xsl:text> </xsl:text></xsl:otherwise>
+ </xsl:choose>
+ <xsl:choose>
+     <xsl:when test='type/@name="notice"'>N    </xsl:when>
+     <xsl:when test='type/@name="archive"'>A    </xsl:when>
+     <xsl:when test='type/@name="binary"'>B    </xsl:when>
+     <xsl:when test='type/@name="standard"'><xsl:value-of select='header-type/@name'/></xsl:when>
+     <xsl:otherwise>!!!!!</xsl:otherwise>
+ </xsl:choose>
+ <xsl:text> </xsl:text>
+ <xsl:value-of select='@name'/>
+ <xsl:text>
+ </xsl:text>
+ </xsl:for-each>
+</xsl:template>
+</xsl:stylesheet>
+EOF
 }
