@@ -134,9 +134,7 @@ function locate_patch
 ## @description  just adding files
 ## @audience     public
 ## @stability    stable
-## @param        filename
-## @param        command
-## @param        [..]
+## @param        log filename
 ## @replaceable  no
 ## @returns      $?
 function patchfile_verify_zero
@@ -188,6 +186,7 @@ function patchfile_verify_zero
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
+## @param        path to patch file to dryrun
 function gitapply_dryrun
 {
   declare patchfile=$1
@@ -219,6 +218,7 @@ function gitapply_dryrun
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
+## @param        path to patch file to dryrun
 function patchcmd_dryrun
 {
   declare patchfile=$1
@@ -251,6 +251,7 @@ function patchcmd_dryrun
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
+## @param        path to patch file to dryrun
 function patchfile_dryrun_driver
 {
   declare patchfile=$1
@@ -276,6 +277,7 @@ function patchfile_dryrun_driver
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
+## @param        path to patch file to apply
 function gitapply_apply
 {
   declare patchfile=$1
@@ -295,6 +297,7 @@ function gitapply_apply
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
+## @param        path to patch file to apply
 function patchcmd_apply
 {
   declare patchfile=$1
@@ -309,6 +312,7 @@ function patchcmd_apply
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
+## @param        path to patch file to apply
 function patchfile_apply_driver
 {
   declare patchfile=$1
