@@ -164,6 +164,7 @@ function checkstyle_postapply
 {
   local result
   local module
+  local mod
   local fn
   local i=0
   local numprepatch=0
@@ -216,9 +217,13 @@ function checkstyle_postapply
       # shellcheck disable=SC2016
       numpostpatch=$(wc -l "${PATCH_DIR}/patch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
 
+      mod=${module}
+      if [[ ${mod} == . ]]; then
+        mod=root
+      fi
       module_status ${i} -1 "diff-checkstyle-${fn}.txt" "Patch generated "\
         "${diffpostpatch} new checkstyle issues in "\
-        "${module} (total was ${numprepatch}, now ${numpostpatch})."
+        "${mod} (total was ${numprepatch}, now ${numpostpatch})."
     fi
     ((i=i+1))
   done
