@@ -49,7 +49,7 @@ class StabilityOptions {
       }
     }
   }
-  
+
   public static String[][] filterOptions(String[][] options) {
     List<String[]> optionsList = new ArrayList<String[]>();
     for (int i = 0; i < options.length; i++) {

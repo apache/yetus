@@ -39,18 +39,18 @@ import org.apache.yetus.audience.InterfaceStability;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class IncludePublicAnnotationsStandardDoclet {
-  
+
   public static LanguageVersion languageVersion() {
     return LanguageVersion.JAVA_1_5;
   }
-  
+
   public static boolean start(RootDoc root) {
     System.out.println(
         IncludePublicAnnotationsStandardDoclet.class.getSimpleName());
     RootDocProcessor.treatUnannotatedClassesAsPrivate = true;
     return Standard.start(RootDocProcessor.process(root));
   }
-  
+
   public static int optionLength(String option) {
     Integer length = StabilityOptions.optionLength(option);
     if (length != null) {
@@ -58,7 +58,7 @@ public class IncludePublicAnnotationsStandardDoclet {
     }
     return Standard.optionLength(option);
   }
-  
+
   public static boolean validOptions(String[][] options,
       DocErrorReporter reporter) {
     StabilityOptions.validOptions(options, reporter);
