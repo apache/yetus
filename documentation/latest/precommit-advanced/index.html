@@ -216,7 +216,7 @@
 <li><p>pluginname_filefilter</p>
 
 <ul>
-<li>executed while determine which files trigger which tests.  This function should use &#39;add_test pluginname&rsquo; to add the plug-in to the test list.</li>
+<li>executed while determine which files trigger which tests.  This function should use <code>add_test pluginname</code> to add the plug-in to the test list.</li>
 </ul></li>
 <li><p>pluginname_tests</p>
 
@@ -288,7 +288,7 @@
 
 <p>In order to communicate back to test-patch, there are two functions for the personality to use.</p>
 
-<p>The first is <code>clear_personality_queue</code>. This removes the previous test&rsquo;s configuration so that a new module queue may be built. Custom personality_modules will almost always want to do this as the first action.</p>
+<p>The first is <code>clear_personality_queue</code>. This removes the previous test&rsquo;s configuration so that a new module queue may be built. Custom <code>personality_modules</code> will almost always want to do this as the first action.</p>
 
 <p>The second is <code>personality_enqueue_module</code>.  This function takes two parameters.  The first parameter is the name of the module to add to this test&rsquo;s queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. <code>personality_enqueue_module</code> may be called as many times as necessary for your project.</p>
 <pre class="highlight plaintext"><code>NOTE: A module name of . signifies the root of the repository.

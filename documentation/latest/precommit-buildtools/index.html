@@ -129,7 +129,7 @@
 <li><p>UNSUPPORTED_TEST</p>
 
 <ul>
-<li>If pluginname_modules_worker is given a test type that is not supported by the build system, set UNSUPPORTED<em>TEST=true.  If it is supported, set UNSUPPORTED</em>TEST=false.</li>
+<li>If pluginname_modules_worker is given a test type that is not supported by the build system, set UNSUPPORTED_TEST=true.  If it is supported, set UNSUPPORTED_TEST=false.</li>
 </ul></li>
 </ul>
 
@@ -151,7 +151,7 @@
 <li><p>pluginname_modules_worker</p>
 
 <ul>
-<li>Input is the branch and the test being run.  This should call modules<em>workers with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &#39;unit&rsquo; tests, then module</em>workers should be called with &#39;test&rsquo; appended onto its normal parameters.</li>
+<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &#39;unit&rsquo; tests, then <code>module_workers</code> should be called with &#39;test&rsquo; appended onto its normal parameters.</li>
 </ul></li>
 <li><p>pluginname_builtin_personality_modules</p>
 
