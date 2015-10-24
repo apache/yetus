@@ -35,6 +35,13 @@
 
   <modules>
     <module>audience-annotations</module>
-    <module>audience-annotations-jdiff</module>
   </modules>
+  <profiles>
+    <profile>
+      <id>include-jdiff-module</id>
+      <modules>
+        <module>audience-annotations-jdiff</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
