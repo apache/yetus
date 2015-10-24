@@ -688,6 +688,7 @@ function yetus_usage
   echo "--personality=<file>   The personality file to load"
   echo "--project=<name>       The short name for project currently using test-patch (default 'yetus')"
   echo "--plugins=<list>       Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
+  echo "                       e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
   echo "--resetrepo            Forcibly clean the repo"
   echo "--run-tests            Run all relevant tests below the base directory"
   echo "--skip-dirs=<list>     Skip following directories for module finding"
