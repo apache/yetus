@@ -23,14 +23,18 @@ JIRA_URL=${JIRA_URL:-"https://issues.apache.org/jira"}
 # Issue regex to help identify the project
 JIRA_ISSUE_RE=''
 
+# If the issue status is matched with this pattern, the attached patch is regarded as ready to be applied
+JIRA_STATUS_RE='Patch Available'
+
 add_bugsystem jira
 
 function jira_usage
 {
   echo "JIRA Options:"
+  echo "--jira-base-url=<url>   The URL of the JIRA server (default:'${JIRA_URL}')"
   echo "--jira-issue-re=<expr>  Bash regular expression to use when trying to find a jira ref in the patch name (default: \'${JIRA_ISSUE_RE}\')"
   echo "--jira-password=<pw>    The password for the 'jira' command"
-  echo "--jira-base-url=<url>   The URL of the JIRA server (default:'${JIRA_URL}')"
+  echo "--jira-status-re=<expr> Grep regular expression representing the issue status whose patch is applicable to the codebase (default: \'${JIRA_STATUS_RE}\')"
   echo "--jira-user=<user>      The user for the 'jira' command"
 }
 
@@ -48,6 +52,9 @@ function jira_parse_args
       ;;
       --jira-password=*)
         JIRA_PASSWD=${i#*=}
+      ;;
+      --jira-status-re=*)
+        JIRA_STATUS_RE=${i#*=}
       ;;
       --jira-user=*)
         JIRA_USER=${i#*=}
@@ -132,12 +139,12 @@ function jira_locate_patch
     echo "${input} appears to be a Github PR. Switching Modes."
     github_jira_bridge "${fileloc}"
     return $?
-  elif [[ $(${GREP} -c 'Patch Available' "${PATCH_DIR}/jira") == 0 ]]; then
+  elif [[ $(${GREP} -c "${JIRA_STATUS_RE}" "${PATCH_DIR}/jira") == 0 ]]; then
     if [[ ${JENKINS} == true ]]; then
-      yetus_error "ERROR: ${input} is not \"Patch Available\"."
+      yetus_error "ERROR: ${input} issue status is not matched with \"${JIRA_STATUS_RE}\"."
       cleanup_and_exit 1
     else
-      yetus_error "WARNING: ${input} is not \"Patch Available\"."
+      yetus_error "WARNING: ${input} issue status is not matched with \"${JIRA_STATUS_RE}\"."
     fi
   fi
 
