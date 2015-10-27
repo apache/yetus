@@ -226,9 +226,7 @@ There are a handful of extremely important system variables that make life easie
 
 * CHANGED\_FILES is a list of all files that appear to be added, deleted, or modified in the patch.
 
-* CHANGED\_UNFILTERED\_MODULES is a list of all modules that house all of the CHANGED\_FILES.  Be aware that the root of the source tree is reported as '.'.
-
-* CHANGED\_MODULES reports which modules that appear to have source code in them.
+* CHANGED\_MODULES is a list of all modules that house all of the CHANGED\_FILES.  Be aware that the root of the source tree is reported as '.'.
 
 * GITHUB\_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.
 

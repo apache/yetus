@@ -70,8 +70,7 @@ function setup_defaults
 
   # shellcheck disable=SC2034
   CHANGED_MODULES=""
-  # shellcheck disable=SC2034
-  CHANGED_UNFILTERED_MODULES=""
+
   # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
   USER_MODULE_LIST=""
@@ -319,6 +318,8 @@ function finish_docker_stats
 function finish_footer_table
 {
   local maxmem
+
+  add_footer_table "modules" "C: ${CHANGED_MODULES} U: ${CHANGED_UNION_MODULES}"
 
   # `sort | head` can cause a broken pipe error, but we can ignore it just like compute_gitdiff.
   # shellcheck disable=SC2016,SC2086
@@ -997,7 +998,7 @@ function module_skipdir
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
-## @return       None; sets ${CHANGED_MODULES} and ${CHANGED_UNFILTERED_MODULES}
+## @return       None; sets ${CHANGED_MODULES}
 function find_changed_modules
 {
   local i
@@ -1044,24 +1045,8 @@ function find_changed_modules
   fi
 
   #shellcheck disable=SC2086,SC2034
-  CHANGED_UNFILTERED_MODULES=$(echo ${builddirs} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
-  #shellcheck disable=SC2086,SC2116
-  CHANGED_UNFILTERED_MODULES=$(echo ${CHANGED_UNFILTERED_MODULES})
-
-  if [[ ${BUILDTOOL} = maven ]]; then
-    # Filter out modules without code
-    for module in ${builddirs}; do
-      ${GREP} "<packaging>pom</packaging>" "${module}/pom.xml" > /dev/null
-      if [[ "$?" != 0 ]]; then
-        buildmods="${buildmods} ${module}"
-      fi
-    done
-  else
-    buildmods=${CHANGED_UNFILTERED_MODULES}
-  fi
-
-  #shellcheck disable=SC2086,SC2034
-  CHANGED_MODULES=$(echo ${buildmods} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
+  CHANGED_MODULES=$(echo ${builddirs} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
+  CHANGED_MODULES=$(echo ${CHANGED_MODULES} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
 
   # turn it back into a list so that anyone printing doesn't
   # generate multiline output
