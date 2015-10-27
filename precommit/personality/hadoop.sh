@@ -322,6 +322,9 @@ function personality_file_tests
        || ${filename} =~ \.cmd
        || ${filename} =~ src/scripts
        || ${filename} =~ src/test/scripts
+       || ${filename} =~ src/main/bin
+       || ${filename} =~ shellprofile\.d
+       || ${filename} =~ src/main/conf
        ]]; then
     yetus_debug "tests/shell: ${filename}"
     add_test unit
@@ -356,7 +359,7 @@ function personality_file_tests
   fi
 
   if [[ ${filename} =~ src/test ]]; then
-    yetus_debug "tests"
+    yetus_debug "tests: src/test"
     add_test unit
   fi
 
