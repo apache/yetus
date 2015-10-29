@@ -17,11 +17,19 @@
 add_test_type javac
 add_test_type javadoc
 
-function javac_initialize
+JAVA_INITIALIZED=false
+
+function initialize_java
 {
   local i
   local jdkdir
   local tmplist
+
+  if [[ ${JAVA_INITIALIZED} == true ]]; then
+    return
+  else
+    JAVA_INITIALIZED=true
+  fi
 
   # if we are in pre-docker mode, don't do any of
   # this work since it's all going to be wrong anyway
@@ -65,6 +73,16 @@ function javac_initialize
 
   JDK_DIR_LIST="${tmplist} ${JAVA_HOME}"
   JDK_DIR_LIST=${JDK_DIR_LIST/ }
+}
+
+function javac_initialize
+{
+  initialize_java
+}
+
+function javadoc_initialize
+{
+  initialize_java
 }
 
 ## @description  Verify that ${JAVA_HOME} is defined
