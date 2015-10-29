@@ -151,6 +151,41 @@
 </ul></li>
 </ul>
 
+<h1 id="bugzilla-specific">Bugzilla Specific</h1>
+
+<p>Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with &lsquo;BZ:&rsquo;.  For example:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> BZ:4
+</code></pre>
+
+<p>&hellip; will pull down Bugzilla ID #4.</p>
+
+<p>Using the <code>--bugzilla-base-url</code> on the command line or BUGZILLA_BASE_URL in a project&rsquo;s personality will define the location of the Bugzilla instance.  By default, it is <a href="https://bz.apache.org/bugzilla">https://bz.apache.org/bugzilla</a> .</p>
+
+<h1 id="github-specific">GitHub Specific</h1>
+
+<p>GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that test-patch.sh will require that GitHub PRs be fully rebased (i.e., a single commit) in many circumstances.</p>
+
+<p>By default, the GitHub plug-in assumes that <a href="https://github.com">https://github.com</a> is the base URL for GitHub.  Enterprise users may override this with the <code>--github-base-url</code> for the normal web user interface and <code>--github-api-url</code> for the API URL.  Personalities may use GITHUB_API_URL and GITHUB_BASE_URL.</p>
+
+<p>The specific repository on GitHub is defined with either <code>--github-repo</code> on the command line or GITHUB_REPO in a personality.  It should take the form of &ldquo;user/repo&rdquo;.</p>
+
+<p>In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports two types:</p>
+
+<ul>
+<li><p>Token-based:  <code>--github-token</code> or GITHUB_TOKEN</p></li>
+<li><p>Username/password: <code>--github-user</code>/ GITHUB_USER , <code>--github-password</code> / GITHUB_PASSWD</p></li>
+</ul>
+
+<p>Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.</p>
+
+<h1 id="jira-specific">JIRA Specific</h1>
+
+<p>JIRA support allows both patch downloads and summary writes.  It also supports branch detection-based upon the name of the attached patch file.</p>
+
+<p>JIRA issues are invoked by matching the command line option to a specific regular expression as given by the <code>--jira-issue-re</code> option or via the JIRA_ISSUE_RE personality variable.  By default, the plug-in uses <a href="https://issues.apache.org/jira">https://issues.apache.org/jira</a> as the JIRA instance to use.  However that may be overwritten via the <code>--jira-base-url</code> option or personalities may define via JIRA_URL.</p>
+
+<p>In order to write information on the issue, JIRA requires username and password authentication using the <code>--jira-user</code>/<code>--jira-password</code> options or the JIRA_USER and JIRA_PASSWORD variables in a personality.</p>
+
 	  </div>
       <div class="container">
     <hr>
