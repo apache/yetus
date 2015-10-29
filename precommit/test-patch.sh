@@ -1943,6 +1943,13 @@ function check_unittests
       ((i=i+1))
     done
 
+    for testsys in ${TESTFORMATS}; do
+      if declare -f ${testsys}_finalize_results >/dev/null; then
+        yetus_debug "Calling ${testsys}_finalize_results"
+        "${testsys}_finalize_results" "${statusjdk}"
+      fi
+    done
+
   done
   JAVA_HOME=${savejavahome}
 
@@ -1953,13 +1960,6 @@ function check_unittests
   if [[ ${JENKINS} == true ]]; then
     add_footer_table "${statusjdk} Test Results" "${BUILD_URL}testReport/"
   fi
-
-  for testsys in ${TESTFORMATS}; do
-    if declare -f ${testsys}_finalize_results >/dev/null; then
-      yetus_debug "Calling ${testsys}_finalize_results"
-      "${testsys}_finalize_results" "${statusjdk}"
-    fi
-  done
 
   if [[ ${result} -gt 0 ]]; then
     return 1
