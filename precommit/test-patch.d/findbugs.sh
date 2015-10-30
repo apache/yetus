@@ -184,12 +184,13 @@ function findbugs_runner
 ## @return       1 on failure
 function findbugs_preapply
 {
-  local fn
-  local module
-  local i=0
-  local warnings_file
-  local module_findbugs_warnings
-  local result=0
+  declare fn
+  declare module
+  declare modindex=0
+  declare warnings_file
+  declare module_findbugs_warnings
+  declare result=0
+  declare msg
 
   verify_needed_test findbugs
 
@@ -212,35 +213,39 @@ function findbugs_preapply
     return 0
   fi
 
-  if [[ "${FINDBUGS_WARNINGS_FAIL_PRECHECK}" == "true" ]]; then
-    until [[ $i -eq ${#MODULE[@]} ]]; do
-      if [[ ${MODULE_STATUS[${i}]} == -1 ]]; then
-        ((result=result+1))
-        ((i=i+1))
-        continue
-      fi
-      module=${MODULE[${i}]}
-      start_clock
-      offset_clock "${MODULE_STATUS_TIMER[${i}]}"
-      fn=$(module_file_fragment "${module}")
-      warnings_file="${PATCH_DIR}/branch-findbugs-${fn}-warnings"
-      # shellcheck disable=SC2016
-      module_findbugs_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first \
-          "${PATCH_BRANCH}" \
-          "${warnings_file}.xml" \
-          "${warnings_file}.xml" \
-          | ${AWK} '{print $1}')
+  until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
+    if [[ ${MODULE_STATUS[${modindex}]} == -1 ]]; then
+      ((result=result+1))
+      ((modindex=modindex+1))
+      continue
+    fi
+    module=${MODULE[${modindex}]}
+    start_clock
+    offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
+    fn=$(module_file_fragment "${module}")
+    warnings_file="${PATCH_DIR}/branch-findbugs-${fn}-warnings"
+    # shellcheck disable=SC2016
+    module_findbugs_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first \
+        "${PATCH_BRANCH}" \
+        "${warnings_file}.xml" \
+        "${warnings_file}.xml" \
+        | ${AWK} '{print $1}')
 
-      if [[ ${module_findbugs_warnings} -gt 0 ]] ; then
-        module_status ${i} -1 "branch-findbugs-${fn}.html" "${module} in ${PATCH_BRANCH} cannot run convertXmlToText from findbugs"
+    if [[ ${module_findbugs_warnings} -gt 0 ]] ; then
+      msg="${module} in ${PATCH_BRANCH} has ${module_findbugs_warnings} extant Findbugs warnings."
+      if [[ "${FINDBUGS_WARNINGS_FAIL_PRECHECK}" == "true" ]]; then
+        module_status ${modindex} -1 "branch-findbugs-${fn}-warnings.html" "${msg}"
         ((result=result+1))
+      else
+        module_status ${modindex} 0 "branch-findbugs-${fn}-warnings.html" "${msg}"
       fi
-      savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
-      ((i=i+1))
-    done
-    modules_messages branch findbugs true
-  fi
+    fi
+
+    savestop=$(stop_clock)
+    MODULE_STATUS_TIMER[${modindex}]=${savestop}
+    ((modindex=modindex+1))
+  done
+  modules_messages branch findbugs true
 
   if [[ ${result} != 0 ]]; then
     return 1
@@ -376,6 +381,7 @@ function findbugs_postinstall
 
     if [[ ${new_findbugs_warnings} -gt 0 ]] ; then
       populate_test_table FindBugs "module:${module}"
+      #shellcheck disable=SC2162
       while read line; do
         firstpart=$(echo "${line}" | cut -f2 -d:)
         secondpart=$(echo "${line}" | cut -f9- -d' ')
