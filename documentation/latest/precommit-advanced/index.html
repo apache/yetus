@@ -326,8 +326,7 @@
 <li><p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). Under Jenkins, this is always true.</p></li>
 <li><p>BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz_ARGS to pass on to the build tool command line. (e.g., MAVEN_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.</p></li>
 <li><p>CHANGED_FILES is a list of all files that appear to be added, deleted, or modified in the patch.</p></li>
-<li><p>CHANGED_UNFILTERED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
-<li><p>CHANGED_MODULES reports which modules that appear to have source code in them.</p></li>
+<li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
 <li><p>GITHUB_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.</p></li>
 <li><p>HOW_TO_CONTRIBUTE should be a URL that points to a project&rsquo;s on-boarding documentation for new users. Currently, it is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project&rsquo;s personality.</p></li>
 <li><p>JIRA_ISSUE_RE is to help test-patch when talking to JIRA.  It helps determine if the given project is appropriate for the given JIRA issue.</p></li>
