@@ -56,6 +56,25 @@ cd asf-site-src/source
 vi contribute.html.md
 ```
 
+### Make changes to API Docs
+Optionally, you can update the generated API docs from other parts of the project. If they have been updated then the middleman build will pick up the changes.
+
+e.g. Precommit changes will be picked up by the Middleman build.
+
+```bash
+cd ../precommit/core.d
+vi 01-common.sh
+```
+
+
+e.g. Audience Annotations requires running Maven.
+
+```bash
+cd ../audience-annotations-component
+mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate
+cd -
+```
+
 ### Generating the website
 To generate the static wesbite for Apache Yetus run the following commands at the root asf-site-src directory:
 

@@ -50,3 +50,54 @@ end
 activate :directory_indexes
 activate :syntax
 activate :livereload
+
+# classes needed to publish our api docs
+class CopyInPlaceResource<Middleman::Sitemap::Resource
+  def initialize (sitemap, dest, src)
+    super(sitemap, dest, src)
+  end
+  def binary?
+    return true
+  end
+end
+
+class ApiDocs
+  def initialize (sitemap, destination, source)
+    @sitemap=sitemap
+    @destination=destination
+    @source=source
+  end
+  def manipulate_resource_list(resources)
+    parent=Pathname.new(@source)
+    build=Pathname.new("documentation/in-progress/#{@destination}")
+    Middleman::Util::all_files_under(@source).each do  |path|
+      dest = build + path.relative_path_from(parent)
+      resources << CopyInPlaceResource.new(@sitemap, dest.to_s, path.to_s)
+    end
+    # to make clear what we return
+    return resources
+  end
+end
+
+def shelldocs(output, docs=[])
+  unless FileUtils.uptodate? output, docs
+    inputs=docs.map do |entry| "--input=#{entry}" end
+    `../shelldocs/shelldocs.py --skipprnorep --output #{output} #{inputs.join ' '}`
+  end
+end
+
+# Add in apidocs rendered by other parts of the repo
+after_configuration do
+  # For Audiene Annotations we just rely on having made javadocs with Maven
+  sitemap.register_resource_list_manipulator(:audience_annotations, ApiDocs.new(sitemap, "audience-annotations-apidocs", "../audience-annotations-component/target/site/apidocs"))
+  # For Precommit we regenerate source files so they can be rendered.
+  FileUtils.mkdir_p 'source/documentation/in-progress/precommit-apidocs'
+  # core API
+  shelldocs('source/documentation/in-progress/precommit-apidocs/core.md', Dir.glob("../precommit/core.d/*.sh"))
+  # smart-apply-patch API
+  shelldocs('source/documentation/in-progress/precommit-apidocs/smart-apply-patch.md', ['../precommit/smart-apply-patch.sh'])
+  # primary API
+  shelldocs('source/documentation/in-progress/precommit-apidocs/test-patch.md', ['../precommit/test-patch.sh'])
+  # plugins API
+  shelldocs('source/documentation/in-progress/precommit-apidocs/plugins.md', Dir.glob('../precommit/test-patch.d/*.sh'))
+end
