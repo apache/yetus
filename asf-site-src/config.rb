@@ -86,6 +86,20 @@ def shelldocs(output, docs=[])
   end
 end
 
+RELEASEDOCMAKER = File.absolute_path('../release-doc-maker/releasedocmaker.py')
+
+def releasenotes(output, version)
+  # TODO: check jira for last update to the version and compare to source
+  #       file timestamp
+  `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
+                                       --projecttitle="Apache Yetus" \
+                                       --usetoday --license --lint)`
+  FileUtils.mv("#{output}/#{version}/RELEASENOTES.#{version}.md",
+               "#{output}/#{version}/RELEASENOTES.md")
+  FileUtils.mv("#{output}/#{version}/CHANGES.#{version}.md",
+               "#{output}/#{version}/CHANGES.md")
+end
+
 # Add in apidocs rendered by other parts of the repo
 after_configuration do
   # For Audiene Annotations we just rely on having made javadocs with Maven
@@ -100,4 +114,9 @@ after_configuration do
   shelldocs('source/documentation/in-progress/precommit-apidocs/test-patch.md', ['../precommit/test-patch.sh'])
   # plugins API
   shelldocs('source/documentation/in-progress/precommit-apidocs/plugins.md', Dir.glob('../precommit/test-patch.d/*.sh'))
+  unless data.versions.releases.nil?
+    data.versions.releases.each do |release|
+      releasenotes('source/documentation', release)
+    end
+  end
 end

@@ -1,0 +1,45 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<% if data.versions.releases.nil? %>
+Coming soon!
+
+As a new top-level project split from another top level Apache project, we
+are currently establishing an independent build and release process.  If you would
+like to help out, check out the Getting Involved link above!
+<% else %>
+# Apache Yetus Downloads
+
+The Apache Yetus project publishes a single source artifact per release for all of
+our components as well as a convenience artifact of binaries and documentation for immediate use. You
+should verify the integrity of these artifacts via [the ASF procedure](https://www.apache.org/info/verification.html)
+using the [KEYS file for our project](https://dist.apache.org/repos/dist/release/yetus/KEYS).
+
+In addition to the artifacts below, we publish convenience artifacts in some
+third-party repositories (e.g. Maven Central).
+
+## Releases
+
+<%   data.versions.releases.each do | release | %>
+  * <%= release %>
+    * [Release Notes](/documentation/<%= release %>/RELEASENOTES)
+    * [CHANGES](/documentation/<%= release %>/CHANGES)
+    * Source : [yetus-<%= release %>-source.zip](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-source.zip) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-source.zip.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-source.zip.mds))
+    * Binaries : [yetus-<%= release %>-bin.zip](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-bin.zip) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.zip.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.zip.mds))
+<%   end
+   end %>
