@@ -151,6 +151,16 @@ function maven_precheck
   fi
 }
 
+function maven_filefilter
+{
+  declare filename=$1
+
+  if [[ ${filename} =~ pom\.xml$ ]]; then
+    yetus_debug "tests/compile: ${filename}"
+    add_test compile
+  fi
+}
+
 function maven_buildfile
 {
   echo "pom.xml"
@@ -167,10 +177,10 @@ function mvnsite_filefilter
 
   if [[ ${BUILDTOOL} = maven ]]; then
     if [[ ${filename} =~ src/site ]]; then
-       yetus_debug "tests/mvnsite: ${filename}"
-       add_test mvnsite
-     fi
-   fi
+      yetus_debug "tests/mvnsite: ${filename}"
+      add_test mvnsite
+    fi
+  fi
 }
 
 function maven_modules_worker

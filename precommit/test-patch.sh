@@ -1323,7 +1323,7 @@ function determine_needed_tests
     yetus_debug "Determining needed tests for ${i}"
     personality_file_tests "${i}"
 
-    for plugin in ${TESTTYPES}; do
+    for plugin in ${TESTTYPES} ${BUILDTOOL}; do
       if declare -f ${plugin}_filefilter >/dev/null 2>&1; then
         "${plugin}_filefilter" "${i}"
       fi
