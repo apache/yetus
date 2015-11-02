@@ -38,7 +38,7 @@ add_bugsystem <pluginname>
 
     - Using any heuristics available, set the issue, bug number, etc, for this bug system, if possible.  This is typically used to fill in supplementary information in the final output table.
 
-* pluginname\_writecomment
+* pluginname\_write\_comment
 
     - Given text input, write this output to the bug system as a comment.  NOTE: It is the bug system's responsibility to format appropriately.
 
