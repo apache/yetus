@@ -67,6 +67,19 @@ function gradle_initialize
   fi
 }
 
+function gradle_filefilter
+{
+  declare filename=$1
+
+  if [[ ${filename} =~ build\.gradle$
+     || ${filename} =~ gradlew$
+     || ${filename} =~ gradle\.properties$
+     || ${filename} =~ wrapper\.gradle$ ]]; then
+    yetus_debug "tests/compile: ${filename}"
+    add_test compile
+  fi
+}
+
 function gradle_buildfile
 {
   echo "gradlew"

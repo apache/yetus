@@ -61,6 +61,17 @@ function ant_initialize
   fi
 }
 
+function ant_filefilter
+{
+  declare filename=$1
+
+  if [[ ${filename} =~ build\.xml$
+     || ${filename} =~ ivy\.xml$ ]]; then
+    yetus_debug "tests/compile: ${filename}"
+    add_test compile
+  fi
+}
+
 function ant_buildfile
 {
   echo "build.xml"
