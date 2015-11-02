@@ -54,7 +54,6 @@ function asflicense_tests
 {
   local numpatch
   local btfails=true
-  local asfex
 
   big_console_header "Determining number of patched ASF License errors"
 
@@ -77,19 +76,23 @@ function asflicense_tests
         return 0
       fi
 
-      if [[ -f ${ASFLICENSE_RAT_EXCLUDES} ]]; then
-        asfex="-E ${ASFLICENSE_RAT_EXCLUDES} -d ${BASEDIR}"
-      else
-        asfex="${BASEDIR}"
-      fi
-
+      btfails=false
       asflicense_writexsl "${PATCH_DIR}/asf.xsl"
-      echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
-      "${JAVA_HOME}/bin/java" \
-          -jar "${ASFLICENSE_RAT_JAR}" \
-          -s "${PATCH_DIR}/asf.xsl" \
-          "${asfex}"
-        ;;
+      if [[ -f ${ASFLICENSE_RAT_EXCLUDES} ]]; then
+        echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
+        "${JAVA_HOME}/bin/java" \
+            -jar "${ASFLICENSE_RAT_JAR}" \
+            -s "${PATCH_DIR}/asf.xsl" \
+            -E "${ASFLICENSE_RAT_EXCLUDES}" \
+            -d "${BASEDIR}"
+      else
+        echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
+        "${JAVA_HOME}/bin/java" \
+            -jar "${ASFLICENSE_RAT_JAR}" \
+            -s "${PATCH_DIR}/asf.xsl" \
+            "${BASEDIR}"
+      fi
+    ;;
   esac
 
   # RAT fails the build if there are license problems.
