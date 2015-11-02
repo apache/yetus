@@ -16,7 +16,6 @@
 
 
 add_test_type asflicense
-add_test asflicense
 
 function asflicense_parse_args
 {
