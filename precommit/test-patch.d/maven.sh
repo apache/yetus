@@ -212,17 +212,12 @@ function maven_modules_worker
   esac
 }
 
-function maven_javac_count_probs
+function maven_javac_logfilter
 {
-  local warningfile=$1
+  declare input=$1
+  declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} '\[WARNING\]' "${warningfile}" | ${AWK} '{sum+=1} END {print sum}'
-}
-
-function maven_scalac_count_probs
-{
-  echo 0
+  ${GREP} -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" > "${output}"
 }
 
 ## @description  Helper for check_patch_javadoc
@@ -231,12 +226,12 @@ function maven_scalac_count_probs
 ## @replaceable  no
 ## @return       0 on success
 ## @return       1 on failure
-function maven_javadoc_count_probs
+function maven_javadoc_logfilter
 {
-  local warningfile=$1
+  declare input=$1
+  declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} -E "^[0-9]+ warnings?$" "${warningfile}" | ${AWK} '{sum+=$1} END {print sum}'
+  ${GREP} -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" > "${output}"
 }
 
 function maven_builtin_personality_modules

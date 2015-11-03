@@ -114,36 +114,43 @@ function gradle_precompile
   return 0
 }
 
-function gradle_scalac_count_probs
-{
-  local warningfile=$1
-
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} "^/.*.scala:[0-9]*:" "${warningfile}" | wc -l
-}
-
-function gradle_javac_count_probs
-{
-  echo 0
-}
-
-function gradle_javadoc_count_probs
-{
-  echo 0
-}
-
-## @description  Helper for check_patch_javadoc
+## @description  Helper for generic_logfilter
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @return       0 on success
-## @return       1 on failure
-function gradle_scaladoc_count_probs
+function gradle_javac_logfilter
 {
-  local warningfile=$1
+  declare input=$1
+  declare output=$2
 
   #shellcheck disable=SC2016,SC2046
-  ${GREP} "^\[ant:scaladoc\]" "${warningfile}" | wc -l
+  ${GREP} "\.java" "${input}" > "${output}"
+}
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function gradle_javadoc_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  #shellcheck disable=SC2016,SC2046
+  ${GREP} "javadoc.*\.java" "${input}" > "${output}"
+}
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function gradle_scaladoc_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  #shellcheck disable=SC2016,SC2046
+  ${GREP} "^\[ant:scaladoc\] /.*\.scala" "${input}" > "${output}"
 }
 
 function gradle_modules_worker

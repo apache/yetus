@@ -75,3 +75,29 @@ function scaladoc_rebuild
     generic_post_handler scaladoc scaladoc false true
   fi
 }
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function scalac_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  #shellcheck disable=SC2016,SC2046
+  ${GREP} "^/.*.scala:[0-9]*:" "${input}" > "${output}"
+}
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function scaladoc_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  #shellcheck disable=SC2016,SC2046
+  ${GREP} "^/.*.scala:[0-9]*:" "${input}" > "${output}"
+}
