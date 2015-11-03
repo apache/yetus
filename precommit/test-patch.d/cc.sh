@@ -16,21 +16,20 @@
 
 add_test_type cc
 
+CC_EXT_RE='(c|cc|cpp|cxx|c\+\+|h|hh|hpp|hxx|h\+\+)'
+
 function cc_filefilter
 {
   declare filename=$1
 
-  if [[ ${filename} =~ \.c$
-      || ${filename} =~ \.cc$
-      || ${filename} =~ \.cpp$
-      || ${filename} =~ \.cxx$
-      || ${filename} =~ \.h$
-      || ${filename} =~ \.hh$
-     ]]; then
-   yetus_debug "tests/cc: ${filename}"
-   add_test cc
-   add_test compile
+  shopt -s nocasematch
+  if [[ ${filename} =~ \.${CC_EXT_RE}$ ]]; then
+    shopt -u nocasematch
+    yetus_debug "tests/cc: ${filename}"
+    add_test cc
+    add_test compile
   fi
+  shopt -u nocasematch
 }
 
 ## @description  check for C/C++ compiler errors
@@ -64,5 +63,5 @@ function cc_logfilter
   declare output=$2
 
   #shellcheck disable=SC2016,SC2046
-  ${GREP} -E '^.*\.(c|cc|h|hh|.cxx|.cpp)\:[[:digit:]]*\:' "${input}" > "${output}"
+  ${GREP} -i -E "^.*\.${CC_EXT_RE}\:[[:digit:]]*\:" "${input}" > "${output}"
 }
