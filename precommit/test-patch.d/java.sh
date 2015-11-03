@@ -184,3 +184,29 @@ function javadoc_rebuild
     generic_post_handler javadoc javadoc "${multijdkmode}" true
   fi
 }
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function javac_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  #shellcheck disable=SC2016,SC2046
+  ${GREP} "^.*.java:[0-9]*:" "${input}" > "${output}"
+}
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function javadoc_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  #shellcheck disable=SC2016,SC2046
+  ${GREP} "^.*.java:[0-9]*:" "${input}" > "${output}"
+}

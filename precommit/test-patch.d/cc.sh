@@ -54,10 +54,15 @@ function cc_compile
   fi
 }
 
-function cc_count_probs
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function cc_logfilter
 {
-  declare warningfile=$1
+  declare input=$1
+  declare output=$2
 
   #shellcheck disable=SC2016,SC2046
-  ${GREP} -E '^.*\.(c|cc|h|hh)\:[[:digit:]]*\:' "${warningfile}" | ${AWK} '{sum+=1} END {print sum}'
+  ${GREP} -E '^.*\.(c|cc|h|hh|.cxx|.cpp)\:[[:digit:]]*\:' "${input}" > "${output}"
 }

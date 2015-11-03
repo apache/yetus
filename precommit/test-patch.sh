@@ -2107,19 +2107,20 @@ function calcdiffs
 ## @stability    evolving
 ## @replaceable  no
 ## @return       number of issues
-function generic_count_probs
+function generic_logfilter
 {
   declare testtype=$1
   declare input=$2
+  declare output=$3
 
-  if declare -f ${PROJECT_NAME}_${testtype}_count_probs >/dev/null; then
-    "${PROJECT_NAME}_${testtype}_count_probs" "${input}"
-  elif declare -f ${BUILDTOOL}_${testtype}_count_probs >/dev/null; then
-    "${BUILDTOOL}_${testtype}_count_probs" "${input}"
-  elif declare -f ${testtype}_count_probs >/dev/null; then
-    "${testtype}_count_probs" "${input}"
+  if declare -f ${PROJECT_NAME}_${testtype}_logfilter >/dev/null; then
+    "${PROJECT_NAME}_${testtype}_logfilter" "${input}" "${output}"
+  elif declare -f ${BUILDTOOL}_${testtype}_logfilter >/dev/null; then
+    "${BUILDTOOL}_${testtype}_logfilter" "${input}" "${output}"
+  elif declare -f ${testtype}_logfilter >/dev/null; then
+    "${testtype}_logfilter" "${input}" "${output}"
   else
-    yetus_error "ERROR: ${testtype}: No function defined to count problems."
+    yetus_error "ERROR: ${testtype}: No function defined to filter problems."
     echo 0
   fi
 }
@@ -2192,6 +2193,9 @@ function generic_postlog_compare
   declare fn
   declare jdk
   declare statusjdk
+  declare numbranch
+  declare numpatch
+  declare diffpatch
 
   if [[ ${multijdk} == true ]]; then
     jdk=$(report_jvm_version "${JAVA_HOME}")
@@ -2218,39 +2222,36 @@ function generic_postlog_compare
     yetus_debug "${testtype}: branch-${origlog}-${fn}.txt vs. patch-${origlog}-${fn}.txt"
 
     # if it was a new module, this won't exist.
-    if [[ -f "${PATCH_DIR}/branch-${origlog}-${fn}.txt" ]]; then
-      ${GREP} -i warning "${PATCH_DIR}/branch-${origlog}-${fn}.txt" \
-        > "${PATCH_DIR}/branch-${testtype}-${fn}-warning.txt"
-    else
-      touch "${PATCH_DIR}/branch-${origlog}-${fn}.txt" \
-        "${PATCH_DIR}/branch-${testtype}-${fn}-warning.txt"
+    if [[ ! -f "${PATCH_DIR}/branch-${origlog}-${fn}.txt" ]]; then
+      touch "${PATCH_DIR}/branch-${origlog}-${fn}.txt"
     fi
 
-    if [[ -f "${PATCH_DIR}/patch-${origlog}-${fn}.txt" ]]; then
-      ${GREP} -i warning "${PATCH_DIR}/patch-${origlog}-${fn}.txt" \
-        > "${PATCH_DIR}/patch-${testtype}-${fn}-warning.txt"
-    else
-      touch "${PATCH_DIR}/patch-${origlog}-${fn}.txt" \
-        "${PATCH_DIR}/patch-${testtype}-${fn}-warning.txt"
+    if [[ ! -f "${PATCH_DIR}/patch-${origlog}-${fn}.txt" ]]; then
+      touch "${PATCH_DIR}/patch-${origlog}-${fn}.txt"
     fi
 
-    numbranch=$("generic_count_probs" "${testtype}" "${PATCH_DIR}/branch-${testtype}-${fn}-warning.txt")
-    numpatch=$("generic_count_probs" "${testtype}" "${PATCH_DIR}/patch-${testtype}-${fn}-warning.txt")
+    generic_logfilter "${testtype}" "${PATCH_DIR}/branch-${origlog}-${fn}.txt" "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt"
+    generic_logfilter "${testtype}" "${PATCH_DIR}/patch-${origlog}-${fn}.txt" "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt"
 
-    yetus_debug "${testtype}: old: ${numbranch} vs new: ${numpatch}"
+    numbranch=$(wc -l "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
+    numpatch=$(wc -l "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
 
-    if [[ -n ${numbranch}
-       && -n ${numpatch}
-       && ${numpatch} -gt ${numbranch} ]]; then
+    calcdiffs \
+      "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" \
+      "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt" \
+      > "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt"
 
-      ${DIFF} -u "${PATCH_DIR}/branch-${testtype}-${fn}-warning.txt" \
-        "${PATCH_DIR}/patch-${testtype}-${fn}-warning.txt" \
-        > "${PATCH_DIR}/${testtype}-${fn}-diff.txt"
+    diffpatch=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
 
-      add_vote_table -1 "${testtype}" "${fn}${statusjdk} has problems."
-      add_footer_table "${testtype}" "${fn}: @@BASE@@/${testtype}-${fn}-diff.txt"
+    echo ""
+    echo "${module_suffix}/${testtype}: ${diffpatch} new issues (was ${numbranch}, now ${numpatch})."
 
-      ((result=result+1))
+    if [[ ${diffpatch} -gt 0 ]] ; then
+      ((result = result + 1))
+
+      add_vote_table -1 "${testtype}" "${fn}${statusjdk} generated " \
+        "${diffpatch} new issues (was ${numbranch}, now ${numpatch}). "
+      add_footer_table "${testtype}" "${fn}: @@BASE@@/diff-${origlog}-${testtype}-${fn}.txt"
     fi
     ((i=i+1))
   done

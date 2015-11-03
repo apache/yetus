@@ -119,36 +119,30 @@ function ant_modules_worker
   esac
 }
 
-function ant_javac_count_probs
-{
-  declare warningfile=$1
-  declare val1
-  declare val2
-
-  #shellcheck disable=SC2016
-  val1=$(${GREP} -E "\[javac\] [0-9]+ errors?$" "${warningfile}" | ${AWK} '{sum+=$2} END {print sum}')
-  #shellcheck disable=SC2016
-  val2=$(${GREP} -E "\[javac\] [0-9]+ warnings?$" "${warningfile}" | ${AWK} '{sum+=$2} END {print sum}')
-  echo $((val1+val2))
-}
-
-## @description  Helper for check_patch_javadoc
+## @description  Helper for generic_logfilter
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @return       0 on success
-## @return       1 on failure
-function ant_javadoc_count_probs
+function ant_javac_logfilter
 {
-  local warningfile=$1
-  local val1
-  local val2
+  declare input=$1
+  declare output=$2
 
   #shellcheck disable=SC2016
-  val1=$(${GREP} -E "\[javadoc\] [0-9]+ errors?$" "${warningfile}" | ${AWK} '{sum+=$2} END {print sum}')
+  ${GREP} "\[javac\] /" "${input}" > "${output}"
+}
+
+## @description  Helper for generic_logfilter
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function ant_javadoc_logfilter
+{
+  declare input=$1
+  declare output=$2
+
   #shellcheck disable=SC2016
-  val2=$(${GREP} -E "\[javadoc\] [0-9]+ warnings?$" "${warningfile}" | ${AWK} '{sum+=$2} END {print sum}')
-  echo $((val1+val2))
+  ${GREP} "\[javadoc\] /" "${input}" > "${output}"
 }
 
 function ant_builtin_personality_modules
