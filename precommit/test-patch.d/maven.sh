@@ -58,7 +58,7 @@ function maven_parse_args
         if [[ -f ${MAVEN_SETTINGS} ]]; then
           MAVEN_ARGS=("${MAVEN_ARGS[@]}" "--settings=${MAVEN_SETTINGS}")
         else
-          yetus_error "WARNING: ${MAVEN_SETTINGS} not found. Ignorning."
+          yetus_error "WARNING: ${MAVEN_SETTINGS} not found. Ignoring."
         fi
       ;;
     esac
