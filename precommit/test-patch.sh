@@ -56,7 +56,7 @@ function setup_defaults
 {
   common_defaults
 
-  DOCKERFILE="${BINDIR}/test-patch-docker/Dockerfile-startstub"
+  DOCKERFILE="${BINDIR}/test-patch-docker/Dockerfile"
   HOW_TO_CONTRIBUTE="https://yetus.apache.org/documentation/latest/precommit-patchnames"
   INSTANCE=${RANDOM}
   RELOCATE_PATCH_DIR=false
@@ -677,6 +677,7 @@ function yetus_usage
   echo "--debug                If set, then output some extra stuff to stderr"
   echo "--dirty-workspace      Allow the local git workspace to have uncommitted changes"
   echo "--docker               Spawn a docker container"
+  echo "--dockercmd=<file>     Command to use as docker executable (default: docker from path)"
   echo "--dockerfile=<file>    Dockerfile fragment to use as the base"
   echo "--java-home=<path>     Set JAVA_HOME (In Docker mode, this should be local to the image)"
   echo "--linecomments=<bug>   Only write line comments to this comma delimited list (defaults to bugcomments)"
@@ -761,6 +762,9 @@ function parse_args
       ;;
       --docker)
         DOCKERSUPPORT=true
+      ;;
+      --dockercmd=*)
+        DOCKERCMD=${i#*=}
       ;;
       --dockerfile=*)
         DOCKERFILE=${i#*=}
@@ -912,6 +916,12 @@ function parse_args
   GITDIFFCONTENT="${PATCH_DIR}/gitdiffcontent.txt"
   GITUNIDIFFLINES="${PATCH_DIR}/gitdiffunilines.txt"
 
+  if [[ -n "${REEXECPERSONALITY}"
+     && -f "${PATCH_DIR}/precommit/personality/provided.sh" ]]; then
+    PERSONALITY="${PATCH_DIR}/precommit/personality/provided.sh"
+  fi
+
+  DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
 }
 
 ## @description  Locate the build file for a given directory
@@ -1363,9 +1373,11 @@ function apply_patch_file
 ## @replaceable  no
 function copytpbits
 {
-  local dockerdir
-  local dockfile
-  local person
+  declare dockerdir
+  declare dockfile
+  declare person
+  declare lines
+
   # we need to copy/consolidate all the bits that might have changed
   # that are considered part of test-patch.  This *might* break
   # things that do off-path includes, but there isn't much we can
@@ -1416,10 +1428,16 @@ function copytpbits
     (
       echo "### TEST_PATCH_PRIVATE: dockerfile=${DOCKERFILE}"
       echo "### TEST_PATCH_PRIVATE: gitrev=${gitfilerev}"
-      cat "${DOCKERFILE}"
+      lines=$(${GREP} -n 'YETUS CUT HERE' ${DOCKERFILE} | cut -f1 -d:)
+      if [[ -z "${lines}" ]]; then
+        cat "${DOCKERFILE}"
+      else
+        head -n "${lines}" "${DOCKERFILE}"
+      fi
       # make sure we put some space between, just in case last
       # line isn't an empty line or whatever
       printf "\n\n"
+      echo "### TEST_PATCH_PRIVATE: start test-patch-bootstrap"
       cat "${BINDIR}/test-patch-docker/Dockerfile-endstub"
 
       printf "\n\n"
@@ -1429,6 +1447,34 @@ function copytpbits
 
   popd >/dev/null
 }
+
+## @description  Verify docker exists
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @returns      1 if docker not found
+## @returns      0 if docker is found
+function dockerverify
+{
+  declare pathdocker
+
+  if [[ -z "${DOCKERCMD}" ]]; then
+    pathdocker=$(which docker 2>/dev/null)
+
+    if [[ ! -f "${pathdocker}" ]]; then
+      yetus_error "Docker cannot be found."
+      return 1
+    fi
+    DOCKERCMD="${pathdocker}"
+  fi
+
+  if [[ ! -x "${DOCKERCMD}" ]];then
+    yetus_error "Docker command ${DOCKERCMD} is not executable."
+    return 1
+  fi
+  return 0
+}
+
 
 ## @description  If this patches actually patches test-patch.sh, then
 ## @description  run with the patched version for the test.
@@ -1450,6 +1496,10 @@ function check_reexec
     return
   fi
 
+  # determine if the patch hits
+  # any test-patch sensitive bits
+  # if so, we need to copy the universe
+  # after patching it (copy=true)
   for testdir in "${BINDIR}" \
       "${PERSONALITY}" \
       "${USER_PLUGIN_DIR}" \
@@ -1460,6 +1510,14 @@ function check_reexec
       copy=true
     fi
   done
+
+  if [[ "${DOCKERSUPPORT}" = true ]]; then
+    dockerverify
+    if [[ $? == 1 ]]; then
+      yetus_error "Docker not found or not executable. Disabling Docker mode."
+      DOCKERSUPPORT=false
+    fi
+  fi
 
   if [[ ${copy} == true ]]; then
     big_console_header "precommit patch detected"
@@ -1489,8 +1547,8 @@ function check_reexec
   fi
 
   if [[ ${DOCKERSUPPORT} == true
-      && ${copy} == false ]]; then
-    big_console_header "Re-execing under Docker"
+    && ${copy} == false ]]; then
+      big_console_header "Re-execing under Docker"
   fi
 
   # copy our universe
@@ -1513,17 +1571,21 @@ function check_reexec
     if [[ -n "${BUILD_URL}" ]]; then
       TESTPATCHMODE="--build-url=${BUILD_URL} ${TESTPATCHMODE}"
     fi
+
+    if [[ -f "${PERSONALITY}" ]]; then
+      TESTPATCHMODE="--tpperson=${PERSONALITY} ${TESTPATCHMODE}"
+    fi
+
     TESTPATCHMODE="--tpglobaltimer=${GLOBALTIMER} ${TESTPATCHMODE}"
     TESTPATCHMODE="--tpreexectimer=${TIMER} ${TESTPATCHMODE}"
     TESTPATCHMODE="--tpinstance=${INSTANCE} ${TESTPATCHMODE}"
-    TESTPATCHMODE="--tpperson=${PERSONALITY} ${TESTPATCHMODE}"
     TESTPATCHMODE="--plugins=${ENABLED_PLUGINS// /,} ${TESTPATCHMODE}"
     TESTPATCHMODE=" ${TESTPATCHMODE}"
     export TESTPATCHMODE
 
     patchdir=$(relative_dir "${PATCH_DIR}")
 
-    if [[ ${TP_SHELL_SCRIPT_DEBUG} = true ]]; then
+    if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
       debugflag="--debug"
     fi
 
@@ -1531,11 +1593,12 @@ function check_reexec
     #shellcheck disable=SC2093
     exec bash "${PATCH_DIR}/precommit/test-patch-docker/test-patch-docker.sh" \
        ${debugflag} \
+       --dockercmd="${DOCKERCMD}" \
        --dockerversion="${dockerversion}" \
        --java-home="${JAVA_HOME}" \
        --patch-dir="${patchdir}" \
-       --project="${PROJECT_NAME}"
-
+       --patchsystem="${PATCH_SYSTEM}" \
+       --project="${PROJECT_NAME}" \
   else
 
     # if we aren't doing docker, then just call ourselves
@@ -2564,7 +2627,7 @@ function prechecks
   declare plugin
   declare result=0
 
-  for plugin in ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
+  for plugin in ${BUILDTOOL} ${NEEDEDTESTS} ${TESTFORMATS}; do
     verify_patchdir_still_exists
 
     if declare -f ${plugin}_precheck >/dev/null 2>&1; then

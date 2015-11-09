@@ -97,6 +97,7 @@ function locate_patch
   # it's a declarely provided file
   if [[ -f ${PATCH_OR_ISSUE} ]]; then
     patchfile="${PATCH_OR_ISSUE}"
+    PATCH_SYSTEM=generic
   else
     # run through the bug systems.  maybe they know?
     for bugsys in ${BUGSYSTEMS}; do
@@ -104,6 +105,7 @@ function locate_patch
         "${bugsys}_locate_patch" "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"
         if [[ $? == 0 ]]; then
           gotit=true
+          PATCH_SYSTEM=${bugsys}
         fi
       fi
     done
@@ -115,8 +117,11 @@ function locate_patch
         yetus_error "ERROR: Unsure how to process ${PATCH_OR_ISSUE}."
         cleanup_and_exit 1
       fi
+      PATCH_SYSTEM=generic
     fi
   fi
+
+  yetus_debug "Determined patch system to be ${PATCH_SYSTEM}"
 
   if [[ ! -f "${PATCH_DIR}/patch"
       && -f "${patchfile}" ]]; then
