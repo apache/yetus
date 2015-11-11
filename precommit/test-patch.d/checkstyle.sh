@@ -17,6 +17,10 @@
 add_test_type checkstyle
 
 CHECKSTYLE_TIMER=0
+CHECKSTYLE_GOAL_DEFAULT="checkstyle"
+CHECKSTYLE_GOAL="${CHECKSTYLE_GOAL_DEFAULT}"
+CHECKSTYLE_OPTIONS_DEFAULT="-Dcheckstyle.consoleOutput=true"
+CHECKSTYLE_OPTIONS="${CHECKSTYLE_OPTIONS_DEFAULT}"
 
 function checkstyle_filefilter
 {
@@ -29,6 +33,36 @@ function checkstyle_filefilter
     fi
   fi
 }
+
+function checkstyle_usage
+{
+  echo "Checkstyle options:"
+  echo "--checkstyle-goal=<goal> Checkstyle maven plugin goal to use, 'check' and 'checkstyle' supported. Defaults to '${CHECKSTYLE_GOAL_DEFAULT}'."
+}
+
+function checkstyle_parse_args
+{
+  local i
+
+  for i in "$@"; do
+    case ${i} in
+    --checkstyle-goal=*)
+      CHECKSTYLE_GOAL=${i#*=}
+        case ${CHECKSTYLE_GOAL} in
+        check)
+            CHECKSTYLE_OPTIONS="-Dcheckstyle.consoleOutput=true -Dcheckstyle.failOnViolation=false"
+        ;;
+        checkstyle)
+        ;;
+        *)
+            yetus_error "Warning: checkstyle goal ${CHECKSTYLE_GOAL} not supported. It may have unexpected behavior"
+        ;;
+        esac
+    ;;
+    esac
+  done
+}
+
 
 function checkstyle_runner
 {
@@ -74,8 +108,8 @@ function checkstyle_runner
       ;;
       maven)
         cmd="${MAVEN} ${MAVEN_ARGS[*]} \
-           checkstyle:checkstyle \
-          -Dcheckstyle.consoleOutput=true \
+           checkstyle:${CHECKSTYLE_GOAL} \
+          ${CHECKSTYLE_OPTIONS} \
           ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}} -Ptest-patch"
       ;;
       *)
