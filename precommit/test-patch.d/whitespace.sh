@@ -45,7 +45,7 @@ function whitespace_postcompile
     return 0
   fi
 
-  big_console_header "Checking for whitespace at the end of lines"
+  big_console_header "Checking for whitespace issues."
   start_clock
 
   pushd "${BASEDIR}" >/dev/null
