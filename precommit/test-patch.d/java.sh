@@ -58,11 +58,11 @@ function initialize_java
     esac
   fi
 
-  JAVA_HOME=$(cd -P -- "${JAVA_HOME}" >/dev/null && pwd -P)
+  JAVA_HOME=$(yetus_abs "${JAVA_HOME}")
 
   for i in ${JDK_DIR_LIST}; do
     if [[ -d "${i}" ]]; then
-      jdkdir=$(cd -P -- "${i}" >/dev/null && pwd -P)
+      jdkdir=$(yetus_abs "${i}")
       if [[ ${jdkdir} != "${JAVA_HOME}" ]]; then
         tmplist="${tmplist} ${jdkdir}"
       fi

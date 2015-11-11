@@ -93,3 +93,36 @@ function yetus_run_and_redirect
   # run the actual command
   "${@}" >> "${logfile}" 2>&1
 }
+
+
+## @description  Given a filename or dir, return the absolute version of it
+## @audience     public
+## @stability    stable
+## @param        directory
+## @replaceable  no
+## @returns      0 success
+## @returns      1 failure
+## @returns      stdout absdir
+function yetus_abs
+{
+  declare obj=$1
+  declare dir
+  declare fn
+
+  if [[ ! -e ${obj} ]]; then
+    return 1
+  elif [[ -d ${obj} ]]; then
+    dir=${obj}
+  else
+    dir=$(dirname -- "${obj}")
+    fn=$(basename -- "${obj}")
+    fn="/${fn}"
+  fi
+
+  dir=$(cd -P -- "${dir}" >/dev/null 2>/dev/null && pwd -P)
+  if [[ $? = 0 ]]; then
+    echo "${dir}${fn}"
+    return 0
+  fi
+  return 1
+}
