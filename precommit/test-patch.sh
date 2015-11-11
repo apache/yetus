@@ -871,7 +871,7 @@ function parse_args
 
   # we need absolute dir for ${BASEDIR}
   cd "${STARTINGDIR}"
-  BASEDIR=$(cd -P -- "${BASEDIR}" >/dev/null && pwd -P)
+  BASEDIR=$(yetus_abs "${BASEDIR}")
 
   if [[ -n ${USER_PATCH_DIR} ]]; then
     PATCH_DIR="${USER_PATCH_DIR}"
@@ -889,7 +889,7 @@ function parse_args
   fi
 
   # we need absolute dir for PATCH_DIR
-  PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
+  PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
 
   if [[ ${JENKINS} == "true" ]]; then
     echo "Running in Jenkins mode"
@@ -905,7 +905,7 @@ function parse_args
   fi
 
   if [[ -n "${USER_PLUGIN_DIR}" ]]; then
-    USER_PLUGIN_DIR=$(cd -P -- "${USER_PLUGIN_DIR}" >/dev/null && pwd -P)
+    USER_PLUGIN_DIR=$(yetus_abs "${USER_PLUGIN_DIR}")
   fi
 
   GITDIFFLINES="${PATCH_DIR}/gitdifflines.txt"
