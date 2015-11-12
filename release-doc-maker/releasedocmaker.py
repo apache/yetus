@@ -29,6 +29,10 @@ try:
     import json
 except ImportError:
     import simplejson as json
+try:
+    set
+except NameError:
+    from sets import Set as set
 
 RELEASE_VERSION = {}
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
@@ -147,17 +151,22 @@ class GetVersions(object):
         self.newversions = []
         versions.sort(key=LooseVersion)
         print "Looking for %s through %s"%(versions[0], versions[-1])
+        newversions = set()
         for project in projects:
             url = "https://issues.apache.org/jira/rest/api/2/project/%s/versions" % project
             resp = urllib2.urlopen(url)
             datum = json.loads(resp.read())
             for data in datum:
-                name = data['name']
-                if name[0].isdigit and versions[0] <= name and name <= versions[-1]:
-                    print "Adding %s to the list" % name
-                    self.newversions.append(name)
-        newlist = list(set(self.newversions))
-        self.newversions = newlist
+                newversions.add(data['name'])
+        newlist = newversions.copy()
+        newlist.add(versions[0])
+        newlist.add(versions[-1])
+        newlist = list(newlist)
+        newlist.sort(key=LooseVersion)
+        for newversion in newlist[newlist.index(versions[0]):newlist.index(versions[-1])+1]:
+            if newversion in newversions:
+                print "Adding %s to the list" % newversion
+                self.newversions.append(newversion)
 
     def getlist(self):
         return self.newversions
