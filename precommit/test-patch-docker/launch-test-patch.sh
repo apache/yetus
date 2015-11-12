@@ -38,6 +38,16 @@ TESTPATCHMODE=${TESTPATCHMODE/--docker }
 cd "${BASEDIR}"
 PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
 
+# if patch system is generic, then it's either a local
+# patch file or was in some other way not pulled from a bug
+# system.  So we need to rescue it and then tell
+# test-patch where to find it.
+if [[ "${PATCH_SYSTEM}" = generic ]]; then
+  cp -p "${PATCH_DIR}/patch" /testptch/extras/patch
+  patchfile="/testptch/extras/patch"
+fi
+
+
 cd "${PATCH_DIR}/precommit/"
 #shellcheck disable=SC2086
 "${PATCH_DIR}/precommit/test-patch.sh" \
@@ -46,5 +56,5 @@ cd "${PATCH_DIR}/precommit/"
    --basedir="${BASEDIR}" \
    --patch-dir="${PATCH_DIR}" \
    --java-home="${JAVA_HOME}" \
-   --personality="${PATCH_DIR}/precommit/personality/provided.sh" \
-   --user-plugins="${PATCH_DIR}/precommit/user-plugins"
+   --user-plugins="${PATCH_DIR}/precommit/user-plugins" \
+   ${patchfile}
