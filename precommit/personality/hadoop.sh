@@ -327,13 +327,14 @@ function personality_file_tests
        || ${filename} =~ src/main/conf
        ]]; then
     yetus_debug "tests/shell: ${filename}"
+    add_test mvnsite
     add_test unit
   elif [[ ${filename} =~ \.md$
        || ${filename} =~ \.md\.vm$
        || ${filename} =~ src/site
        ]]; then
     yetus_debug "tests/site: ${filename}"
-    add_test site
+    add_test mvnsite
   elif [[ ${filename} =~ \.c$
        || ${filename} =~ \.cc$
        || ${filename} =~ \.h$
@@ -343,18 +344,22 @@ function personality_file_tests
        || ${filename} =~ CMakeLists.txt
        ]]; then
     yetus_debug "tests/units: ${filename}"
+    add_test compile
     add_test cc
-    add_test unit
+    add_test mvnsite
     add_test javac
+    add_test unit
   elif [[ ${filename} =~ build.xml$
        || ${filename} =~ pom.xml$
        || ${filename} =~ \.java$
        || ${filename} =~ src/main
        ]]; then
       yetus_debug "tests/javadoc+units: ${filename}"
+      add_test compile
       add_test javac
       add_test javadoc
       add_test mvninstall
+      add_test mvnsite
       add_test unit
   fi
 
