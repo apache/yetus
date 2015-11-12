@@ -45,6 +45,8 @@ function common_defaults
   PATCH_METHODS=("gitapply" "patchcmd")
   #shellcheck disable=SC2034
   PATCH_LEVEL=0
+  #shellcheck disable=SC2034
+  PATCH_SYSTEM=""
   PROJECT_NAME=yetus
   RESULT=0
   #shellcheck disable=SC2034
@@ -434,22 +436,19 @@ function importplugins
     files=("${files[@]}" ${USER_PLUGIN_DIR}/*.sh)
   fi
 
+  if [[ -n ${PERSONALITY} && ! -f ${PERSONALITY} ]]; then
+    yetus_error "ERROR: Can't find ${PERSONALITY} to import."
+    unset PERSONALITY
+  fi
+
   if [[ -z ${PERSONALITY}
       && -f "${BINDIR}/personality/${PROJECT_NAME}.sh"
       && ${LOAD_SYSTEM_PLUGINS} = "true" ]]; then
+    yetus_debug "Using project personality."
     PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
   fi
 
-  if [[ -n ${PERSONALITY} ]]; then
-    if [[ ! -f ${PERSONALITY} ]]; then
-      if [[ -f "${BINDIR}/personality/${PROJECT_NAME}.sh"
-         && ${LOAD_SYSTEM_PLUGINS} = "true" ]]; then
-        PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-      else
-        yetus_debug "Can't find ${PERSONALITY} to import."
-        return
-      fi
-    fi
+  if [[ -n ${PERSONALITY} && -f ${PERSONALITY} ]]; then
     yetus_debug "Importing ${PERSONALITY}"
     # shellcheck disable=SC1090
     . "${PERSONALITY}"
