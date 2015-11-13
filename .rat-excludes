@@ -1,0 +1,7 @@
+\..*
+Gemfile.lock
+config.json
+bootstrap.*
+[Ff]ont-?[Aa]wesome.*
+glyphicons.*
+jquery.*
