@@ -14,8 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DOCKER_ID=${RANDOM}
-DOCKER_DESTRUCTIVE=true
+DID=${RANDOM}
+
+## @description  Print a message to stderr if --debug is turned on
+## @audience     private
+## @stability    stable
+## @replaceable  no
+## @param        string
+function yetus_debug
+{
+  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
+    echo "[$(date) DEBUG]: $*" 1>&2
+  fi
+}
 
 ## @description  Run docker with some arguments, and
 ## @description  optionally send to debug
@@ -26,7 +37,43 @@ DOCKER_DESTRUCTIVE=true
 function dockercmd
 {
   yetus_debug "docker $*"
-  "${DOCKERCMD}" "$@"
+  docker "$@"
+}
+
+## @description  Handle command line arguments
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        args
+function parse_args
+{
+  local i
+
+  for i in "$@"; do
+    case ${i} in
+      --debug)
+        YETUS_SHELL_SCRIPT_DEBUG=true
+      ;;
+      --dockerversion=*)
+        DOCKER_VERSION=${i#*=}
+      ;;
+      --help|-help|-h|help|--h|--\?|-\?|\?)
+        yetus_usage
+        exit 0
+      ;;
+      --java-home=*)
+        JAVA_HOME=${i#*=}
+      ;;
+      --patch-dir=*)
+        PATCH_DIR=${i#*=}
+      ;;
+      --project=*)
+        PROJECT_NAME=${i#*=}
+      ;;
+      *)
+      ;;
+    esac
+  done
 }
 
 ## @description  Stop and delete all defunct containers
@@ -34,22 +81,16 @@ function dockercmd
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_stop_exited_containers
+function stop_exited_containers
 {
-  declare line
-  declare id
-  declare value
-  declare size
-  declare exitfn="${PATCH_DIR}/dsec.$$"
-
-  big_console_header "Removing stopped/exited containers"
+  local line
+  local id
+  local value
+  local size
 
   echo "Docker containers in exit state:"
 
-  dockercmd ps -a | ${GREP} Exited > "${exitfn}"
-  if [[ ! -s "${exitfn}" ]]; then
-    return
-  fi
+  dockercmd ps -a | grep Exited
 
   # stop *all* containers that are in exit state for
   # more than > 8 hours
@@ -63,27 +104,19 @@ function docker_stop_exited_containers
         || ${size} =~ month
         || ${size} =~ year ]]; then
           echo "Removing docker ${id}"
-          if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-            dockercmd rm "${id}"
-          else
-            echo docker rm "${id}"
-          fi
+          dockercmd rm "${id}"
      fi
 
      if [[ ${size} =~ hours
         && ${value} -gt 8 ]]; then
         echo "Removing docker ${id}"
-        if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-          dockercmd rm "${id}"
-        else
-          echo docker rm "${id}"
-        fi
+        dockercmd rm "${id}"
      fi
   done < <(
-    cat "${exitfn}" \
-    | ${SED} -e 's,ago,,g' \
-    | ${AWK} '{print $1" "$(NF - 2)" "$(NF - 1)}')
-  rm "${exitfn}"
+    dockercmd ps -a \
+    | grep Exited \
+    | sed -e 's,ago,,g' \
+    | awk '{print $1" "$(NF - 2)" "$(NF - 1)}')
 }
 
 ## @description  Remove all containers that are not
@@ -92,15 +125,13 @@ function docker_stop_exited_containers
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_rm_old_containers
+function rm_old_containers
 {
   declare line
   declare id
   declare value
   declare size
   declare running
-
-  big_console_header "Removing old containers"
 
   while read -r line; do
     id=$(echo "${line}" | cut -f1 -d, )
@@ -127,11 +158,7 @@ function docker_rm_old_containers
     ((difftime = curtime - stoptime))
     if [[ ${difftime} -gt 86400 ]]; then
       echo "Removing docker ${id}"
-      if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-        dockercmd rm "${id}"
-      else
-        echo docker rm "${id}"
-      fi
+      dockercmd rm "${id}"
     fi
   done < <(
    # see https://github.com/koalaman/shellcheck/issues/375
@@ -141,18 +168,15 @@ function docker_rm_old_containers
        $(dockercmd ps -qa) 2>/dev/null)
 }
 
-## @description  Remove untagged/unu${SED} images
+## @description  Remove untagged/unused images
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_remove_untagged_images
+function remove_untagged_images
 {
-
-  big_console_header "Removing untagged images"
-
   # this way is a bit more compatible with older docker versions
-  dockercmd images | tail -n +2 | ${AWK} '$1 == "<none>" {print $3}' | \
+  dockercmd images | tail -n +2 | awk '$1 == "<none>" {print $3}' | \
     xargs --no-run-if-empty docker rmi
 }
 
@@ -161,42 +185,32 @@ function docker_remove_untagged_images
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_remove_old_tagged_images
+function remove_old_tagged_images
 {
-  declare line
-  declare id
-  declare created
-
-  big_console_header "Removing old tagged images"
+  local line
+  local id
+  local created
 
   while read -r line; do
-    id=$(echo "${line}" | ${AWK} '{print $1":"$2}')
-    created=$(echo "${line}" | ${AWK} '{print $5}')
+    id=$(echo "${line}" | awk '{print $1}')
+    created=$(echo "${line}" | awk '{print $5}')
 
     if [[ ${created} =~ week
        || ${created} =~ month
        || ${created} =~ year ]]; then
          echo "Removing docker image ${id}"
-         if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-           dockercmd rmi "${id}"
-         else
-           echo docker rmi "${id}"
-         fi
+         dockercmd rmi "${id}"
     fi
 
-    if [[ ${id} =~ yetus/${PROJECT_NAME}:date
-       || ${id} =~ test-patch- ]]; then
+    if [[ ${id} =~ test-patch-base-${PROJECT_NAME}-date ]]; then
       if [[ ${created} =~ day
         || ${created} =~ hours ]]; then
         echo "Removing docker image ${id}"
-        if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-          dockercmd rmi "${id}"
-        else
-          echo docker rmi "${id}"
-        fi
+        dockercmd rmi "${id}"
       fi
     fi
   done < <(dockercmd images)
+
 }
 
 ## @description  Performance docker maintenance on Jenkins
@@ -204,7 +218,7 @@ function docker_remove_old_tagged_images
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_cleanup_apache_jenkins
+function cleanup_apache_jenkins_docker
 {
   echo "=========================="
   echo "Docker Images:"
@@ -214,32 +228,32 @@ function docker_cleanup_apache_jenkins
   dockercmd ps -a
   echo "=========================="
 
-  docker_stop_exited_containers
+  stop_exited_containers
 
-  docker_rm_old_containers
+  rm_old_containers
 
-  docker_remove_untagged_images
+  remove_untagged_images
 
-  docker_remove_old_tagged_images
+  remove_old_tagged_images
 }
 
-## @description  Clean up our old images u${SED} for patch testing
+## @description  Clean up our old images used for patch testing
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_cleanup_yetus_images
+function cleanup_test_patch_images
 {
-  declare images
-  declare imagecount
-  declare rmimage
-  declare rmi
+  local images
+  local imagecount
+  local rmimage
+  local rmi
 
   # we always want to leave at least one of our images
   # so that the whole thing doesn't have to be rebuilt.
   # This also let's us purge any old images so that
   # we can get fresh stuff sometimes
-  images=$(dockercmd images | ${GREP} "yetus/${PROJECT_NAME}" | ${GREP} tp | ${AWK} '{print $1":"$2}') 2>&1
+  images=$(dockercmd images | grep --color=none "test-patch-tp-${PROJECT_NAME}" | awk '{print $1}') 2>&1
 
   # shellcheck disable=SC2086
   imagecount=$(echo ${images} | tr ' ' '\n' | wc -l)
@@ -250,11 +264,7 @@ function docker_cleanup_yetus_images
   for rmi in ${rmimage}
   do
     echo "Removing image ${rmi}"
-    if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-      dockercmd rmi "${rmi}"
-    else
-      echo docker rmi "${rmi}"
-    fi
+    dockercmd rmi "${rmi}"
   done
 }
 
@@ -265,13 +275,13 @@ function docker_cleanup_yetus_images
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_cleanup
+function cleanup
 {
   if [[ ${TESTPATCHMODE} =~ jenkins ]]; then
-    docker_cleanup_apache_jenkins
+    cleanup_apache_jenkins_docker
   fi
 
-  docker_cleanup_yetus_images
+  cleanup_test_patch_images
 }
 
 ## @description  Deterine the user name and user id of the user
@@ -280,7 +290,7 @@ function docker_cleanup
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_determine_user
+function determine_user
 {
   # On the Apache Jenkins hosts, $USER is pretty much untrustable beacuse some
   # ... person ... sets it to an account that doesn't actually exist.
@@ -306,9 +316,9 @@ function docker_determine_user
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_getfilerev
+function getdockerfilerev
 {
-  ${GREP} 'YETUS_PRIVATE: gitrev=' \
+  grep 'TEST_PATCH_PRIVATE: gitrev=' \
         "${PATCH_DIR}/precommit/test-patch-docker/Dockerfile" \
           | cut -f2 -d=
 }
@@ -318,30 +328,20 @@ function docker_getfilerev
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_run_image
+function run_image
 {
-  declare dockerfilerev
-  declare baseimagename
-  declare patchimagename="yetus/${PROJECT_NAME}:tp-${DOCKER_ID}"
+  local dockerfilerev
+  local baseimagename
 
-  dockerfilerev=$(docker_getfilerev)
+  dockerfilerev=$(getdockerfilerev)
 
-  baseimagename="yetus/${PROJECT_NAME}:${dockerfilerev}"
+  baseimagename="test-patch-base-${PROJECT_NAME}-${dockerfilerev}"
 
   # make a base image, if it isn't available
-  big_console_header "Building base image: ${baseimagename}"
   dockercmd build -t "${baseimagename}" "${PATCH_DIR}/precommit/test-patch-docker"
 
-  if [[ $? != 0 ]]; then
-    yetus_error "ERROR: Docker failed to build image."
-    add_vote_table -1 docker "Docker failed to build ${baseimagename}."
-    bugsystem_finalreport 1
-    cleanup_and_exit 1
-  fi
-
-  big_console_header "Building patch image: ${patchimagename}"
   # using the base image, make one that is patch specific
-  dockercmd build -t "${patchimagename}" - <<PatchSpecificDocker
+  dockercmd build -t "test-patch-tp-${PROJECT_NAME}-${DID}" - <<PatchSpecificDocker
 FROM ${baseimagename}
 RUN groupadd --non-unique -g ${GROUP_ID} ${USER_NAME}
 RUN useradd -g ${GROUP_ID} -u ${USER_ID} -m ${USER_NAME}
@@ -350,13 +350,6 @@ ENV HOME /home/${USER_NAME}
 USER ${USER_NAME}
 PatchSpecificDocker
 
-  if [[ $? != 0 ]]; then
-    yetus_error "ERROR: Docker failed to build image."
-    add_vote_table -1 docker "Docker failed to build ${patchimagename}."
-    bugsystem_finalreport 1
-    cleanup_and_exit 1
-  fi
-
   if [[ -f "${PATCH_DIR}/buildtool-docker-params.txt" ]]; then
     extraargs=$(cat "${PATCH_DIR}/buildtool-docker-params.txt")
   else
@@ -364,7 +357,7 @@ PatchSpecificDocker
   fi
 
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
-    exec "${DOCKERCMD}" run --rm=true -i \
+    dockercmd run --rm=true -i \
       ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -v "${PATCH_DIR}:/testptch/patchprocess" \
@@ -374,12 +367,11 @@ PatchSpecificDocker
       --env=DOCKER_VERSION="${DOCKER_VERSION} Image:${baseimagename}" \
       --env=JAVA_HOME="${JAVA_HOME}" \
       --env=PATCH_DIR=/testptch/patchprocess \
-      --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
-      "${patchimagename}"
+      "test-patch-tp-${PROJECT_NAME}-${DID}"
  else
-   exec "${DOCKERCMD}" run --rm=true -i \
+    dockercmd run --rm=true -i \
       ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -u "${USER_NAME}" \
@@ -388,21 +380,13 @@ PatchSpecificDocker
       --env=DOCKER_VERSION="${DOCKER_VERSION} Image:${baseimagename}" \
       --env=JAVA_HOME="${JAVA_HOME}" \
       --env=PATCH_DIR="${PATCH_DIR}" \
-      --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
-      "${patchimagename}"
+      "test-patch-tp-${PROJECT_NAME}-${DID}"
  fi
 }
 
-## @description  Switch over to a Docker container
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_handler
-{
-  docker_cleanup
-  docker_determine_user
-  docker_run_image
-}
+parse_args "$@"
+cleanup
+determine_user
+run_image

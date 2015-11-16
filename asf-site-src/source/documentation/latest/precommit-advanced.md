@@ -27,9 +27,9 @@ test-patch
 
 # Docker Support
 
-By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a container.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a Jenkins instance.
+By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself into a container.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java.
 
-The `--docker` parameter tells test-patch to run in Docker mode. The `--dockerfile` parameter allows one to provide a custom Dockerfile. The Dockerfile should contain all of the necessary binaries and tooling needed to run the test.  test-patch will copy this file up until the text "YETUS CUT HERE" to a different directory and then append its necessary hooks to re-launch itself prior to executing docker.
+The `--docker` parameter tells test-patch to run in Docker mode. The `--dockerfile` parameter allows one to provide a custom Dockerfile. The Dockerfile should contain all of the necessary binaries and tooling needed to run the test.  However be aware that test-patch will copy this file and append its necessary hooks to re-launch itself prior to executing docker.
 
 NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the --basedir and --patch-dir options respectively), because automatically mountable directories are limited to them. See [the Docker documentation](https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume).
 
