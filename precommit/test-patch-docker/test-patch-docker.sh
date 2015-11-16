@@ -37,7 +37,7 @@ function yetus_debug
 function dockercmd
 {
   yetus_debug "docker $*"
-  "${DOCKERCMD}" "$@"
+  docker "$@"
 }
 
 ## @description  Handle command line arguments
@@ -54,9 +54,6 @@ function parse_args
       --debug)
         YETUS_SHELL_SCRIPT_DEBUG=true
       ;;
-      --dockercmd=*)
-        DOCKERCMD=${i#*=}
-      ;;
       --dockerversion=*)
         DOCKER_VERSION=${i#*=}
       ;;
@@ -69,9 +66,6 @@ function parse_args
       ;;
       --patch-dir=*)
         PATCH_DIR=${i#*=}
-      ;;
-      --patchsystem=*)
-        PATCH_SYSTEM=${i#*=}
       ;;
       --project=*)
         PROJECT_NAME=${i#*=}
@@ -373,7 +367,6 @@ PatchSpecificDocker
       --env=DOCKER_VERSION="${DOCKER_VERSION} Image:${baseimagename}" \
       --env=JAVA_HOME="${JAVA_HOME}" \
       --env=PATCH_DIR=/testptch/patchprocess \
-      --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
       "test-patch-tp-${PROJECT_NAME}-${DID}"
@@ -387,7 +380,6 @@ PatchSpecificDocker
       --env=DOCKER_VERSION="${DOCKER_VERSION} Image:${baseimagename}" \
       --env=JAVA_HOME="${JAVA_HOME}" \
       --env=PATCH_DIR="${PATCH_DIR}" \
-      --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
       "test-patch-tp-${PROJECT_NAME}-${DID}"
