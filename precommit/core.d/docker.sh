@@ -395,7 +395,7 @@ PatchSpecificDocker
     extraargs=""
   fi
 
-  client=$(dockermcd version | ${GREP} 'Client version' | cut -f2 -d: | tr -d ' ')
+  client=$(dockercmd version | ${GREP} 'Client version' | cut -f2 -d: | tr -d ' ')
   server=$(dockercmd version | ${GREP} 'Server version' | cut -f2 -d: | tr -d ' ')
 
   dockerversion="Client=${client} Server=${server}"
