@@ -31,6 +31,18 @@ By default, test-patch runs in the same shell where it was launched.  It can alt
 
 The `--docker` parameter tells test-patch to run in Docker mode. The `--dockerfile` parameter allows one to provide a custom Dockerfile. The Dockerfile should contain all of the necessary binaries and tooling needed to run the test.  test-patch will copy this file up until the text "YETUS CUT HERE" to a different directory and then append its necessary hooks to re-launch itself prior to executing docker.
 
+If a custom Dockerfile cannot be used or the docker executable does not work, test-patch will attempt to recover by switching to its bundled Dockerfile or disabling docker support and running locally.  This behavior can be changed with the `--dockeronfail` option.  It takes a list of comma-delimited settings:
+
+  * fallback - Use the bundled Dockerfile
+  * continue - Turn off docker support
+  * fail - fail the test
+
+The 'fail' setting is always the last option that test-patch will use and may be omitted unless it is the only option.
+
+For example, `--dockeronfail=continue` means if the Dockerfile can't be found, just turn off Docker support and continue running.  `--dockeronfail=fallback` will switch to the bundled Dockerfile and then fail the build if docker fails to work. `--dockeronfail=fail` means to just fail the build and do not try any other mechanisms of recovery. The default is 'fallback,continue,fail' which will allow test-patch to try to continue executing as much as it possibily can.
+
+Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.
+
 NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the --basedir and --patch-dir options respectively), because automatically mountable directories are limited to them. See [the Docker documentation](https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume).
 
 Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in --jenkins mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.

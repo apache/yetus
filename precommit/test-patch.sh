@@ -56,7 +56,6 @@ function setup_defaults
 {
   common_defaults
 
-  DOCKERFILE="${BINDIR}/test-patch-docker/Dockerfile"
   HOW_TO_CONTRIBUTE="https://yetus.apache.org/documentation/latest/precommit-patchnames"
   INSTANCE=${RANDOM}
   RELOCATE_PATCH_DIR=false
@@ -646,8 +645,6 @@ function relative_dir
 ## @replaceable  no
 function yetus_usage
 {
-  local -r up=$(echo "${PROJECT_NAME}" | tr '[:lower:]' '[:upper:]')
-
   echo "Usage: test-patch.sh [options] patch"
   echo
   echo "Where:"
@@ -667,6 +664,7 @@ function yetus_usage
   echo "--docker               Spawn a docker container"
   echo "--dockercmd=<file>     Command to use as docker executable (default: docker from path)"
   echo "--dockerfile=<file>    Dockerfile fragment to use as the base"
+  echo "--dockeronfail=<list>  If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
   echo "--java-home=<path>     Set JAVA_HOME (In Docker mode, this should be local to the image)"
   echo "--linecomments=<bug>   Only write line comments to this comma delimited list (defaults to bugcomments)"
   echo "--list-plugins         List all installed plug-ins and then exit"
@@ -760,6 +758,9 @@ function parse_args
       ;;
       --dockermode)
         DOCKERMODE=true
+      ;;
+      --dockeronfail=*)
+        DOCKERFAIL=${i#*=}
       ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
@@ -907,8 +908,6 @@ function parse_args
     REEXECPERSONALITY="${PERSONALITY}"
     PERSONALITY="${PATCH_DIR}/precommit/personality/provided.sh"
   fi
-
-  DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
 }
 
 ## @description  Locate the build file for a given directory
@@ -1467,14 +1466,6 @@ function check_reexec
       copy=true
     fi
   done
-
-  if [[ "${DOCKERSUPPORT}" = true ]]; then
-    dockerverify
-    if [[ $? == 1 ]]; then
-      yetus_error "Docker not found or not executable. Disabling Docker mode."
-      DOCKERSUPPORT=false
-    fi
-  fi
 
   if [[ ${copy} == true ]]; then
     big_console_header "precommit patch detected"
@@ -2526,11 +2517,14 @@ function initialize
 
   BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
 
-  plugins_initialize
-
-  if declare -f docker_finish_stats >/dev/null; then
-    docker_finish_stats
+  # we need to do this BEFORE plugins initalize
+  # because they may change what they do based upon
+  # docker support
+  if declare -f docker_initialize >/dev/null; then
+    docker_initialize
   fi
+
+  plugins_initialize
 
   locate_patch
 

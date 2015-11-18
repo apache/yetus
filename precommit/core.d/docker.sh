@@ -16,16 +16,69 @@
 
 DOCKER_ID=${RANDOM}
 DOCKER_DESTRUCTIVE=true
+DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
+DOCKERFAIL="fallback,continue,fail"
 
-## @description  Put docker stats in various tables
-## @stability     stable
+## @description  Docker initialization pre- and post- re-exec
+## @stability    stable
 ## @audience     private
-## @replaceable  yes
-function docker_finish_stats
+## @replaceable  no
+function docker_initialize
 {
   if [[ ${DOCKERMODE} == true ]]; then
     # DOCKER_VERSION is set by our creator.
     add_footer_table "Docker" "${DOCKER_VERSION}"
+  fi
+
+
+  # turn DOCKERFAIL into a string composed of numbers
+  # to ease interpretation:  123, 213, 321, ... whatever
+  # some of these combos are non-sensical but that's ok.
+  # we'll treat non-sense as effectively errors.
+  DOCKERFAIL=${DOCKERFAIL//,/ }
+  DOCKERFAIL=${DOCKERFAIL//fallback/1}
+  DOCKERFAIL=${DOCKERFAIL//continue/2}
+  DOCKERFAIL=${DOCKERFAIL//fail/3}
+  DOCKERFAIL=${DOCKERFAIL//[[:blank:]]/}
+
+  if [[ "${DOCKERSUPPORT}" != true ]]; then
+    return
+  fi
+
+  if [[ -n "${DOCKERFILE}" ]]; then
+    pushd "${STARTINGDIR}" >/dev/null
+    if [[ -f ${DOCKERFILE} ]]; then
+      DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
+    else
+      if [[ "${DOCKERFAIL}" =~ ^1 ]]; then
+        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
+        add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
+        DOCKERFILE=${DOCKERFILE_DEFAULT}
+      elif [[ "${DOCKERFAIL}" =~ ^2 ]]; then
+        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, disabling docker."
+        add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, disabling docker."
+        DOCKERSUPPORT=false
+      else
+        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found."
+        add_vote_table -1 docker "Dockerfile '${DOCKERFILE}' not found."
+        bugsystem_finalreport 1
+        cleanup_and_exit 1
+      fi
+    fi
+    popd >/dev/null
+  fi
+
+  dockerverify
+  if [[ $? != 0 ]]; then
+    if [[ "${DOCKERFAIL}" =~ ^12
+       || "${DOCKERFAIL}" =~ ^2 ]]; then
+      add_vote_table 0 docker "Docker command '${DOCKERCMD}' not found/broken. Disabling docker."
+      DOCKERSUPPORT=false
+    else
+      add_vote_table -1 docker "Docker command '${DOCKERCMD}' not found/broken."
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+    fi
   fi
 }
 
@@ -33,8 +86,8 @@ function docker_finish_stats
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @returns      1 if docker not found
-## @returns      0 if docker is found
+## @returns      1 if docker is broken
+## @returns      0 if docker is working
 function dockerverify
 {
   declare pathdocker
