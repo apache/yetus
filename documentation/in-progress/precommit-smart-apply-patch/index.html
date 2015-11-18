@@ -112,27 +112,33 @@
   under the License.
 -->
 
-<h1 id="community">Community</h1>
+<h1 id="smart-apply-patch">smart-apply-patch</h1>
 
-<div class="row-fluid">
-    <div class="col-lg-6">
-        <h3>Mailing Lists</h3>
-        <p><strong>Developers</strong> - Development related discussion.</p>
+<p><code>smart-apply-patch</code> is a command to help apply patches easily.  It uses the same plug-ins and many of the same options as test-patch.  This means that it can, for example, fetch patches from JIRA and apply them to a local source tree.</p>
 
-        <p><a href="mailto:dev-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:dev-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-dev/">Archive</a></p>
+<h1 id="usage">Usage</h1>
 
-        <p><strong>Commits</strong> - Commit notification source repository.</p>
+<p>Its simpliest form is used when a patch is stored in a local file:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch patch
+</code></pre>
 
-                <p><a href="mailto:commits-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:commits-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-commits/">Archive</a></p>
+<p>This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.</p>
 
-                <p><strong>Notifications</strong> - JIRA issue notifications</p>
+<p>Perhaps you just want to see if the patch even applies without changing your local repo.  The <code>--dry-run</code> option will just test for applicability:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --dry-run patch
+</code></pre>
 
-                <p><a href="mailto:notifications-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:notifications-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-notifications/">Archive</a></p>
+<p>For committers of projects, there is a special mode:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --committer patch
+</code></pre>
 
-    </div>
-</div>
+<p>that in addition to applying the patch will also attempt to:</p>
 
-<p><hr></p>
+<ul>
+<li>use <code>--whitespace=fix</code> mode</li>
+<li>add all newly created files in the repo</li>
+<li>use <code>--signoff</code> and commit the change via git-am</li>
+</ul>
 
 	  </div>
       <div class="container">

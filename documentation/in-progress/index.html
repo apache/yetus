@@ -112,27 +112,47 @@
   under the License.
 -->
 
-<h1 id="community">Community</h1>
+<h1 id="yetus-precommit">Yetus Precommit</h1>
 
-<div class="row-fluid">
-    <div class="col-lg-6">
-        <h3>Mailing Lists</h3>
-        <p><strong>Developers</strong> - Development related discussion.</p>
+<p>The Yetus Precommit Patch Tester allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.</p>
 
-        <p><a href="mailto:dev-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:dev-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-dev/">Archive</a></p>
+<ul>
+<li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we&rsquo;ll use as terminology specific to this project.</li>
+<li>For an overview of Yetus&rsquo; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
+<li>To get started on your project, including an explanation of what we&rsquo;ll expect in a runtime environment and what optional utilities we&rsquo;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
+<li>Customize how precommit interacts with your project by choosing amongst <a href="precommit-buildtools">build systems</a>, <a href="precommit-bugsystems">bug systems</a> and <a href="precommit-testformats">test formats</a>.</li>
+<li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&rsquo;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
+</ul>
 
-        <p><strong>Commits</strong> - Commit notification source repository.</p>
+<p>For a complete guide to the Precommit API, see <a href="precommit-apidocs/">the generated API documentation</a>.</p>
 
-                <p><a href="mailto:commits-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:commits-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-commits/">Archive</a></p>
+<h1 id="yetus-release-doc-maker">Yetus Release Doc Maker</h1>
 
-                <p><strong>Notifications</strong> - JIRA issue notifications</p>
+<p>The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
+documenation <a href="releasedocmaker">here</a>.</p>
 
-                <p><a href="mailto:notifications-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:notifications-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-notifications/">Archive</a></p>
+<h1 id="yetus-shelldocs">Yetus Shelldocs</h1>
 
-    </div>
-</div>
+<p>Shelldocs provides generation of html formatted api documentation based on comments on Bash functions. Currently supports documenting API status (public / private) as well as parameters and return values.</p>
 
-<p><hr></p>
+<p>See the shelldocs cli help for more information on usage.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>./shelldocs/shelldocs.py --help
+Usage: shelldocs.py --skipprnorep --output OUTFILE --input INFILE <span class="o">[</span>--input INFILE ...]
+
+Options:
+  -h, --help            show this <span class="nb">help </span>message and <span class="nb">exit</span>
+  -o OUTFILE, --output<span class="o">=</span>OUTFILE
+                        file to create
+  -i INFILE, --input<span class="o">=</span>INFILE
+                        file to <span class="nb">read</span>
+  --skipprnorep         Skip Private &amp; Not Replaceable
+</code></pre>
+
+<h1 id="yetus-audience-annotations">Yetus Audience Annotations</h1>
+
+<p>Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.</p>
+
+<p>See <a href="audience-annotations-apidocs/">the javadocs</a> for details.</p>
 
 	  </div>
       <div class="container">

@@ -1,0 +1,5123 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		    <meta name="description" content="">
+		    <meta name="author" content="">
+
+		    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+		    <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
+                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+
+		    <!-- JS -->
+		    <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
+		    <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+	</head>
+    <body>
+      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li><a href="/documentation/in-progress/">Documentation</a>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="http://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+
+<ul>
+<li>Public/Stable/Not Replaceable
+
+<ul>
+<li><a href="#bugzilla_write_comment">bugzilla_write_comment</a></li>
+<li><a href="#github_write_comment">github_write_comment</a></li>
+</ul></li>
+<li>Public/Stable/Not Replaceable
+
+<ul>
+<li><a href="#javac_precheck">javac_precheck</a></li>
+</ul></li>
+<li>Public/Stable/Not Replaceable
+
+<ul>
+<li><a href="#jira_write_comment">jira_write_comment</a></li>
+</ul></li>
+<li>None/None/Not Replaceable
+
+<ul>
+<li><a href="#ant_buildfile">ant_buildfile</a></li>
+<li><a href="#ant_builtin_personality_file_tests">ant_builtin_personality_file_tests</a></li>
+<li><a href="#ant_builtin_personality_modules">ant_builtin_personality_modules</a></li>
+<li><a href="#ant_docker_support">ant_docker_support</a></li>
+<li><a href="#ant_executor">ant_executor</a></li>
+<li><a href="#ant_initialize">ant_initialize</a></li>
+<li><a href="#ant_javac_count_probs">ant_javac_count_probs</a></li>
+<li><a href="#ant_modules_worker">ant_modules_worker</a></li>
+<li><a href="#ant_parse_args">ant_parse_args</a></li>
+<li><a href="#ant_usage">ant_usage</a></li>
+<li><a href="#asflicense_parse_args">asflicense_parse_args</a></li>
+<li><a href="#asflicense_writexsl">asflicense_writexsl</a></li>
+<li><a href="#bugzilla_determine_issue">bugzilla_determine_issue</a></li>
+<li><a href="#bugzilla_http_fetch">bugzilla_http_fetch</a></li>
+<li><a href="#bugzilla_locate_patch">bugzilla_locate_patch</a></li>
+<li><a href="#bugzilla_parse_args">bugzilla_parse_args</a></li>
+<li><a href="#bugzilla_usage">bugzilla_usage</a></li>
+<li><a href="#cc_count_probs">cc_count_probs</a></li>
+<li><a href="#cc_filefilter">cc_filefilter</a></li>
+<li><a href="#checkstyle_filefilter">checkstyle_filefilter</a></li>
+<li><a href="#checkstyle_postapply">checkstyle_postapply</a></li>
+<li><a href="#checkstyle_postcompile">checkstyle_postcompile</a></li>
+<li><a href="#checkstyle_preapply">checkstyle_preapply</a></li>
+<li><a href="#checkstyle_runner">checkstyle_runner</a></li>
+<li><a href="#findbugs_filefilter">findbugs_filefilter</a></li>
+<li><a href="#findbugs_parse_args">findbugs_parse_args</a></li>
+<li><a href="#findbugs_rebuild">findbugs_rebuild</a></li>
+<li><a href="#findbugs_usage">findbugs_usage</a></li>
+<li><a href="#github_breakup_url">github_breakup_url</a></li>
+<li><a href="#github_determine_issue">github_determine_issue</a></li>
+<li><a href="#github_find_jira_title">github_find_jira_title</a></li>
+<li><a href="#github_jira_bridge">github_jira_bridge</a></li>
+<li><a href="#github_linecomments">github_linecomments</a></li>
+<li><a href="#github_locate_patch">github_locate_patch</a></li>
+<li><a href="#github_parse_args">github_parse_args</a></li>
+<li><a href="#github_usage">github_usage</a></li>
+<li><a href="#gradle_buildfile">gradle_buildfile</a></li>
+<li><a href="#gradle_builtin_personality_file_tests">gradle_builtin_personality_file_tests</a></li>
+<li><a href="#gradle_builtin_personality_modules">gradle_builtin_personality_modules</a></li>
+<li><a href="#gradle_docker_support">gradle_docker_support</a></li>
+<li><a href="#gradle_executor">gradle_executor</a></li>
+<li><a href="#gradle_initialize">gradle_initialize</a></li>
+<li><a href="#gradle_javac_count_probs">gradle_javac_count_probs</a></li>
+<li><a href="#gradle_javadoc_count_probs">gradle_javadoc_count_probs</a></li>
+<li><a href="#gradle_modules_worker">gradle_modules_worker</a></li>
+<li><a href="#gradle_parse_args">gradle_parse_args</a></li>
+<li><a href="#gradle_scalac_count_probs">gradle_scalac_count_probs</a></li>
+<li><a href="#gradle_usage">gradle_usage</a></li>
+<li><a href="#initialize_java">initialize_java</a></li>
+<li><a href="#javac_filefilter">javac_filefilter</a></li>
+<li><a href="#javac_initialize">javac_initialize</a></li>
+<li><a href="#javadoc_filefilter">javadoc_filefilter</a></li>
+<li><a href="#javadoc_initialize">javadoc_initialize</a></li>
+<li><a href="#jira_determine_issue">jira_determine_issue</a></li>
+<li><a href="#jira_http_fetch">jira_http_fetch</a></li>
+<li><a href="#jira_locate_patch">jira_locate_patch</a></li>
+<li><a href="#jira_parse_args">jira_parse_args</a></li>
+<li><a href="#jira_usage">jira_usage</a></li>
+<li><a href="#junit_finalize_results">junit_finalize_results</a></li>
+<li><a href="#junit_process_tests">junit_process_tests</a></li>
+<li><a href="#maven_buildfile">maven_buildfile</a></li>
+<li><a href="#maven_builtin_personality_file_tests">maven_builtin_personality_file_tests</a></li>
+<li><a href="#maven_builtin_personality_modules">maven_builtin_personality_modules</a></li>
+<li><a href="#maven_docker_support">maven_docker_support</a></li>
+<li><a href="#maven_executor">maven_executor</a></li>
+<li><a href="#maven_initialize">maven_initialize</a></li>
+<li><a href="#maven_javac_count_probs">maven_javac_count_probs</a></li>
+<li><a href="#maven_modules_worker">maven_modules_worker</a></li>
+<li><a href="#maven_parse_args">maven_parse_args</a></li>
+<li><a href="#maven_precheck">maven_precheck</a></li>
+<li><a href="#maven_scalac_count_probs">maven_scalac_count_probs</a></li>
+<li><a href="#maven_usage">maven_usage</a></li>
+<li><a href="#mvnsite_filefilter">mvnsite_filefilter</a></li>
+<li><a href="#nobuild_buildfile">nobuild_buildfile</a></li>
+<li><a href="#nobuild_builtin_personality_file_tests">nobuild_builtin_personality_file_tests</a></li>
+<li><a href="#nobuild_builtin_personality_modules">nobuild_builtin_personality_modules</a></li>
+<li><a href="#nobuild_executor">nobuild_executor</a></li>
+<li><a href="#nobuild_modules_worker">nobuild_modules_worker</a></li>
+<li><a href="#perlcritic_filefilter">perlcritic_filefilter</a></li>
+<li><a href="#perlcritic_parse_args">perlcritic_parse_args</a></li>
+<li><a href="#perlcritic_postapply">perlcritic_postapply</a></li>
+<li><a href="#perlcritic_postcompile">perlcritic_postcompile</a></li>
+<li><a href="#perlcritic_preapply">perlcritic_preapply</a></li>
+<li><a href="#perlcritic_usage">perlcritic_usage</a></li>
+<li><a href="#pylint_filefilter">pylint_filefilter</a></li>
+<li><a href="#pylint_parse_args">pylint_parse_args</a></li>
+<li><a href="#pylint_postapply">pylint_postapply</a></li>
+<li><a href="#pylint_postcompile">pylint_postcompile</a></li>
+<li><a href="#pylint_preapply">pylint_preapply</a></li>
+<li><a href="#pylint_usage">pylint_usage</a></li>
+<li><a href="#rubocop_filefilter">rubocop_filefilter</a></li>
+<li><a href="#rubocop_parse_args">rubocop_parse_args</a></li>
+<li><a href="#rubocop_postapply">rubocop_postapply</a></li>
+<li><a href="#rubocop_postcompile">rubocop_postcompile</a></li>
+<li><a href="#rubocop_preapply">rubocop_preapply</a></li>
+<li><a href="#rubocop_usage">rubocop_usage</a></li>
+<li><a href="#ruby_lint_filefilter">ruby_lint_filefilter</a></li>
+<li><a href="#ruby_lint_parse_args">ruby_lint_parse_args</a></li>
+<li><a href="#ruby_lint_postapply">ruby_lint_postapply</a></li>
+<li><a href="#ruby_lint_postcompile">ruby_lint_postcompile</a></li>
+<li><a href="#ruby_lint_preapply">ruby_lint_preapply</a></li>
+<li><a href="#ruby_lint_usage">ruby_lint_usage</a></li>
+<li><a href="#scalac_filefilter">scalac_filefilter</a></li>
+<li><a href="#scaladoc_filefilter">scaladoc_filefilter</a></li>
+<li><a href="#shellcheck_filefilter">shellcheck_filefilter</a></li>
+<li><a href="#shellcheck_postapply">shellcheck_postapply</a></li>
+<li><a href="#shellcheck_postcompile">shellcheck_postcompile</a></li>
+<li><a href="#shellcheck_preapply">shellcheck_preapply</a></li>
+<li><a href="#shellcheck_private_findbash">shellcheck_private_findbash</a></li>
+<li><a href="#tap_finalize_results">tap_finalize_results</a></li>
+<li><a href="#tap_parse_args">tap_parse_args</a></li>
+<li><a href="#tap_process_tests">tap_process_tests</a></li>
+<li><a href="#tap_usage">tap_usage</a></li>
+<li><a href="#whitespace_linecomment_reporter">whitespace_linecomment_reporter</a></li>
+<li><a href="#whitespace_postcompile">whitespace_postcompile</a></li>
+<li><a href="#xml_filefilter">xml_filefilter</a></li>
+<li><a href="#xml_postcompile">xml_postcompile</a></li>
+</ul></li>
+</ul>
+
+<hr>
+
+<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
+
+<h3 id="bugzilla_write_comment"><code>bugzilla_write_comment</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>bugzilla_write_comment ## @params filename
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Write the contents of a file to Bugzilla</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_write_comment"><code>github_write_comment</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_write_comment ## @params filename
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Write the contents of a file to github</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
+
+<h3 id="javac_precheck"><code>javac_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>javac_precheck
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Verify that ${JAVA_HOME} is defined</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>1 - no JAVA_HOME</p>
+
+<p>0 - JAVA_HOME defined</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
+
+<h3 id="jira_write_comment"><code>jira_write_comment</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>jira_write_comment ## @params filename
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Write the contents of a file to JIRA</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<h2 id="returns-exit-code-from-posting-to-jira">@returns exit code from posting to jira</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h2 id="none-none-not-replaceable">None/None/Not Replaceable</h2>
+
+<h3 id="ant_buildfile"><code>ant_buildfile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_buildfile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_builtin_personality_file_tests"><code>ant_builtin_personality_file_tests</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_builtin_personality_file_tests
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_builtin_personality_modules"><code>ant_builtin_personality_modules</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_builtin_personality_modules
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_docker_support"><code>ant_docker_support</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_docker_support
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_executor"><code>ant_executor</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_executor
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_initialize"><code>ant_initialize</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_initialize
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_javac_count_probs"><code>ant_javac_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_javac_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_modules_worker"><code>ant_modules_worker</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_modules_worker
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_parse_args"><code>ant_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ant_usage"><code>ant_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ant_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="asflicense_parse_args"><code>asflicense_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>asflicense_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="asflicense_writexsl"><code>asflicense_writexsl</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>asflicense_writexsl
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="bugzilla_determine_issue"><code>bugzilla_determine_issue</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>bugzilla_determine_issue
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="bugzilla_http_fetch"><code>bugzilla_http_fetch</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>bugzilla_http_fetch
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="bugzilla_locate_patch"><code>bugzilla_locate_patch</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>bugzilla_locate_patch
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="bugzilla_parse_args"><code>bugzilla_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>bugzilla_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="bugzilla_usage"><code>bugzilla_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>bugzilla_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="cc_count_probs"><code>cc_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>cc_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="cc_filefilter"><code>cc_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>cc_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_filefilter"><code>checkstyle_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_postapply"><code>checkstyle_postapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_postapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_postcompile"><code>checkstyle_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_preapply"><code>checkstyle_preapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_runner"><code>checkstyle_runner</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_runner
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="findbugs_filefilter"><code>findbugs_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>findbugs_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="findbugs_parse_args"><code>findbugs_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>findbugs_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="findbugs_rebuild"><code>findbugs_rebuild</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>findbugs_rebuild
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="findbugs_usage"><code>findbugs_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>findbugs_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_breakup_url"><code>github_breakup_url</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_breakup_url ## @params url
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>given a URL, break it up into github plugin globals this will <em>override</em> any personality or yetus defaults</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_determine_issue"><code>github_determine_issue</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_determine_issue
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_find_jira_title"><code>github_find_jira_title</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_find_jira_title
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>based upon a github PR, attempt to link back to JIRA</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_jira_bridge"><code>github_jira_bridge</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_jira_bridge
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>this gets called when JIRA thinks this issue is just a pointer to github WARNING: Called from JIRA plugin!</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_linecomments"><code>github_linecomments</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_linecomments
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_locate_patch"><code>github_locate_patch</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_locate_patch
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_parse_args"><code>github_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="github_usage"><code>github_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>github_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_buildfile"><code>gradle_buildfile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_buildfile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_builtin_personality_file_tests"><code>gradle_builtin_personality_file_tests</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_builtin_personality_file_tests
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_builtin_personality_modules"><code>gradle_builtin_personality_modules</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_builtin_personality_modules
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_docker_support"><code>gradle_docker_support</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_docker_support
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_executor"><code>gradle_executor</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_executor
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_initialize"><code>gradle_initialize</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_initialize
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_javac_count_probs"><code>gradle_javac_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_javac_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_javadoc_count_probs"><code>gradle_javadoc_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_javadoc_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_modules_worker"><code>gradle_modules_worker</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_modules_worker
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_parse_args"><code>gradle_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_scalac_count_probs"><code>gradle_scalac_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_scalac_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="gradle_usage"><code>gradle_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="initialize_java"><code>initialize_java</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>initialize_java
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="javac_filefilter"><code>javac_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>javac_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="javac_initialize"><code>javac_initialize</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>javac_initialize
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="javadoc_filefilter"><code>javadoc_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>javadoc_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="javadoc_initialize"><code>javadoc_initialize</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>javadoc_initialize
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="jira_determine_issue"><code>jira_determine_issue</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>jira_determine_issue
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>provides issue determination based upon the URL and more. WARNING: called from the github plugin!</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="jira_http_fetch"><code>jira_http_fetch</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>jira_http_fetch
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="jira_locate_patch"><code>jira_locate_patch</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>jira_locate_patch
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="jira_parse_args"><code>jira_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>jira_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="jira_usage"><code>jira_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>jira_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="junit_finalize_results"><code>junit_finalize_results</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>junit_finalize_results
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="junit_process_tests"><code>junit_process_tests</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>junit_process_tests
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_buildfile"><code>maven_buildfile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_buildfile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_builtin_personality_file_tests"><code>maven_builtin_personality_file_tests</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_builtin_personality_file_tests
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_builtin_personality_modules"><code>maven_builtin_personality_modules</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_builtin_personality_modules
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_docker_support"><code>maven_docker_support</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_docker_support
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_executor"><code>maven_executor</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_executor
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_initialize"><code>maven_initialize</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_initialize
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_javac_count_probs"><code>maven_javac_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_javac_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_modules_worker"><code>maven_modules_worker</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_modules_worker
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_parse_args"><code>maven_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_precheck"><code>maven_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_precheck
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_scalac_count_probs"><code>maven_scalac_count_probs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_scalac_count_probs
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="maven_usage"><code>maven_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="mvnsite_filefilter"><code>mvnsite_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>mvnsite_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="nobuild_buildfile"><code>nobuild_buildfile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>nobuild_buildfile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="nobuild_builtin_personality_file_tests"><code>nobuild_builtin_personality_file_tests</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>nobuild_builtin_personality_file_tests
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="nobuild_builtin_personality_modules"><code>nobuild_builtin_personality_modules</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>nobuild_builtin_personality_modules
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="nobuild_executor"><code>nobuild_executor</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>nobuild_executor
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="nobuild_modules_worker"><code>nobuild_modules_worker</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>nobuild_modules_worker
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="perlcritic_filefilter"><code>perlcritic_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="perlcritic_parse_args"><code>perlcritic_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="perlcritic_postapply"><code>perlcritic_postapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_postapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="perlcritic_postcompile"><code>perlcritic_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="perlcritic_preapply"><code>perlcritic_preapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="perlcritic_usage"><code>perlcritic_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_filefilter"><code>pylint_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_parse_args"><code>pylint_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_postapply"><code>pylint_postapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_postapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_postcompile"><code>pylint_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_preapply"><code>pylint_preapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_usage"><code>pylint_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="rubocop_filefilter"><code>rubocop_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="rubocop_parse_args"><code>rubocop_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="rubocop_postapply"><code>rubocop_postapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_postapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="rubocop_postcompile"><code>rubocop_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="rubocop_preapply"><code>rubocop_preapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="rubocop_usage"><code>rubocop_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_filefilter"><code>ruby_lint_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_parse_args"><code>ruby_lint_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_postapply"><code>ruby_lint_postapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_postapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_postcompile"><code>ruby_lint_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_preapply"><code>ruby_lint_preapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_usage"><code>ruby_lint_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="scalac_filefilter"><code>scalac_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>scalac_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="scaladoc_filefilter"><code>scaladoc_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>scaladoc_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="shellcheck_filefilter"><code>shellcheck_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>shellcheck_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="shellcheck_postapply"><code>shellcheck_postapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>shellcheck_postapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="shellcheck_postcompile"><code>shellcheck_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>shellcheck_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="shellcheck_preapply"><code>shellcheck_preapply</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>shellcheck_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="shellcheck_private_findbash"><code>shellcheck_private_findbash</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>shellcheck_private_findbash
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="tap_finalize_results"><code>tap_finalize_results</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>tap_finalize_results
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="tap_parse_args"><code>tap_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>tap_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="tap_process_tests"><code>tap_process_tests</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>tap_process_tests
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="tap_usage"><code>tap_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>tap_usage
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="whitespace_linecomment_reporter"><code>whitespace_linecomment_reporter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>whitespace_linecomment_reporter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="whitespace_postcompile"><code>whitespace_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>whitespace_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="xml_filefilter"><code>xml_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>xml_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="xml_postcompile"><code>xml_postcompile</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>xml_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+	  </div>
+      <div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+                            <div class="span12">
+                Copyright 2008-2015 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                            </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+	</body>
+</html>

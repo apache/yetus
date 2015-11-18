@@ -112,27 +112,24 @@
   under the License.
 -->
 
-<h1 id="community">Community</h1>
+<h1 id="test-format-support">Test Format Support</h1>
 
-<div class="row-fluid">
-    <div class="col-lg-6">
-        <h3>Mailing Lists</h3>
-        <p><strong>Developers</strong> - Development related discussion.</p>
+<p>test-patch has the ability to support multiple test formats. Test formats have some extra hooks to process the output of test tools and write the results to some tables. Every test format plug-in must have one line in order to be recognized:</p>
+<pre class="highlight shell"><code>add_test_format &lt;pluginname&gt;
+</code></pre>
 
-        <p><a href="mailto:dev-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:dev-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-dev/">Archive</a></p>
+<ul>
+<li><p>pluginname_process_tests</p>
 
-        <p><strong>Commits</strong> - Commit notification source repository.</p>
+<ul>
+<li>Given a path to the log file and tested module name, parse that file and store the test result into global variables and/or files.</li>
+</ul></li>
+<li><p>pluginname_finalize_results</p>
 
-                <p><a href="mailto:commits-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:commits-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-commits/">Archive</a></p>
-
-                <p><strong>Notifications</strong> - JIRA issue notifications</p>
-
-                <p><a href="mailto:notifications-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:notifications-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-notifications/">Archive</a></p>
-
-    </div>
-</div>
-
-<p><hr></p>
+<ul>
+<li>Using the results stored by pluginname_process_tests, write them to the test result table and/or the footer table for reporting.</li>
+</ul></li>
+</ul>
 
 	  </div>
       <div class="container">

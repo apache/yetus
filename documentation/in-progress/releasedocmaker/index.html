@@ -112,78 +112,113 @@
   under the License.
 -->
 
-<h1 id="how-to-contribute">How To Contribute</h1>
-
-<h2 id="submitting-changes">Submitting Changes</h2>
-
-<p>We use git as our version control system. To streamline the process of giving proper credit to the contributors when committing patches, we encourage contributors to submit patches generated using git format-patch. This has many benefits:</p>
+<h1 id="releasedocmaker">releasedocmaker</h1>
 
 <ul>
-<li>Committers can&rsquo;t forget to attribute proper credit to the contributor</li>
-<li>The contributors name and email address shows up in git log</li>
-<li>When viewing Yetus&rsquo;s source code on <a href="https://github.com/apache/yetus">https://github.com/apache/yetus</a> , the commits from the contributor are linked to their github.com account if it&rsquo;s linked to the same email address they used when generating the git format-patch</li>
+<li><a href="#Purpose">Purpose</a></li>
+<li><a href="#Basic_Usage">Basic Usage</a></li>
+<li><a href="#Changing_the_Header">Changing the Header</a></li>
+<li><a href="#Multiple_Versions">Multiple Versions</a></li>
+<li><a href="#Unreleased_Dates">Unreleased Dates</a></li>
+<li><a href="#Lint_Mode">Lint Mode</a></li>
+<li><a href="#Index_Mode">Index Mode</a></li>
 </ul>
 
-<p>Long story short, it makes both the contributors&rsquo; and committers&rsquo; lives easier, so please generate your patches using git format-patch.</p>
+<h1 id="purpose">Purpose</h1>
 
-<p>Here are some instructions on how to generate patches:</p>
+<p>Building changelog information in a form that is human digestible but still containing as much useful information is difficult.  Many attempts over the years have resulted in a variety of methods that projects use to solve this problem:</p>
 
 <ul>
-<li>Ensure that you have all of your change as 1 commit which has the correct commit message - something like <code>YETUS-1. Update shellcheck plug-in to support bats files</code></li>
-<li>Then run a command like: <code>git format-patch HEAD^..HEAD --stdout &gt; YETUS-1.00.patch</code></li>
-<li>Upload the YETUS-1.00.patch file to the aformenentioned JIRA</li>
+<li>JIRA-generated release notes from the &ldquo;Release Notes&rdquo; button</li>
+<li>Manually modified CHANGES file</li>
+<li>Processing git log information</li>
 </ul>
 
-<p>The naming of the patch should be in (JIRA).(patch number).patch or, if it needs to apply to a specific branch, (JIRA).(branch name).(patch number).patch format. For example, YETUS-9.00.patch, YETUS-500.02.patch, or YETUS-23.cmake.11.patch. This way, if you need to upload another version  of the patch, you should keep the file name the same and JIRA will sort them according to date/time if multiple files have the same name. This feature is also useful to traceback the history of a patch and roll-back to an earlier version if needed.</p>
+<p>All of these methods have their pros and cons.  Some have issues with accuracy.  Some have issues with lack of details. None of these methods seem to cover all of the needs of many projects and are full of potential pitfalls.</p>
 
-<h2 id="website">Website</h2>
+<p>In order to solve these problems, releasedocmaker was written to automatically generate a changelog and release notes by querying Apache&rsquo;s JIRA instance.</p>
 
-<p>We use middleman to generate the website content from markdown and other
-dynamic templates. The following steps assume you have a working
-ruby 2.x environment setup:</p>
-<pre class="highlight shell"><code>gem install bundler
-bundle install
+<h1 id="basic-usage">Basic Usage</h1>
+
+<p>Minimally, the name of the JIRA project and a version registered in JIRA must be provided:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project <span class="o">(</span>project<span class="o">)</span> --version <span class="o">(</span>version<span class="o">)</span>
 </code></pre>
 
-<h3 id="make-changes-in-asf-site-src-source">Make changes in asf-site-src/source</h3>
+<p>This will query Apache JIRA, generating two files in a directory named after the given version in an extended markdown format which can be processed by both mvn site and GitHub.</p>
 
-<p>Make any changes in the source directory:</p>
-<pre class="highlight shell"><code><span class="nb">cd </span>asf-site-src/source
-vi contribute.html.md
+<ul>
+<li>CHANGES.(version).md</li>
+</ul>
+
+<p>This is similar to the JIRA &ldquo;Release Notes&rdquo; button but is in tabular format and includes the priority, component, reporter, and contributor fields.  It also highlights Incompatible Changes so that readers know what to look out for when upgrading. The top of the file also includes the date that the version was marked as released in JIRA.</p>
+
+<ul>
+<li>RELEASENOTES.(version).md</li>
+</ul>
+
+<p>If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGES log that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.</p>
+
+<p>For example, to build the release documentation for HBase v1.2.0&hellip;</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0
 </code></pre>
 
-<h3 id="make-changes-to-api-docs">Make changes to API Docs</h3>
+<p>&hellip; will create a 1.2.0 directory and inside that directory will be CHANGES.1.2.0.md and RELEASENOTES.1.2.0.md .</p>
 
-<p>Optionally, you can update the generated API docs from other parts of the project. If they have been updated then the middleman build will pick up the changes.</p>
-
-<p>e.g. Precommit changes will be picked up by the Middleman build.</p>
-<pre class="highlight shell"><code><span class="nb">cd</span> ../precommit/core.d
-vi 01-common.sh
+<p>By default, release notes are expected to be in plain text.  However, you can write them in markdown if you include a header at the top of your release note:</p>
+<pre class="highlight xml"><code><span class="c">&lt;!-- markdown --&gt;</span>
+remaining text
 </code></pre>
 
-<p>e.g. Audience Annotations requires running Maven.</p>
-<pre class="highlight shell"><code><span class="nb">cd</span> ../audience-annotations-component
-mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate
-<span class="nb">cd</span> -
+<h1 id="changing-the-header">Changing the Header</h1>
+
+<p>By default, it will use a header that matches the project name.  But that is kind of ugly and the case may be wrong.  Luckily, the title can be changed:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0 --projecttitle <span class="s2">"Apache HBase"</span>
 </code></pre>
 
-<h3 id="generating-the-website">Generating the website</h3>
+<p>Now instead of &ldquo;HBASE&rdquo;, it will use &ldquo;Apache HBASE&rdquo; for some titles and headers.</p>
 
-<p>To generate the static wesbite for Apache Yetus run the following commands at the root asf-site-src directory:</p>
-<pre class="highlight shell"><code>bundle <span class="nb">exec </span>middleman build
+<h1 id="multiple-versions">Multiple Versions</h1>
+
+<p>The script can also generate multiple versions at once, by</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0
 </code></pre>
 
-<h3 id="live-development">Live Development</h3>
+<p>This will create the files for versions 1.0.0 and versions 1.2.0 in their own directories.</p>
 
-<p>Live development of the site enables automatic reload when changes are saved.
-To enable run the following command and then open a browser and navigate to
-<a href="http://localhost:4567/">http://localhost:4567</a></p>
-<pre class="highlight plaintext"><code>bundle exec middleman
+<p>But what if the version numbers are not known?  releasedocmaker can also generate version data based upon ranges:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0 --range
 </code></pre>
 
-<h3 id="publishing-the-site">Publishing the Site</h3>
+<p>In this form, releasedocmaker will query JIRA, discover all versions that alphabetically appear to be between 1.0.0 and 1.2.0, inclusive, and generate all of the relative release documents.  This is especially useful when bootstrapping an existing project.</p>
 
-<p>Commit the publish directory to the asf-site branch.</p>
+<h1 id="unreleased-dates">Unreleased Dates</h1>
+
+<p>For released versions, releasedocmaker will pull the date of the release from JIRA.  However, for unreleased versions it marks the release as &ldquo;Unreleased&rdquo;. This can be inconvenient when actually building a release and wanting to include it inside the source package.</p>
+
+<p>The &ndash;usetoday option can be used to signify that instead of using Unreleased, releasedocmaker should use today&rsquo;s date.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
+</code></pre>
+
+<p>After using this option and release, don&rsquo;t forget to change JIRA&rsquo;s release date to match!</p>
+
+<h1 id="lint-mode">Lint Mode</h1>
+
+<p>In order to ensure proper formatting while using mvn site, releasedocmaker puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.</p>
+
+<p>In order to help release managers from having to scan through potentially large documents, releasedocmaker features a lint mode, triggered via &ndash;lint:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --lint
+</code></pre>
+
+<p>This will do the normal JIRA querying, looking for items it considers problematic.  It will print the information to the screen and then exit with either success or failure, depending upon if any issues were discovered.</p>
+
+<h1 id="index-mode">Index Mode</h1>
+
+<p>There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor.micro-style version numbering system, where all fields are numeric.</p>
+
+<ul>
+<li>index.md: a file suitable for conversion to HTML via mvn site</li>
+<li>README.md: a file suitable for display on Github and other Markdown rendering websites</li>
+</ul>
 
 	  </div>
       <div class="container">
