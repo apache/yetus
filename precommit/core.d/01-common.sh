@@ -92,6 +92,7 @@ function common_defaults
 function common_args
 {
   declare i
+  declare showhelp=false
 
   for i in "$@"; do
     case ${i} in
@@ -130,8 +131,7 @@ function common_args
         GREP=${i#*=}
       ;;
       --help|-help|-h|help|--h|--\?|-\?|\?)
-        yetus_usage
-        exit 0
+        showhelp=true
       ;;
       --list-plugins)
         list_plugins
@@ -167,6 +167,10 @@ function common_args
       ;;
     esac
   done
+  if [[ ${showhelp} == true ]]; then
+    yetus_usage
+    exit 0
+  fi
 }
 
 ## @description  List all installed plug-ins, regardless of whether
