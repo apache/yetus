@@ -30,7 +30,6 @@ function docker_initialize
     add_footer_table "Docker" "${DOCKER_VERSION}"
   fi
 
-
   # turn DOCKERFAIL into a string composed of numbers
   # to ease interpretation:  123, 213, 321, ... whatever
   # some of these combos are non-sensical but that's ok.
@@ -66,6 +65,8 @@ function docker_initialize
       fi
     fi
     popd >/dev/null
+  else
+    DOCKERFILE=${DOCKERFILE_DEFAULT}
   fi
 
   dockerverify
@@ -527,8 +528,8 @@ PatchSpecificDocker
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
       "${patchimagename}"
- else
-   exec "${DOCKERCMD}" run --rm=true -i \
+  else
+    exec "${DOCKERCMD}" run --rm=true -i \
       ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -u "${USER_NAME}" \
@@ -541,7 +542,7 @@ PatchSpecificDocker
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
       "${patchimagename}"
- fi
+  fi
 }
 
 ## @description  Switch over to a Docker container
