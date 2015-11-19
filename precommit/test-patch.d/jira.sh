@@ -152,21 +152,26 @@ function jira_locate_patch
   relativeurl=$(${AWK} 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' "${PATCH_DIR}/jira" |
     ${GREP} -v -e 'htm[l]*$' | sort | tail -1 | ${SED} -e 's,[ ]*$,,g')
   PATCHURL="${JIRA_URL}${relativeurl}"
-  if [[ ! ${PATCHURL} =~ \.patch$ ]]; then
-    guess_patch_file "${PATCH_DIR}/patch"
-    if [[ $? == 0 ]]; then
-      yetus_debug "The patch ${PATCHURL} was not named properly, but it looks like a patch file. Proceeding, but issue/branch matching might go awry."
-      add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${HOW_TO_CONTRIBUTE} for instructions."
-    fi
-  fi
+
   echo "${input} patch is being downloaded at $(date) from"
   echo "${PATCHURL}"
-  add_footer_table "JIRA Patch URL" "${PATCHURL}"
   jira_http_fetch "${relativeurl}" "${fileloc}"
   if [[ $? != 0 ]];then
     yetus_error "ERROR: ${input}/${PATCHURL} could not be downloaded."
     cleanup_and_exit 1
   fi
+
+  if [[ ! ${PATCHURL} =~ \.patch$ ]]; then
+    guess_patch_file "${PATCH_DIR}/patch"
+    if [[ $? == 0 ]]; then
+      yetus_debug "The patch ${PATCHURL} was not named properly, but it looks like a patch file. Proceeding, but issue/branch matching might go awry."
+      add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${HOW_TO_CONTRIBUTE} for instructions."
+    else
+      # this definitely isn't a patch so just bail out.
+      return 1
+    fi
+  fi
+  add_footer_table "JIRA Patch URL" "${PATCHURL}"
   return 0
 }
 

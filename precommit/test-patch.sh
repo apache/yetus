@@ -1344,7 +1344,7 @@ function apply_patch_file
   if [[ $? != 0 ]] ; then
     echo "PATCH APPLICATION FAILED"
     ((RESULT = RESULT + 1))
-    add_vote_table -1 patch "The patch command could not apply the patch."
+    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${HOW_TO_CONTRIBUTE} for help."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -2540,7 +2540,10 @@ function initialize
 
   patchfile_dryrun_driver "${PATCH_DIR}/patch"
   if [[ $? != 0 ]]; then
+    ((RESULT = RESULT + 1))
     yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
+    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${HOW_TO_CONTRIBUTE} for help."
+    bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
 

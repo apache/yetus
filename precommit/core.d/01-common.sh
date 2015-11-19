@@ -93,6 +93,7 @@ function common_args
 {
   declare i
   declare showhelp=false
+  declare version
 
   for i in "$@"; do
     case ${i} in
@@ -170,6 +171,26 @@ function common_args
   if [[ ${showhelp} == true ]]; then
     yetus_usage
     exit 0
+
+  # Absolutely require v1.7.3 or higher
+  # versions lower than this either have bugs with
+  # git apply or don't support all the
+  # expected options
+  version=$(${GIT} --version)
+
+  if [[ $? != 0 ]]; then
+    yetus_error "ERROR: ${GIT} failed during version detection."
+    exit 1
+  fi
+
+  # shellcheck disable=SC2016
+  version=$(echo "${version}" | ${AWK} '{print $NF}')
+  if [[ ${version} =~ ^0
+     || ${version} =~ ^1.[0-6]
+     || ${version} =~ ^1.7.[0-2]
+    ]]; then
+    yetus_error "ERROR: ${GIT} v1.7.3 or higher is required (found ${version})."
+    exit 1
   fi
 }
 
