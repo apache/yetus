@@ -171,6 +171,7 @@ function common_args
   if [[ ${showhelp} == true ]]; then
     yetus_usage
     exit 0
+  fi
 
   # Absolutely require v1.7.3 or higher
   # versions lower than this either have bugs with
