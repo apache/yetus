@@ -87,8 +87,8 @@ function docker_initialize
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @returns      1 if docker is broken
-## @returns      0 if docker is working
+## @return       1 if docker is broken
+## @return       0 if docker is working
 function dockerverify
 {
   declare pathdocker

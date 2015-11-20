@@ -125,7 +125,7 @@ function yetus_usage
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
-## @params       $@
+## @param        $@
 ## @return       May exit on failure
 function parse_args
 {

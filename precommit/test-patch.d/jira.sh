@@ -277,10 +277,10 @@ function jira_determine_branch
 }
 
 ## @description Write the contents of a file to JIRA
-## @params filename
+## @param     filename
 ## @stability stable
-## @audience public
-## @returns exit code from posting to jira
+## @audience  public
+## @return    exit code from posting to jira
 function jira_write_comment
 {
   declare -r commentfile=${1}

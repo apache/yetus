@@ -87,7 +87,7 @@ function common_defaults
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
-## @params       $@
+## @param        $@
 ## @return       May exit on failure
 function common_args
 {

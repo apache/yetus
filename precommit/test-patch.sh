@@ -240,11 +240,11 @@ function add_vote_table
 }
 
 ## @description  Report the JVM version of the given directory
-## @stability     stable
+## @stability    stable
 ## @audience     private
 ## @replaceable  yes
-## @params       directory
-## @returns      version
+## @param        directory
+## @return       version
 function report_jvm_version
 {
   #shellcheck disable=SC2016
@@ -276,7 +276,7 @@ function verify_multijdk_test
 
 ## @description  Put the opening environment information at the bottom
 ## @description  of the footer table
-## @stability     stable
+## @stability    stable
 ## @audience     private
 ## @replaceable  yes
 function prepopulate_footer
@@ -420,9 +420,9 @@ function findlargest
 
 ## @description Write the contents of a file to all of the bug systems
 ## @description (so content should avoid special formatting)
-## @params filename
+## @param     filename
 ## @stability stable
-## @audience public
+## @audience  public
 function write_comment
 {
   local -r commentfile=${1}
@@ -441,7 +441,7 @@ function write_comment
 ## @audience    private
 ## @stability   evolving
 ## @replaceable yes
-## @returns     may exit on failure
+## @return      may exit on failure
 function verify_patchdir_still_exists
 {
   local -r commentfile=/tmp/testpatch.$$.${RANDOM}
@@ -604,7 +604,7 @@ function compute_unidiff
 ## @param        command
 ## @param        [..]
 ## @replaceable  no
-## @returns      $?
+## @return       $?
 function echo_and_redirect
 {
   local logfile=$1
@@ -624,8 +624,8 @@ function echo_and_redirect
 ## @stability   stable
 ## @replaceable yes
 ## @param       path
-## @returns     1 - no, path
-## @returns     0 - yes, path - BASEDIR
+## @return      1 - no, path
+## @return      0 - yes, path - BASEDIR
 function relative_dir
 {
   local p=${1#${BASEDIR}}
@@ -716,7 +716,7 @@ function yetus_usage
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
-## @params       $@
+## @param        $@
 ## @return       May exit on failure
 function parse_args
 {
@@ -915,8 +915,8 @@ function parse_args
 ## @stability    stable
 ## @replaceable  no
 ## @return       directory containing the buildfile. Nothing returned if not found.
-## @params       buildfile
-## @params       directory
+## @param        buildfile
+## @param        directory
 function find_buildfile_dir
 {
   local buildfile=$1
@@ -959,9 +959,9 @@ function find_changed_files
 ## @audience    private
 ## @stability   stable
 ## @replaceable no
-## @params      directory
-## @returns     0 for use
-## @returns     1 for skip
+## @param       directory
+## @return      0 for use
+## @return      1 for skip
 function module_skipdir
 {
   local dir=${1}

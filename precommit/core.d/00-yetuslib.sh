@@ -65,7 +65,7 @@ function yetus_add_entry
 ## @audience     public
 ## @stability    stable
 ## @replaceable  no
-## @returns      1 = yes, 0 = no
+## @return       1 = yes, 0 = no
 function yetus_verify_entry
 {
   [[ ! ${!1} =~ \ ${2}\  ]]
@@ -78,7 +78,7 @@ function yetus_verify_entry
 ## @param        command
 ## @param        [..]
 ## @replaceable  no
-## @returns      $?
+## @return       $?
 function yetus_run_and_redirect
 {
   declare logfile=$1
@@ -99,9 +99,9 @@ function yetus_run_and_redirect
 ## @stability    stable
 ## @param        directory
 ## @replaceable  no
-## @returns      0 success
-## @returns      1 failure
-## @returns      stdout abspath
+## @return       0 success
+## @return       1 failure
+## @return       stdout abspath
 function yetus_abs
 {
   declare obj=$1

@@ -141,7 +141,7 @@ function locate_patch
 ## @stability    stable
 ## @param        log filename
 ## @replaceable  no
-## @returns      $?
+## @return       $?
 function patchfile_verify_zero
 {
   declare logfile=$1

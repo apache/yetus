@@ -98,7 +98,7 @@ function github_jira_bridge
 
 ## @description given a URL, break it up into github plugin globals
 ## @description this will *override* any personality or yetus defaults
-## @params url
+## @param url
 function github_breakup_url
 {
   declare url=$1
@@ -362,9 +362,9 @@ function github_linecomments
 }
 
 ## @description Write the contents of a file to github
-## @params filename
+## @param     filename
 ## @stability stable
-## @audience public
+## @audience  public
 function github_write_comment
 {
   declare -r commentfile=${1}

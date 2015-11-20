@@ -135,9 +135,9 @@ function bugzilla_locate_patch
 }
 
 ## @description Write the contents of a file to Bugzilla
-## @params filename
+## @param     filename
 ## @stability stable
-## @audience public
+## @audience  public
 function bugzilla_write_comment
 {
   return 0
