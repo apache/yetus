@@ -25,8 +25,6 @@ function personality_globals
   #shellcheck disable=SC2034
   GITHUB_REPO="apache/pig"
   #shellcheck disable=SC2034
-  HOW_TO_CONTRIBUTE=""
-  #shellcheck disable=SC2034
   BUILDTOOL=ant
 }
 

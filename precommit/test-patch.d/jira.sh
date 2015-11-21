@@ -162,10 +162,10 @@ function jira_locate_patch
   fi
 
   if [[ ! ${PATCHURL} =~ \.patch$ ]]; then
-    guess_patch_file "${PATCH_DIR}/patch"
+    guess_patch_file "${fileloc}"
     if [[ $? == 0 ]]; then
       yetus_debug "The patch ${PATCHURL} was not named properly, but it looks like a patch file. Proceeding, but issue/branch matching might go awry."
-      add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${HOW_TO_CONTRIBUTE} for instructions."
+      add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${PATCH_NAMING_RULE} for instructions."
     else
       # this definitely isn't a patch so just bail out.
       return 1

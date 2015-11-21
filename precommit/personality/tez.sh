@@ -25,5 +25,5 @@ function personality_globals
   #shellcheck disable=SC2034
   GITHUB_REPO="apache/tez"
   #shellcheck disable=SC2034
-  HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/TEZ/How+to+Contribute+to+Tez"
+  PATCH_NAMING_RULE="https://cwiki.apache.org/confluence/display/TEZ/How+to+Contribute+to+Tez"
 }

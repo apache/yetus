@@ -24,7 +24,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^SAMZA-[0-9]+$'
   #shellcheck disable=SC2034
-  HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/SAMZA/Contributor's+Corner"
+  PATCH_NAMING_RULE="https://cwiki.apache.org/confluence/display/SAMZA/Contributor's+Corner"
   # shellcheck disable=SC2034
   BUILDTOOL=gradle
   #shellcheck disable=SC2034

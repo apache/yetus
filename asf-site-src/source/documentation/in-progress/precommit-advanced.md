@@ -242,8 +242,6 @@ There are a handful of extremely important system variables that make life easie
 
 * GITHUB\_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.
 
-* HOW\_TO\_CONTRIBUTE should be a URL that points to a project's on-boarding documentation for new users. Currently, it is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project's personality.
-
 * JIRA\_ISSUE\_RE is to help test-patch when talking to JIRA.  It helps determine if the given project is appropriate for the given JIRA issue.
 
 * MODULE and other MODULE\_\* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.
@@ -251,5 +249,7 @@ There are a handful of extremely important system variables that make life easie
 * PATCH\_BRANCH\_DEFAULT is the name of the branch in the git repo that is considered the master.  This is useful to set in personalities.
 
 * PATCH\_DIR is the name of the temporary directory that houses test-patch artifacts (such as logs and the patch file itself)
+
+* PATCH\_NAMING\_RULE should be a URL that points to a project's on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project's personality.
 
 * TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel.

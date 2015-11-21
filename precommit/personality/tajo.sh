@@ -25,5 +25,5 @@ function personality_globals
   #shellcheck disable=SC2034
   GITHUB_REPO="apache/tajo"
   #shellcheck disable=SC2034
-  HOW_TO_CONTRIBUTE="https://cwiki.apache.org/confluence/display/TAJO/How+to+Contribute+to+Tajo"
+  PATCH_NAMING_RULE="https://cwiki.apache.org/confluence/display/TAJO/How+to+Contribute+to+Tajo"
 }

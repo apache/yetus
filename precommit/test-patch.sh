@@ -56,7 +56,7 @@ function setup_defaults
 {
   common_defaults
 
-  HOW_TO_CONTRIBUTE="https://yetus.apache.org/documentation/latest/precommit-patchnames"
+  PATCH_NAMING_RULE="https://yetus.apache.org/documentation/latest/precommit-patchnames"
   INSTANCE=${RANDOM}
   RELOCATE_PATCH_DIR=false
 
@@ -658,7 +658,7 @@ function yetus_usage
   # shellcheck disable=SC2153
   echo "--build-tool=<tool>    Pick which build tool to focus around (${BUILDTOOLS})"
   echo "--bugcomments=<bug>    Only write comments to the screen and this comma delimited list (${BUGSYSTEMS})"
-  echo "--contrib-guide=<url>  URL to point new users towards project conventions. (default: ${HOW_TO_CONTRIBUTE} )"
+  echo "--contrib-guide=<url>  URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   echo "--debug                If set, then output some extra stuff to stderr"
   echo "--dirty-workspace      Allow the local git workspace to have uncommitted changes"
   echo "--docker               Spawn a docker container"
@@ -741,7 +741,7 @@ function parse_args
         BUILD_URL=${i#*=}
       ;;
       --contrib-guide=*)
-        HOW_TO_CONTRIBUTE=${i#*=}
+        PATCH_NAMING_RULE=${i#*=}
       ;;
       --dirty-workspace)
         DIRTY_WORKSPACE=true
@@ -1343,7 +1343,7 @@ function apply_patch_file
   if [[ $? != 0 ]] ; then
     echo "PATCH APPLICATION FAILED"
     ((RESULT = RESULT + 1))
-    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${HOW_TO_CONTRIBUTE} for help."
+    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -2536,7 +2536,7 @@ function initialize
   if [[ $? != 0 ]]; then
     ((RESULT = RESULT + 1))
     yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
-    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${HOW_TO_CONTRIBUTE} for help."
+    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi

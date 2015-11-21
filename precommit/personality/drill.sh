@@ -21,7 +21,7 @@ function personality_globals
   #shellcheck disable=SC2034
   GITHUB_REPO="apache/drill"
   #shellcheck disable=SC2034
-  HOW_TO_CONTRIBUTE="https://drill.apache.org/docs/apache-drill-contribution-guidelines/"
+  PATCH_NAMING_RULE="https://drill.apache.org/docs/apache-drill-contribution-guidelines/"
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^DRILL-[0-9]+$'
   #shellcheck disable=SC2034

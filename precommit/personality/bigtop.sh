@@ -23,8 +23,6 @@ function personality_globals
   # shellcheck disable=SC2034
   JIRA_ISSUE_RE='^BIGTOP-[0-9]+$'
   # shellcheck disable=SC2034
-  HOW_TO_CONTRIBUTE=""
-  # shellcheck disable=SC2034
   BUILDTOOL=gradle
   # shellcheck disable=SC2034
   GITHUB_REPO="apache/bigtop"
