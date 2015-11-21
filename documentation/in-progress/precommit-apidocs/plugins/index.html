@@ -50,7 +50,12 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/downloads/">Downloads</a>
-                <li><a href="/documentation/in-progress/">Documentation</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
@@ -136,25 +141,27 @@
 <li><a href="#ant_builtin_personality_modules">ant_builtin_personality_modules</a></li>
 <li><a href="#ant_docker_support">ant_docker_support</a></li>
 <li><a href="#ant_executor">ant_executor</a></li>
+<li><a href="#ant_filefilter">ant_filefilter</a></li>
 <li><a href="#ant_initialize">ant_initialize</a></li>
-<li><a href="#ant_javac_count_probs">ant_javac_count_probs</a></li>
 <li><a href="#ant_modules_worker">ant_modules_worker</a></li>
 <li><a href="#ant_parse_args">ant_parse_args</a></li>
 <li><a href="#ant_usage">ant_usage</a></li>
 <li><a href="#asflicense_parse_args">asflicense_parse_args</a></li>
+<li><a href="#asflicense_usage">asflicense_usage</a></li>
 <li><a href="#asflicense_writexsl">asflicense_writexsl</a></li>
 <li><a href="#bugzilla_determine_issue">bugzilla_determine_issue</a></li>
 <li><a href="#bugzilla_http_fetch">bugzilla_http_fetch</a></li>
 <li><a href="#bugzilla_locate_patch">bugzilla_locate_patch</a></li>
 <li><a href="#bugzilla_parse_args">bugzilla_parse_args</a></li>
 <li><a href="#bugzilla_usage">bugzilla_usage</a></li>
-<li><a href="#cc_count_probs">cc_count_probs</a></li>
 <li><a href="#cc_filefilter">cc_filefilter</a></li>
 <li><a href="#checkstyle_filefilter">checkstyle_filefilter</a></li>
+<li><a href="#checkstyle_parse_args">checkstyle_parse_args</a></li>
 <li><a href="#checkstyle_postapply">checkstyle_postapply</a></li>
 <li><a href="#checkstyle_postcompile">checkstyle_postcompile</a></li>
 <li><a href="#checkstyle_preapply">checkstyle_preapply</a></li>
 <li><a href="#checkstyle_runner">checkstyle_runner</a></li>
+<li><a href="#checkstyle_usage">checkstyle_usage</a></li>
 <li><a href="#findbugs_filefilter">findbugs_filefilter</a></li>
 <li><a href="#findbugs_parse_args">findbugs_parse_args</a></li>
 <li><a href="#findbugs_rebuild">findbugs_rebuild</a></li>
@@ -172,12 +179,10 @@
 <li><a href="#gradle_builtin_personality_modules">gradle_builtin_personality_modules</a></li>
 <li><a href="#gradle_docker_support">gradle_docker_support</a></li>
 <li><a href="#gradle_executor">gradle_executor</a></li>
+<li><a href="#gradle_filefilter">gradle_filefilter</a></li>
 <li><a href="#gradle_initialize">gradle_initialize</a></li>
-<li><a href="#gradle_javac_count_probs">gradle_javac_count_probs</a></li>
-<li><a href="#gradle_javadoc_count_probs">gradle_javadoc_count_probs</a></li>
 <li><a href="#gradle_modules_worker">gradle_modules_worker</a></li>
 <li><a href="#gradle_parse_args">gradle_parse_args</a></li>
-<li><a href="#gradle_scalac_count_probs">gradle_scalac_count_probs</a></li>
 <li><a href="#gradle_usage">gradle_usage</a></li>
 <li><a href="#initialize_java">initialize_java</a></li>
 <li><a href="#javac_filefilter">javac_filefilter</a></li>
@@ -196,12 +201,12 @@
 <li><a href="#maven_builtin_personality_modules">maven_builtin_personality_modules</a></li>
 <li><a href="#maven_docker_support">maven_docker_support</a></li>
 <li><a href="#maven_executor">maven_executor</a></li>
+<li><a href="#maven_filefilter">maven_filefilter</a></li>
 <li><a href="#maven_initialize">maven_initialize</a></li>
-<li><a href="#maven_javac_count_probs">maven_javac_count_probs</a></li>
+<li><a href="#maven_javac_logfilter">maven_javac_logfilter</a></li>
 <li><a href="#maven_modules_worker">maven_modules_worker</a></li>
 <li><a href="#maven_parse_args">maven_parse_args</a></li>
 <li><a href="#maven_precheck">maven_precheck</a></li>
-<li><a href="#maven_scalac_count_probs">maven_scalac_count_probs</a></li>
 <li><a href="#maven_usage">maven_usage</a></li>
 <li><a href="#mvnsite_filefilter">mvnsite_filefilter</a></li>
 <li><a href="#nobuild_buildfile">nobuild_buildfile</a></li>
@@ -623,12 +628,12 @@
 </tr>
 </tbody></table>
 
-<h3 id="ant_initialize"><code>ant_initialize</code></h3>
+<h3 id="ant_filefilter"><code>ant_filefilter</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>ant_initialize
+<pre class="highlight plaintext"><code>ant_filefilter
 </code></pre>
 
 <ul>
@@ -663,12 +668,12 @@
 </tr>
 </tbody></table>
 
-<h3 id="ant_javac_count_probs"><code>ant_javac_count_probs</code></h3>
+<h3 id="ant_initialize"><code>ant_initialize</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>ant_javac_count_probs
+<pre class="highlight plaintext"><code>ant_initialize
 </code></pre>
 
 <ul>
@@ -829,6 +834,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>asflicense_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="asflicense_usage"><code>asflicense_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>asflicense_usage
 </code></pre>
 
 <ul>
@@ -1103,46 +1148,6 @@
 </tr>
 </tbody></table>
 
-<h3 id="cc_count_probs"><code>cc_count_probs</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>cc_count_probs
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
-</tr>
-</tbody></table>
-
 <h3 id="cc_filefilter"><code>cc_filefilter</code></h3>
 
 <ul>
@@ -1189,6 +1194,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>checkstyle_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_parse_args"><code>checkstyle_parse_args</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_parse_args
 </code></pre>
 
 <ul>
@@ -1349,6 +1394,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>checkstyle_runner
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
+<h3 id="checkstyle_usage"><code>checkstyle_usage</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>checkstyle_usage
 </code></pre>
 
 <ul>
@@ -2063,92 +2148,52 @@
 </tr>
 </tbody></table>
 
+<h3 id="gradle_filefilter"><code>gradle_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>gradle_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
 <h3 id="gradle_initialize"><code>gradle_initialize</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>gradle_initialize
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
-</tr>
-</tbody></table>
-
-<h3 id="gradle_javac_count_probs"><code>gradle_javac_count_probs</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>gradle_javac_count_probs
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
-</tr>
-</tbody></table>
-
-<h3 id="gradle_javadoc_count_probs"><code>gradle_javadoc_count_probs</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>gradle_javadoc_count_probs
 </code></pre>
 
 <ul>
@@ -2229,46 +2274,6 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>gradle_parse_args
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
-</tr>
-</tbody></table>
-
-<h3 id="gradle_scalac_count_probs"><code>gradle_scalac_count_probs</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>gradle_scalac_count_probs
 </code></pre>
 
 <ul>
@@ -3023,6 +3028,46 @@
 </tr>
 </tbody></table>
 
+<h3 id="maven_filefilter"><code>maven_filefilter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>maven_filefilter
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
+
 <h3 id="maven_initialize"><code>maven_initialize</code></h3>
 
 <ul>
@@ -3063,12 +3108,12 @@
 </tr>
 </tbody></table>
 
-<h3 id="maven_javac_count_probs"><code>maven_javac_count_probs</code></h3>
+<h3 id="maven_javac_logfilter"><code>maven_javac_logfilter</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>maven_javac_count_probs
+<pre class="highlight plaintext"><code>maven_javac_logfilter
 </code></pre>
 
 <ul>
@@ -3189,46 +3234,6 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>maven_precheck
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
-</tr>
-</tbody></table>
-
-<h3 id="maven_scalac_count_probs"><code>maven_scalac_count_probs</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>maven_scalac_count_probs
 </code></pre>
 
 <ul>

@@ -50,7 +50,12 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/downloads/">Downloads</a>
-                <li><a href="/documentation/in-progress/">Documentation</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
@@ -127,6 +132,20 @@
 
 <p>The <code>--docker</code> parameter tells test-patch to run in Docker mode. The <code>--dockerfile</code> parameter allows one to provide a custom Dockerfile. The Dockerfile should contain all of the necessary binaries and tooling needed to run the test.  test-patch will copy this file up until the text &ldquo;YETUS CUT HERE&rdquo; to a different directory and then append its necessary hooks to re-launch itself prior to executing docker.</p>
 
+<p>If a custom Dockerfile cannot be used or the docker executable does not work, test-patch will attempt to recover by switching to its bundled Dockerfile or disabling docker support and running locally.  This behavior can be changed with the <code>--dockeronfail</code> option.  It takes a list of comma-delimited settings:</p>
+
+<ul>
+<li>fallback - Use the bundled Dockerfile</li>
+<li>continue - Turn off docker support</li>
+<li>fail - fail the test</li>
+</ul>
+
+<p>The &lsquo;fail&rsquo; setting is always the last option that test-patch will use and may be omitted unless it is the only option.</p>
+
+<p>For example, <code>--dockeronfail=continue</code> means if the Dockerfile can&rsquo;t be found, just turn off Docker support and continue running.  <code>--dockeronfail=fallback</code> will switch to the bundled Dockerfile and then fail the build if docker fails to work. <code>--dockeronfail=fail</code> means to just fail the build and do not try any other mechanisms of recovery. The default is &#39;fallback,continue,fail&rsquo; which will allow test-patch to try to continue executing as much as it possibily can.</p>
+
+<p>Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.</p>
+
 <p>NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the &ndash;basedir and &ndash;patch-dir options respectively), because automatically mountable directories are limited to them. See <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume">the Docker documentation</a>.</p>
 
 <p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in &ndash;jenkins mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.</p>
@@ -137,7 +156,7 @@
 
 <h2 id="common-plug-in-functions">Common Plug-in Functions</h2>
 
-<p>Every plug-in must have one line in order to be recognized, usually an &lsquo;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
+<p>Every plug-in must have one line in order to be recognized, usually an &#39;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
 <pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
 
@@ -328,11 +347,11 @@
 <li><p>CHANGED_FILES is a list of all files that appear to be added, deleted, or modified in the patch.</p></li>
 <li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
 <li><p>GITHUB_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.</p></li>
-<li><p>HOW_TO_CONTRIBUTE should be a URL that points to a project&rsquo;s on-boarding documentation for new users. Currently, it is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project&rsquo;s personality.</p></li>
 <li><p>JIRA_ISSUE_RE is to help test-patch when talking to JIRA.  It helps determine if the given project is appropriate for the given JIRA issue.</p></li>
 <li><p>MODULE and other MODULE_* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.</p></li>
 <li><p>PATCH_BRANCH_DEFAULT is the name of the branch in the git repo that is considered the master.  This is useful to set in personalities.</p></li>
 <li><p>PATCH_DIR is the name of the temporary directory that houses test-patch artifacts (such as logs and the patch file itself)</p></li>
+<li><p>PATCH_NAMING_RULE should be a URL that points to a project&rsquo;s on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project&rsquo;s personality.</p></li>
 <li><p>TEST_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST_THREADS is the number of threads that have been requested to run in parallel.</p></li>
 </ul>
 

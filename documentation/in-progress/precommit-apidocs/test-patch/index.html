@@ -50,7 +50,12 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/downloads/">Downloads</a>
-                <li><a href="/documentation/in-progress/">Documentation</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
@@ -154,7 +159,7 @@
 <li><a href="#compile">compile</a></li>
 <li><a href="#compile_cycle">compile_cycle</a></li>
 <li><a href="#distclean">distclean</a></li>
-<li><a href="#generic_count_probs">generic_count_probs</a></li>
+<li><a href="#generic_logfilter">generic_logfilter</a></li>
 <li><a href="#generic_post_handler">generic_post_handler</a></li>
 <li><a href="#generic_postlog_compare">generic_postlog_compare</a></li>
 <li><a href="#generic_pre_handler">generic_pre_handler</a></li>
@@ -169,7 +174,6 @@
 <li>Private/Stable/Replaceable
 
 <ul>
-<li><a href="#finish_docker_stats">finish_docker_stats</a></li>
 <li><a href="#prepopulate_footer">prepopulate_footer</a></li>
 <li><a href="#report_jvm_version">report_jvm_version</a></li>
 </ul></li>
@@ -1128,12 +1132,12 @@
 </tr>
 </tbody></table>
 
-<h3 id="generic_count_probs"><code>generic_count_probs</code></h3>
+<h3 id="generic_logfilter"><code>generic_logfilter</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>generic_count_probs
+<pre class="highlight plaintext"><code>generic_logfilter
 </code></pre>
 
 <ul>
@@ -1579,46 +1583,6 @@
 </tbody></table>
 
 <h2 id="private-stable-replaceable">Private/Stable/Replaceable</h2>
-
-<h3 id="finish_docker_stats"><code>finish_docker_stats</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>finish_docker_stats
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>Put docker stats in various tables</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Private</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Stable</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">Yes</td>
-</tr>
-</tbody></table>
 
 <h3 id="prepopulate_footer"><code>prepopulate_footer</code></h3>
 

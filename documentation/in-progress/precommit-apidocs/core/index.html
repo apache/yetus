@@ -50,7 +50,12 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/downloads/">Downloads</a>
-                <li><a href="/documentation/in-progress/">Documentation</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
                 </li>
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
@@ -134,6 +139,7 @@
 <ul>
 <li><a href="#common_defaults">common_defaults</a></li>
 <li><a href="#patchfile_verify_zero">patchfile_verify_zero</a></li>
+<li><a href="#yetus_abs">yetus_abs</a></li>
 <li><a href="#yetus_add_entry">yetus_add_entry</a></li>
 <li><a href="#yetus_debug">yetus_debug</a></li>
 <li><a href="#yetus_delete_entry">yetus_delete_entry</a></li>
@@ -149,6 +155,7 @@
 <li>None/None/Not Replaceable
 
 <ul>
+<li><a href="#docker_version">docker_version</a></li>
 <li><a href="#personality_file_tests">personality_file_tests</a></li>
 <li><a href="#personality_modules">personality_modules</a></li>
 </ul></li>
@@ -768,6 +775,50 @@
 </tr>
 </tbody></table>
 
+<h3 id="yetus_abs"><code>yetus_abs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_abs directory
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Given a filename or dir, return the absolute version of it</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<h2 id="returns-0-success">@returns      0 success</h2>
+
+<h2 id="returns-1-failure">@returns      1 failure</h2>
+
+<h2 id="returns-stdout-abspath">@returns      stdout abspath</h2>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
 <h3 id="yetus_add_entry"><code>yetus_add_entry</code></h3>
 
 <ul>
@@ -1051,6 +1102,46 @@
 </tbody></table>
 
 <h2 id="none-none-not-replaceable">None/None/Not Replaceable</h2>
+
+<h3 id="docker_version"><code>docker_version</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>docker_version
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">None</td>
+</tr>
+</tbody></table>
 
 <h3 id="personality_file_tests"><code>personality_file_tests</code></h3>
 
