@@ -37,12 +37,9 @@ function personality_globals
 function hadoop_module_manipulation
 {
   local startingmodules=${1:-normal}
+  local full_ordered_hadoop_modules;
   local module
-  local hdfs_modules
-  local mapred_modules
-  local yarn_modules
   local ordered_modules
-  local tools_modules
   local passed_modules
   local flags
 
@@ -56,11 +53,15 @@ function hadoop_module_manipulation
 
   yetus_debug "hmm expanded to: ${startingmodules}"
 
-  if [[ ${startingmodules} = "." ]]; then
-    yetus_debug "hmm shortcut since ."
-    HADOOP_MODULES=.
-    return
-  fi
+  # If "." is present along with other changed modules,
+  # then just choose "."
+  for module in ${startingmodules}; do
+    if [[ "${module}" = "." ]]; then
+      yetus_debug "hmm shortcut since ."
+      HADOOP_MODULES=.
+      return
+    fi
+  done
 
   # ${startingmodules} is already sorted and uniq'd.
   # let's remove child modules if we're going to
@@ -74,39 +75,116 @@ function hadoop_module_manipulation
 
   yetus_debug "hmm pre-ordering: ${startingmodules}"
 
-  # Hadoop's compilation rules are complex
-  # Precedence: common > [hdfs|yarn] > mapred > tools
-  #  - everything depends upon common
-  #  - hdfs needs common's native bits for unit tests
-  #  - mapred depends upon yarn since it is a yarn app
-  #  - tools can require anything
+  # Build a full ordered list of modules
+  # based in maven dependency and re-arrange changed modules
+  # in dependency order.
+  # NOTE: module names with spaces not expected in hadoop
+  full_ordered_hadoop_modules=(
+    hadoop-build-tools
+    hadoop-project
+    hadoop-common-project/hadoop-annotations
+    hadoop-project-dist
+    hadoop-assemblies
+    hadoop-maven-plugins
+    hadoop-common-project/hadoop-minikdc
+    hadoop-common-project/hadoop-auth
+    hadoop-common-project/hadoop-auth-examples
+    hadoop-common-project/hadoop-common
+    hadoop-common-project/hadoop-nfs
+    hadoop-common-project/hadoop-kms
+    hadoop-common-project
+    hadoop-hdfs-project/hadoop-hdfs-client
+    hadoop-hdfs-project/hadoop-hdfs
+    hadoop-hdfs-project/hadoop-hdfs-native-client
+    hadoop-hdfs-project/hadoop-hdfs-httfs
+    hadoop-hdfs-project/hadoop-hdfs/src/contrib/bkjournal
+    hadoop-hdfs-project/hadoop-hdfs-nfs
+    hadoop-hdfs-project
+    hadoop-yarn-project/hadoop-yarn
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-applicationhistoryservice
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-tests
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-sharedcachemanager
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-unmanaged-am-launcher
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-site
+    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-registry
+    hadoop-yarn-project
+    hadoop-mapreduce-project/hadoop-mapreduce-client
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins
+    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-nativetask
+    hadoop-mapreduce-project/hadoop-mapreduce-examples
+    hadoop-mapreduce-project
+    hadoop-tools/hadoop-streaming
+    hadoop-tools/hadoop-distcp
+    hadoop-tools/hadoop-archives
+    hadoop-tools/hadoop-archive-logs
+    hadoop-tools/hadoop-rumen
+    hadoop-tools/hadoop-gridmix
+    hadoop-tools/hadoop-datajoin
+    hadoop-tools/hadoop-ant
+    hadoop-tools/hadoop-extras
+    hadoop-tools/hadoop-pipes
+    hadoop-tools/hadoop-openstack
+    hadoop-tools/hadoop-aws
+    hadoop-tools/hadoop-azure
+    hadoop-client
+    hadoop-minicluster
+    hadoop-tools/hadoop-sls
+    hadoop-tools/hadoop-tools-dist
+    hadoop-tools/hadoop-kafka
+    hadoop-tools
+    hadoop-dist)
 
-  for module in ${passed_modules}; do
-    yetus_debug "Personality ordering ${module}"
-    if [[ ${module} = "." ]]; then
-      HADOOP_MODULES=.
-      break
-    fi
-
-    if [[ ${module} = hadoop-hdfs-project* ]]; then
-      hdfs_modules="${hdfs_modules} ${module}"
-    elif [[ ${module} = hadoop-common-project/hadoop-common
-      || ${module} = hadoop-common-project ]]; then
-      ordered_modules="${ordered_modules} ${module}"
-    elif [[ ${module} = hadoop-tools* ]]; then
-      tools_modules="${tools_modules} ${module}"
-    elif [[ ${module} = hadoop-mapreduce-project* ]]; then
-      mapred_modules="${mapred_modules} ${module}"
-    elif [[ ${module} = hadoop-yarn-project* ]]; then
-      yarn_modules="${yarn_modules} ${module}"
-    else
+  # For each expected ordered module,
+  # if it's in changed modules, add to HADOOP_MODULES
+  for module in "${full_ordered_hadoop_modules[@]}"; do
+    # shellcheck disable=SC2086
+    if hadoop_check_module_present "${module}" ${passed_modules}; then
+      yetus_debug "Personality ordering ${module}"
       ordered_modules="${ordered_modules} ${module}"
     fi
   done
 
-  HADOOP_MODULES="${ordered_modules} ${hdfs_modules} ${yarn_modules} ${mapred_modules} ${tools_modules}"
+  # For modules which are not in ordered list,
+  # add them at last
+  for module in $( echo "${passed_modules}" | tr ' ' '\n'); do
+    # shellcheck disable=SC2086
+    if ! hadoop_check_module_present "${module}" ${ordered_modules}; then
+      yetus_debug "Personality ordering ${module}"
+      ordered_modules="${ordered_modules} ${module}"
+    fi
+  done
+
+  HADOOP_MODULES="${ordered_modules}"
 
   yetus_debug "hmm out: ${HADOOP_MODULES}"
+}
+
+function hadoop_check_module_present
+{
+  local module_to_check=${1}
+  shift
+  for module in "${@}"; do
+    if [[ ${module_to_check} = "${module}" ]]; then
+      return 0
+    fi
+  done
+  return 1
 }
 
 function hadoop_unittest_prereqs
