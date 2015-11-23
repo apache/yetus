@@ -98,6 +98,7 @@ function dockerverify
 
     if [[ ! -f "${pathdocker}" ]]; then
       yetus_error "Docker cannot be found."
+      DOCKERCMD=docker
       return 1
     fi
     DOCKERCMD="${pathdocker}"

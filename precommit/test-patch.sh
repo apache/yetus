@@ -2532,6 +2532,13 @@ function initialize
   # plugins need to pushd/popd if they change.
   git_checkout
 
+  determine_issue
+  if [[ "${ISSUE}" == 'Unknown' ]]; then
+    echo "Testing patch on ${PATCH_BRANCH}."
+  else
+    echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
+  fi
+
   patchfile_dryrun_driver "${PATCH_DIR}/patch"
   if [[ $? != 0 ]]; then
     ((RESULT = RESULT + 1))
@@ -2539,13 +2546,6 @@ function initialize
     add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
     bugsystem_finalreport 1
     cleanup_and_exit 1
-  fi
-
-  determine_issue
-  if [[ "${ISSUE}" == 'Unknown' ]]; then
-    echo "Testing patch on ${PATCH_BRANCH}."
-  else
-    echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
   fi
 
   find_changed_files
