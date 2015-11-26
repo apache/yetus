@@ -79,10 +79,13 @@ class ApiDocs
   end
 end
 
+SHELLDOCS = File.absolute_path('../shelldocs/shelldocs.py')
+
 def shelldocs(output, docs=[])
-  unless FileUtils.uptodate? output, docs
+  unless FileUtils.uptodate?(output, docs) &&
+         FileUtils.uptodate?(output, [SHELLDOCS])
     inputs=docs.map do |entry| "--input=#{entry}" end
-    `../shelldocs/shelldocs.py --skipprnorep --output #{output} #{inputs.join ' '}`
+    `#{SHELLDOCS} --skipprnorep --output #{output} #{inputs.join ' '}`
   end
 end
 
@@ -104,19 +107,28 @@ end
 after_configuration do
   # For Audiene Annotations we just rely on having made javadocs with Maven
   sitemap.register_resource_list_manipulator(:audience_annotations, ApiDocs.new(sitemap, "audience-annotations-apidocs", "../audience-annotations-component/target/site/apidocs"))
+
   # For Precommit we regenerate source files so they can be rendered.
-  FileUtils.mkdir_p 'source/documentation/in-progress/precommit-apidocs'
+  # we rely on a symlink. to avoid an error from the file watcher, our target
+  # has to be outside of hte asf-site-src directory.
+  # TODO when we can, update to middleman 4 so we can use multiple source dirs
+  # instead of symlinks
+  FileUtils.mkdir_p '../target/in-progress/precommit-apidocs'
   # core API
-  shelldocs('source/documentation/in-progress/precommit-apidocs/core.md', Dir.glob("../precommit/core.d/*.sh"))
+  shelldocs('../target/in-progress/precommit-apidocs/core.md',
+            Dir.glob("../precommit/core.d/*.sh"))
   # smart-apply-patch API
-  shelldocs('source/documentation/in-progress/precommit-apidocs/smart-apply-patch.md', ['../precommit/smart-apply-patch.sh'])
+  shelldocs('../target/in-progress/precommit-apidocs/smart-apply-patch.md',
+            ['../precommit/smart-apply-patch.sh'])
   # primary API
-  shelldocs('source/documentation/in-progress/precommit-apidocs/test-patch.md', ['../precommit/test-patch.sh'])
+  shelldocs('../target/in-progress/precommit-apidocs/test-patch.md',
+            ['../precommit/test-patch.sh'])
   # plugins API
-  shelldocs('source/documentation/in-progress/precommit-apidocs/plugins.md', Dir.glob('../precommit/test-patch.d/*.sh'))
+  shelldocs('../target/in-progress/precommit-apidocs/plugins.md',
+            Dir.glob('../precommit/test-patch.d/*.sh'))
   unless data.versions.releases.nil?
     data.versions.releases.each do |release|
-      releasenotes('source/documentation', release)
+      releasenotes('../target', release)
     end
   end
 end
