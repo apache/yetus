@@ -127,13 +127,13 @@ class ShellFunction:
     self.replaceb=self.replaceb.capitalize()
 
   def getreplace(self):
-    if (self.replaceb is None):
-      return "None"
-    else:
+    if self.replaceb == "Yes":
       return self.replaceb
+    else:
+      return "No"
 
   def getinter(self):
-    return( (self.getaudience(), self.getstability(), self.getreplace()))
+    return ((self.getaudience(), self.getstability(), self.getreplace()))
 
   def addreturn(self,text):
     if (self.returnt is None):
@@ -170,7 +170,7 @@ class ShellFunction:
 
   def getusage(self):
     line="%s %s" % (self.name, self.getparams())
-    return line
+    return line.rstrip()
 
   def headerbuild(self):
     if self.getreplace() == "Yes":
