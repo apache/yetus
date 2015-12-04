@@ -449,7 +449,14 @@ def main():
                       default=False, help="use current date for unreleased versions")
     parser.add_option("-v", "--version", dest="versions", action="append", type="string",
                       help="versions in JIRA to include in releasenotes", metavar="VERSION")
+    parser.add_option("-V", dest="release_version", action="store_true", default=False,
+                      help="display version information for releasedocmaker and exit.")
     (options, _) = parser.parse_args()
+
+    if options.release_version:
+        with open(os.path.join(os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+            print ver_file.read()
+        sys.exit(0)
 
     if options.versions is None:
         parser.error("At least one version needs to be supplied")

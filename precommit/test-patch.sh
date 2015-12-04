@@ -685,6 +685,7 @@ function yetus_usage
   echo "--test-parallel=<bool> Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   echo "--test-threads=<int>   Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
   echo "--user-plugins=<dir>   A directory of user provided plugins. see test-patch.d for examples (default empty)"
+  echo "--version              Print release version information and exit"
   echo ""
   echo "Shell binary overrides:"
   echo "--awk-cmd=<cmd>        The 'awk' command to use (default 'awk')"
@@ -1988,9 +1989,12 @@ function bugsystem_linecomments
 ## @replaceable  no
 function bugsystem_finalreport
 {
+  declare version
   declare bugs
 
-  add_footer_table "Powered by" "Apache Yetus   http://yetus.apache.org"
+  version=$(cat "${BINDIR}/../VERSION")
+
+  add_footer_table "Powered by" "Apache Yetus ${version}   http://yetus.apache.org"
 
   for bugs in ${BUGCOMMENTS}; do
     if declare -f ${bugs}_finalreport >/dev/null;then

@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import re
 import sys
 import string
@@ -221,8 +222,15 @@ def main():
      help="file to read", metavar="INFILE")
   parser.add_option("--skipprnorep", dest="skipprnorep",
      action="store_true", help="Skip Private & Not Replaceable")
+  parser.add_option("-V", "--version", dest="release_version", action="store_true", default=False,
+                    help="display version information for shelldocs and exit.")
 
   (options, args)=parser.parse_args()
+
+  if options.release_version:
+    with open(os.path.join(os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+      print ver_file.read()
+    sys.exit(0)
 
   allfuncs=[]
   for filename in options.infile:

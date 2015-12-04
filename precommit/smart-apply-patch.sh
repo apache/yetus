@@ -96,6 +96,7 @@ function yetus_usage
   echo "--project=<name>       The short name for project currently using test-patch (default 'yetus')"
   echo "--skip-system-plugins  Do not load plugins from ${BINDIR}/test-patch.d"
   echo "--user-plugins=<dir>   A directory of user provided plugins. see test-patch.d for examples (default empty)"
+  echo "--version              Print release version information and exit"
   echo ""
   echo "Shell binary overrides:"
   echo "--awk-cmd=<cmd>        The 'awk' command to use (default 'awk')"

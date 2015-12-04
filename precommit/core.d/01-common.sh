@@ -93,6 +93,7 @@ function common_args
 {
   declare i
   declare showhelp=false
+  declare showversion=false
   declare version
 
   for i in "$@"; do
@@ -164,12 +165,19 @@ function common_args
       --user-plugins=*)
         USER_PLUGIN_DIR=${i#*=}
       ;;
+      --version)
+        showversion=true
+      ;;
       *)
       ;;
     esac
   done
   if [[ ${showhelp} == true ]]; then
     yetus_usage
+    exit 0
+  fi
+  if [[ ${showversion} == true ]]; then
+    cat "${BINDIR}/../VERSION"
     exit 0
   fi
 
