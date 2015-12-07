@@ -57,7 +57,7 @@ function pylint_preapply
 {
   local i
   local count
-  local tmp=pylint.$$.${RANDOM}
+  local pylintStderr=branch-pylint-stderr.txt
 
   verify_needed_test pylint
   if [[ $? == 0 ]]; then
@@ -79,16 +79,17 @@ function pylint_preapply
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
       # shellcheck disable=SC2086
       eval "${PYLINT} ${PYLINT_OPTIONS} --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' --reports=n ${i}" \
-        2>${PATCH_DIR}/${tmp} | ${AWK} '1<NR' >> "${PATCH_DIR}/branch-pylint-result.txt"
-    fi
-    # shellcheck disable=SC2016
-    count=$(${GREP} -v "^No config file found" "${PATCH_DIR}/${tmp}" | wc -l | ${AWK} '{print $1}')
-    if [[ ${count} -gt 0 ]]; then
-      add_footer_table pylint "prepatch stderr: @@BASE@@/${tmp}"
-      return 1
+        2>>${PATCH_DIR}/${pylintStderr} | ${AWK} '1<NR' >> "${PATCH_DIR}/branch-pylint-result.txt"
     fi
   done
-  rm "${PATCH_DIR}/${tmp}" 2>/dev/null
+  if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
+    count=$(${GREP} -vc "^No config file found" "${PATCH_DIR}/${pylintStderr}")
+    if [[ ${count} -gt 0 ]]; then
+      add_footer_table pylint "prepatch stderr: @@BASE@@/${pylintStderr}"
+      return 1
+    fi
+  fi
+  rm "${PATCH_DIR}/${pylintStderr}" 2>/dev/null
   popd >/dev/null
   # keep track of how much as elapsed for us already
   PYLINT_TIMER=$(stop_clock)
@@ -102,7 +103,7 @@ function pylint_postapply
   local numPrepatch
   local numPostpatch
   local diffPostpatch
-  local tmp=pylint.$$.${RANDOM}
+  local pylintStderr=patch-pylint-stderr.txt
 
   verify_needed_test pylint
   if [[ $? == 0 ]]; then
@@ -130,17 +131,18 @@ function pylint_postapply
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
       # shellcheck disable=SC2086
       eval "${PYLINT} ${PYLINT_OPTIONS} --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' --reports=n ${i}" \
-        2>${PATCH_DIR}/${tmp} | ${AWK} '1<NR' >> "${PATCH_DIR}/patch-pylint-result.txt"
-    fi
-    # shellcheck disable=SC2016
-    count=$(${GREP} -v "^No config file found" "${PATCH_DIR}/${tmp}" | wc -l | ${AWK} '{print $1}')
-    if [[ ${count} -gt 0 ]]; then
-      add_vote_table -1 pylint "Something bad seems to have happened in running pylint. Please check pylint stderr files."
-      add_footer_table pylint "postpatch stderr: @@BASE@@/${tmp}"
-      return 1
+        2>>${PATCH_DIR}/${pylintStderr} | ${AWK} '1<NR' >> "${PATCH_DIR}/patch-pylint-result.txt"
     fi
   done
-  rm "${PATCH_DIR}/${tmp}" 2>/dev/null
+  if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
+    count=$(${GREP} -vc "^No config file found" "${PATCH_DIR}/${pylintStderr}")
+    if [[ ${count} -gt 0 ]]; then
+      add_vote_table -1 pylint "Something bad seems to have happened in running pylint. Please check pylint stderr files."
+      add_footer_table pylint "postpatch stderr: @@BASE@@/${pylintStderr}"
+      return 1
+    fi
+  fi
+  rm "${PATCH_DIR}/${pylintStderr}" 2>/dev/null
   popd >/dev/null
 
   # shellcheck disable=SC2016
