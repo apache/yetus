@@ -75,7 +75,8 @@ function asflicense_tests
       modules_workers patch asflicense rat
     ;;
     maven)
-      modules_workers patch asflicense apache-rat:check
+      modules_workers patch asflicense -fn apache-rat:check
+      btfails=false
     ;;
     *)
       if [[ -z "${ASFLICENSE_RAT_JAR}" ]]; then
