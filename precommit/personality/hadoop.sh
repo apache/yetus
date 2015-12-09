@@ -240,7 +240,7 @@ function hadoop_native_flags
   # current build servers are pretty limited in
   # what they support
   if [[ ${JENKINS} = true
-      && ${DOCKERSUPPORT} = false ]]; then
+      && ${DOCKERMODE} = false ]]; then
     # shellcheck disable=SC2086
     echo -Pnative \
       -Drequire.snappy -Drequire.openssl -Drequire.fuse \
