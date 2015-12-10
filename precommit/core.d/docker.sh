@@ -30,6 +30,10 @@ function docker_initialize
     add_footer_table "Docker" "${DOCKER_VERSION}"
   fi
 
+  if [[ "${DOCKERSUPPORT}" != true ]]; then
+    return
+  fi
+
   # turn DOCKERFAIL into a string composed of numbers
   # to ease interpretation:  123, 213, 321, ... whatever
   # some of these combos are non-sensical but that's ok.
@@ -40,36 +44,7 @@ function docker_initialize
   DOCKERFAIL=${DOCKERFAIL//fail/3}
   DOCKERFAIL=${DOCKERFAIL//[[:blank:]]/}
 
-  if [[ "${DOCKERSUPPORT}" != true ]]; then
-    return
-  fi
-
-  if [[ -n "${DOCKERFILE}" ]]; then
-    pushd "${STARTINGDIR}" >/dev/null
-    if [[ -f ${DOCKERFILE} ]]; then
-      DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
-    else
-      if [[ "${DOCKERFAIL}" =~ ^1 ]]; then
-        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
-        add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
-        DOCKERFILE=${DOCKERFILE_DEFAULT}
-      elif [[ "${DOCKERFAIL}" =~ ^2 ]]; then
-        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, disabling docker."
-        add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, disabling docker."
-        DOCKERSUPPORT=false
-      else
-        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found."
-        add_vote_table -1 docker "Dockerfile '${DOCKERFILE}' not found."
-        bugsystem_finalreport 1
-        cleanup_and_exit 1
-      fi
-    fi
-    popd >/dev/null
-  else
-    DOCKERFILE=${DOCKERFILE_DEFAULT}
-  fi
-
-  dockerverify
+  docker_exeverify
   if [[ $? != 0 ]]; then
     if [[ "${DOCKERFAIL}" =~ ^12
        || "${DOCKERFAIL}" =~ ^2 ]]; then
@@ -83,13 +58,49 @@ function docker_initialize
   fi
 }
 
+## @description  Verify dockerfile exists
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       exits on failure if configured
+function docker_fileverify
+{
+  if [[ ${DOCKERMODE} = false &&
+        ${DOCKERSUPPORT} = true ]]; then
+    if [[ -n "${DOCKERFILE}" ]]; then
+      pushd "${STARTINGDIR}" >/dev/null
+      if [[ -f ${DOCKERFILE} ]]; then
+        DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
+      else
+        if [[ "${DOCKERFAIL}" =~ ^1 ]]; then
+          yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
+          add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
+          DOCKERFILE=${DOCKERFILE_DEFAULT}
+        elif [[ "${DOCKERFAIL}" =~ ^2 ]]; then
+          yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, disabling docker."
+          add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, disabling docker."
+          DOCKERSUPPORT=false
+        else
+          yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found."
+          add_vote_table -1 docker "Dockerfile '${DOCKERFILE}' not found."
+          bugsystem_finalreport 1
+          cleanup_and_exit 1
+        fi
+      fi
+      popd >/dev/null
+    else
+      DOCKERFILE=${DOCKERFILE_DEFAULT}
+    fi
+  fi
+}
+
 ## @description  Verify docker exists
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @return       1 if docker is broken
 ## @return       0 if docker is working
-function dockerverify
+function docker_exeverify
 {
   declare pathdocker
 

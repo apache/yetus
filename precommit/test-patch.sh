@@ -62,6 +62,7 @@ function setup_defaults
 
   ALLOWSUMMARIES=true
 
+  DOCKERMODE=false
   DOCKERSUPPORT=false
   BUILD_NATIVE=${BUILD_NATIVE:-true}
 
@@ -2524,6 +2525,8 @@ function initialize
   # we need to do this BEFORE plugins initalize
   # because they may change what they do based upon
   # docker support
+  # note that docker support still isn't guaranteed
+  # to be working even after this is executed here!
   if declare -f docker_initialize >/dev/null; then
     docker_initialize
   fi
@@ -2553,6 +2556,13 @@ function initialize
   fi
 
   find_changed_files
+
+  # re-verify that our dockerfile is still there (branch switch, etc)
+  # note that there is still a chance that docker mode will be
+  # disabled from here. Plug-ins should plan appropriately!
+  if declare -f docker_fileverify >/dev/null; then
+    docker_fileverify
+  fi
 
   check_reexec
 
