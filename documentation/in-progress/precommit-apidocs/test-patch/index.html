@@ -139,15 +139,7 @@
 <li><a href="#setup_defaults">setup_defaults</a></li>
 <li><a href="#start_clock">start_clock</a></li>
 <li><a href="#stop_clock">stop_clock</a></li>
-</ul></li>
-<li>Public/Stable/Not Replaceable
-
-<ul>
 <li><a href="#write_comment">write_comment</a></li>
-</ul></li>
-<li>Public/Stable/Not Replaceable
-
-<ul>
 <li><a href="#yetus_usage">yetus_usage</a></li>
 </ul></li>
 <li>Public/Evolving/Not Replaceable
@@ -159,7 +151,7 @@
 <li><a href="#compile">compile</a></li>
 <li><a href="#compile_cycle">compile_cycle</a></li>
 <li><a href="#distclean">distclean</a></li>
-<li><a href="#generic_count_probs">generic_count_probs</a></li>
+<li><a href="#generic_logfilter">generic_logfilter</a></li>
 <li><a href="#generic_post_handler">generic_post_handler</a></li>
 <li><a href="#generic_postlog_compare">generic_postlog_compare</a></li>
 <li><a href="#generic_pre_handler">generic_pre_handler</a></li>
@@ -174,7 +166,6 @@
 <li>Private/Stable/Replaceable
 
 <ul>
-<li><a href="#finish_docker_stats">finish_docker_stats</a></li>
 <li><a href="#prepopulate_footer">prepopulate_footer</a></li>
 <li><a href="#report_jvm_version">report_jvm_version</a></li>
 </ul></li>
@@ -182,12 +173,6 @@
 
 <ul>
 <li><a href="#verify_patchdir_still_exists">verify_patchdir_still_exists</a></li>
-</ul></li>
-<li>Private/Evolving/Not Replaceable
-
-<ul>
-<li><a href="#import_core">import_core</a></li>
-<li><a href="#prechecks">prechecks</a></li>
 </ul></li>
 </ul>
 
@@ -213,9 +198,9 @@
 <li>Returns</li>
 </ul>
 
-<h2 id="returns-1-no-path">@returns     1 - no, path</h2>
+<p>1 - no, path</p>
 
-<h2 id="returns-0-yes-path-basedir">@returns     0 - yes, path - BASEDIR</h2>
+<p>0 - yes, path - BASEDIR</p>
 
 <table><thead>
 <tr>
@@ -539,7 +524,7 @@
 <li>Returns</li>
 </ul>
 
-<h2 id="returns">@returns      $?</h2>
+<p>$?</p>
 
 <table><thead>
 <tr>
@@ -801,14 +786,12 @@
 </tr>
 </tbody></table>
 
-<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
-
 <h3 id="write_comment"><code>write_comment</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>write_comment ## @params filename
+<pre class="highlight plaintext"><code>write_comment filename
 </code></pre>
 
 <ul>
@@ -839,11 +822,9 @@
 </tr>
 <tr>
 <td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
+<td style="text-align: left">No</td>
 </tr>
 </tbody></table>
-
-<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
 
 <h3 id="yetus_usage"><code>yetus_usage</code></h3>
 
@@ -1133,12 +1114,12 @@
 </tr>
 </tbody></table>
 
-<h3 id="generic_count_probs"><code>generic_count_probs</code></h3>
+<h3 id="generic_logfilter"><code>generic_logfilter</code></h3>
 
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>generic_count_probs
+<pre class="highlight plaintext"><code>generic_logfilter
 </code></pre>
 
 <ul>
@@ -1585,46 +1566,6 @@
 
 <h2 id="private-stable-replaceable">Private/Stable/Replaceable</h2>
 
-<h3 id="finish_docker_stats"><code>finish_docker_stats</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>finish_docker_stats
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>Put docker stats in various tables</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Private</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Stable</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">Yes</td>
-</tr>
-</tbody></table>
-
 <h3 id="prepopulate_footer"><code>prepopulate_footer</code></h3>
 
 <ul>
@@ -1670,7 +1611,7 @@
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>report_jvm_version ## @params       directory
+<pre class="highlight plaintext"><code>report_jvm_version directory
 </code></pre>
 
 <ul>
@@ -1683,7 +1624,7 @@
 <li>Returns</li>
 </ul>
 
-<h2 id="returns-version">@returns      version</h2>
+<p>version</p>
 
 <table><thead>
 <tr>
@@ -1725,7 +1666,7 @@
 <li>Returns</li>
 </ul>
 
-<h2 id="returns-may-exit-on-failure">@returns     may exit on failure</h2>
+<p>may exit on failure</p>
 
 <table><thead>
 <tr>
@@ -1744,88 +1685,6 @@
 <tr>
 <td style="text-align: left">Replaceable</td>
 <td style="text-align: left">Yes</td>
-</tr>
-</tbody></table>
-
-<h2 id="private-evolving-not-replaceable">Private/Evolving/Not Replaceable</h2>
-
-<h3 id="import_core"><code>import_core</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>import_core
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>import core library routines</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Private</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Evolving</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
-</tr>
-</tbody></table>
-
-<h3 id="prechecks"><code>prechecks</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>prechecks
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>perform prechecks</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>exits on failure</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Private</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Evolving</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">None</td>
 </tr>
 </tbody></table>
 
