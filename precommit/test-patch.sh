@@ -1386,6 +1386,11 @@ function copytpbits
   # shellcheck disable=SC2164
   (cd "${BINDIR}"; tar cpf - . ) | (cd "${PATCH_DIR}/precommit"; tar xpf - )
 
+  if [[ ! -f "${BINDIR}/VERSION"
+     && -f "${BINDIR}/../VERSION" ]]; then
+    cp -p "${BINDIR}/../VERSION" "${PATCH_DIR}/precommit/VERSION"
+  fi
+
   if [[ -n "${USER_PLUGIN_DIR}"
     && -d "${USER_PLUGIN_DIR}"  ]]; then
     yetus_debug "copying '${USER_PLUGIN_DIR}' over to ${PATCH_DIR}/precommit/user-plugins"
@@ -1993,7 +1998,11 @@ function bugsystem_finalreport
   declare version
   declare bugs
 
-  version=$(cat "${BINDIR}/../VERSION")
+  if [[ -f "${BINDIR}/../VERSION" ]]; then
+    version=$(cat "${BINDIR}/../VERSION")
+  elif [[ -f "${BINDIR}/VERSION" ]]; then
+    version=$(cat "${BINDIR}/VERSION")
+  fi
 
   add_footer_table "Powered by" "Apache Yetus ${version}   http://yetus.apache.org"
 
