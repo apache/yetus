@@ -82,32 +82,43 @@ function setup_defaults
 ## @replaceable  no
 function yetus_usage
 {
-  echo "Usage: smart-apply-patch.sh [options] patch"
-  echo
-  echo "--committer            Apply patches like a boss."
-  echo "--debug                If set, then output some extra stuff to stderr"
-  echo "--dry-run              Check for patch viability without applying"
-  echo "--list-plugins         List all installed plug-ins and then exit"
-  echo "--modulelist=<list>    Specify additional modules to test (comma delimited)"
-  echo "--offline              Avoid connecting to the Internet"
-  echo "--patch-dir=<dir>      The directory for working and output files (default '/tmp/yetus-(random))"
-  echo "--personality=<file>   The personality file to load"
-  echo "--plugins=<list>       Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
-  echo "--project=<name>       The short name for project currently using test-patch (default 'yetus')"
-  echo "--skip-system-plugins  Do not load plugins from ${BINDIR}/test-patch.d"
-  echo "--user-plugins=<dir>   A directory of user provided plugins. see test-patch.d for examples (default empty)"
-  echo "--version              Print release version information and exit"
+  echo "test-patch.sh [OPTIONS] patch"
+  echo ""
+  echo "Where:"
+  echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"
+  echo ""
+  echo "Options:"
+  echo ""
+  yetus_add_option "--committer" "Apply patches like a boss."
+  yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
+  yetus_add_option "--dry-run" "Check for patch viability without applying"
+  yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
+  yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
+  yetus_add_option "--offline" "Avoid connecting to the Internet"
+  yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/yetus-(random))"
+  yetus_add_option "--personality=<file>" "he personality file to load"
+  yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
+  yetus_add_option "--project=<name>" "The short name for project currently using test-patch (default 'yetus')"
+  yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
+  yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
+  yetus_add_option "--version" "Print release version information and exit"
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
   echo ""
   echo "Shell binary overrides:"
-  echo "--awk-cmd=<cmd>        The 'awk' command to use (default 'awk')"
-  echo "--curl-cmd=<cmd>       The 'curl' command to use (default 'curl')"
-  echo "--diff-cmd=<cmd>       The GNU-compatible 'diff' command to use (default 'diff')"
-  echo "--file-cmd=<cmd>       The 'file' command to use (default 'file')"
-  echo "--git-cmd=<cmd>        The 'git' command to use (default 'git')"
-  echo "--grep-cmd=<cmd>       The 'grep' command to use (default 'grep')"
-  echo "--patch-cmd=<cmd>      The 'patch' command to use (default 'patch')"
-  echo "--sed-cmd=<cmd>        The 'sed' command to use (default 'sed')"
+  yetus_add_option "--awk-cmd=<cmd>" "The 'awk' command to use (default 'awk')"
+  yetus_add_option "--curl-cmd=<cmd>" "The 'curl' command to use (default 'curl')"
+  yetus_add_option "--diff-cmd=<cmd>" "The GNU-compatible 'diff' command to use (default 'diff')"
+  yetus_add_option "--file-cmd=<cmd>" "The 'file' command to use (default 'file')"
+  yetus_add_option "--git-cmd=<cmd>" "The 'git' command to use (default 'git')"
+  yetus_add_option "--grep-cmd=<cmd>" "The 'grep' command to use (default 'grep')"
+  yetus_add_option "--patch-cmd=<cmd>" "The 'patch' command to use (default 'patch')"
+  yetus_add_option "--sed-cmd=<cmd>" "The 'sed' command to use (default 'sed')"
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
 
+  echo ""
   importplugins
 
   unset TESTFORMATS
@@ -116,8 +127,11 @@ function yetus_usage
 
   for plugin in ${BUGSYSTEMS}; do
     if declare -f ${plugin}_usage >/dev/null 2>&1; then
-      echo
+      echo ""
+      echo "${plugin} plugin usage options:"
       "${plugin}_usage"
+      yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+      yetus_reset_usage
     fi
   done
 }

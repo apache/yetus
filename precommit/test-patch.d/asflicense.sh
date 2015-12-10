@@ -19,9 +19,8 @@ add_test_type asflicense
 
 function asflicense_usage
 {
-  echo "ASF License Options:"
-  echo "--asflicense-rat-excludes=<path>  path to file containing exclusion patterns"
-  echo "--asflicense-rat-jar=<path>       path to Apache Creadur Rat jar file"
+  yetus_add_option "--asflicense-rat-excludes=<path>" "path to file containing exclusion patterns"
+  yetus_add_option "--asflicense-rat-jar=<path>" "path to Apache Creadur Rat jar file"
 }
 
 function asflicense_parse_args

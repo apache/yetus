@@ -23,9 +23,8 @@ PYLINT_OPTIONS=${PYLINT_OPTIONS:-}
 
 function pylint_usage
 {
-  echo "Pylint specific:"
-  echo "--pylint=<path>         path to pylint executable"
-  echo "--pylint-options=<path> pylint options other than output-format and reports"
+  yetus_add_option "--pylint=<path>" "path to pylint executable"
+  yetus_add_option "--pylint-options=<path>" "pylint options other than output-format and reports"
 }
 
 function pylint_parse_args

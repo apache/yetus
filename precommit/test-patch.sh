@@ -646,70 +646,89 @@ function relative_dir
 ## @replaceable  no
 function yetus_usage
 {
-  echo "Usage: test-patch.sh [options] patch"
-  echo
-  echo "Where:"
-  echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"
-  echo
-  echo "Options:"
-  echo "--basedir=<dir>        The directory to apply the patch to (default current directory)"
-  echo "--branch=<ref>         Forcibly set the branch"
-  echo "--branch-default=<ref> If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
-  echo "--build-native=<bool>  If true, then build native components (default 'true')"
-  # shellcheck disable=SC2153
-  echo "--build-tool=<tool>    Pick which build tool to focus around (${BUILDTOOLS})"
-  echo "--bugcomments=<bug>    Only write comments to the screen and this comma delimited list (${BUGSYSTEMS})"
-  echo "--contrib-guide=<url>  URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
-  echo "--debug                If set, then output some extra stuff to stderr"
-  echo "--dirty-workspace      Allow the local git workspace to have uncommitted changes"
-  echo "--docker               Spawn a docker container"
-  echo "--dockercmd=<file>     Command to use as docker executable (default: docker from path)"
-  echo "--dockerfile=<file>    Dockerfile fragment to use as the base"
-  echo "--dockeronfail=<list>  If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
-  echo "--java-home=<path>     Set JAVA_HOME (In Docker mode, this should be local to the image)"
-  echo "--linecomments=<bug>   Only write line comments to this comma delimited list (defaults to bugcomments)"
-  echo "--list-plugins         List all installed plug-ins and then exit"
-  echo "--multijdkdirs=<paths> Comma delimited lists of JDK paths to use for multi-JDK tests"
-  echo "--multijdktests=<list> Comma delimited tests to use when multijdkdirs is used. (default: javac,javadoc,unit)"
-  echo "--modulelist=<list>    Specify additional modules to test (comma delimited)"
-  echo "--offline              Avoid connecting to the Internet"
-  echo "--patch-dir=<dir>      The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
-  echo "--personality=<file>   The personality file to load"
-  echo "--project=<name>       The short name for project currently using test-patch (default 'yetus')"
-  echo "--plugins=<list>       Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
-  echo "                       e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
-  echo "--resetrepo            Forcibly clean the repo"
-  echo "--run-tests            Run all relevant tests below the base directory"
-  echo "--skip-dirs=<list>     Skip following directories for module finding"
-  echo "--skip-system-plugins  Do not load plugins from ${BINDIR}/test-patch.d"
-  echo "--summarize=<bool>     Allow tests to summarize results"
-  echo "--test-parallel=<bool> Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
-  echo "--test-threads=<int>   Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
-  echo "--user-plugins=<dir>   A directory of user provided plugins. see test-patch.d for examples (default empty)"
-  echo "--version              Print release version information and exit"
-  echo ""
-  echo "Shell binary overrides:"
-  echo "--awk-cmd=<cmd>        The 'awk' command to use (default 'awk')"
-  echo "--curl-cmd=<cmd>       The 'curl' command to use (default 'curl')"
-  echo "--diff-cmd=<cmd>       The GNU-compatible 'diff' command to use (default 'diff')"
-  echo "--file-cmd=<cmd>       The 'file' command to use (default 'file')"
-  echo "--git-cmd=<cmd>        The 'git' command to use (default 'git')"
-  echo "--grep-cmd=<cmd>       The 'grep' command to use (default 'grep')"
-  echo "--patch-cmd=<cmd>      The 'patch' command to use (default 'patch')"
-  echo "--sed-cmd=<cmd>        The 'sed' command to use (default 'sed')"
 
-  echo
-  echo "Jenkins-only options:"
-  echo "--jenkins              Jenkins mode"
-  echo "--build-url            Set the build location web page"
-  echo "--mv-patch-dir         Move the patch-dir into the basedir during cleanup."
+  declare bugsys
 
   importplugins
 
+  bugsys=$(echo ${BUGSYSTEMS})
+  bugsys=${bugsys// /,}
+
+  echo "test-patch.sh [OPTIONS] patch"
+  echo ""
+  echo "Where:"
+  echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"
+  echo ""
+  echo "Options:"
+  echo ""
+  yetus_add_option "--basedir=<dir>" "The directory to apply the patch to (default current directory)"
+  yetus_add_option "--branch=<ref>" "Forcibly set the branch"
+  yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
+  yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
+  # shellcheck disable=SC2153
+  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (one of ${BUILDTOOLS})"
+  yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: ${bugsys})"
+  yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
+  yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
+  yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
+  yetus_add_option "--docker" "Spawn a docker container"
+  yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: docker from path)"
+  yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base"
+  yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
+  yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
+  yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
+  yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
+  yetus_add_option "--multijdkdirs=<paths>" "Comma delimited lists of JDK paths to use for multi-JDK tests"
+  yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: javac,javadoc,unit)"
+  yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
+  yetus_add_option "--offline" "Avoid connecting to the Internet"
+  yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
+  yetus_add_option "--personality=<file>" "The personality file to load"
+  yetus_add_option "--project=<name>" "The short name for project currently using test-patch (default 'yetus')"
+  yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found) e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
+  yetus_add_option "--resetrepo" "Forcibly clean the repo"
+  yetus_add_option "--run-tests" "Run all relevant tests below the base directory"
+  yetus_add_option "--skip-dirs=<list>" "Skip following directories for module finding"
+  yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
+  yetus_add_option "--summarize=<bool>" "Allow tests to summarize results"
+  yetus_add_option "--test-parallel=<bool>" "Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
+  yetus_add_option "--test-threads=<int>" "Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
+  yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
+  yetus_add_option "--version" "Print release version information and exit"
+
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
+  echo ""
+  echo "Shell binary overrides:"
+  yetus_add_option "--awk-cmd=<cmd>" "The 'awk' command to use (default 'awk')"
+  yetus_add_option "--curl-cmd=<cmd>" "The 'curl' command to use (default 'curl')"
+  yetus_add_option "--diff-cmd=<cmd>" "The GNU-compatible 'diff' command to use (default 'diff')"
+  yetus_add_option "--file-cmd=<cmd>" "The 'file' command to use (default 'file')"
+  yetus_add_option "--git-cmd=<cmd>" "The 'git' command to use (default 'git')"
+  yetus_add_option "--grep-cmd=<cmd>" "The 'grep' command to use (default 'grep')"
+  yetus_add_option "--patch-cmd=<cmd>" "The 'patch' command to use (default 'patch')"
+  yetus_add_option "--sed-cmd=<cmd>" "The 'sed' command to use (default 'sed')"
+
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
+  echo ""
+  echo "Jenkins-only options:"
+  yetus_add_option "--jenkins" "Jenkins mode"
+  yetus_add_option "--build-url" "Set the build location web page"
+  yetus_add_option "--mv-patch-dir" "Move the patch-dir into the basedir during cleanup."
+
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
   for plugin in ${BUILDTOOLS} ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS}; do
     if declare -f ${plugin}_usage >/dev/null 2>&1; then
-      echo
+      echo ""
+      echo "'${plugin}' plugin usage options:"
       "${plugin}_usage"
+      yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+      yetus_reset_usage
     fi
   done
 }

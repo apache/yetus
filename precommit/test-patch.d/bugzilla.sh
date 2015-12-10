@@ -21,8 +21,7 @@ BUGZILLA_BASE_URL="https://bz.apache.org/bugzilla"
 
 function bugzilla_usage
 {
-  echo "Bugzilla Options:"
-  echo "--bugzilla-base-url=<url>  The URL of the bugzilla server"
+  yetus_add_option "--bugzilla-base-url=<url>" "The URL of the bugzilla server"
 }
 
 function bugzilla_parse_args

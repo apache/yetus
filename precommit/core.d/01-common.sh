@@ -500,3 +500,15 @@ function importplugins
     personality_globals
   fi
 }
+
+## @description  Print the plugin's usage info
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        array
+function plugin_usage_output
+{
+  echo ""
+  echo "${YETUS_USAGE_HEADER}"
+  echo ""
+}

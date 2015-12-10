@@ -36,8 +36,7 @@ function checkstyle_filefilter
 
 function checkstyle_usage
 {
-  echo "Checkstyle options:"
-  echo "--checkstyle-goal=<goal> Checkstyle maven plugin goal to use, 'check' and 'checkstyle' supported. Defaults to '${CHECKSTYLE_GOAL_DEFAULT}'."
+  yetus_add_option "--checkstyle-goal=<goal>" "Checkstyle maven plugin goal to use, 'check' and 'checkstyle' supported. Defaults to '${CHECKSTYLE_GOAL_DEFAULT}'."
 }
 
 function checkstyle_parse_args

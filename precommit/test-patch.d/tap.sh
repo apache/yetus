@@ -34,8 +34,7 @@ function tap_parse_args
 
 function tap_usage
 {
-  echo "TAP Options:"
-  echo "--tap-log-dir=<dir>    Directory relative to the module for tap output (default: \"target/tap\")"
+  yetus_add_option "--tap-log-dir=<dir>" "Directory relative to the module for tap output (default: \"target/tap\")"
 }
 
 function tap_process_tests

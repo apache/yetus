@@ -32,8 +32,7 @@ add_test_type jmeter
 
 function jmeter_usage
 {
-  echo "JMeter specific:"
-  echo "--jmeter-download-jars=[false|true]  download third-party jars needed by ant build"
+  yetus_add_option "--jmeter-download-jars=<bool>"  "download third-party jars needed by ant build"
 }
 
 function jmeter_parse_args

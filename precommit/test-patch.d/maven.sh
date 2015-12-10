@@ -31,11 +31,10 @@ add_build_tool maven
 
 function maven_usage
 {
-  echo "maven specific:"
-  echo "--mvn-cmd=<cmd>            The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
-  echo "--mvn-custom-repos         Use per-project maven repos"
-  echo "--mvn-custom-repos-dir=dir Location of repos, default is \'${MAVEN_CUSTOM_REPOS_DIR}\'"
-  echo "--mvn-settings=file        File to use for settings.xml"
+  yetus_add_option "--mvn-cmd=<cmd>" "The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
+  yetus_add_option "--mvn-custom-repos" "Use per-project maven repos"
+  yetus_add_option "--mvn-custom-repos-dir=dir" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
+  yetus_add_option "--mvn-settings=file" "File to use for settings.xml"
 }
 
 function maven_parse_args

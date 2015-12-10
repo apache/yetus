@@ -41,13 +41,12 @@ GITHUB_COMMITSHA=""
 
 function github_usage
 {
-  echo "GITHUB Options:"
-  echo "--github-api-url=<url>   The URL of the API for github (default: '${GITHUB_API_URL}')"
-  echo "--github-base-url=<url>  The URL of the github server (default:'${GITHUB_BASE_URL}')"
-  echo "--github-password=<pw>   Github password"
-  echo "--github-repo=<repo>     github repo to use (default:'${GITHUB_REPO}')"
-  echo "--github-token=<token>   The token to use to write to github"
-  echo "--github-user=<user>     Github user"
+  yetus_add_option "--github-api-url=<url>" "The URL of the API for github (default: '${GITHUB_API_URL}')"
+  yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
+  yetus_add_option "--github-password=<pw>" "Github password"
+  yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
+  yetus_add_option "--github-token=<token>" "The token to use to write to github"
+  yetus_add_option "--github-user=<user>" "Github user"
 }
 
 function github_parse_args

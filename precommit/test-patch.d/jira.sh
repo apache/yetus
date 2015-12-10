@@ -30,12 +30,11 @@ add_bugsystem jira
 
 function jira_usage
 {
-  echo "JIRA Options:"
-  echo "--jira-base-url=<url>   The URL of the JIRA server (default:'${JIRA_URL}')"
-  echo "--jira-issue-re=<expr>  Bash regular expression to use when trying to find a jira ref in the patch name (default: \'${JIRA_ISSUE_RE}\')"
-  echo "--jira-password=<pw>    The password for the 'jira' command"
-  echo "--jira-status-re=<expr> Grep regular expression representing the issue status whose patch is applicable to the codebase (default: \'${JIRA_STATUS_RE}\')"
-  echo "--jira-user=<user>      The user for the 'jira' command"
+  yetus_add_option "--jira-base-url=<url>" "The URL of the JIRA server (default:'${JIRA_URL}')"
+  yetus_add_option "--jira-issue-re=<expr>" "Bash regular expression to use when trying to find a jira ref in the patch name (default: '${JIRA_ISSUE_RE}')"
+  yetus_add_option "--jira-password=<pw>" "The password for the 'jira' command"
+  yetus_add_option "--jira-status-re=<expr>" "Grep regular expression representing the issue status whose patch is applicable to the codebase (default: '${JIRA_STATUS_RE}')"
+  yetus_add_option "--jira-user=<user>" "The user for the 'jira' command"
 }
 
 function jira_parse_args

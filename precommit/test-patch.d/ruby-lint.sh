@@ -22,8 +22,7 @@ RUBY_LINT=${RUBY_LINT:-$(which ruby-lint 2>/dev/null)}
 
 function ruby_lint_usage
 {
-  echo "Ruby-lint specific:"
-  echo "--ruby-lint=<path> path to ruby-lint executable"
+  yetus_add_option "--ruby-lint=<path>" "path to ruby-lint executable"
 }
 
 function ruby_lint_parse_args

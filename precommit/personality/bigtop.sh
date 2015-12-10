@@ -34,8 +34,7 @@ add_test_type bigtop
 
 function bigtop_usage
 {
-  echo "Bigtop specific:"
-  echo "--bigtop-puppet=[false|true]   execute the bigtop puppet setup (needs sudo to root)"
+  yetus_add_option "--bigtop-puppet=[false|true]" "execute the bigtop puppet setup (needs sudo to root)"
 }
 
 function bigtop_parse_args

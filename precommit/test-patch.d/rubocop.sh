@@ -22,8 +22,7 @@ RUBOCOP=${RUBOCOP:-$(which rubocop 2>/dev/null)}
 
 function rubocop_usage
 {
-  echo "Rubocop specific:"
-  echo "--rubocop=<path> path to rubocop executable"
+  yetus_add_option "--rubocop=<path>" "path to rubocop executable"
 }
 
 function rubocop_parse_args

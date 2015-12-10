@@ -22,8 +22,7 @@ PERLCRITIC=${PERLCRITIC:-$(which perlcritic 2>/dev/null)}
 
 function perlcritic_usage
 {
-  echo "Perl::Critic specific:"
-  echo "--perlcritic=<path> path to perlcritic executable"
+  yetus_add_option "--perlcritic=<path>" "path to perlcritic executable"
 }
 
 function perlcritic_parse_args

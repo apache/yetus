@@ -20,9 +20,8 @@ declare -a GRADLE_ARGS=()
 
 function gradle_usage
 {
-  echo "gradle specific:"
-  echo "--gradle-cmd=<cmd>        The 'gradle' command to use (default 'gradle')"
-  echo "--gradlew-cmd=<cmd>        The 'gradlew' command to use (default 'basedir/gradlew')"
+  yetus_add_option "--gradle-cmd=<cmd>" "The 'gradle' command to use (default 'gradle')"
+  yetus_add_option "--gradlew-cmd=<cmd>" "The 'gradlew' command to use (default 'basedir/gradlew')"
 }
 
 function gradle_parse_args

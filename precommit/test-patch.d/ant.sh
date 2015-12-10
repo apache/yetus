@@ -26,8 +26,7 @@ declare -a ANT_ARGS=("-noinput")
 
 function ant_usage
 {
-  echo "ant specific:"
-  echo "--ant-cmd=<cmd>        The 'ant' command to use (default \${ANT_HOME}/bin/ant, or 'ant')"
+  yetus_add_option "--ant-cmd=<cmd>" "The 'ant' command to use (default \${ANT_HOME}/bin/ant, or 'ant')"
 }
 
 function ant_parse_args

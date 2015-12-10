@@ -35,9 +35,8 @@ function findbugs_filefilter
 
 function findbugs_usage
 {
-  echo "FindBugs specific:"
-  echo "--findbugs-home=<path> Findbugs home directory (default FINDBUGS_HOME environment variable)"
-  echo "--findbugs-strict-precheck If there are Findbugs warnings during precheck, fail"
+  yetus_add_option "--findbugs-home=<path>" "Findbugs home directory (default \${FINDBUGS_HOME})"
+  yetus_add_option "--findbugs-strict-precheck" "If there are Findbugs warnings during precheck, fail"
 }
 
 function findbugs_parse_args
