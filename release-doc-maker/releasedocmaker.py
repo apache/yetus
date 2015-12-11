@@ -331,47 +331,62 @@ class Jira(object):
 class JiraIter(object):
     """An Iterator of JIRAs"""
 
+    @staticmethod
+    def collect_fields():
+        """send a query to JIRA and collect field-id map"""
+        resp = urllib2.urlopen("https://issues.apache.org/jira/rest/api/2/field")
+        data = json.loads(resp.read())
+        field_id_map = {}
+        for part in data:
+            field_id_map[part['name']] = part['id']
+        return field_id_map
+
+    @staticmethod
+    def query_jira(ver, projects, pos):
+        """send a query to JIRA and collect a certain number of issue information"""
+        count = 100
+        pjs = "','".join(projects)
+        jql = "project in ('%s') and fixVersion in ('%s') and resolution = Fixed" % (pjs, ver)
+        params = urllib.urlencode({'jql':jql, 'startAt':pos, 'maxResults':count})
+        try:
+            resp = urllib2.urlopen("https://issues.apache.org/jira/rest/api/2/search?%s" % params)
+        except urllib2.HTTPError, err:
+            code = err.code
+            print "JIRA returns HTTP error %d: %s. Aborting." % (code, err.msg)
+            if code == 400:
+                print "Please make sure the specified projects are correct."
+            sys.exit(1)
+        data = json.loads(resp.read())
+        return data
+
+    @staticmethod
+    def collect_jiras(ver, projects):
+        """send queries to JIRA and collect all issues that belongs to given version and projects"""
+        jiras = []
+        pos = 0
+        end = 1
+        while pos < end:
+            data = JiraIter.query_jira(ver, projects, pos)
+            if data.has_key('error_messages'):
+                print "JIRA returns error message: %s" % data['error_messages']
+                sys.exit(1)
+            pos = data['startAt'] + data['maxResults']
+            end = data['total']
+            jiras.extend(data['issues'])
+
+            if ver not in RELEASE_VERSION:
+                for issue in data['issues']:
+                    for fix_version in issue['fields']['fixVersions']:
+                        if 'releaseDate' in fix_version:
+                            RELEASE_VERSION[fix_version['name']] = fix_version['releaseDate']
+        return jiras
+
     def __init__(self, version, projects):
         self.version = version
         self.projects = projects
+        self.field_id_map = JiraIter.collect_fields()
         ver = str(version).replace("-SNAPSHOT", "")
-
-        resp = urllib2.urlopen("https://issues.apache.org/jira/rest/api/2/field")
-        data = json.loads(resp.read())
-
-        self.field_id_map = {}
-        for part in data:
-            self.field_id_map[part['name']] = part['id']
-
-        self.jiras = []
-        pos = 0
-        end = 1
-        count = 100
-        while pos < end:
-            pjs = "','".join(projects)
-            jql = "project in ('%s') and fixVersion in ('%s') and resolution = Fixed" % (pjs, ver)
-            params = urllib.urlencode({'jql': jql, 'startAt':pos, 'maxResults':count})
-            resp = urllib2.urlopen("https://issues.apache.org/jira/rest/api/2/search?%s" % params)
-            data = json.loads(resp.read())
-            if data.has_key('error_messages'):
-                raise Exception(data['error_messages'])
-            pos = data['startAt'] + data['maxResults']
-            end = data['total']
-            self.jiras.extend(data['issues'])
-
-            needaversion = False
-            if ver not in RELEASE_VERSION:
-                needaversion = True
-
-            if needaversion is True:
-                issues = data['issues']
-                for i in range(len(issues)):
-                    fix_versions = issues[i]['fields']['fixVersions']
-                    for j in range(len(fix_versions)):
-                        fields = fix_versions[j]
-                        if 'releaseDate' in fields:
-                            RELEASE_VERSION[fields['name']] = fields['releaseDate']
-
+        self.jiras = JiraIter.collect_jiras(ver, projects)
         self.iter = self.jiras.__iter__()
 
     def __iter__(self):
