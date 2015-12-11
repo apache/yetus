@@ -35,13 +35,13 @@ version.
 * [Precommit](precommit/)
 Precommit provides robust tools to deal with contributions, including applying patches from a variety of project sources
 and evaluating them against project norms via a system of plugins. See the
-[precommit overview](asf-site-src/source/documentation/latest/precommit-architecture.md) to get started working with
+[precommit overview](asf-site-src/source/documentation/in-progress/precommit-architecture.md) to get started working with
 precommit. Note that even if the top level layout doesn't change, the layout of Precommit might when it adds in
 unit tests under [YETUS-15](https://issues.apache.org/jira/browse/YETUS-15).
 * [Yetus Project Pom](yetus-project/)
 Provides common configuration and dependency management for Yetus' java based component. Currently
 builds with Maven 3.2.0+.
-* [Audience Annotations](audience-annotations/)
+* [Audience Annotations](audience-annotations-component/)
 Audience Annotations allows projects to use Java Annotations to delineate public and non-public parts of their APIs.
 It also provides doclets to generate javadocs filtered by intended audience. Currently builds with Maven 3.2.0+.
 * [Shelldocs](shelldocs/)
