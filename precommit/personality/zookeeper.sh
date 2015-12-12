@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-personality_plugins "all"
+personality_plugins "all,-checkstyle"
 
 function personality_globals
 {
@@ -26,4 +26,26 @@ function personality_globals
   BUILDTOOL=ant
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^ZOOKEEPER-[0-9]+$'
+}
+
+function personality_modules
+{
+  local repostatus=$1
+  local testtype=$2
+  local extra=""
+
+  yetus_debug "Personality: ${repostatus} ${testtype}"
+
+  clear_personality_queue
+
+  case ${testtype} in
+    findbugs)
+      # shellcheck disable=SC2034
+      ANT_FINDBUGSXML="${BASEDIR}/build/test/findbugs/zookeeper-findbugs-report.xml"
+      extra="-Dfindbugs.home=${FINDBUGS_HOME}"
+      ;;
+  esac
+
+  # shellcheck disable=SC2086
+  personality_enqueue_module . ${extra}
 }
