@@ -153,7 +153,7 @@ class GetVersions(object):
         print "Looking for %s through %s"%(versions[0], versions[-1])
         newversions = set()
         for project in projects:
-            url = "https://issues.apache.org/jira/rest/api/2/project/%s/versions" % project
+            url = "https://issues.apache.org/jira/rest/api/2/project/%s/versions" % project.upper()
             resp = urllib2.urlopen(url)
             datum = json.loads(resp.read())
             for data in datum:
