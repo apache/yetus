@@ -73,11 +73,10 @@ function setup_defaults
 
   ALLOWSUMMARIES=true
 
-  DOCKERMODE=false
-  DOCKERSUPPORT=false
-  DOCKER_ENABLE_PRIVILEGED=true
   BUILD_NATIVE=${BUILD_NATIVE:-true}
 
+  BUILD_URL_ARTIFACTS=artifact/patchprocess
+  BUILD_URL_CONSOLE=console
   BUILDTOOLCWD=module
 
   # shellcheck disable=SC2034
@@ -471,9 +470,9 @@ function verify_patchdir_still_exists
     echo
     if [[ ${JENKINS} == true ]]; then
       if [[ -n ${NODE_NAME} ]]; then
-        extra=" (node ${NODE_NAME})"
+        extra=" (Jenkins node ${NODE_NAME})"
       fi
-      echo "Jenkins${extra} information at ${BUILD_URL} may provide some hints. " >> "${commentfile}"
+      echo "Jenkins${extra} information at ${BUILD_URL}${BUILD_URL_CONSOLE} may provide some hints. " >> "${commentfile}"
 
       write_comment ${commentfile}
     fi
@@ -684,11 +683,6 @@ function yetus_usage
   yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
-  yetus_add_option "--docker" "Spawn a docker container"
-  yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: docker from path)"
-  yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base"
-  yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
-  yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
@@ -728,11 +722,24 @@ function yetus_usage
   yetus_reset_usage
 
   echo ""
-  echo "Jenkins-only options:"
-  yetus_add_option "--jenkins" "Jenkins mode"
-  yetus_add_option "--build-url" "Set the build location web page"
-  yetus_add_option "--mv-patch-dir" "Move the patch-dir into the basedir during cleanup."
+  echo "Automation options:"
+  yetus_add_option "--build-url=<url>" "Set the build location web page (Default: '${BUILD_URL}')"
+  yetus_add_option "--build-url-console=<location>" "Location relative to --build-url of the console (Default: '${BUILD_URL_CONSOLE}')"
+  yetus_add_option "--build-url-patchdir=<location>" "Location relative to --build-url of the --patch-dir (Default: '${BUILD_URL_ARTIFACTS}')"
+  yetus_add_option "--console-urls" "Use the build URL instead of path on the console report"
+  yetus_add_option "--instance=<string>" "Parallel execution identifier string"
+  yetus_add_option "--jenkins" "Enable Jenkins-specifc handling (auto: --robot)"
+  yetus_add_option "--mv-patch-dir" "Move the patch-dir into the basedir during cleanup"
+  yetus_add_option "--robot" "Assume this is an automated run"
+  yetus_add_option "--sentinel" "A very aggressive robot (auto: --robot)"
 
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
+
+  echo ""
+  echo "Docker options:"
+  docker_usage
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
@@ -755,8 +762,8 @@ function yetus_usage
 ## @return       May exit on failure
 function parse_args
 {
-  local i
-  local j
+  declare i
+  declare j
 
   common_args "$@"
 
@@ -775,38 +782,32 @@ function parse_args
       --build-url=*)
         BUILD_URL=${i#*=}
       ;;
+      --build-url-artifacts=*)
+        # shellcheck disable=SC2034
+        BUILD_URL_ARTIFACTS=${i#*=}
+      ;;
+      --build-url-console=*)
+        # shellcheck disable=SC2034
+        BUILD_URL_CONSOLE=${i#*=}
+      ;;
+      --console-urls)
+        # shellcheck disable=SC2034
+        CONSOLE_USE_BUILD_URL=true
+      ;;
       --contrib-guide=*)
         PATCH_NAMING_RULE=${i#*=}
       ;;
       --dirty-workspace)
         DIRTY_WORKSPACE=true
       ;;
-      --docker)
-        DOCKERSUPPORT=true
-      ;;
-      --dockercmd=*)
-        #shellcheck disable=SC2034
-        DOCKERCMD=${i#*=}
-      ;;
-      --dockerfile=*)
-        DOCKERFILE=${i#*=}
-      ;;
-      --dockermode)
-        DOCKERMODE=true
-      ;;
-      --dockeronfail=*)
-        DOCKERFAIL=${i#*=}
-      ;;
-      --dockerprivd=*)
-        DOCKER_ENABLE_PRIVILEGED=${i#*=}
+      --instance=*)
+        INSTANCE=${i#*=}
       ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
       ;;
       --jenkins)
         JENKINS=true
-        TEST_PARALLEL=${TEST_PARALLEL:-true}
-        INSTANCE=${EXECUTOR_NUMBER:-RANDOM}
       ;;
       --linecomments=*)
         BUGLINECOMMENTS=${i#*=}
@@ -820,12 +821,13 @@ function parse_args
       --multijdkdirs=*)
         JDK_DIR_LIST=${i#*=}
         JDK_DIR_LIST=${JDK_DIR_LIST//,/ }
-        yetus_debug "Multi-JVM mode activated with ${JDK_DIR_LIST}"
+        yetus_debug "Multi-JDK mode activated with ${JDK_DIR_LIST}"
+        yetus_add_entry EXEC_MODES MultiJDK
       ;;
       --multijdktests=*)
         JDK_TEST_LIST=${i#*=}
         JDK_TEST_LIST=${JDK_TEST_LIST//,/ }
-        yetus_debug "Multi-JVM test list: ${JDK_TEST_LIST}"
+        yetus_debug "Multi-JDK test list: ${JDK_TEST_LIST}"
       ;;
       --mv-patch-dir)
         RELOCATE_PATCH_DIR=true;
@@ -839,8 +841,16 @@ function parse_args
       --resetrepo)
         RESETREPO=true
       ;;
+      --robot)
+        ROBOT=true
+      ;;
       --run-tests)
         RUN_TESTS=true
+      ;;
+      --sentinel)
+        # shellcheck disable=SC2034
+        SENTINEL=true
+        yetus_add_entry EXEC_MODES Sentinel
       ;;
       --skip-dirs=*)
         MODULE_SKIPDIRS=${i#*=}
@@ -851,6 +861,7 @@ function parse_args
         ALLOWSUMMARIES=${i#*=}
       ;;
       --test-parallel=*)
+        # shellcheck disable=SC2034
         TEST_PARALLEL=${i#*=}
       ;;
       --test-threads=*)
@@ -881,10 +892,26 @@ function parse_args
     esac
   done
 
-  if [[ "${DOCKERMODE}" = true ]]; then
-    add_vote_table 0 reexec "Docker mode activated."
-  elif [[ "${REEXECED}" = true ]]; then
-    add_vote_table 0 reexec "Precommit patch detected."
+  docker_parse_args "$@"
+
+  if [[ -z "${PATCH_OR_ISSUE}" ]]; then
+    yetus_usage
+    exit 1
+  fi
+
+  if [[ ${JENKINS} = true ]]; then
+    ROBOT=true
+    INSTANCE=${EXECUTOR_NUMBER}
+    yetus_add_entry EXEC_MODES Jenkins
+  fi
+
+  if [[ ${ROBOT} = true ]]; then
+    # shellcheck disable=SC2034
+    TEST_PARALLEL=true
+    RESETREPO=true
+    RUN_TESTS=true
+    ISSUE=${PATCH_OR_ISSUE}
+    yetus_add_entry EXEC_MODES Robot
   fi
 
   if [[ -n ${REEXECLAUNCHTIMER} ]]; then
@@ -893,9 +920,18 @@ function parse_args
     start_clock
   fi
 
-  if [[ -z "${PATCH_OR_ISSUE}" ]]; then
-    yetus_usage
-    exit 1
+  if [[ "${DOCKERMODE}" = true || "${DOCKERSUPPORT}" = true ]]; then
+    if [[ "${DOCKER_DESTRCUTIVE}" = true ]]; then
+      yetus_add_entry EXEC_MODES DestructiveDocker
+    else
+      yetus_add_entry EXEC_MODES Docker
+    fi
+    add_vote_table 0 reexec "Docker mode activated."
+    start_clock
+  elif [[ "${REEXECED}" = true ]]; then
+    yetus_add_entry EXEC_MODES Re-exec
+    add_vote_table 0 reexec "Precommit patch detected."
+    start_clock
   fi
 
   # we need absolute dir for ${BASEDIR}
@@ -920,17 +956,12 @@ function parse_args
   # we need absolute dir for PATCH_DIR
   PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
 
-  if [[ ${JENKINS} == "true" ]]; then
-    echo "Running in Jenkins mode"
-    ISSUE=${PATCH_OR_ISSUE}
-    RESETREPO=true
-  else
-    if [[ ${RESETREPO} == "true" ]] ; then
-      echo "Running in destructive (--resetrepo) developer mode"
-    else
-      echo "Running in developer mode"
-    fi
-    JENKINS=false
+  if [[ ${RESETREPO} == "true" ]] ; then
+    yetus_add_entry EXEC_MODES ResetRepo
+  fi
+
+  if [[ ${RUN_TESTS} == "true" ]] ; then
+    yetus_add_entry EXEC_MODES UnitTests
   fi
 
   if [[ -n "${USER_PLUGIN_DIR}" ]]; then
@@ -1564,11 +1595,11 @@ function check_reexec
 
       apply_patch_file
 
-      if [[ ${JENKINS} == true ]]; then
+      if [[ ${ROBOT} == true ]]; then
         rm "${commentfile}" 2>/dev/null
         echo "(!) A patch to the testing environment has been detected. " > "${commentfile}"
         echo "Re-executing against the patched versions to perform further tests. " >> "${commentfile}"
-        echo "The console is at ${BUILD_URL}console in case of problems." >> "${commentfile}"
+        echo "The console is at ${BUILD_URL}${BUILD_URL_CONSOLE} in case of problems." >> "${commentfile}"
         write_comment "${commentfile}"
         rm "${commentfile}"
       fi
@@ -2105,6 +2136,11 @@ function bugsystem_finalreport
     version=$(cat "${BINDIR}/VERSION")
   fi
 
+  if [[ "${ROBOT}" = true &&
+        -n "${BUILD_URL}" &&
+        -n "${BUILD_URL_CONSOLE}" ]]; then
+    add_footer_table "Console output" "${BUILD_URL}${BUILD_URL_CONSOLE}"
+  fi
   add_footer_table "Powered by" "Apache Yetus ${version}   http://yetus.apache.org"
 
   for bugs in ${BUGCOMMENTS}; do
@@ -2123,7 +2159,7 @@ function cleanup_and_exit
 {
   local result=$1
 
-  if [[ ${JENKINS} == "true" && ${RELOCATE_PATCH_DIR} == "true" && \
+  if [[ ${ROBOT} == "true" && ${RELOCATE_PATCH_DIR} == "true" && \
       -e ${PATCH_DIR} && -d ${PATCH_DIR} ]] ; then
     # if PATCH_DIR is already inside BASEDIR, then
     # there is no need to move it since we assume that
@@ -2149,8 +2185,7 @@ function runtests
 {
   local plugin
 
-  ### Run tests for Jenkins or if explictly asked for by a developer
-  if [[ ${JENKINS} == "true" || ${RUN_TESTS} == "true" ]] ; then
+  if [[ ${RUN_TESTS} == "true" ]] ; then
 
     verify_patchdir_still_exists
     check_unittests
@@ -2807,6 +2842,8 @@ function initialize
   if [[ ${RESULT} != 0 ]]; then
     cleanup_and_exit 1
   fi
+
+  echo "Modes: ${EXEC_MODES}"
 
   locate_patch
 

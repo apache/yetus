@@ -229,17 +229,6 @@ function hadoop_native_flags
   #   e.g, HADOOP-12027 for OS X. so no -Drequire.bzip2
   #
 
-  # current build servers are pretty limited in
-  # what they support
-  if [[ ${JENKINS} = true
-      && ${DOCKERMODE} = false ]]; then
-    # shellcheck disable=SC2086
-    echo -Pnative \
-      -Drequire.snappy -Drequire.openssl -Drequire.fuse \
-      -Drequire.test.libhadoop
-    return
-  fi
-
   case ${OSTYPE} in
     Linux)
       # shellcheck disable=SC2086
@@ -265,7 +254,7 @@ function hadoop_native_flags
       echo \
         -Pnative \
         -Drequire.snappy -Drequire.openssl \
-        -Drequire.libwebhdfs -Drequire.test.libhadoop
+        -Drequire.test.libhadoop
     ;;
   esac
 }

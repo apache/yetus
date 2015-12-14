@@ -139,7 +139,7 @@ function jira_locate_patch
     github_jira_bridge "${fileloc}"
     return $?
   elif [[ $(${GREP} -c "${JIRA_STATUS_RE}" "${PATCH_DIR}/jira") == 0 ]]; then
-    if [[ ${JENKINS} == true ]]; then
+    if [[ ${ROBOT} == true ]]; then
       yetus_error "ERROR: ${input} issue status is not matched with \"${JIRA_STATUS_RE}\"."
       cleanup_and_exit 1
     else
@@ -339,7 +339,7 @@ function jira_finalreport
 
   rm "${commentfile}" 2>/dev/null
 
-  if [[ ${JENKINS} == "false"
+  if [[ ${ROBOT} == "false"
       || ${OFFLINE} == true ]] ; then
     return 0
   fi
@@ -349,8 +349,6 @@ function jira_finalreport
   fi
 
   big_console_header "Adding comment to JIRA"
-
-  add_footer_table "Console output" "${BUILD_URL}console"
 
   if [[ ${result} == 0 ]]; then
     echo "| (/) *{color:green}+1 overall{color}* |" >> "${commentfile}"
@@ -429,7 +427,7 @@ function jira_finalreport
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
     comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              ${SED} -e "s,@@BASE@@,${BUILD_URL}artifact/patchprocess,g")
+              ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
     printf "%s\n" "${comment}" >> "${commentfile}"
     ((i=i+1))
   done

@@ -23,6 +23,7 @@ test-patch
 * [Purpose](#Purpose)
 * [Pre-requisites](#Pre-requisites)
 * [Basic Usage](#Basic_Usage)
+* [Automation](#Automation)
 * [Build Tool](#Build_Tool)
 * [Providing Patch Files](#Providing_Patch_Files)
 * [Project-Specific Capabilities](#Project-Specific_Capabilities)
@@ -49,7 +50,6 @@ For Solaris and Solaris-like operating systems, the default location for the POS
 
 test-patch requires these installed components to execute:
 
-* A project with a supported build tool (ant, gradle, maven, ...)
 * git-based project (and git 1.7.3 or higher installed)
 * bash v3.2 or higher
 * GNU diff
@@ -68,9 +68,25 @@ Bug Systems:
 
 * [GitHub](https://github.com/)-based issue tracking
 * [JIRA](https://www.atlassian.com/software/jira)-based issue tracking
+* [Bugzilla](https://www.bugzilla.org/)-based issue tracking (Read Only)
+
+Build Tools:
+
+* [ant](https://ant.apache.org)
+* [autoconf](https://www.gnu.org/software/autoconf/autoconf.html)
+* [cmake](https://www.cmake.org)
+* [gradle](https://www.gradle.org)
+* make
+* [maven](https://maven.apache.org)
+
+Automation and Isolation:
+
+* [Docker](https://www.docker.com) version 1.6.0+
+* [Jenkins](https://www.jenkins-ci.org)
 
 Unit Test Formats:
 
+* [ctest](https://cmake.org/Wiki/CMake/Testing_With_CTest)
 * [JUnit](http://junit.org/)
 * [TAP](https://testanything.org/)
 
@@ -145,15 +161,40 @@ $ test-patch.sh --basedir=<testrepo> --resetrepo /tmp/patchfile
 
 We used two new options here.  --basedir sets the location of the repository to use for testing.  --resetrepo tells test patch that it can go into **destructive** mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!
 
+# Automation
+
 After the tests have run, there is a directory that contains all of the test-patch related artifacts.  This is generally referred to as the patchprocess directory.  By default, test-patch tries to make something off of /tmp to contain this content.  Using the `--patch-dir` option, one can specify exactly which directory to use.  This is helpful for automated precommit testing so that Jenkins or other automated workflow system knows where to look to gather up the output.
 
 For example:
 
 ```bash
+$ test-patch.sh --robot --patch-dir=${WORKSPACE}/patchprocess --basedir=${WORKSPACE}/source ${WORKSPACE}/patchfile
+```
+
+... will trigger test-patch to run in fully automated mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.  This will always run the unit tests, write answers back to bug systems, remove old, stopped/exited Docker images and containers after 24 hours, forcibly use --resetrepo, and more.  The --build-url option is also useful when running in --robot mode so that emails and such
+have a location to look at the output artifacts:
+
+```bash
+$ test-patch.sh --robot --build-url=http://server.example.name:80/${buildnumber}/
+```
+
+Some plug-ins such as Maven have special handling if there are multiple executions of test-patch happening at once.  It is very common when using automation systems to have multiple runs on the same host. In order to assist these plug-ins, an instance identifier may be provided:
+
+```bash
+$ test-patch.sh --robot --instance=1
+```
+
+If --robot is specified without an instance, a random number is generated and used.
+
+There is some special handling if Jenkins is actually your automation tool.  Instead of using --robot, use --jenkins:
+
+```bash
 $ test-patch.sh --jenkins --patch-dir=${WORKSPACE}/patchprocess --basedir=${WORKSPACE}/source ${WORKSPACE}/patchfile
 ```
 
-... will trigger test-patch to run in fully automated Jenkins mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.
+This will enable --robot, set the --build-url option from the ${BUILD_URL} environment variable, and the instance identifier is set to the ${EXECUTOR_NUMBER}.
+
+If stuck containers are a problem, a more aggressive robot may be enabled with the --sentinel option.  This option enables killing containers that have been running for over 24 hours as well.
 
 # Build Tool
 

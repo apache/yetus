@@ -45,8 +45,7 @@ Be aware that if the Dockerfile is found and the docker command works, test-patc
 
 NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the --basedir and --patch-dir options respectively), because automatically mountable directories are limited to them. See [the Docker documentation](https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume).
 
-Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in --jenkins mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.
-
+Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in --robot mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a "safe" mode that prevents deletions via the `--dockerdelrep` option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.
 
 # Plug-ins
 

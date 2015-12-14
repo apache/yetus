@@ -19,6 +19,8 @@
 
 add_bugsystem console
 
+CONSOLE_USE_BUILD_URL=false
+
 ## @description  Print out the finished details on the console
 ## @audience     private
 ## @stability    evolving
@@ -44,9 +46,9 @@ function console_finalreport
   declare spcfx=${PATCH_DIR}/spcl.txt
 
   if [[ ${result} == 0 ]]; then
-    if [[ ${JENKINS} == false ]]; then
+    if [[ ${ROBOT} == false ]]; then
       if declare -f ${PROJECT_NAME}_console_success >/dev/null; then
-        ${PROJECT_NAME}_console_success > "${spcfx}"
+        "${PROJECT_NAME}_console_success" > "${spcfx}"
       else
         {
           printf "IF9fX18gICAgICAgICAgICAgICAgICAgICAgICAgICAgICBfIAovIF9fX3wg";
@@ -60,9 +62,9 @@ function console_finalreport
     fi
     printf "\n\n+1 overall\n\n"
   else
-    if [[ ${JENKINS} == false ]]; then
+    if [[ ${ROBOT} == false ]]; then
       if declare -f ${PROJECT_NAME}_console_failure >/dev/null; then
-        ${PROJECT_NAME}_console_failure > "${spcfx}"
+        "${PROJECT_NAME}_console_failure" > "${spcfx}"
       else
         {
           printf "IF9fX19fICAgICBfIF8gICAgICAgICAgICAgICAgXyAKfCAgX19ffF8gXyhf";
@@ -141,8 +143,14 @@ function console_finalreport
   i=0
 
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              ${SED} -e "s,@@BASE@@,${PATCH_DIR},g")
+    if [[ "${CONSOLE_USE_BUILD_URL}" = true &&
+          -n "${BUILD_URL}" ]]; then
+      comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
+                ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+    else
+      comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
+                ${SED} -e "s,@@BASE@@,${PATCH_DIR},g")
+    fi
     printf "%s\n" "${comment}"
     ((i=i+1))
   done

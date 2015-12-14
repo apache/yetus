@@ -14,10 +14,77 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+DOCKERMODE=false
+DOCKERCMD=$(command -v docker)
 DOCKER_ID=${RANDOM}
 DOCKER_DESTRUCTIVE=true
 DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
 DOCKERFAIL="fallback,continue,fail"
+DOCKERSUPPORT=false
+DOCKER_ENABLE_PRIVILEGED=true
+
+####
+#### IMPORTANT
+####
+#### If these times are updated, the documentation needs to
+#### be changed too!
+
+# stopped, exited, running, for 24 hours
+DOCKER_CONTAINER_PURGE=("86400" "86400" "86400")
+
+# keep images for 24 hours
+DOCKER_IMAGE_PURGE=86400
+
+## @description  Docker-specific usage
+## @stability    stable
+## @audience     private
+## @replaceable  no
+function docker_usage
+{
+  yetus_add_option "--docker" "Spawn a docker container"
+  yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: '${DOCKERCMD}')"
+  yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
+  yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
+  yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
+  yetus_add_option "--dockerdelrep" "In Docker mode, only report image/container deletions, not act on them"
+}
+
+## @description  Docker-specific argument parsing
+## @stability    stable
+## @audience     private
+## @replaceable  no
+## @params       arguments
+function docker_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --docker)
+        DOCKERSUPPORT=true
+      ;;
+      --dockercmd=*)
+        #shellcheck disable=SC2034
+        DOCKERCMD=${i#*=}
+      ;;
+      --dockerdelrep)
+        DOCKER_DESTRUCTIVE=false
+      ;;
+      --dockerfile=*)
+        DOCKERFILE=${i#*=}
+      ;;
+      --dockermode)
+        DOCKERMODE=true
+      ;;
+      --dockeronfail=*)
+        DOCKERFAIL=${i#*=}
+      ;;
+      --dockerprivd=*)
+        DOCKER_ENABLE_PRIVILEGED=${i#*=}
+      ;;
+    esac
+  done
+}
 
 ## @description  Docker initialization pre- and post- re-exec
 ## @stability    stable
@@ -25,11 +92,27 @@ DOCKERFAIL="fallback,continue,fail"
 ## @replaceable  no
 function docker_initialize
 {
-  if [[ ${DOCKERMODE} == true ]]; then
+  declare dockvers
+
+  # --docker and --dockermode are mutually
+  # exclusive.  --docker is used by the user to
+  # re-exec test-patch in Docker mode.
+  # --dockermode is used by launch-test-patch (which is
+  # run as the Docker EXEC in the Dockerfile,
+  # see elsewhere for more info) to tell test-patch that
+  # it has been restarted already. launch-test-patch
+  # also strips --docker from the command line so that we
+  # don't end up in a loop if the docker image
+  # also has the docker command in it
+
+  # we are already in docker mode
+  if [[ "${DOCKERMODE}" == true ]]; then
     # DOCKER_VERSION is set by our creator.
     add_footer_table "Docker" "${DOCKER_VERSION}"
+    return
   fi
 
+  # docker mode hasn't been requested
   if [[ "${DOCKERSUPPORT}" != true ]]; then
     return
   fi
@@ -52,6 +135,20 @@ function docker_initialize
       DOCKERSUPPORT=false
     else
       add_vote_table -1 docker "Docker command '${DOCKERCMD}' not found/broken."
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+    fi
+  fi
+
+  dockvers=$(docker_version Client)
+  if [[ "${dockvers}" =~ ^0
+     || "${dockvers}" =~ ^1\.[0-5] ]]; then
+    if [[ "${DOCKERFAIL}" =~ ^12
+       || "${DOCKERFAIL}" =~ ^2 ]]; then
+      add_vote_table 0 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 1.6.0). Disabling docker."
+      DOCKERSUPPORT=false
+    else
+      add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 1.6.0). Disabling docker."
       bugsystem_finalreport 1
       cleanup_and_exit 1
     fi
@@ -102,19 +199,6 @@ function docker_fileverify
 ## @return       0 if docker is working
 function docker_exeverify
 {
-  declare pathdocker
-
-  if [[ -z "${DOCKERCMD}" ]]; then
-    pathdocker=$(which docker 2>/dev/null)
-
-    if [[ ! -f "${pathdocker}" ]]; then
-      yetus_error "Docker cannot be found."
-      DOCKERCMD=docker
-      return 1
-    fi
-    DOCKERCMD="${pathdocker}"
-  fi
-
   if ! verify_command "Docker" "${DOCKERCMD}"; then
     return 1
   fi
@@ -129,129 +213,163 @@ function docker_exeverify
 }
 
 ## @description  Run docker with some arguments, and
-## @description  optionally send to debug
+## @description  optionally send to debug.
+## @description  some destructive commands require
+## @description  DOCKER_DESTRUCTIVE to be set to true
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
 function dockercmd
 {
-  yetus_debug "${DOCKERCMD} $*"
-  "${DOCKERCMD}" "$@"
+  declare subcmd=$1
+  shift
+
+  yetus_debug "dockercmd: ${DOCKERCMD} ${subcmd} $*"
+  if [[ ${subcmd} == rm
+      || ${subcmd} == rmi
+      || ${subcmd} == stop
+      || ${subcmd} == kill ]]; then
+    if [[ "${DOCKER_DESTRUCTIVE}" == false ]]; then
+      yetus_error "Safemode: not running ${DOCKERCMD} ${subcmd} $*"
+      return
+    fi
+  fi
+  "${DOCKERCMD}" "${subcmd}" "$@"
+}
+
+## @description  Convet docker's time format to ctime
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        time
+function dockerdate_to_ctime
+{
+  declare mytime=$1
+
+  # believe it or not, date is not even close to standardized...
+  if [[ $(uname -s) == Linux ]]; then
+
+    # GNU date
+    date -d "${mytime}" "+%s"
+  else
+
+    # BSD date
+    date -j -f "%FT%T%z" "${mytime}" "+%s"
+  fi
 }
 
 ## @description  Stop and delete all defunct containers
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @param        args
-function docker_stop_exited_containers
+function docker_container_maintenance
 {
   declare line
   declare id
-  declare value
-  declare size
-  declare exitfn="${PATCH_DIR}/dsec.$$"
+  declare name
+  declare status
+  declare tmptime
+  declare starttime
+  declare stoptime
+  declare remove
+  declare difftime
+  declare data
 
-  big_console_header "Removing stopped/exited containers"
-
-  echo "Docker containers in exit state:"
-
-  dockercmd ps -a | ${GREP} Exited > "${exitfn}"
-  if [[ ! -s "${exitfn}" ]]; then
-    rm -f "${exitfn}"
+  if [[ "${ROBOT}" = false ]]; then
     return
   fi
 
-  # stop *all* containers that are in exit state for
-  # more than > 8 hours
-  while read -r line; do
-     id=$(echo "${line}" | cut -f1 -d' ')
-     value=$(echo "${line}" | cut -f2 -d' ')
-     size=$(echo "${line}" | cut -f3 -d' ')
+  big_console_header "Docker Container Maintenance"
 
-     if [[ ${size} =~ day
-        || ${size} =~ week
-        || ${size} =~ month
-        || ${size} =~ year ]]; then
-          echo "Removing docker ${id}"
-          if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-            dockercmd rm "${id}"
-          else
-            echo docker rm "${id}"
-          fi
-     fi
+  dockercmd ps -a
 
-     if [[ ${size} =~ hours
-        && ${value} -gt 8 ]]; then
-        echo "Removing docker ${id}"
-        if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-          dockercmd rm "${id}"
-        else
-          echo docker rm "${id}"
-        fi
-     fi
-  done < <(
-    ${SED} -e 's,ago,,g' "${exitfn}"\
-    | ${AWK} '{print $1" "$(NF - 2)" "$(NF - 1)}')
-  rm "${exitfn}"
-}
+  data=$(dockercmd ps -qa)
 
-## @description  Remove all containers that are not
-## @description  are not running + older than 1 day
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_rm_old_containers
-{
-  declare line
-  declare id
-  declare value
-  declare size
-  declare running
-  declare stoptime
-  declare curtime
-
-  big_console_header "Removing old containers"
+  if [[ -z "${data}" ]]; then
+    return
+  fi
 
   while read -r line; do
     id=$(echo "${line}" | cut -f1 -d, )
-    running=$(echo "${line}" | cut -f2 -d, )
-    stoptime=$(echo "${line}" | cut -f3 -d, | cut -f1 -d. )
+    name=$(echo "${line}" | cut -f2 -d, )
+    status=$(echo "${line}" | cut -f3 -d, )
+    tmptime=$(echo "${line}" | cut -f4 -d, | cut -f1 -d. )
+    starttime=$(dockerdate_to_ctime "${tmptime}")
+    tmptime=$(echo "${line}" | cut -f5 -d, | cut -f1 -d. )
+    stoptime=$(dockerdate_to_ctime "${tmptime}")
+    curtime=$(TZ=UTC date "+%s")
+    remove=false
 
-    if [[ ${running} = true ]]; then
-      yetus_debug "${id} is still running, skipping."
-      continue
+    case ${status} in
+      stopped)
+        ((difftime = curtime - stoptime))
+        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[0]} ]]; then
+          remove=true
+        fi
+      ;;
+      exited)
+        ((difftime = curtime - stoptime))
+        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[1]} ]]; then
+          remove=true
+        fi
+      ;;
+      running)
+        ((difftime = curtime - starttime))
+        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[2]}
+             && "${SENTINEL}" = true ]]; then
+          remove=true
+          echo "Attempting to kill docker container ${name} [${id}]"
+          dockercmd kill "${id}"
+        fi
+      ;;
+      *)
+      ;;
+    esac
+
+    if [[ "${remove}" == true ]]; then
+      echo "Attempting to remove docker container ${name} [${id}]"
+      dockercmd rm "${id}"
     fi
 
-    # believe it or not, date is not even close to standardized...
-    if [[ $(uname -s) == Linux ]]; then
-
-      # GNU date
-      stoptime=$(date -d "${stoptime}" "+%s")
-    else
-
-      # BSD date
-      stoptime=$(date -j -f "%Y-%m-%dT%H:%M:%S" "${stoptime}" "+%s")
-    fi
-
-    curtime=$(date "+%s")
-    ((difftime = curtime - stoptime))
-    if [[ ${difftime} -gt 86400 ]]; then
-      echo "Removing docker ${id}"
-      if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-        dockercmd rm "${id}"
-      else
-        echo docker rm "${id}"
-      fi
-    fi
   done < <(
-   # see https://github.com/koalaman/shellcheck/issues/375
-   # shellcheck disable=SC2046
-    dockercmd inspect \
-      -f '{{.Id}},{{.State.Running}},{{.State.FinishedAt}}' \
-       $(dockercmd ps -qa) 2>/dev/null)
+     # shellcheck disable=SC2086
+     dockercmd inspect \
+        --format '{{.Id}},{{.Name}},{{.State.Status}},{{.State.StartedAt}},{{.State.FinishedAt}}' \
+       ${data})
+}
+
+## @description  Delete images after ${DOCKER_IMAGE_PURGE}
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function docker_image_maintenance_helper
+{
+  declare id
+  declare tmptime
+  declare createtime
+  declare difftime
+  declare name
+
+  if [[ "${ROBOT}" = false ]]; then
+    return
+  fi
+
+  if [[ -z "$*" ]]; then
+    return
+  fi
+
+  for id in "$@"; do
+    tmptime=$(dockercmd inspect --format '{{.Created}}' "${id}" | cut -f1 -d. )
+    createtime=$(dockerdate_to_ctime "${tmptime}")
+    curtime=$(date "+%s")
+
+    ((difftime = curtime - createtime))
+    if [[ ${difftime} -gt ${DOCKER_IMAGE_PURGE} ]]; then
+      echo "Attempting to remove docker image ${id}"
+      dockercmd rmi "${id}"
+    fi
+  done
 }
 
 ## @description  Remove untagged/unused images
@@ -259,121 +377,46 @@ function docker_rm_old_containers
 ## @stability    evolving
 ## @replaceable  no
 ## @param        args
-function docker_remove_untagged_images
+function docker_image_maintenance
 {
-
-  big_console_header "Removing untagged images"
-
-  # this way is a bit more compatible with older docker versions
-  # shellcheck disable=SC2016
-  dockercmd images | tail -n +2 | ${AWK} '$1 == "<none>" {print $3}' | \
-    xargs --no-run-if-empty docker rmi
-}
-
-## @description  Remove defunct tagged images
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_remove_old_tagged_images
-{
-  declare line
   declare id
-  declare created
 
-  big_console_header "Removing old tagged images"
+  if [[ "${ROBOT}" = false ]]; then
+    return
+  fi
 
-  while read -r line; do
-    # shellcheck disable=SC2016
-    id=$(echo "${line}" | ${AWK} '{print $1":"$2}')
-    # shellcheck disable=SC2016
-    created=$(echo "${line}" | ${AWK} '{print $5}')
+  big_console_header "Removing old images"
 
-    if [[ ${created} =~ week
-       || ${created} =~ month
-       || ${created} =~ year ]]; then
-         echo "Removing docker image ${id}"
-         if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-           dockercmd rmi "${id}"
-         else
-           echo docker rmi "${id}"
-         fi
-    fi
-
-    if [[ ${id} =~ yetus/${PROJECT_NAME}:date
-       || ${id} =~ test-patch- ]]; then
-      if [[ ${created} =~ day
-        || ${created} =~ hours ]]; then
-        echo "Removing docker image ${id}"
-        if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-          dockercmd rmi "${id}"
-        else
-          echo docker rmi "${id}"
-        fi
-      fi
-    fi
-  done < <(dockercmd images)
-}
-
-## @description  Performance docker maintenance on Jenkins
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_cleanup_apache_jenkins
-{
-  echo "=========================="
-  echo "Docker Images:"
   dockercmd images
-  echo "=========================="
-  echo "Docker Containers:"
-  dockercmd ps -a
-  echo "=========================="
 
-  docker_stop_exited_containers
+  echo "Untagged images:"
 
-  docker_rm_old_containers
+  #shellcheck disable=SC2046
+  docker_image_maintenance_helper $(dockercmd images --filter "dangling=true" -q --no-trunc)
 
-  docker_remove_untagged_images
+  echo "Apache Yetus images:"
 
-  docker_remove_old_tagged_images
+  # removing this by image id doesn't always work without a force
+  # in the situations that, for whatever reason, docker decided
+  # to use the same image. this was a rare problem with older
+  # releases of yetus. at some point, we should revisit this
+  # in the mean time, we're going to reconstruct the
+  # repostory:tag and send that to get removed.
+
+  #shellcheck disable=SC2046,SC2016
+  docker_image_maintenance_helper $(dockercmd images | ${GREP} -e ^yetus | grep tp- | ${AWK} '{print $1":"$2}')
+  #shellcheck disable=SC2046,SC2016
+  docker_image_maintenance_helper $(dockercmd images | ${GREP} -e ^yetus | ${GREP} -v hours | ${AWK} '{print $1":"$2}')
+
+  if [[ "${SENTINTAL}" = false ]]; then
+    return
+  fi
+
+  echo "Other images:"
+  #shellcheck disable=SC2046,SC2016
+  docker_image_maintenance_helper $(dockercmd images | tail -n +2 | ${GREP} -v hours  | ${AWK} '{print $1":"$2}')
 }
 
-## @description  Clean up our old images used for patch testing
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_cleanup_yetus_images
-{
-  declare images
-  declare imagecount
-  declare rmimage
-  declare rmi
-
-  # we always want to leave at least one of our images
-  # so that the whole thing doesn't have to be rebuilt.
-  # This also let's us purge any old images so that
-  # we can get fresh stuff sometimes
-  # shellcheck disable=SC2016
-  images=$(dockercmd images | ${GREP} "yetus/${PROJECT_NAME}" | ${GREP} tp | ${AWK} '{print $1":"$2}') 2>&1
-
-  # shellcheck disable=SC2086
-  imagecount=$(echo ${images} | tr ' ' '\n' | wc -l)
-  ((imagecount = imagecount - 1 ))
-
-  # shellcheck disable=SC2086
-  rmimage=$(echo ${images} | tr ' ' '\n' | tail -${imagecount})
-  for rmi in ${rmimage}
-  do
-    echo "Removing image ${rmi}"
-    if [[ "${DOCKER_DESTRUCTIVE}" = true ]]; then
-      dockercmd rmi "${rmi}"
-    else
-      echo docker rmi "${rmi}"
-    fi
-  done
-}
 
 ## @description  Perform pre-run maintenance to free up
 ## @description  resources. With --jenkins, it is a lot
@@ -384,11 +427,10 @@ function docker_cleanup_yetus_images
 ## @param        args
 function docker_cleanup
 {
-  if [[ ${TESTPATCHMODE} =~ jenkins ]]; then
-    docker_cleanup_apache_jenkins
-  fi
 
-  docker_cleanup_yetus_images
+  docker_image_maintenance
+
+  docker_container_maintenance
 }
 
 ## @description  Deterine the user name and user id of the user
@@ -457,6 +499,7 @@ function docker_run_image
   declare dockerfilerev
   declare baseimagename
   declare patchimagename="yetus/${PROJECT_NAME}:tp-${DOCKER_ID}"
+  declare containername="yetus_tp-${DOCKER_ID}"
   declare client
   declare server
   declare retval
@@ -469,7 +512,9 @@ function docker_run_image
   # make a base image, if it isn't available
   big_console_header "Building base image: ${baseimagename}"
   start_clock
-  dockercmd build -t "${baseimagename}" "${PATCH_DIR}/precommit/test-patch-docker"
+  dockercmd build \
+    -t "${baseimagename}" \
+    "${PATCH_DIR}/precommit/test-patch-docker"
   retval=$?
 
   #shellcheck disable=SC2046
@@ -489,8 +534,13 @@ function docker_run_image
   big_console_header "Building patch image: ${patchimagename}"
   start_clock
   # using the base image, make one that is patch specific
-  dockercmd build -t "${patchimagename}" - <<PatchSpecificDocker
+  dockercmd build \
+    -t "${patchimagename}" \
+    - <<PatchSpecificDocker
 FROM ${baseimagename}
+LABEL org.apache.yetus=""
+LABEL org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}"
+LABEL org.apache.yetus.testpatch.project=${PROJECT_NAME}
 RUN groupadd --non-unique -g ${GROUP_ID} ${USER_NAME}
 RUN useradd -g ${GROUP_ID} -u ${USER_ID} -m ${USER_NAME}
 RUN chown -R ${USER_NAME} /home/${USER_NAME}
@@ -528,7 +578,6 @@ PatchSpecificDocker
   server=$(docker_version Server)
 
   dockerversion="Client=${client} Server=${server}"
-
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
     # shellcheck disable=SC2086
     exec "${DOCKERCMD}" run --rm=true -i \
@@ -544,6 +593,7 @@ PatchSpecificDocker
       --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
+      --name "${containername}" \
       "${patchimagename}"
   else
     # shellcheck disable=SC2086
@@ -559,6 +609,7 @@ PatchSpecificDocker
       --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
       --env=PROJECT_NAME="${PROJECT_NAME}" \
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
+      --name "${containername}" \
       "${patchimagename}"
   fi
 }

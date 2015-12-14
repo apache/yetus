@@ -33,6 +33,7 @@ export MAVEN_OPTS
 
 # strip out --docker param to prevent re-exec again
 TESTPATCHMODE=${TESTPATCHMODE/--docker }
+TESTPATCHMODE=${TESTPATCHMODE%--docker}
 
 
 cd "${BASEDIR}"

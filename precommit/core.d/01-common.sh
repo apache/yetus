@@ -24,9 +24,11 @@ function common_defaults
   BASEDIR=$(pwd)
   BUGSYSTEMS=""
   BUILDTOOLS=""
-  LOAD_SYSTEM_PLUGINS=true
+  #shellcheck disable=SC2034
+  EXEC_MODES=""
   #shellcheck disable=SC2034
   JENKINS=false
+  LOAD_SYSTEM_PLUGINS=true
   #shellcheck disable=SC2034
   OFFLINE=false
   OSTYPE=$(uname -s)
@@ -47,8 +49,12 @@ function common_defaults
   PATCH_LEVEL=0
   #shellcheck disable=SC2034
   PATCH_SYSTEM=""
-  PROJECT_NAME=yetus
+  PROJECT_NAME=unknown
   RESULT=0
+  #shellcheck disable=SC2034
+  ROBOT=false
+  #shellcheck disable=SC2034
+  SENTINEL=false
   #shellcheck disable=SC2034
   TESTTYPES=""
   TESTFORMATS=""
