@@ -204,6 +204,28 @@ class ShellFunction:
             self.getreplace())
     return line
 
+  def lint(self):
+    getfuncs = {
+        "audience"    : self.getaudience,
+        "stability"   : self.getstability,
+        "replaceable" : self.getreplace,
+    }
+    validvalues = {
+        "audience"    : ("Public", "Private"),
+        "stability"   : ("Stable", "Evolving"),
+        "replaceable" : ("Yes", "No"),
+    }
+    messages = []
+    for attr in ("audience", "stability", "replaceable"):
+      value = getfuncs[attr]()
+      if value == "None":
+        messages.append("ERROR: function %s has no @%s" % (self.getname(), attr.lower()))
+      elif value not in validvalues[attr]:
+        validvalue = "|".join(v.lower() for v in validvalues[attr])
+        messages.append("ERROR: function %s has invalid value (%s) for @%s (%s)" %
+                        (self.getname(), value.lower(), attr.lower(), validvalue))
+    return "\n".join(messages)
+
   def __str__(self):
     line="{%s %s %s %s}" \
       % (self.getname(),
@@ -213,7 +235,7 @@ class ShellFunction:
     return line
 
 def main():
-  parser=OptionParser(usage="usage: %prog --skipprnorep --output OUTFILE --input INFILE [--input INFILE ...]")
+  parser=OptionParser(usage="usage: %prog [--skipprnorep] --output OUTFILE --input INFILE [--input INFILE ...]")
   parser.add_option("-o","--output", dest="outfile",
      action="store", type="string",
      help="file to create", metavar="OUTFILE")
@@ -222,6 +244,8 @@ def main():
      help="file to read", metavar="INFILE")
   parser.add_option("--skipprnorep", dest="skipprnorep",
      action="store_true", help="Skip Private & Not Replaceable")
+  parser.add_option("--lint", dest="lint",
+                    action="store_true", help="Enable lint mode")
   parser.add_option("-V", "--version", dest="release_version", action="store_true", default=False,
                     help="display version information for shelldocs and exit.")
 
@@ -232,50 +256,64 @@ def main():
       print ver_file.read()
     sys.exit(0)
 
-  allfuncs=[]
-  for filename in options.infile:
-    with open(filename,"r") as shellcode:
-      funcdef=ShellFunction()
-      for line in shellcode:
-        if line.startswith('## @description'):
-          funcdef.adddesc(line)
-        elif line.startswith('## @audience'):
-          funcdef.setaudience(line)
-        elif line.startswith('## @stability'):
-          funcdef.setstability(line)
-        elif line.startswith('## @replaceable'):
-          funcdef.setreplace(line)
-        elif line.startswith('## @param'):
-          funcdef.addparam(line)
-        elif line.startswith('## @return'):
-          funcdef.addreturn(line)
-        elif line.startswith('function'):
-          funcdef.setname(line)
-          if options.skipprnorep and \
-            funcdef.getaudience() == "Private" and \
-            funcdef.getreplace() == "No":
-               pass
-          else:
-            allfuncs.append(funcdef)
-          funcdef=ShellFunction()
+  if options.infile is None:
+    parser.error("At least one input file needs to be supplied")
+  elif options.outfile is None and options.lint is None:
+    parser.error("At least one of output file and lint mode needs to be specified")
 
-  allfuncs=sorted(allfuncs)
+  allfuncs = []
+  try:
+    for filename in options.infile:
+      with open(filename,"r") as shellcode:
+        funcdef = ShellFunction()
+        for line in shellcode:
+          if line.startswith('## @description'):
+            funcdef.adddesc(line)
+          elif line.startswith('## @audience'):
+            funcdef.setaudience(line)
+          elif line.startswith('## @stability'):
+            funcdef.setstability(line)
+          elif line.startswith('## @replaceable'):
+            funcdef.setreplace(line)
+          elif line.startswith('## @param'):
+            funcdef.addparam(line)
+          elif line.startswith('## @return'):
+            funcdef.addreturn(line)
+          elif line.startswith('function'):
+            funcdef.setname(line)
+            if options.skipprnorep and \
+              funcdef.getaudience() == "Private" and \
+              funcdef.getreplace() == "No":
+                 pass
+            else:
+              allfuncs.append(funcdef)
+            funcdef = ShellFunction()
+  except IOError, err:
+    print >> sys.stderr, "ERROR: Failed to read from file: %s. Aborting." % err.filename
+    sys.exit(1)
 
-  outfile=open(options.outfile, "w")
-  outfile.write(asflicense)
-  for line in toc(allfuncs):
-    outfile.write(line)
+  allfuncs = sorted(allfuncs)
 
-  outfile.write("\n------\n\n")
+  if options.lint:
+    for funcs in allfuncs:
+      message = funcs.lint()
+      if 0 < len(message):
+        print message
 
-  header=[]
-  for funcs in allfuncs:
-    if header != funcs.getinter():
-      header=funcs.getinter()
-      line="## %s\n" % (funcs.headerbuild())
-      outfile.write(line)
-    outfile.write(funcs.getdocpage())
-  outfile.close()
+  if options.outfile is not None:
+    with open(options.outfile, "w") as outfile:
+      outfile.write(asflicense)
+      for line in toc(allfuncs):
+         outfile.write(line)
+      outfile.write("\n------\n\n")
+
+      header = []
+      for funcs in allfuncs:
+        if header != funcs.getinter():
+          header = funcs.getinter()
+          line = "## %s\n" % (funcs.headerbuild())
+          outfile.write(line)
+        outfile.write(funcs.getdocpage())
 
 if __name__ == "__main__":
   main()
