@@ -69,7 +69,7 @@ class ApiDocs
   end
   def manipulate_resource_list(resources)
     parent=Pathname.new(@source)
-    build=Pathname.new("documentation/in-progress/#{@destination}")
+    build=Pathname.new(@destination)
     Middleman::Util::all_files_under(@source).each do  |path|
       dest = build + path.relative_path_from(parent)
       resources << CopyInPlaceResource.new(@sitemap, dest.to_s, path.to_s)
@@ -86,6 +86,9 @@ def shelldocs(output, docs=[])
          FileUtils.uptodate?(output, [SHELLDOCS])
     inputs=docs.map do |entry| "--input=#{entry}" end
     `#{SHELLDOCS} --skipprnorep --output #{output} #{inputs.join ' '}`
+    unless $?.exitstatus == 0
+      abort("shelldocs failed to generate docs for '#{docs}'")
+    end
   end
 end
 
@@ -97,16 +100,57 @@ def releasenotes(output, version)
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
                                        --usetoday --license --lint)`
+  unless $?.exitstatus == 0
+    abort("releasedocmaker failed to generate release notes for #{version}.")
+  end
   FileUtils.mv("#{output}/#{version}/RELEASENOTES.#{version}.md",
                "#{output}/#{version}/RELEASENOTES.md")
   FileUtils.mv("#{output}/#{version}/CHANGES.#{version}.md",
                "#{output}/#{version}/CHANGES.md")
 end
 
+GITREPO = 'https://git-wip-us.apache.org/repos/asf/yetus.git'
+
+def build_release_docs(output, version)
+  # TODO get the version date from jira and do an up to date check instead of building each time.
+  puts "Building docs for release #{version}"
+  puts "\tcleaning up output directories in #{output}"
+  FileUtils.rm_rf("#{output}/build-#{version}", :secure => true)
+  FileUtils.rm_rf("#{output}/#{version}", :secure => true)
+  puts "\tcloning from tag."
+  `(cd "#{output}" && git clone --depth 1 --branch "#{version}" --single-branch -- "#{GITREPO}" "build-#{version}") >"#{output}/#{version}_git_checkout.log" 2>&1`
+  unless $?.exitstatus == 0
+    abort("building docs failed to for #{version}.")
+  end
+  puts "\tsetting up markdown docs"
+  FileUtils.mkdir "#{output}/#{version}"
+  FileUtils.mv(Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"), "#{output}/#{version}/")
+  FileUtils.mv("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md", "#{output}/#{version}.html.md")
+  FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
+  precommit_shelldocs("#{output}/#{version}/precommit-apidocs", "#{output}/build-#{version}/precommit")
+
+  puts "\tgenerating javadocs"
+  `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1`
+  unless $?.exitstatus == 0
+    puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log"
+  end
+end
+
+def precommit_shelldocs(apidocs_dir, source_dir)
+  # core API
+  shelldocs("#{apidocs_dir}/core.md", Dir.glob("#{source_dir}/core.d/*.sh"))
+  # smart-apply-patch API
+  shelldocs("#{apidocs_dir}/smart-apply-patch.md", ["#{source_dir}/smart-apply-patch.sh"])
+  # primary API
+  shelldocs("#{apidocs_dir}/test-patch.md", ["#{source_dir}/test-patch.sh"])
+  # plugins API
+  shelldocs("#{apidocs_dir}/plugins.md", Dir.glob("#{source_dir}/test-patch.d/*.sh"))
+end
+
 # Add in apidocs rendered by other parts of the repo
 after_configuration do
   # For Audiene Annotations we just rely on having made javadocs with Maven
-  sitemap.register_resource_list_manipulator(:audience_annotations, ApiDocs.new(sitemap, "audience-annotations-apidocs", "../audience-annotations-component/target/site/apidocs"))
+  sitemap.register_resource_list_manipulator(:audience_annotations, ApiDocs.new(sitemap, "documentation/in-progress/audience-annotations-apidocs", "../audience-annotations-component/target/site/apidocs"))
 
   # For Precommit we regenerate source files so they can be rendered.
   # we rely on a symlink. to avoid an error from the file watcher, our target
@@ -114,21 +158,13 @@ after_configuration do
   # TODO when we can, update to middleman 4 so we can use multiple source dirs
   # instead of symlinks
   FileUtils.mkdir_p '../target/in-progress/precommit-apidocs'
-  # core API
-  shelldocs('../target/in-progress/precommit-apidocs/core.md',
-            Dir.glob("../precommit/core.d/*.sh"))
-  # smart-apply-patch API
-  shelldocs('../target/in-progress/precommit-apidocs/smart-apply-patch.md',
-            ['../precommit/smart-apply-patch.sh'])
-  # primary API
-  shelldocs('../target/in-progress/precommit-apidocs/test-patch.md',
-            ['../precommit/test-patch.sh'])
-  # plugins API
-  shelldocs('../target/in-progress/precommit-apidocs/plugins.md',
-            Dir.glob('../precommit/test-patch.d/*.sh'))
+  precommit_shelldocs('../target/in-progress/precommit-apidocs', '../precommit')
   unless data.versions.releases.nil?
     data.versions.releases.each do |release|
+      build_release_docs('../target', release)
       releasenotes('../target', release)
+      # stitch the javadoc in place
+      sitemap.register_resource_list_manipulator("#{release}_javadocs".to_sym, ApiDocs.new(sitemap, "documentation/#{release}/audience-annotations-apidocs", "../target/build-#{release}/audience-annotations-component/target/site/apidocs"))
     end
   end
 end
