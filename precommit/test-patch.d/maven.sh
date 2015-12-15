@@ -424,7 +424,7 @@ function maven_precompile
   fi
 
   personality_modules "${repostatus}" mvninstall
-  modules_workers "${repostatus}" mvninstall -fae clean install -DskipTests=true -Dmaven.javadoc.skip=true
+  modules_workers "${repostatus}" mvninstall -fae clean install -DskipTests=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dfindbugs.skip=true
   result=$?
   modules_messages "${repostatus}" mvninstall true
   if [[ ${result} != 0 ]]; then
