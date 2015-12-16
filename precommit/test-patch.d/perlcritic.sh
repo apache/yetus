@@ -82,6 +82,18 @@ function perlcritic_preapply
   return 0
 }
 
+## @description  Wrapper to call column_calcdiffs
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function perlcritic_calcdiffs
+{
+  column_calcdiffs "$@"
+}
+
 function perlcritic_postapply
 {
   local i
@@ -115,7 +127,11 @@ function perlcritic_postapply
   PERLCRITIC_VERSION=$(${PERLCRITIC} --version 2>/dev/null)
   add_footer_table perlcritic "v${PERLCRITIC_VERSION}"
 
-  calcdiffs "${PATCH_DIR}/branch-perlcritic-result.txt" "${PATCH_DIR}/patch-perlcritic-result.txt" > "${PATCH_DIR}/diff-patch-perlcritic.txt"
+  calcdiffs \
+    "${PATCH_DIR}/branch-perlcritic-result.txt" \
+    "${PATCH_DIR}/patch-perlcritic-result.txt" \
+    perlcritic \
+    > "${PATCH_DIR}/diff-patch-perlcritic.txt"
   # shellcheck disable=SC2016
   diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-perlcritic.txt" | ${AWK} '{print $1}')
 

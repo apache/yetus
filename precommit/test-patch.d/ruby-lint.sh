@@ -81,6 +81,49 @@ function ruby_lint_preapply
   return 0
 }
 
+## @description  Calculate the differences between the specified files
+## @description  using columns and output it to stdout
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function ruby_lint_calcdiffs
+{
+  declare orig=$1
+  declare new=$2
+  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
+  declare j
+
+  # first, strip filenames:line:
+  # this keeps column: in an attempt to increase
+  # accuracy in case of multiple, repeated errors
+  # since the column number shouldn't change
+  # if the line of code hasn't been touched
+  # shellcheck disable=SC2016
+  cut -f4- -d: "${orig}" > "${tmp}.branch"
+  # shellcheck disable=SC2016
+  cut -f4- -d: "${new}" > "${tmp}.patch"
+
+  # compare the errors, generating a string of line
+  # numbers. Sorry portability: GNU diff makes this too easy
+  ${DIFF} --unchanged-line-format="" \
+     --old-line-format="" \
+     --new-line-format="%dn " \
+     "${tmp}.branch" \
+     "${tmp}.patch" > "${tmp}.lined"
+
+  # now, pull out those lines of the raw output
+  # shellcheck disable=SC2013
+  for j in $(cat "${tmp}.lined"); do
+    # shellcheck disable=SC2086
+    head -${j} "${new}" | tail -1
+  done
+
+  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
+}
+
 function ruby_lint_postapply
 {
   local i
@@ -115,7 +158,11 @@ function ruby_lint_postapply
   RUBY_LINT_VERSION=$(${RUBY_LINT} -v | ${AWK} '{print $2}')
   add_footer_table ruby-lint "${RUBY_LINT_VERSION}"
 
-  calcdiffs "${PATCH_DIR}/branch-ruby-lint-result.txt" "${PATCH_DIR}/patch-ruby-lint-result.txt" > "${PATCH_DIR}/diff-patch-ruby-lint.txt"
+  calcdiffs \
+    "${PATCH_DIR}/branch-ruby-lint-result.txt" \
+    "${PATCH_DIR}/patch-ruby-lint-result.txt" \
+      ruby_lint \
+      > "${PATCH_DIR}/diff-patch-ruby-lint.txt"
   diffPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-ruby-lint.txt")
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then

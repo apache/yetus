@@ -95,6 +95,18 @@ function shellcheck_preapply
   return 0
 }
 
+## @description  Wrapper to call column_calcdiffs
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function shellcheck_calcdiffs
+{
+  column_calcdiffs "$@"
+}
+
 function shellcheck_postapply
 {
   local i
@@ -139,6 +151,7 @@ function shellcheck_postapply
   calcdiffs \
     "${PATCH_DIR}/branch-shellcheck-result.txt" \
     "${PATCH_DIR}/patch-shellcheck-result.txt" \
+    shellcheck \
       > "${PATCH_DIR}/diff-patch-shellcheck.txt"
   # shellcheck disable=SC2016
   diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shellcheck.txt" | ${AWK} '{print $1}')

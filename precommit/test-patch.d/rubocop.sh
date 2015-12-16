@@ -82,6 +82,18 @@ function rubocop_preapply
   return 0
 }
 
+## @description  Wrapper to call column_calcdiffs
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function rubocop_calcdiffs
+{
+  column_calcdiffs "$@"
+}
+
 function rubocop_postapply
 {
   local i
@@ -116,7 +128,11 @@ function rubocop_postapply
   RUBOCOP_VERSION=$(${RUBOCOP} -v | ${AWK} '{print $NF}')
   add_footer_table rubocop "v${RUBOCOP_VERSION}"
 
-  calcdiffs "${PATCH_DIR}/branch-rubocop-result.txt" "${PATCH_DIR}/patch-rubocop-result.txt" > "${PATCH_DIR}/diff-patch-rubocop.txt"
+  calcdiffs \
+    "${PATCH_DIR}/branch-rubocop-result.txt" \
+    "${PATCH_DIR}/patch-rubocop-result.txt" \
+    rubocop \
+      > "${PATCH_DIR}/diff-patch-rubocop.txt"
   diffPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-rubocop.txt")
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then

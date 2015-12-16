@@ -62,7 +62,52 @@ function checkstyle_parse_args
   done
 }
 
+## @description  checkstyle plug-in specific difference calculator
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function checkstyle_calcdiffs
+{
+  declare orig=$1
+  declare new=$2
+  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
+  declare j
 
+  # first, strip filenames:line:
+  # this keeps column: in an attempt to increase
+  # accuracy in case of multiple, repeated errors
+  # since the column number shouldn't change
+  # if the line of code hasn't been touched
+  # shellcheck disable=SC2016
+  cut -f3- -d: "${orig}" > "${tmp}.branch"
+  # shellcheck disable=SC2016
+  cut -f3- -d: "${new}" > "${tmp}.patch"
+
+  # compare the errors, generating a string of line
+  # numbers. Sorry portability: GNU diff makes this too easy
+  ${DIFF} --unchanged-line-format="" \
+     --old-line-format="" \
+     --new-line-format="%dn " \
+     "${tmp}.branch" \
+     "${tmp}.patch" > "${tmp}.lined"
+
+  # now, pull out those lines of the raw output
+  # shellcheck disable=SC2013
+  for j in $(cat "${tmp}.lined"); do
+    # shellcheck disable=SC2086
+    head -${j} "${new}" | tail -1
+  done
+
+  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
+}
+
+## @description execute checkstyle
+## @audience    private
+## @stability   stable
+## @replaceable no
 function checkstyle_runner
 {
   local repostatus=$1
@@ -77,7 +122,13 @@ function checkstyle_runner
   local repo
   local modulesuffix
   local cmd
+  local logline
+  local text
+  local linenum
+  local codeline
 
+
+  # first, let's clear out any previous run information
   modules_reset
 
   if [[ ${repostatus} == branch ]]; then
@@ -86,14 +137,18 @@ function checkstyle_runner
     repo="the patch"
   fi
 
+  # loop through the modules we've been given
   #shellcheck disable=SC2153
   until [[ $i -eq ${#MODULE[@]} ]]; do
+
+    # start the clock per module, setup some help vars, etc
     start_clock
     fn=$(module_file_fragment "${MODULE[${i}]}")
     modulesuffix=$(basename "${MODULE[${i}]}")
     output="${PATCH_DIR}/${repostatus}-checkstyle-${fn}.txt"
     logfile="${PATCH_DIR}/maven-${repostatus}-checkstyle-${fn}.txt"
 
+    # set up the command line, etc, to build...
     if [[ ${BUILDTOOLCWD} == true ]]; then
       pushd "${BASEDIR}/${MODULE[${i}]}" >/dev/null
     fi
@@ -117,6 +172,10 @@ function checkstyle_runner
       ;;
     esac
 
+    # we're going to execute it and pull out
+    # anything that beings with a /.  that's
+    # almost certainly checkstyle output
+
     #shellcheck disable=SC2086
     echo ${cmd} "> ${logfile}"
     #shellcheck disable=SC2086
@@ -132,15 +191,57 @@ function checkstyle_runner
       module_status ${i} -1 "${logfile}" "${modulesuffix} in ${repo} failed checkstyle"
       ((result = result + 1))
     fi
+
+    # if we have some output, we need to do more work:
+    if [[ -s ${tmp} ]]; then
+
+      # first, let's pull out all of the files that
+      # we actually care about, esp since that run
+      # above is likely from the entire source
+      # this will grealy cut down how much work we
+      # have to do later
+
+      for j in ${CHANGED_FILES}; do
+        ${GREP} "${j}" "${tmp}" >> "${tmp}.1"
+      done
+
+      # now that we have just the files we care about,
+      # let's unscrew it. You see...
+
+      # checkstyle seems to do everything it possibly can
+      # to make it hard to process, including inconsistent
+      # output (sometimes it has columns, sometimes it doesn't!)
+      # and giving very generic errors when context would be
+      # helpful, esp when doing diffs.
+
+      # in order to help calcdiff and the user out, we're
+      # going to reprocess the output to include the code
+      # line being flagged.  When calcdiff gets a hold of this
+      # it will have the code to act as context to help
+      # report the correct line
+
+      # file:linenum:(column:)error    ====>
+      # file:linenum:code(:column):error
+      pushd "${BASEDIR}" >/dev/null
+      while read -r logline; do
+        file=$(echo "${logline}" | cut -f1 -d:)
+        linenum=$(echo "${logline}" | cut -f2 -d:)
+        text=$(echo "${logline}" | cut -f3- -d:)
+        codeline=$(head -n "+${linenum}" "${file}" | tail -1 )
+        echo "${file}:${linenum}:${codeline}:${text}" >> "${output}"
+      done < <(cat "${tmp}.1")
+
+      popd >/dev/null
+      # later on, calcdiff will turn this into code(:column):error
+      # compare, and then put the file:line back onto it.
+
+    fi
+
+    rm "${tmp}" "${tmp}.1" 2>/dev/null
+
     savestop=$(stop_clock)
     #shellcheck disable=SC2034
     MODULE_STATUS_TIMER[${i}]=${savestop}
-
-    for j in ${CHANGED_FILES}; do
-      ${GREP} "${j}" "${tmp}" >> "${output}"
-    done
-
-    rm "${tmp}" 2>/dev/null
 
     if [[ ${BUILDTOOLCWD} == true ]]; then
       popd >/dev/null
@@ -238,7 +339,12 @@ function checkstyle_postapply
       touch "${PATCH_DIR}/branch-checkstyle-${fn}.txt"
     fi
 
-    calcdiffs "${PATCH_DIR}/branch-checkstyle-${fn}.txt" "${PATCH_DIR}/patch-checkstyle-${fn}.txt" > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+    # call calcdiffs to allow overrides
+    calcdiffs \
+      "${PATCH_DIR}/branch-checkstyle-${fn}.txt" \
+      "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
+      checkstyle \
+      > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
     #shellcheck disable=SC2016
     diffpostpatch=$(wc -l "${PATCH_DIR}/diff-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
 

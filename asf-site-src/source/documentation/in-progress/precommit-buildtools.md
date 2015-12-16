@@ -78,6 +78,10 @@ For example, the gradle build tool does not have a standard way to execute check
 
     - Certain language test plug-ins require assistance from the build tool to count problems in the compile log due to some tools having custom handling for those languages.  The test plug-in name should be in the (test) part of the function name.
 
+* pluginname\_(test)_calcdiffs
+
+    - Some build tools (e.g., maven) use custom output for certain types of compilations (e.g., java).  This allows for custom log file difference calculation used to determine the before and after views.
+
 * pluginname\_docker\_support
 
     - If this build tool requires extra settings on the `docker run` command line, this function should be defined and write those options into a file called `${PATCH_DIR}/buildtool-docker-params.txt`.  This is particularly useful for things like mounting volumes for repository caches.

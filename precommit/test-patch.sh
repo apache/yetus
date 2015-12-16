@@ -2089,24 +2089,30 @@ function runtests
 }
 
 ## @description  Calculate the differences between the specified files
-## @description  and output it to stdout.
+## @description  using just the column+ messages (third+ column in a
+## @descriptoin  colon delimated flie) and output it to stdout.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
-function calcdiffs
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function column_calcdiffs
 {
-  local orig=$1
-  local new=$2
-  local tmp=${PATCH_DIR}/pl.$$.${RANDOM}
-  local count=0
-  local j
+  declare branch=$1
+  declare patch=$2
+  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
+  declare j
 
-  # first, pull out just the errors
+  # first, strip filenames:line:
+  # this keeps column: in an attempt to increase
+  # accuracy in case of multiple, repeated errors
+  # since the column number shouldn't change
+  # if the line of code hasn't been touched
   # shellcheck disable=SC2016
-  ${AWK} -F: '{print $NF}' "${orig}" > "${tmp}.branch"
-
+  cut -f3- -d: "${branch}" > "${tmp}.branch"
   # shellcheck disable=SC2016
-  ${AWK} -F: '{print $NF}' "${new}" > "${tmp}.patch"
+  cut -f3- -d: "${patch}" > "${tmp}.patch"
 
   # compare the errors, generating a string of line
   # numbers. Sorry portability: GNU diff makes this too easy
@@ -2120,12 +2126,78 @@ function calcdiffs
   # shellcheck disable=SC2013
   for j in $(cat "${tmp}.lined"); do
     # shellcheck disable=SC2086
-    head -${j} "${new}" | tail -1
+    head -${j} "${patch}" | tail -1
   done
 
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
 
+## @description  Calculate the differences between the specified files
+## @description  using just the error messages (last column in a
+## @descriptoin  colon delimated flie) and output it to stdout.
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @return       differences
+function error_calcdiffs
+{
+  declare branch=$1
+  declare patch=$2
+  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
+  declare j
+
+  # first, pull out just the errors
+  # shellcheck disable=SC2016
+  ${AWK} -F: '{print $NF}' "${branch}" > "${tmp}.branch"
+
+  # shellcheck disable=SC2016
+  ${AWK} -F: '{print $NF}' "${patch}" > "${tmp}.patch"
+
+  # compare the errors, generating a string of line
+  # numbers. Sorry portability: GNU diff makes this too easy
+  ${DIFF} --unchanged-line-format="" \
+     --old-line-format="" \
+     --new-line-format="%dn " \
+     "${tmp}.branch" \
+     "${tmp}.patch" > "${tmp}.lined"
+
+  # now, pull out those lines of the raw output
+  # shellcheck disable=SC2013
+  for j in $(cat "${tmp}.lined"); do
+    # shellcheck disable=SC2086
+    head -${j} "${patch}" | tail -1
+  done
+
+  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
+}
+
+## @description  Wrapper to call specific version of calcdiffs if available
+## @description  otherwise calls generic_calcdiffs
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        branchlog
+## @param        patchlog
+## @param        testtype
+## @return       differences
+function calcdiffs
+{
+  declare branch=$1
+  declare patch=$2
+  declare testtype=$3
+
+  if declare -f ${PROJECT_NAME}_${testtype}_calcdiffs >/dev/null; then
+    "${PROJECT_NAME}_${testtype}_calcdiffs" "${branch}" "${patch}"
+  elif declare -f ${BUILDTOOL}_${testtype}_calcdiffs >/dev/null; then
+    "${BUILDTOOL}_${testtype}_calcdiffs" "${branch}" "${patch}"
+  elif declare -f ${testtype}_calcdiffs >/dev/null; then
+    "${testtype}_calcdiffs" "${branch}" "${patch}"
+  else
+    error_calcdiffs "${branch}" "${patch}"
+  fi
+}
 
 ## @description  Helper routine for plugins to ask projects, etc
 ## @description  to count problems in a log file
@@ -2266,6 +2338,7 @@ function generic_postlog_compare
     calcdiffs \
       "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" \
       "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt" \
+      "${testtype}" \
       > "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt"
 
     diffpatch=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')

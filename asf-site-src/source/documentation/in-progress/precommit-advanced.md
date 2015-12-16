@@ -111,7 +111,7 @@ If the `--skip-system-plugins` flag is passed, then only core.d is imported.
 
 ## Test Plug-ins
 
-Plug-ins geared towards independent tests are registed via:
+Plug-ins geared towards independent tests are registered via:
 
 
 ```bash
@@ -123,6 +123,10 @@ add_test_type <pluginname>
 
 * pluginname\_tests
     - executed after the unit tests have completed.
+
+* pluginname\_calcdiffs
+
+    - This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have "Missing period." as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool's output (e.g., checkstyle) to provide a more accurate way to determine differences.
 
 
 # Personalities
