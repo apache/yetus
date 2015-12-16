@@ -53,6 +53,7 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.1.0/">Docs for v0.1.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -151,6 +152,10 @@
 
 <ul>
 <li><a href="#list_plugins">list_plugins</a></li>
+<li><a href="#plugin_usage_output">plugin_usage_output</a></li>
+<li><a href="#yetus_add_header">yetus_add_header</a></li>
+<li><a href="#yetus_add_option">yetus_add_option</a></li>
+<li><a href="#yetus_generic_columnprinter">yetus_generic_columnprinter</a></li>
 </ul></li>
 <li>None/None/Not Replaceable
 
@@ -1068,6 +1073,166 @@
 </ul>
 
 <p>List all installed plug-ins, regardless of whether they have been enabled</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="plugin_usage_output"><code>plugin_usage_output</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>plugin_usage_output array
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Print the plugin&rsquo;s usage info</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="yetus_add_header"><code>yetus_add_header</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_add_header header
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Add a header to the usage output</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="yetus_add_option"><code>yetus_add_option</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_add_option subcommand subcommanddesc
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Add an option to the usage output</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="yetus_generic_columnprinter"><code>yetus_generic_columnprinter</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_generic_columnprinter array
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Print a screen-size aware two-column output</p>
 
 <ul>
 <li>Returns</li>
