@@ -121,6 +121,7 @@ function asflicense_tests
     if [[ ${btfails} = true ]]; then
       # if we're here, then build actually failed
       modules_messages patch asflicense true
+      return 1
     else
       add_vote_table 0 asflicense "ASF License check generated no output?"
       return 0
