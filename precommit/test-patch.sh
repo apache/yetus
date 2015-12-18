@@ -2608,7 +2608,7 @@ function prechecks
   declare plugin
   declare result=0
 
-  for plugin in ${BUILDTOOL} ${NEEDEDTESTS} ${TESTFORMATS}; do
+  for plugin in ${BUILDTOOL} ${NEEDED_TESTS} ${TESTFORMATS}; do
     verify_patchdir_still_exists
 
     if declare -f ${plugin}_precheck >/dev/null 2>&1; then

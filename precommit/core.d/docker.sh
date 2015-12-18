@@ -115,8 +115,7 @@ function docker_exeverify
     DOCKERCMD="${pathdocker}"
   fi
 
-  if [[ ! -x "${DOCKERCMD}" ]];then
-    yetus_error "Docker command ${DOCKERCMD} is not executable."
+  if ! verify_command "Docker" "${DOCKERCMD}"; then
     return 1
   fi
 

@@ -25,6 +25,14 @@ function xml_filefilter
   fi
 }
 
+function xml_precheck
+{
+  if ! verify_command "jrunscript" "${JAVA_HOME}/bin/jrunscript"; then
+    add_vote_table 0 xml "jrunscript was not available."
+    delete_test xml
+  fi
+}
+
 function xml_postcompile
 {
   declare repostatus=$1
@@ -44,10 +52,6 @@ function xml_postcompile
   big_console_header "Checking if XML files are well-formed"
 
   js="${JAVA_HOME}/bin/jrunscript"
-  if [[ ! -x ${js} ]]; then
-    yetus_error "${js} does not exist"
-    return 0
-  fi
 
   start_clock
 

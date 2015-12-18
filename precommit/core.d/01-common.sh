@@ -512,3 +512,31 @@ function plugin_usage_output
   echo "${YETUS_USAGE_HEADER}"
   echo ""
 }
+
+## @description  Verifies the existence of a command
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        commandname
+## @param        commandpath
+## @return       0 = ok
+## @return       1 = error
+function verify_command
+{
+  local cmd_name="$1"
+  local cmd_path="$2"
+
+  if [[ -z ${cmd_path} ]]; then
+    yetus_error "executable for '${cmd_name}' was not specified."
+    return 1
+  fi
+  if [[ ! -f ${cmd_path} ]]; then
+    yetus_error "executable '${cmd_path}' for '${cmd_name}' does not exist."
+    return 1
+  fi
+  if [[ ! -x ${cmd_path} ]]; then
+    yetus_error "executable '${cmd_path}' for '${cmd_name}' is not executable."
+    return 1
+  fi
+  return 0
+}

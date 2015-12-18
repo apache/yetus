@@ -20,19 +20,6 @@ FINDBUGS_WARNINGS_FAIL_PRECHECK=false
 
 add_test_type findbugs
 
-function findbugs_filefilter
-{
-  local filename=$1
-
-  if [[ ${BUILDTOOL} == maven
-    || ${BUILDTOOL} == ant ]]; then
-    if [[ ${filename} =~ \.java$
-      || ${filename} =~ (^|/)findbugs-exclude.xml$ ]]; then
-      add_test findbugs
-    fi
-  fi
-}
-
 function findbugs_usage
 {
   yetus_add_option "--findbugs-home=<path>" "Findbugs home directory (default \${FINDBUGS_HOME})"
@@ -55,13 +42,20 @@ function findbugs_parse_args
   done
 }
 
-## @description  are the needed bits for findbugs present?
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @return       0 findbugs will work for our use
-## @return       1 findbugs is missing some component
-function findbugs_is_installed
+function findbugs_filefilter
+{
+  local filename=$1
+
+  if [[ ${BUILDTOOL} == maven
+    || ${BUILDTOOL} == ant ]]; then
+    if [[ ${filename} =~ \.java$
+      || ${filename} =~ (^|/)findbugs-exclude.xml$ ]]; then
+      add_test findbugs
+    fi
+  fi
+}
+
+function findbugs_precheck
 {
   declare exec
   declare status=0
@@ -71,12 +65,14 @@ function findbugs_is_installed
               convertXmlToText \
               filterBugs \
               setBugDatabaseInfo; do
-    if [[ ! -x "${FINDBUGS_HOME}/bin/${exec}"  ]]; then
-      yetus_error "ERROR: ${FINDBUGS_HOME}/bin/${exec} is not executable."
+    if ! verify_command "${exec}" "${FINDBUGS_HOME}/bin/${exec}"; then
       status=1
     fi
   done
-  return ${status}
+  if [[ ${status} == 1 ]]; then
+    add_vote_table 0 findbugs "Findbugs executables are not available."
+    delete_test findbugs
+  fi
 }
 
 ## @description  Run the maven findbugs plugin and record found issues in a bug database
@@ -192,14 +188,7 @@ function findbugs_preapply
   declare msg
 
   verify_needed_test findbugs
-
   if [[ $? == 0 ]]; then
-    return 0
-  fi
-
-  findbugs_is_installed
-  if [[ $? != 0 ]]; then
-    add_vote_table 0 findbugs "findbugs executables are not available."
     return 0
   fi
 
@@ -277,13 +266,7 @@ function findbugs_postinstall
   local savestop
 
   verify_needed_test findbugs
-
   if [[ $? == 0 ]]; then
-    return 0
-  fi
-
-  findbugs_is_installed
-  if [[ $? != 0 ]]; then
     return 0
   fi
 

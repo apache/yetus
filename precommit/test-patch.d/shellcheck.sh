@@ -38,6 +38,14 @@ function shellcheck_filefilter
   fi
 }
 
+function shellcheck_precheck
+{
+  if ! verify_command "shellcheck" "${SHELLCHECK}"; then
+    add_vote_table 0 shellcheck "Shellcheck was not available."
+    delete_test shellcheck
+  fi
+}
+
 function shellcheck_private_findbash
 {
   local i
@@ -72,11 +80,6 @@ function shellcheck_preapply
 
   big_console_header "shellcheck plugin: prepatch"
 
-  if [[ ! -x "${SHELLCHECK}" ]]; then
-    yetus_error "shellcheck is not available."
-    return 0
-  fi
-
   start_clock
 
   echo "Running shellcheck against all identifiable shell scripts"
@@ -106,12 +109,6 @@ function shellcheck_postapply
   fi
 
   big_console_header "shellcheck plugin: postpatch"
-
-  if [[ ! -x "${SHELLCHECK}" ]]; then
-    yetus_error "shellcheck is not available."
-    add_vote_table 0 shellcheck "Shellcheck was not available."
-    return 0
-  fi
 
   start_clock
 

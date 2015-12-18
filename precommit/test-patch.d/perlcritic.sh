@@ -47,6 +47,15 @@ function perlcritic_filefilter
   fi
 }
 
+function perlcritic_precheck
+{
+  if ! verify_command "Perl::Critic" "${PERLCRITIC}"; then
+    add_vote_table 0 perlcritic "Perl::Critic was not available."
+    delete_test perlcritic
+  fi
+}
+
+
 function perlcritic_preapply
 {
   local i
@@ -57,11 +66,6 @@ function perlcritic_preapply
   fi
 
   big_console_header "Perl::Critic plugin: prepatch"
-
-  if [[ ! -x ${PERLCRITIC} ]]; then
-    yetus_error "${PERLCRITIC} does not exist."
-    return 0
-  fi
 
   start_clock
 
@@ -91,12 +95,6 @@ function perlcritic_postapply
   fi
 
   big_console_header "Perl::Critic plugin: postpatch"
-
-  if [[ ! -x ${PERLCRITIC} ]]; then
-    yetus_error "${PERLCRITIC} is not available."
-    add_vote_table 0 perlcritic "Perl::Critic was not available."
-    return 0
-  fi
 
   start_clock
 

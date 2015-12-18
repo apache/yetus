@@ -52,6 +52,15 @@ function pylint_filefilter
   fi
 }
 
+function pylint_precheck
+{
+  if ! verify_command "Pylint" "${PYLINT}"; then
+    add_vote_table 0 pylint "Pylint was not available."
+    delete_test pylint
+  fi
+}
+
+
 function pylint_preapply
 {
   local i
@@ -64,11 +73,6 @@ function pylint_preapply
   fi
 
   big_console_header "pylint plugin: prepatch"
-
-  if [[ ! -x ${PYLINT} ]]; then
-    yetus_error "${PYLINT} does not exist."
-    return 0
-  fi
 
   start_clock
 
@@ -110,12 +114,6 @@ function pylint_postapply
   fi
 
   big_console_header "pylint plugin: postpatch"
-
-  if [[ ! -x ${PYLINT} ]]; then
-    yetus_error "${PYLINT} is not available."
-    add_vote_table 0 pylint "Pylint was not available."
-    return 0
-  fi
 
   start_clock
 

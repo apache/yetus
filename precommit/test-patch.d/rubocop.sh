@@ -47,6 +47,15 @@ function rubocop_filefilter
   fi
 }
 
+function rubocop_precheck
+{
+  if ! verify_command rubocop "${RUBOCOP}"; then
+    add_vote_table 0 rubocop "rubocop was not available."
+    delete_test rubocop
+  fi
+}
+
+
 function rubocop_preapply
 {
   local i
@@ -57,11 +66,6 @@ function rubocop_preapply
   fi
 
   big_console_header "rubocop plugin: prepatch"
-
-  if [[ ! -x ${RUBOCOP} ]]; then
-    yetus_error "${RUBOCOP} does not exist."
-    return 0
-  fi
 
   start_clock
 
@@ -91,12 +95,6 @@ function rubocop_postapply
   fi
 
   big_console_header "rubocop plugin: postpatch"
-
-  if [[ ! -x ${RUBOCOP} ]]; then
-    yetus_error "${RUBOCOP} is not available."
-    add_vote_table 0 rubocop "Rubocop was not available."
-    return 0
-  fi
 
   start_clock
 

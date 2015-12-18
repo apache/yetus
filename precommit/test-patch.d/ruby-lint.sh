@@ -47,6 +47,14 @@ function ruby_lint_filefilter
   fi
 }
 
+function ruby_lint_precheck
+{
+  if ! verify_command "Ruby-lint" "${RUBY_LINT}"; then
+    add_vote_table 0 ruby-lint "Ruby-lint was not available."
+    delete_test ruby_lint
+  fi
+}
+
 function ruby_lint_preapply
 {
   local i
@@ -57,11 +65,6 @@ function ruby_lint_preapply
   fi
 
   big_console_header "ruby-lint plugin: prepatch"
-
-  if [[ ! -x ${RUBY_LINT} ]]; then
-    yetus_error "${RUBY_LINT} does not exist."
-    return 0
-  fi
 
   start_clock
 
@@ -91,12 +94,6 @@ function ruby_lint_postapply
   fi
 
   big_console_header "ruby-lint plugin: postpatch"
-
-  if [[ ! -x ${RUBY_LINT} ]]; then
-    yetus_error "${RUBY_LINT} is not available."
-    add_vote_table 0 ruby-lint "Ruby-lint was not available."
-    return 0
-  fi
 
   start_clock
 
