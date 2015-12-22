@@ -24,6 +24,37 @@
 #   * maven 3.2.0+
 #   * jdk 1.7+ (1.7 in --release)
 #   * ruby + gems needed to run middleman
+
+## @description  Verify that all required dependencies exist
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       1 - Some dependencies are missing
+## @return       0 - All dependencies exist
+function detect_dependencies
+{
+  local exit_code=0
+  if ! [ -x "$(command -v java)" ]; then
+    echo "Java not found! Must install JDK version >= 1.7" >&2
+    exit_code=1
+  fi
+  if ! [ -x "$(command -v mvn)" ]; then
+    echo "Apache Maven not found! Must install version >= 3.2.0" >&2
+    echo "Download it at https://maven.apache.org/download.cgi" >&2
+    exit_code=1
+  fi
+  if ! [ -x "$(command -v bundle)" ]; then
+    echo "building docs requires a Ruby executable bundle." >&2
+    echo "Install it by executing 'gem install bundler && bundle install'" >&2
+    exit_code=1
+  fi
+
+  if [[ "${exit_code}" -ne "0" ]]; then
+    echo "Some dependencies are missing. Exit now." >&2
+  fi
+  return ${exit_code}
+}
+
 YETUS_VERSION=$(cat VERSION)
 RAT_DOWNLOAD_URL=https://repo1.maven.org/maven2/org/apache/rat/apache-rat/0.11/apache-rat-0.11.jar
 
@@ -38,6 +69,8 @@ for arg in "$@"; do
 done
 
 echo "working on version '${YETUS_VERSION}'"
+
+detect_dependencies
 mkdir -p target
 
 if [ "${offline}" != "true" ]; then
