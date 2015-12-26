@@ -2508,6 +2508,7 @@ function distclean
   declare plugin
 
   personality_modules branch distclean
+  "${BUILDTOOL}_modules_worker" branch distclean
 
   for plugin in ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_clean >/dev/null 2>&1; then
