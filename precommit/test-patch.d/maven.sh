@@ -243,15 +243,14 @@ function maven_javadoc_logfilter
   ${GREP} -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" > "${output}"
 }
 
-## @description  Calculate the differences between the specified files
-## @description  and output it to stdout, the maven way
+## @description  handle diffing maven javac errors
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @param        branchlog
 ## @param        patchlog
 ## @return       differences
-function maven_java_calcdiffs
+function maven_javac_calcdiffs
 {
   declare orig=$1
   declare new=$2
@@ -286,18 +285,6 @@ function maven_java_calcdiffs
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
 
-## @description  handle diffing maven javac errors
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        branchlog
-## @param        patchlog
-## @return       differences
-function maven_javac_calcdiffs
-{
-  maven_java_calcdiffs "$@"
-}
-
 ## @description  handle diffing maven javadoc errors
 ## @audience     private
 ## @stability    evolving
@@ -307,7 +294,35 @@ function maven_javac_calcdiffs
 ## @return       differences
 function maven_javadoc_calcdiffs
 {
-  maven_java_calcdiffs "$@"
+  declare orig=$1
+  declare new=$2
+  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
+  declare j
+
+  # can't use the generic handler for this because of the
+  # [WARNING], etc headers.
+  # strip :linenum from the output, keeping the filename
+  # shellcheck disable=SC2016
+  ${SED} -e 's#:[0-9]*:#:#' "${orig}" > "${tmp}.branch"
+  # shellcheck disable=SC2016
+  ${SED} -e 's#:[0-9]*:#:#' "${new}" > "${tmp}.patch"
+
+  # compare the errors, generating a string of line
+  # numbers. Sorry portability: GNU diff makes this too easy
+  ${DIFF} --unchanged-line-format="" \
+     --old-line-format="" \
+     --new-line-format="%dn " \
+     "${tmp}.branch" \
+     "${tmp}.patch" > "${tmp}.lined"
+
+  # now, pull out those lines of the raw output
+  # shellcheck disable=SC2013
+  for j in $(cat "${tmp}.lined"); do
+    # shellcheck disable=SC2086
+    head -${j} "${new}" | tail -1
+  done
+
+  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
 
 function maven_builtin_personality_modules
