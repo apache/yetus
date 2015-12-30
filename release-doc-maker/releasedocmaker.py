@@ -466,6 +466,8 @@ def main():
                       help="versions in JIRA to include in releasenotes", metavar="VERSION")
     parser.add_option("-V", dest="release_version", action="store_true", default=False,
                       help="display version information for releasedocmaker and exit.")
+    parser.add_option("-O", "--outputdir", dest="output_directory", action="append", type="string",
+                      help="specify output directory to put release docs to.")
     (options, _) = parser.parse_args()
 
     if options.release_version:
@@ -475,6 +477,16 @@ def main():
 
     if options.versions is None:
         parser.error("At least one version needs to be supplied")
+
+    if options.output_directory is not None:
+        if len(options.output_directory) > 1:
+            parser.error("Only one output directory should be given")
+        if not os.path.isdir(options.output_directory[0]):
+            try:
+                os.makedirs(options.output_directory[0])
+            except OSError:
+                parser.error("Unable to create output directory that does not exist")
+        os.chdir(options.output_directory[0])
 
     proxy = urllib2.ProxyHandler()
     opener = urllib2.build_opener(proxy)
