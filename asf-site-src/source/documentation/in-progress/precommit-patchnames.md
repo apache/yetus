@@ -20,7 +20,7 @@
 We use Apache Yetus to process your patch. It supports the following patterns and
 procedures for patch file names:
 
-JIRA:
+## JIRA
 
 If JIRA support is configured, attach the patch to the given ISSUE and
 click 'Submit Patch'.  The patch file should be named one of:
@@ -29,8 +29,16 @@ click 'Submit Patch'.  The patch file should be named one of:
   * ISSUE.###.patch
   * ISSUE.branch.###.patch
   * ISSUE-branch-###.patch
-  * ISSUE.##.branch.patch
-  * ISSUE-branch.##.patch
+  * ISSUE.###.branch.patch
+  * ISSUE-branch.###.patch
+
+The meaning of the subpart are the following:
+
+  * ISSUE: JIRA key (e.g. YETUS-1)
+  * branch: either the name of a branch or a git hash prefixed with **git** (e.g. branch-2.8 or git8e55427b35)
+  * ###: revision of the patch (e.g. 00 or 01)
+
+## Github
 
 If Github support is also configured, a comment that contains a link to a Pull Request's
 patch file (e.g., https://github.com/user/repo/pull/1.patch) will pull the patch from
