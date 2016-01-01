@@ -54,9 +54,20 @@ TP_FOOTER_COUNTER=0
 ## @replaceable  no
 function setup_defaults
 {
+  declare version="in-progress"
+
   common_defaults
 
-  PATCH_NAMING_RULE="https://yetus.apache.org/documentation/latest/precommit-patchnames"
+  if [[ -f "${BINDIR}/../VERSION" ]]; then
+    version=$(cat "${BINDIR}/../VERSION")
+  elif [[ -f "${BINDIR}/VERSION" ]]; then
+    version=$(cat "${BINDIR}/VERSION")
+  fi
+  if [[ ${version} =~ SNAPSHOT$ ]]; then
+    version="in-progress"
+  fi
+
+  PATCH_NAMING_RULE="https://yetus.apache.org/documentation/${version}/precommit-patchnames"
   INSTANCE=${RANDOM}
   RELOCATE_PATCH_DIR=false
 
