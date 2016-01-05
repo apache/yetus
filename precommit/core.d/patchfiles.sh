@@ -31,7 +31,7 @@ function generic_locate_patch
     return 1
   fi
 
-  ${CURL} --silent \
+  ${CURL} --silent -L \
           --output "${output}" \
          "${input}"
   if [[ $? != 0 ]]; then
