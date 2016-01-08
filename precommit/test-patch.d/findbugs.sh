@@ -60,15 +60,20 @@ function findbugs_precheck
   declare exec
   declare status=0
 
-  for exec in findbugs \
-              computeBugHistory \
-              convertXmlToText \
-              filterBugs \
-              setBugDatabaseInfo; do
-    if ! verify_command "${exec}" "${FINDBUGS_HOME}/bin/${exec}"; then
-      status=1
-    fi
-  done
+  if [[ -z ${FINDBUGS_HOME} ]]; then
+    yetus_error "FINDBUGS_HOME was not specified."
+    status=1
+  else
+    for exec in findbugs \
+                computeBugHistory \
+                convertXmlToText \
+                filterBugs \
+                setBugDatabaseInfo; do
+      if ! verify_command "${exec}" "${FINDBUGS_HOME}/bin/${exec}"; then
+        status=1
+      fi
+    done
+  fi
   if [[ ${status} == 1 ]]; then
     add_vote_table 0 findbugs "Findbugs executables are not available."
     delete_test findbugs
