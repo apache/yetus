@@ -80,6 +80,41 @@ function findbugs_precheck
   fi
 }
 
+## @description  Dequeue maven modules that lack java sources
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        repostatus
+function findbugs_maven_skipper
+{
+  declare repostat=$1
+  declare -i i=0
+  declare skiplist=()
+  declare modname
+
+  start_clock
+  #shellcheck disable=SC2153
+  until [[ ${i} -eq ${#MODULE[@]} ]]; do
+    # If there are no java source code in the module,
+    # skip parsing output xml file.
+    if [[ ! -d "${MODULE[${i}]}/src/main/java"
+       && ! -d "${MODULE[${i}]}/src/test/java" ]]; then
+       skiplist=("${skiplist[@]}" "${MODULE[$i]}")
+    fi
+    ((i=i+1))
+  done
+
+  i=0
+
+  for modname in "${skiplist[@]}"; do
+    dequeue_personality_module "${modname}"
+  done
+
+  if [[ -n "${modname}" ]]; then
+    add_vote_table 0 findbugs "Skipped ${repostat} modules with no Java source: ${skiplist[*]}"
+  fi
+}
+
 ## @description  Run the maven findbugs plugin and record found issues in a bug database
 ## @audience     private
 ## @stability    evolving
@@ -97,6 +132,13 @@ function findbugs_runner
   local savestop
 
   personality_modules "${name}" findbugs
+
+  # strip out any modules that aren't actually java modules
+  # this can save a lot of time during testing
+  if [[ "${BUILDTOOL}" = maven ]]; then
+    findbugs_maven_skipper "${name}"
+  fi
+
   "${BUILDTOOL}_modules_worker" "${name}" findbugs
 
   if [[ ${UNSUPPORTED_TEST} = true ]]; then
@@ -123,7 +165,6 @@ function findbugs_runner
         file="${ANT_FINDBUGSXML}"
       ;;
     esac
-
 
     if [[ ! -f ${file} ]]; then
       module_status ${i} -1 "" "${name}/${module} no findbugs output file (${file})"
@@ -212,6 +253,7 @@ function findbugs_preapply
       ((modindex=modindex+1))
       continue
     fi
+
     module=${MODULE[${modindex}]}
     start_clock
     offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
@@ -289,6 +331,7 @@ function findbugs_postinstall
       ((i=i+1))
       continue
     fi
+
     start_clock
     offset_clock "${MODULE_STATUS_TIMER[${i}]}"
     module="${MODULE[${i}]}"

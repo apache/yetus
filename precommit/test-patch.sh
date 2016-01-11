@@ -1854,6 +1854,32 @@ function personality_enqueue_module
   ((MODCOUNT=MODCOUNT+1))
 }
 
+## @description  Remove a module
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        modulenames
+function dequeue_personality_module
+{
+  declare modname=$1
+  declare oldmodule=("${MODULE[@]}")
+  declare oldmodparams=("${MODULEESXTRAPARAM[@]}")
+  declare modindex=0
+
+  yetus_debug "Personality: dequeue $*"
+
+  clear_personality_queue
+
+  until [[ ${modindex} -eq ${#oldmodule[@]} ]]; do
+    if [[ "${oldmodule[${modindex}]}" = "${modname}" ]]; then
+      yetus_debug "Personality: removing ${modindex}, ${oldmodule[${modindex}]} = ${modname}"
+    else
+      personality_enqueue_module "${oldmodule[${modindex}]}" "${oldmodparams[${modindex}]}"
+    fi
+    ((modindex=modindex+1))
+  done
+}
+
 ## @description  Utility to push many tests into the failure list
 ## @audience     private
 ## @stability    evolving
