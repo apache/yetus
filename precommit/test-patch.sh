@@ -1026,9 +1026,11 @@ function module_skipdir
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
+## @param        repostatus
 ## @return       None; sets ${CHANGED_MODULES}
 function find_changed_modules
 {
+  local repostatus=$1
   local i
   local changed_dirs
   local builddirs
@@ -1115,6 +1117,10 @@ function find_changed_modules
 
   #shellcheck disable=SC2034
   CHANGED_UNION_MODULES="${builddir}"
+
+  if declare -f ${BUILDTOOL}_reorder_modules >/dev/null; then
+    "${BUILDTOOL}_reorder_modules" "${repostatus}"
+  fi
 }
 
 ## @description  git checkout the appropriate branch to test.  Additionally, this calls
@@ -2506,7 +2512,7 @@ function compile_cycle
   declare result=0
   declare plugin
 
-  find_changed_modules
+  find_changed_modules "${codebase}"
 
   for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f ${plugin}_precompile >/dev/null 2>&1; then

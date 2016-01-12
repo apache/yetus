@@ -63,15 +63,7 @@ function hadoop_module_manipulation
     fi
   done
 
-  # ${startingmodules} is already sorted and uniq'd.
-  # let's remove child modules if we're going to
-  # touch their parent.
   passed_modules=${startingmodules}
-  for module in ${startingmodules}; do
-    yetus_debug "Stripping ${module}"
-    # shellcheck disable=SC2086
-    passed_modules=$(echo ${passed_modules} | tr ' ' '\n' | ${GREP} -v ${module}/ )
-  done
 
   yetus_debug "hmm pre-ordering: ${startingmodules}"
 
