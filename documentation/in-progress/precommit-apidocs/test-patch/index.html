@@ -149,9 +149,11 @@
 <li><a href="#bugsystem_linecomments">bugsystem_linecomments</a></li>
 <li><a href="#calcdiffs">calcdiffs</a></li>
 <li><a href="#clear_personality_queue">clear_personality_queue</a></li>
+<li><a href="#column_calcdiffs">column_calcdiffs</a></li>
 <li><a href="#compile">compile</a></li>
 <li><a href="#compile_cycle">compile_cycle</a></li>
 <li><a href="#distclean">distclean</a></li>
+<li><a href="#error_calcdiffs">error_calcdiffs</a></li>
 <li><a href="#generic_logfilter">generic_logfilter</a></li>
 <li><a href="#generic_post_handler">generic_post_handler</a></li>
 <li><a href="#generic_postlog_compare">generic_postlog_compare</a></li>
@@ -914,20 +916,20 @@
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>calcdiffs
+<pre class="highlight plaintext"><code>calcdiffs branchlog patchlog testtype
 </code></pre>
 
 <ul>
 <li>Description</li>
 </ul>
 
-<p>Calculate the differences between the specified files and output it to stdout.</p>
+<p>Wrapper to call specific version of calcdiffs if available otherwise calls generic_calcdiffs</p>
 
 <ul>
 <li>Returns</li>
 </ul>
 
-<p>Nothing</p>
+<p>differences</p>
 
 <table><thead>
 <tr>
@@ -968,6 +970,46 @@
 </ul>
 
 <p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="column_calcdiffs"><code>column_calcdiffs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>column_calcdiffs branchlog patchlog
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Calculate the differences between the specified files using just the column+ messages (third+ column in a</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>differences</p>
 
 <table><thead>
 <tr>
@@ -1094,6 +1136,46 @@
 <p>0 on success</p>
 
 <p>1 on failure</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="error_calcdiffs"><code>error_calcdiffs</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>error_calcdiffs branchlog patchlog
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Calculate the differences between the specified files using just the error messages (last column in a</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>differences</p>
 
 <table><thead>
 <tr>

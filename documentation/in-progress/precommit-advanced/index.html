@@ -228,7 +228,7 @@
 
 <h2 id="test-plug-ins">Test Plug-ins</h2>
 
-<p>Plug-ins geared towards independent tests are registed via:</p>
+<p>Plug-ins geared towards independent tests are registered via:</p>
 <pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
 
@@ -242,6 +242,11 @@
 
 <ul>
 <li>executed after the unit tests have completed.</li>
+</ul></li>
+<li><p>pluginname_calcdiffs</p>
+
+<ul>
+<li>This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have &ldquo;Missing period.&rdquo; as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool&rsquo;s output (e.g., checkstyle) to provide a more accurate way to determine differences.</li>
 </ul></li>
 </ul>
 

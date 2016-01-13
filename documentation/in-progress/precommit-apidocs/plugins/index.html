@@ -153,10 +153,10 @@
 <li><a href="#checkstyle_postapply">checkstyle_postapply</a></li>
 <li><a href="#checkstyle_postcompile">checkstyle_postcompile</a></li>
 <li><a href="#checkstyle_preapply">checkstyle_preapply</a></li>
-<li><a href="#checkstyle_runner">checkstyle_runner</a></li>
 <li><a href="#checkstyle_usage">checkstyle_usage</a></li>
 <li><a href="#findbugs_filefilter">findbugs_filefilter</a></li>
 <li><a href="#findbugs_parse_args">findbugs_parse_args</a></li>
+<li><a href="#findbugs_precheck">findbugs_precheck</a></li>
 <li><a href="#findbugs_rebuild">findbugs_rebuild</a></li>
 <li><a href="#findbugs_usage">findbugs_usage</a></li>
 <li><a href="#github_breakup_url">github_breakup_url</a></li>
@@ -212,24 +212,28 @@
 <li><a href="#perlcritic_postapply">perlcritic_postapply</a></li>
 <li><a href="#perlcritic_postcompile">perlcritic_postcompile</a></li>
 <li><a href="#perlcritic_preapply">perlcritic_preapply</a></li>
+<li><a href="#perlcritic_precheck">perlcritic_precheck</a></li>
 <li><a href="#perlcritic_usage">perlcritic_usage</a></li>
 <li><a href="#pylint_filefilter">pylint_filefilter</a></li>
 <li><a href="#pylint_parse_args">pylint_parse_args</a></li>
 <li><a href="#pylint_postapply">pylint_postapply</a></li>
 <li><a href="#pylint_postcompile">pylint_postcompile</a></li>
 <li><a href="#pylint_preapply">pylint_preapply</a></li>
+<li><a href="#pylint_precheck">pylint_precheck</a></li>
 <li><a href="#pylint_usage">pylint_usage</a></li>
 <li><a href="#rubocop_filefilter">rubocop_filefilter</a></li>
 <li><a href="#rubocop_parse_args">rubocop_parse_args</a></li>
 <li><a href="#rubocop_postapply">rubocop_postapply</a></li>
 <li><a href="#rubocop_postcompile">rubocop_postcompile</a></li>
 <li><a href="#rubocop_preapply">rubocop_preapply</a></li>
+<li><a href="#rubocop_precheck">rubocop_precheck</a></li>
 <li><a href="#rubocop_usage">rubocop_usage</a></li>
 <li><a href="#ruby_lint_filefilter">ruby_lint_filefilter</a></li>
 <li><a href="#ruby_lint_parse_args">ruby_lint_parse_args</a></li>
 <li><a href="#ruby_lint_postapply">ruby_lint_postapply</a></li>
 <li><a href="#ruby_lint_postcompile">ruby_lint_postcompile</a></li>
 <li><a href="#ruby_lint_preapply">ruby_lint_preapply</a></li>
+<li><a href="#ruby_lint_precheck">ruby_lint_precheck</a></li>
 <li><a href="#ruby_lint_usage">ruby_lint_usage</a></li>
 <li><a href="#scalac_filefilter">scalac_filefilter</a></li>
 <li><a href="#scaladoc_filefilter">scaladoc_filefilter</a></li>
@@ -237,6 +241,7 @@
 <li><a href="#shellcheck_postapply">shellcheck_postapply</a></li>
 <li><a href="#shellcheck_postcompile">shellcheck_postcompile</a></li>
 <li><a href="#shellcheck_preapply">shellcheck_preapply</a></li>
+<li><a href="#shellcheck_precheck">shellcheck_precheck</a></li>
 <li><a href="#shellcheck_private_findbash">shellcheck_private_findbash</a></li>
 <li><a href="#tap_finalize_results">tap_finalize_results</a></li>
 <li><a href="#tap_parse_args">tap_parse_args</a></li>
@@ -246,6 +251,7 @@
 <li><a href="#whitespace_postcompile">whitespace_postcompile</a></li>
 <li><a href="#xml_filefilter">xml_filefilter</a></li>
 <li><a href="#xml_postcompile">xml_postcompile</a></li>
+<li><a href="#xml_precheck">xml_precheck</a></li>
 </ul></li>
 </ul>
 
@@ -1377,46 +1383,6 @@
 </tr>
 </tbody></table>
 
-<h3 id="checkstyle_runner"><code>checkstyle_runner</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<pre class="highlight plaintext"><code>checkstyle_runner
-</code></pre>
-
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table><thead>
-<tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody>
-<tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">No</td>
-</tr>
-</tbody></table>
-
 <h3 id="checkstyle_usage"><code>checkstyle_usage</code></h3>
 
 <ul>
@@ -1503,6 +1469,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>findbugs_parse_args
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="findbugs_precheck"><code>findbugs_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>findbugs_precheck
 </code></pre>
 
 <ul>
@@ -3737,6 +3743,46 @@
 </tr>
 </tbody></table>
 
+<h3 id="perlcritic_precheck"><code>perlcritic_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>perlcritic_precheck
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
 <h3 id="perlcritic_usage"><code>perlcritic_usage</code></h3>
 
 <ul>
@@ -3943,6 +3989,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>pylint_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="pylint_precheck"><code>pylint_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>pylint_precheck
 </code></pre>
 
 <ul>
@@ -4217,6 +4303,46 @@
 </tr>
 </tbody></table>
 
+<h3 id="rubocop_precheck"><code>rubocop_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>rubocop_precheck
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
 <h3 id="rubocop_usage"><code>rubocop_usage</code></h3>
 
 <ul>
@@ -4423,6 +4549,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>ruby_lint_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="ruby_lint_precheck"><code>ruby_lint_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>ruby_lint_precheck
 </code></pre>
 
 <ul>
@@ -4703,6 +4869,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>shellcheck_preapply
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="shellcheck_precheck"><code>shellcheck_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>shellcheck_precheck
 </code></pre>
 
 <ul>
@@ -5063,6 +5269,46 @@
 <li>Synopsis</li>
 </ul>
 <pre class="highlight plaintext"><code>xml_postcompile
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>None</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">None</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="xml_precheck"><code>xml_precheck</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>xml_precheck
 </code></pre>
 
 <ul>

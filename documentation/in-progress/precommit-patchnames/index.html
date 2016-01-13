@@ -121,7 +121,7 @@
 <p>We use Apache Yetus to process your patch. It supports the following patterns and
 procedures for patch file names:</p>
 
-<p>JIRA:</p>
+<h2 id="jira">JIRA</h2>
 
 <p>If JIRA support is configured, attach the patch to the given ISSUE and
 click &lsquo;Submit Patch&rsquo;.  The patch file should be named one of:</p>
@@ -131,9 +131,19 @@ click &lsquo;Submit Patch&rsquo;.  The patch file should be named one of:</p>
 <li>ISSUE.###.patch</li>
 <li>ISSUE.branch.###.patch</li>
 <li>ISSUE-branch-###.patch</li>
-<li>ISSUE.##.branch.patch</li>
-<li>ISSUE-branch.##.patch</li>
+<li>ISSUE.###.branch.patch</li>
+<li>ISSUE-branch.###.patch</li>
 </ul>
+
+<p>The meaning of the subpart are the following:</p>
+
+<ul>
+<li>ISSUE: JIRA key (e.g. YETUS-1)</li>
+<li>branch: either the name of a branch or a git hash prefixed with <strong>git</strong> (e.g. branch-2.8 or git8e55427b35)</li>
+<li>###: revision of the patch (e.g. 00 or 01)</li>
+</ul>
+
+<h2 id="github">Github</h2>
 
 <p>If Github support is also configured, a comment that contains a link to a Pull Request&rsquo;s
 patch file (e.g., <a href="https://github.com/user/repo/pull/1.patch">https://github.com/user/repo/pull/1.patch</a>) will pull the patch from
