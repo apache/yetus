@@ -101,12 +101,14 @@ function pylint_preapply
 
 function pylint_postapply
 {
-  local i
-  local count
-  local numPrepatch
-  local numPostpatch
-  local diffPostpatch
-  local pylintStderr=patch-pylint-stderr.txt
+  declare i
+  declare count
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare pylintStderr=patch-pylint-stderr.txt
+  declare fixedpatch
+  declare statstring
 
   verify_needed_test pylint
   if [[ $? == 0 ]]; then
@@ -147,19 +149,21 @@ function pylint_postapply
   add_footer_table pylint "v${PYLINT_VERSION%,}"
 
   calcdiffs "${PATCH_DIR}/branch-pylint-result.txt" "${PATCH_DIR}/patch-pylint-result.txt" > "${PATCH_DIR}/diff-patch-pylint.txt"
+  numPrepatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/branch-pylint-result.txt")
+  numPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/patch-pylint-result.txt")
   diffPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/diff-patch-pylint.txt")
 
+  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
+
+  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
+
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    # shellcheck disable=SC2016
-    numPrepatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/branch-pylint-result.txt")
-
-    # shellcheck disable=SC2016
-    numPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/patch-pylint-result.txt")
-
-    add_vote_table -1 pylint "The applied patch generated "\
-      "${diffPostpatch} new pylint issues (total was ${numPrepatch}, now ${numPostpatch})."
+    add_vote_table -1 pylint "The applied patch ${statstring}"
     add_footer_table pylint "@@BASE@@/diff-patch-pylint.txt"
     return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+    add_vote_table +1 pylint "The applied patch ${statstring}"
+    return 0
   fi
 
   add_vote_table +1 pylint "There were no new pylint issues."

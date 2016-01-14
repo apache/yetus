@@ -296,21 +296,24 @@ function findbugs_preapply
 ## @return       1 on failure
 function findbugs_postinstall
 {
-  local module
-  local fn
-  local combined_xml
-  local branchxml
-  local patchxml
-  local newbugsbase
-  local fixedbugsbase
-  local new_findbugs_warnings
-  local fixed_findbugs_warnings
-  local line
-  local firstpart
-  local secondpart
-  local i=0
-  local result=0
-  local savestop
+  declare module
+  declare fn
+  declare combined_xml
+  declare branchxml
+  declare patchxml
+  declare newbugsbase
+  declare fixedbugsbase
+  declare branch_warnings
+  declare patch_warnings
+  declare fixed_warnings
+  declare line
+  declare firstpart
+  declare secondpart
+  declare i=0
+  declare result=0
+  declare savestop
+  declare summarize=true
+  declare statstring
 
   verify_needed_test findbugs
   if [[ $? == 0 ]]; then
@@ -346,7 +349,14 @@ function findbugs_postinstall
     branchxml="${PATCH_DIR}/branch-findbugs-${fn}-warnings.xml"
     patchxml="${PATCH_DIR}/patch-findbugs-${fn}-warnings.xml"
 
-    if [[ ! -f "${branchxml}" ]]; then
+    if [[ -f "${branchxml}" ]]; then
+      # shellcheck disable=SC2016
+      branch_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first \
+          "${PATCH_BRANCH}" \
+          "${branchxml}" \
+          "${branchxml}" \
+          | ${AWK} '{print $1}')
+    else
       branchxml=${patchxml}
     fi
 
@@ -369,8 +379,15 @@ function findbugs_postinstall
       continue
     fi
 
+    # shellcheck disable=SC2016
+    patch_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first \
+        "patch" \
+        "${patchxml}" \
+        "${patchxml}" \
+        | ${AWK} '{print $1}')
+
     #shellcheck disable=SC2016
-    new_findbugs_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first patch \
+    add_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first patch \
         "${combined_xml}" "${newbugsbase}.xml" | ${AWK} '{print $1}')
     if [[ $? != 0 ]]; then
       popd >/dev/null
@@ -383,7 +400,7 @@ function findbugs_postinstall
     fi
 
     #shellcheck disable=SC2016
-    fixed_findbugs_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -fixed patch \
+    fixed_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -fixed patch \
         "${combined_xml}" "${fixedbugsbase}.xml" | ${AWK} '{print $1}')
     if [[ $? != 0 ]]; then
       popd >/dev/null
@@ -395,7 +412,7 @@ function findbugs_postinstall
       continue
     fi
 
-    echo "Found ${new_findbugs_warnings} new Findbugs warnings and ${fixed_findbugs_warnings} newly fixed warnings."
+    statstring=$(generic_calcdiff_status "${branch_warnings}" "${patch_warnings}" "${add_warnings}")
 
     "${FINDBUGS_HOME}/bin/convertXmlToText" -html "${newbugsbase}.xml" \
         "${newbugsbase}.html"
@@ -409,7 +426,7 @@ function findbugs_postinstall
       continue
     fi
 
-    if [[ ${new_findbugs_warnings} -gt 0 ]] ; then
+    if [[ ${add_warnings} -gt 0 ]] ; then
       populate_test_table FindBugs "module:${module}"
       #shellcheck disable=SC2162
       while read line; do
@@ -418,9 +435,11 @@ function findbugs_postinstall
         add_test_table "" "${firstpart}:${secondpart}"
       done < <("${FINDBUGS_HOME}/bin/convertXmlToText" "${newbugsbase}.xml")
 
-      module_status ${i} -1 "new-findbugs-${fn}.html" "${module} introduced "\
-        "${new_findbugs_warnings} new FindBugs issues."
+      module_status ${i} -1 "new-findbugs-${fn}.html" "${module} ${statstring}"
       ((result=result+1))
+    elif [[ ${fixed_warnings} -gt 0 ]]; then
+      module_status ${i} +1 "" "${module} ${statstring}"
+      summarize=false
     fi
     savestop=$(stop_clock)
     MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -428,7 +447,7 @@ function findbugs_postinstall
     ((i=i+1))
   done
 
-  modules_messages patch findbugs true
+  modules_messages patch findbugs "${summarize}"
   if [[ ${result} != 0 ]]; then
     return 1
   fi

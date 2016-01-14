@@ -96,10 +96,12 @@ function perlcritic_calcdiffs
 
 function perlcritic_postapply
 {
-  local i
-  local numPrepatch
-  local numPostpatch
-  local diffPostpatch
+  declare i
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare fixedpatch
+  declare statstring
 
   verify_needed_test perlcritic
   if [[ $? == 0 ]]; then
@@ -132,20 +134,27 @@ function perlcritic_postapply
     "${PATCH_DIR}/patch-perlcritic-result.txt" \
     perlcritic \
     > "${PATCH_DIR}/diff-patch-perlcritic.txt"
+
+  # shellcheck disable=SC2016
+  numPrepatch=$(wc -l "${PATCH_DIR}/branch-perlcritic-result.txt" | ${AWK} '{print $1}')
+
+  # shellcheck disable=SC2016
+  numPostpatch=$(wc -l "${PATCH_DIR}/patch-perlcritic-result.txt" | ${AWK} '{print $1}')
+
   # shellcheck disable=SC2016
   diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-perlcritic.txt" | ${AWK} '{print $1}')
 
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    # shellcheck disable=SC2016
-    numPrepatch=$(wc -l "${PATCH_DIR}/branch-perlcritic-result.txt" | ${AWK} '{print $1}')
+  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
 
-    # shellcheck disable=SC2016
-    numPostpatch=$(wc -l "${PATCH_DIR}/patch-perlcritic-result.txt" | ${AWK} '{print $1}')
+  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
-    add_vote_table -1 perlcritic "The applied patch generated "\
-      "${diffPostpatch} new Perl::Critic issues (total was ${numPrepatch}, now ${numPostpatch})."
+  if [[ ${diffPostpatch} -gt 0 ]]; then
+    add_vote_table -1 perlcritic "The applied patch ${statstring}"
     add_footer_table perlcritic "@@BASE@@/diff-patch-perlcritic.txt"
     return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+    add_vote_table +1 perlcritic "The applied patch ${statstring}"
+    return 0
   fi
 
   add_vote_table +1 perlcritic "There were no new perlcritic issues."

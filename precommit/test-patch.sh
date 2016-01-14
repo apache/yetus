@@ -2247,6 +2247,33 @@ function calcdiffs
   fi
 }
 
+## @description generate a standarized calcdiff status message
+## @audience    public
+## @stability   evolving
+## @replaceable no
+## @param       totalbranchissues
+## @param       totalpatchissues
+## @param       newpatchissues
+## @return      errorstring
+function generic_calcdiff_status
+{
+  declare numbranch=$1
+  declare numpatch=$2
+  declare addpatch=$3
+  declare samepatch
+  declare fixedpatch
+
+  ((samepatch=numpatch-addpatch))
+  ((fixedpatch=numbranch-numpatch+addpatch))
+
+  printf "generated %i new + %i unchanged - %i fixed = %i total (was %i)" \
+    "${addpatch}" \
+    "${samepatch}" \
+    "${fixedpatch}" \
+    "${numpatch}" \
+    "${numbranch}"
+}
+
 ## @description  Helper routine for plugins to ask projects, etc
 ## @description  to count problems in a log file
 ## @description  and output it to stdout.
@@ -2342,7 +2369,10 @@ function generic_postlog_compare
   declare statusjdk
   declare numbranch
   declare numpatch
-  declare diffpatch
+  declare addpatch
+  declare samepatch
+  declare fixedpatch
+  declare summarize=true
 
   if [[ ${multijdk} == true ]]; then
     jdk=$(report_jvm_version "${JAVA_HOME}")
@@ -2389,21 +2419,24 @@ function generic_postlog_compare
       "${testtype}" \
       > "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt"
 
-    diffpatch=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
+    # shellcheck disable=SC2016
+    addpatch=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
 
-    echo ""
-    echo "${module_suffix}/${testtype}: ${diffpatch} new issues (was ${numbranch}, now ${numpatch})."
+    ((fixedpatch=numbranch-numpatch+addpatch))
 
-    if [[ ${diffpatch} -gt 0 ]] ; then
+    statstring=$(generic_calcdiff_status "${numbranch}" "${numpatch}" "${addpatch}" )
+
+    if [[ ${addpatch} -gt 0 ]]; then
       ((result = result + 1))
-
-      add_vote_table -1 "${testtype}" "${fn}${statusjdk} generated " \
-        "${diffpatch} new issues (was ${numbranch}, now ${numpatch}). "
+      add_vote_table -1 "${testtype}" "${fn}${statusjdk} ${statstring}"
       add_footer_table "${testtype}" "${fn}: @@BASE@@/diff-${origlog}-${testtype}-${fn}.txt"
+    elif [[ ${fixedpatch} -gt 0 ]]; then
+      add_vote_table +1 "${testtype}" "${fn}${statusjdk} ${statstring}"
+      summarize=false
     fi
     ((i=i+1))
   done
-  modules_messages patch "${testtype}" true
+  modules_messages patch "${testtype}" "${summarize}"
   if [[ ${result} -gt 0 ]]; then
     return 1
   fi

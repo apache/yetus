@@ -296,14 +296,15 @@ function checkstyle_preapply
 
 function checkstyle_postapply
 {
-  local result
-  local module
-  local mod
-  local fn
-  local i=0
-  local numprepatch=0
-  local numpostpatch=0
-  local diffpostpatch=0
+  declare result
+  declare module
+  declare mod
+  declare fn
+  declare i=0
+  declare numbranch=0
+  declare numpatch=0
+  declare addpatch=0
+  declare summarize=true
 
   verify_needed_test checkstyle
   if [[ $? == 0 ]]; then
@@ -345,29 +346,34 @@ function checkstyle_postapply
       "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
       checkstyle \
       > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+
     #shellcheck disable=SC2016
-    diffpostpatch=$(wc -l "${PATCH_DIR}/diff-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
+    numbranch=$(wc -l "${PATCH_DIR}/branch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
+    #shellcheck disable=SC2016
+    numpatch=$(wc -l "${PATCH_DIR}/patch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
+    #shellcheck disable=SC2016
+    addpatch=$(wc -l "${PATCH_DIR}/diff-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
 
-    if [[ ${diffpostpatch} -gt 0 ]] ; then
+    ((fixedpatch=numbranch-numpatch+addpatch))
+
+    statstring=$(generic_calcdiff_status "${numbranch}" "${numpatch}" "${addpatch}" )
+
+    mod=${module}
+    if [[ ${mod} == . ]]; then
+      mod=root
+    fi
+
+    if [[ ${addpatch} -gt 0 ]] ; then
       ((result = result + 1))
-
-      # shellcheck disable=SC2016
-      numprepatch=$(wc -l "${PATCH_DIR}/branch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
-      # shellcheck disable=SC2016
-      numpostpatch=$(wc -l "${PATCH_DIR}/patch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
-
-      mod=${module}
-      if [[ ${mod} == . ]]; then
-        mod=root
-      fi
-      module_status ${i} -1 "diff-checkstyle-${fn}.txt" "Patch generated "\
-        "${diffpostpatch} new checkstyle issues in "\
-        "${mod} (total was ${numprepatch}, now ${numpostpatch})."
+      module_status ${i} -1 "diff-checkstyle-${fn}.txt" "${mod}: patch ${statstring}"
+    elif [[ ${fixedpatch} -gt 0 ]]; then
+      module_status ${i} +1 "diff-checkstyle-${fn}.txt" "${mod}: patch ${statstring}"
+      summarize=false
     fi
     ((i=i+1))
   done
 
-  modules_messages patch checkstyle true
+  modules_messages patch checkstyle "${summarize}"
 
   if [[ ${result} != 0 ]]; then
     return 1

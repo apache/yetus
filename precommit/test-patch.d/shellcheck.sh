@@ -71,7 +71,8 @@ function shellcheck_private_findbash
 
 function shellcheck_preapply
 {
-  local i
+  declare i
+  declare msg
 
   verify_needed_test shellcheck
   if [[ $? == 0 ]]; then
@@ -90,6 +91,15 @@ function shellcheck_preapply
     fi
   done
   popd > /dev/null
+
+  # shellcheck disable=SC2016
+  SHELLCHECK_VERSION=$(${SHELLCHECK} --version | ${GREP} version: | ${AWK} '{print $NF}')
+  msg="v${SHELLCHECK_VERSION}"
+  if [[ ${SHELLCHECK_VERSION} =~ 0.[0-3].[0-5] ]]; then
+    msg="${msg} (This is an old version that has serious bugs. Consider upgrading.)"
+  fi
+  add_footer_table shellcheck "${msg}"
+
   # keep track of how much as elapsed for us already
   SHELLCHECK_TIMER=$(stop_clock)
   return 0
@@ -109,11 +119,12 @@ function shellcheck_calcdiffs
 
 function shellcheck_postapply
 {
-  local i
-  local msg
-  local numPrepatch
-  local numPostpatch
-  local diffPostpatch
+  declare i
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare fixedpatch
+  declare statstring
 
   verify_needed_test shellcheck
   if [[ $? == 0 ]]; then
@@ -140,34 +151,34 @@ function shellcheck_postapply
     touch "${PATCH_DIR}/branch-shellcheck-result.txt"
   fi
 
-  # shellcheck disable=SC2016
-  SHELLCHECK_VERSION=$(${SHELLCHECK} --version | ${GREP} version: | ${AWK} '{print $NF}')
-  msg="v${SHELLCHECK_VERSION}"
-  if [[ ${SHELLCHECK_VERSION} =~ 0.[0-3].[0-5] ]]; then
-    msg="${msg} (This is an old version that has serious bugs. Consider upgrading.)"
-  fi
-  add_footer_table shellcheck "${msg}"
-
   calcdiffs \
     "${PATCH_DIR}/branch-shellcheck-result.txt" \
     "${PATCH_DIR}/patch-shellcheck-result.txt" \
     shellcheck \
       > "${PATCH_DIR}/diff-patch-shellcheck.txt"
+
+  # shellcheck disable=SC2016
+  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shellcheck-result.txt" | ${AWK} '{print $1}')
+
+  # shellcheck disable=SC2016
+  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shellcheck-result.txt" | ${AWK} '{print $1}')
+
   # shellcheck disable=SC2016
   diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shellcheck.txt" | ${AWK} '{print $1}')
 
+
+  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
+
+  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
+
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    # shellcheck disable=SC2016
-    numPrepatch=$(wc -l "${PATCH_DIR}/branch-shellcheck-result.txt" | ${AWK} '{print $1}')
-
-    # shellcheck disable=SC2016
-    numPostpatch=$(wc -l "${PATCH_DIR}/patch-shellcheck-result.txt" | ${AWK} '{print $1}')
-
-    add_vote_table -1 shellcheck "The applied patch generated "\
-      "${diffPostpatch} new shellcheck issues (total was ${numPrepatch}, now ${numPostpatch})."
+    add_vote_table -1 shellcheck "The applied patch ${statstring}"
     add_footer_table shellcheck "@@BASE@@/diff-patch-shellcheck.txt"
     bugsystem_linecomments "shellcheck" "${PATCH_DIR}/diff-patch-shellcheck.txt"
     return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+    add_vote_table +1 shellcheck "The applied patch ${statstring}"
+    return 0
   fi
 
   add_vote_table +1 shellcheck "There were no new shellcheck issues."

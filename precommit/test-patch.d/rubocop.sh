@@ -96,10 +96,12 @@ function rubocop_calcdiffs
 
 function rubocop_postapply
 {
-  local i
-  local numPrepatch
-  local numPostpatch
-  local diffPostpatch
+  declare i
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare fixedpatch
+  declare statstring
 
   verify_needed_test rubocop
   if [[ $? == 0 ]]; then
@@ -135,17 +137,23 @@ function rubocop_postapply
       > "${PATCH_DIR}/diff-patch-rubocop.txt"
   diffPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-rubocop.txt")
 
+  # shellcheck disable=SC2016
+  numPrepatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-rubocop-result.txt")
+
+  # shellcheck disable=SC2016
+  numPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-rubocop-result.txt")
+
+  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
+
+  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
+
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    # shellcheck disable=SC2016
-    numPrepatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-rubocop-result.txt")
-
-    # shellcheck disable=SC2016
-    numPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-rubocop-result.txt")
-
-    add_vote_table -1 rubocop "The applied patch generated "\
-      "${diffPostpatch} new rubocop issues (total was ${numPrepatch}, now ${numPostpatch})."
+    add_vote_table -1 rubocop "The applied patch ${statstring}"
     add_footer_table rubocop "@@BASE@@/diff-patch-rubocop.txt"
     return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+    add_vote_table +1 rubocop "The applied patch ${statstring}"
+    return 0
   fi
 
   add_vote_table +1 rubocop "There were no new rubocop issues."

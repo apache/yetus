@@ -126,10 +126,12 @@ function ruby_lint_calcdiffs
 
 function ruby_lint_postapply
 {
-  local i
-  local numPrepatch
-  local numPostpatch
-  local diffPostpatch
+  declare i
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare fixedpatch
+  declare statstring
 
   verify_needed_test ruby_lint
   if [[ $? == 0 ]]; then
@@ -165,17 +167,23 @@ function ruby_lint_postapply
       > "${PATCH_DIR}/diff-patch-ruby-lint.txt"
   diffPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-ruby-lint.txt")
 
+  # shellcheck disable=SC2016
+  numPrepatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-ruby-lint-result.txt")
+
+  # shellcheck disable=SC2016
+  numPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-ruby-lint-result.txt")
+
+  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
+
+  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
+
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    # shellcheck disable=SC2016
-    numPrepatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-ruby-lint-result.txt")
-
-    # shellcheck disable=SC2016
-    numPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-ruby-lint-result.txt")
-
-    add_vote_table -1 ruby-lint "The applied patch generated "\
-      "${diffPostpatch} new ruby-lint issues (total was ${numPrepatch}, now ${numPostpatch})."
+    add_vote_table -1 ruby-lint "The applied patch ${statstring}"
     add_footer_table ruby-lint "@@BASE@@/diff-patch-ruby-lint.txt"
     return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+    add_vote_table +1 ruby-lint "The applied patch ${statstring}"
+    return 0
   fi
 
   add_vote_table +1 ruby-lint "There were no new ruby-lint issues."
