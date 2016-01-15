@@ -519,12 +519,17 @@ PatchSpecificDocker
     extraargs=""
   fi
 
+  if [[ "${DOCKER_ENABLE_PRIVILEGED}" = true ]]; then
+    extraargs="${extraargs} --privileged "
+  fi
+
   client=$(docker_version Client)
   server=$(docker_version Server)
 
   dockerversion="Client=${client} Server=${server}"
 
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
+    # shellcheck disable=SC2086
     exec "${DOCKERCMD}" run --rm=true -i \
       ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
@@ -540,6 +545,7 @@ PatchSpecificDocker
       --env=TESTPATCHMODE="${TESTPATCHMODE}" \
       "${patchimagename}"
   else
+    # shellcheck disable=SC2086
     exec "${DOCKERCMD}" run --rm=true -i \
       ${extraargs} \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \

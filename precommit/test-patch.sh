@@ -75,6 +75,7 @@ function setup_defaults
 
   DOCKERMODE=false
   DOCKERSUPPORT=false
+  DOCKER_ENABLE_PRIVILEGED=true
   BUILD_NATIVE=${BUILD_NATIVE:-true}
 
   BUILDTOOLCWD=true
@@ -686,6 +687,7 @@ function yetus_usage
   yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: docker from path)"
   yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base"
   yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
+  yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
@@ -793,6 +795,9 @@ function parse_args
       ;;
       --dockeronfail=*)
         DOCKERFAIL=${i#*=}
+      ;;
+      --dockerprivd=*)
+        DOCKER_ENABLE_PRIVILEGED=${i#*=}
       ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
