@@ -147,10 +147,6 @@ function shellcheck_postapply
     fi
   done
 
-  if [[ ! -f "${PATCH_DIR}/branch-shellcheck-result.txt" ]]; then
-    touch "${PATCH_DIR}/branch-shellcheck-result.txt"
-  fi
-
   calcdiffs \
     "${PATCH_DIR}/branch-shellcheck-result.txt" \
     "${PATCH_DIR}/patch-shellcheck-result.txt" \

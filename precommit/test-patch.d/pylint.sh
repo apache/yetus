@@ -148,7 +148,9 @@ function pylint_postapply
   PYLINT_VERSION=$(${PYLINT} --version 2>/dev/null | ${GREP} pylint | ${AWK} '{print $NF}')
   add_footer_table pylint "v${PYLINT_VERSION%,}"
 
-  calcdiffs "${PATCH_DIR}/branch-pylint-result.txt" "${PATCH_DIR}/patch-pylint-result.txt" > "${PATCH_DIR}/diff-patch-pylint.txt"
+  calcdiffs "${PATCH_DIR}/branch-pylint-result.txt" \
+            "${PATCH_DIR}/patch-pylint-result.txt" \
+            pylint > "${PATCH_DIR}/diff-patch-pylint.txt"
   numPrepatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/branch-pylint-result.txt")
   numPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/patch-pylint-result.txt")
   diffPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/diff-patch-pylint.txt")

@@ -336,10 +336,6 @@ function checkstyle_postapply
     module=${MODULE[$i]}
     fn=$(module_file_fragment "${module}")
 
-    if [[ ! -f "${PATCH_DIR}/branch-checkstyle-${fn}.txt" ]]; then
-      touch "${PATCH_DIR}/branch-checkstyle-${fn}.txt"
-    fi
-
     # call calcdiffs to allow overrides
     calcdiffs \
       "${PATCH_DIR}/branch-checkstyle-${fn}.txt" \

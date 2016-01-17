@@ -2232,18 +2232,26 @@ function error_calcdiffs
 ## @return       differences
 function calcdiffs
 {
-  declare branch=$1
-  declare patch=$2
+  declare branchlog=$1
+  declare patchlog=$2
   declare testtype=$3
 
+  # ensure that both log files exist
+  if [[ ! -f "${branchlog}" ]]; then
+    touch "${branchlog}"
+  fi
+  if [[ ! -f "${patchlog}" ]]; then
+    touch "${patchlog}"
+  fi
+
   if declare -f ${PROJECT_NAME}_${testtype}_calcdiffs >/dev/null; then
-    "${PROJECT_NAME}_${testtype}_calcdiffs" "${branch}" "${patch}"
+    "${PROJECT_NAME}_${testtype}_calcdiffs" "${branchlog}" "${patchlog}"
   elif declare -f ${BUILDTOOL}_${testtype}_calcdiffs >/dev/null; then
-    "${BUILDTOOL}_${testtype}_calcdiffs" "${branch}" "${patch}"
+    "${BUILDTOOL}_${testtype}_calcdiffs" "${branchlog}" "${patchlog}"
   elif declare -f ${testtype}_calcdiffs >/dev/null; then
-    "${testtype}_calcdiffs" "${branch}" "${patch}"
+    "${testtype}_calcdiffs" "${branchlog}" "${patchlog}"
   else
-    error_calcdiffs "${branch}" "${patch}"
+    error_calcdiffs "${branchlog}" "${patchlog}"
   fi
 }
 
