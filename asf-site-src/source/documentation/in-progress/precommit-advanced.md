@@ -72,23 +72,23 @@ Similarly, there are other functions that may be defined during the test-patch r
 
     HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.
 
-* pluginname\_initialize
-    - After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
-
 * pluginname\_usage
     - executed when the help message is displayed. This is used to display the plug-in specific options for the user.
 
 * pluginname\_parse\_args
     - executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
 
+* pluginname\_initialize
+    - After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
+
 * pluginname\_precheck
     - executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.
 
+* pluginname\_patchfile
+    - executed prior to the patch being applied but after the git repository is setup. This step is intended to perform tests on the content of the patch itself.
+
 * pluginname\_precompile
     - executed prior to the compilation part of the lifecycle. This is useful for doing setup work required by the compilation process.
-
-* pluginname\_compile
-    - executed immediately after the actual compilation. This is step is intended to be used to verify the results and add extra checking of the compile phase and it's stdout/stderr.
 
 * pluginname\_postcompile
     - This step happens after the compile phase.
@@ -121,8 +121,17 @@ add_test_type <pluginname>
 + pluginname\_filefilter
     - executed while determine which files trigger which tests.  This function should use `add_test pluginname` to add the plug-in to the test list.
 
+* pluginname\_compile
+    - executed immediately after the actual compilation. This step is intended to be used to verify the results and add extra checking of the compile phase and it's stdout/stderr.
+
 * pluginname\_tests
     - executed after the unit tests have completed.
+
+* pluginname\_clean
+    - executed to allow the plugin to remove all files that have been generate by this plugin.
+
+* pluginname\_logfilter
+    - This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function.
 
 * pluginname\_calcdiffs
 

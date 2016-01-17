@@ -74,9 +74,13 @@ For example, the gradle build tool does not have a standard way to execute check
 
     - After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
 
-* pluginname\_count\_(test)\_probs
+* pluginname\_reorder\_modules
 
-    - Certain language test plug-ins require assistance from the build tool to count problems in the compile log due to some tools having custom handling for those languages.  The test plug-in name should be in the (test) part of the function name.
+    - This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED_MODULES already contains all changed modules. It must be altered to have an effect.
+
+* pluginname\_(test)\_logfilter
+
+    - This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function. The test plug-in name should be in the (test) part of the function name.
 
 * pluginname\_(test)_calcdiffs
 
