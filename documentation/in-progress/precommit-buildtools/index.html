@@ -189,10 +189,15 @@
 <ul>
 <li>After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.</li>
 </ul></li>
-<li><p>pluginname_count_(test)_probs</p>
+<li><p>pluginname_reorder_modules</p>
 
 <ul>
-<li>Certain language test plug-ins require assistance from the build tool to count problems in the compile log due to some tools having custom handling for those languages.  The test plug-in name should be in the (test) part of the function name.</li>
+<li>This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED_MODULES already contains all changed modules. It must be altered to have an effect.</li>
+</ul></li>
+<li><p>pluginname_(test)_logfilter</p>
+
+<ul>
+<li>This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the <code>calcdiffs</code> function. The test plug-in name should be in the (test) part of the function name.</li>
 </ul></li>
 <li><p>pluginname_(test)_calcdiffs</p>
 

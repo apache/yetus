@@ -152,8 +152,10 @@
 <li><a href="#column_calcdiffs">column_calcdiffs</a></li>
 <li><a href="#compile">compile</a></li>
 <li><a href="#compile_cycle">compile_cycle</a></li>
+<li><a href="#dequeue_personality_module">dequeue_personality_module</a></li>
 <li><a href="#distclean">distclean</a></li>
 <li><a href="#error_calcdiffs">error_calcdiffs</a></li>
+<li><a href="#generic_calcdiff_status">generic_calcdiff_status</a></li>
 <li><a href="#generic_logfilter">generic_logfilter</a></li>
 <li><a href="#generic_post_handler">generic_post_handler</a></li>
 <li><a href="#generic_postlog_compare">generic_postlog_compare</a></li>
@@ -1115,6 +1117,46 @@
 </tr>
 </tbody></table>
 
+<h3 id="dequeue_personality_module"><code>dequeue_personality_module</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>dequeue_personality_module modulenames
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Remove a module</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
 <h3 id="distclean"><code>distclean</code></h3>
 
 <ul>
@@ -1176,6 +1218,46 @@
 </ul>
 
 <p>differences</p>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+
+<h3 id="generic_calcdiff_status"><code>generic_calcdiff_status</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>generic_calcdiff_status totalbranchissues totalpatchissues newpatchissues
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>generate a standarized calcdiff status message</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>errorstring</p>
 
 <table><thead>
 <tr>

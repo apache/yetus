@@ -172,11 +172,6 @@
 </code></pre>
 
 <ul>
-<li><p>pluginname_initialize</p>
-
-<ul>
-<li>After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.</li>
-</ul></li>
 <li><p>pluginname_usage</p>
 
 <ul>
@@ -187,20 +182,25 @@
 <ul>
 <li>executed prior to any other above functions except for pluginname_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.</li>
 </ul></li>
+<li><p>pluginname_initialize</p>
+
+<ul>
+<li>After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.</li>
+</ul></li>
 <li><p>pluginname_precheck</p>
 
 <ul>
 <li>executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.</li>
 </ul></li>
+<li><p>pluginname_patchfile</p>
+
+<ul>
+<li>executed prior to the patch being applied but after the git repository is setup. This step is intended to perform tests on the content of the patch itself.</li>
+</ul></li>
 <li><p>pluginname_precompile</p>
 
 <ul>
 <li>executed prior to the compilation part of the lifecycle. This is useful for doing setup work required by the compilation process.</li>
-</ul></li>
-<li><p>pluginname_compile</p>
-
-<ul>
-<li>executed immediately after the actual compilation. This is step is intended to be used to verify the results and add extra checking of the compile phase and it&rsquo;s stdout/stderr.</li>
 </ul></li>
 <li><p>pluginname_postcompile</p>
 
@@ -238,10 +238,25 @@
 <ul>
 <li>executed while determine which files trigger which tests.  This function should use <code>add_test pluginname</code> to add the plug-in to the test list.</li>
 </ul></li>
+<li><p>pluginname_compile</p>
+
+<ul>
+<li>executed immediately after the actual compilation. This step is intended to be used to verify the results and add extra checking of the compile phase and it&rsquo;s stdout/stderr.</li>
+</ul></li>
 <li><p>pluginname_tests</p>
 
 <ul>
 <li>executed after the unit tests have completed.</li>
+</ul></li>
+<li><p>pluginname_clean</p>
+
+<ul>
+<li>executed to allow the plugin to remove all files that have been generate by this plugin.</li>
+</ul></li>
+<li><p>pluginname_logfilter</p>
+
+<ul>
+<li>This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the <code>calcdiffs</code> function.</li>
 </ul></li>
 <li><p>pluginname_calcdiffs</p>
 
