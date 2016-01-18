@@ -37,6 +37,7 @@ except NameError:
 RELEASE_VERSION = {}
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
 RELNOTE_PATTERN = re.compile('^\<\!\-\- ([a-z]+) \-\-\>')
+JIRA_BASE_URL = "https://issues.apache.org/jira"
 
 ASF_LICENSE = '''
 <!---
@@ -153,7 +154,7 @@ class GetVersions(object):
         print "Looking for %s through %s"%(versions[0], versions[-1])
         newversions = set()
         for project in projects:
-            url = "https://issues.apache.org/jira/rest/api/2/project/%s/versions" % project.upper()
+            url = JIRA_BASE_URL + "/rest/api/2/project/%s/versions" % project.upper()
             resp = urllib2.urlopen(url)
             datum = json.loads(resp.read())
             for data in datum:
@@ -334,7 +335,7 @@ class JiraIter(object):
     @staticmethod
     def collect_fields():
         """send a query to JIRA and collect field-id map"""
-        resp = urllib2.urlopen("https://issues.apache.org/jira/rest/api/2/field")
+        resp = urllib2.urlopen(JIRA_BASE_URL + "/rest/api/2/field")
         data = json.loads(resp.read())
         field_id_map = {}
         for part in data:
@@ -349,7 +350,7 @@ class JiraIter(object):
         jql = "project in ('%s') and fixVersion in ('%s') and resolution = Fixed" % (pjs, ver)
         params = urllib.urlencode({'jql':jql, 'startAt':pos, 'maxResults':count})
         try:
-            resp = urllib2.urlopen("https://issues.apache.org/jira/rest/api/2/search?%s" % params)
+            resp = urllib2.urlopen(JIRA_BASE_URL + "/rest/api/2/search?%s" % params)
         except urllib2.HTTPError, err:
             code = err.code
             print "JIRA returns HTTP error %d: %s. Aborting." % (code, err.msg)
@@ -432,7 +433,7 @@ class Outputs(object):
 
     def write_list(self, mylist):
         for jira in sorted(mylist):
-            line = '| [%s](https://issues.apache.org/jira/browse/%s) | %s |  %s | %s | %s | %s |\n'
+            line = '| [%s](' + JIRA_BASE_URL + '/browse/%s) | %s |  %s | %s | %s | %s |\n'
             line = line % (notableclean(jira.get_id()),
                            notableclean(jira.get_id()),
                            notableclean(jira.get_summary()),
@@ -468,6 +469,8 @@ def main():
                       help="display version information for releasedocmaker and exit.")
     parser.add_option("-O", "--outputdir", dest="output_directory", action="append", type="string",
                       help="specify output directory to put release docs to.")
+    parser.add_option("-B", "--baseurl", dest="base_url", action="append", type="string",
+                      help="specify base URL of the JIRA instance.")
     (options, _) = parser.parse_args()
 
     if options.release_version:
@@ -487,6 +490,12 @@ def main():
             except OSError:
                 parser.error("Unable to create output directory that does not exist")
         os.chdir(options.output_directory[0])
+
+    if options.base_url is not None:
+        if len(options.base_url) > 1:
+            parser.error("Only one base URL should be given")
+        global JIRA_BASE_URL
+        JIRA_BASE_URL = options.base_url[0]
 
     proxy = urllib2.ProxyHandler()
     opener = urllib2.build_opener(proxy)
@@ -579,8 +588,9 @@ def main():
             else:
                 otherlist.append(jira)
 
-            line = '* [%s](https://issues.apache.org/jira/browse/%s) | *%s* | **%s**\n' \
-                   % (notableclean(jira.get_id()), notableclean(jira.get_id()),
+            line = '* [%s](' % (notableclean(jira.get_id())) + JIRA_BASE_URL + \
+                   '/browse/%s) | *%s* | **%s**\n' \
+                   % (notableclean(jira.get_id()),
                       notableclean(jira.get_priority()), notableclean(jira.get_summary()))
 
             if jira.get_incompatible_change() and len(jira.get_release_note()) == 0:
