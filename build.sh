@@ -130,7 +130,18 @@ bin_tarball="target/bin-dir/yetus-${YETUS_VERSION}"
 echo "creating staging area for convenience binary at '$(pwd)/${bin_tarball}'"
 rm -rf "${bin_tarball}" 2>/dev/null || true
 mkdir -p "${bin_tarball}"
-cp LICENSE NOTICE target/RELEASENOTES.md target/CHANGES.md "${bin_tarball}"
+
+for i in LICENSE NOTICE; do
+  lines=$(grep -n 'Apache Yetus Source' "${i}" | cut -f1 -d:)
+  if [[ -z "${lines}" ]]; then
+    cp -p "${i}" "${bin_tarball}"
+  else
+    ((lines=lines-2))
+    head -n "${lines}" "${i}" > "${bin_tarball}/${i}"
+  fi
+done
+
+cp target/RELEASENOTES.md target/CHANGES.md "${bin_tarball}"
 cp -r asf-site-src/publish/documentation/in-progress "${bin_tarball}/docs"
 
 mkdir -p "${bin_tarball}/lib"
