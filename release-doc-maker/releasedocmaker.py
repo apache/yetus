@@ -158,9 +158,9 @@ class GetVersions(object):
             datum = json.loads(resp.read())
             for data in datum:
                 newversions.add(data['name'])
+        newversions.add(versions[0])
+        newversions.add(versions[-1])
         newlist = newversions.copy()
-        newlist.add(versions[0])
-        newlist.add(versions[-1])
         newlist = list(newlist)
         newlist.sort(key=LooseVersion)
         for newversion in newlist[newlist.index(versions[0]):newlist.index(versions[-1])+1]:
@@ -511,7 +511,10 @@ def main():
 
     for version in versions:
         vstr = str(version)
-        jlist = JiraIter(vstr, projects)
+        jlist = sorted(JiraIter(vstr, projects))
+        if len(jlist) == 0:
+            print "There is no issue which has the specified version: %s" % version
+            continue
 
         if vstr in RELEASE_VERSION:
             reldate = RELEASE_VERSION[vstr]
@@ -556,7 +559,7 @@ def main():
         testlist = []
         otherlist = []
 
-        for jira in sorted(jlist):
+        for jira in jlist:
             if jira.get_incompatible_change():
                 incompatlist.append(jira)
             elif jira.get_important():
