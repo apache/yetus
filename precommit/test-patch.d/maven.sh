@@ -15,8 +15,6 @@
 # limitations under the License.
 
 declare -a MAVEN_ARGS=("--batch-mode")
-declare -a MAVEN_ALREADY=()
-declare -a MAVEN_NEWLIST=()
 
 if [[ -z "${MAVEN_HOME:-}" ]]; then
   MAVEN=mvn
@@ -348,7 +346,7 @@ function maven_builtin_personality_modules
   # copy of everything per pom rules.
   if [[ ${repostatus} == branch
      && ${testtype} == mvninstall ]];then
-     personality_enqueue_module .
+     personality_enqueue_module "${CHANGED_UNION_MODULES}"
      return
    fi
 
@@ -537,77 +535,76 @@ function maven_docker_support
 ## @stability    evolving
 ## @replaceable  no
 ## @param        repostatus
-## @param        module
 function maven_reorder_module_process
 {
   declare repostatus=$1
-  declare module=$2
-  declare indexd
+  declare module
+  declare line
   declare indexm
-  declare deplist
+  declare indexn
+  declare -a newlist
   declare fn
   declare basemod
+  declare needroot=false
+  declare found
 
-  yetus_debug "Maven: check order: ${module}"
-
-  # this is a recursive function; no need to process
-  # modules that we have already seen
-  if [[ " ${MAVEN_ALREADY[@]} " =~ \ ${module}\  ]]; then
-    return
+  if [[ ${CHANGED_MODULES} =~ \. ]]; then
+    needroot=true
   fi
 
-  # immediately place a module in the list to avoid
-  # loops
-  MAVEN_ALREADY=("${MAVEN_ALREADY[@]}" "${module}")
+  fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
+  pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null
 
-  pushd "${BASEDIR}/${module}" >/dev/null
-  fn=$(module_file_fragment "${module}")
+  # get the output of validate
+  # this *should* be pretty darn close to the correct order
+  # shellcheck disable=SC2046
+  echo_and_redirect "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt" \
+    $("${BUILDTOOL}_executor") validate
 
-  # get the dependency list from maven
-  #shellcheck disable=SC2046
-  echo_and_redirect "${PATCH_DIR}/maven-${repostatus}-dependencylist-${fn}.txt" \
-    $("${BUILDTOOL}_executor") dependency:list \
-      -DoutputFile="${PATCH_DIR}/${repostatus}-mvndeporder-${fn}.txt"
-
-  # if this fails, there's really not much we can do other than tell the
-  # user that it did. So we'll press on and just hope for the best
-
-  if [[ $? != 0 ]]; then
-    add_vote_table -1 mvndep "${repostatus}'s ${module} dependency:list failed"
-    add_footer_table mvndep "${fn}: @@BASE@@/maven-${repostatus}-dependencylist-${fn}.txt"
-  fi
-
-  # take the list from maven, and pull out the artifactids. this means
-  # we have an assumption that the module names we are given map
-  # 1:1 to the artifactid
-  deplist=$(cut -f2 -d: "${PATCH_DIR}/${repostatus}-mvndeporder-${fn}.txt")
-
-  # loop through the generated dependency artificatid list
-  # and try to match it to any of the other modules we are working on
-  # if it is a match, process it.  dependencies that aren't being hit
-  # by the patch should be irrelevant since maven will pick them up
-  # from the repo caches.  if a dependency really does matter, then
-  # the personality will have a chance to manipulate this list later
-  for indexd in ${deplist}; do
+  while read -r line; do
+    if [[ ${line} =~ ^module: ]]; then
+      module=${line##module:}
+    else
+      continue
+    fi
     for indexm in ${CHANGED_MODULES}; do
-
       # modules could be foo/bar, where bar is the artifactid
       # so get the basename and compare that too
-      basemod=$(basename "${indexm}")
-      if [[ " ${indexd} " = " ${indexm} "
-         || " ${indexd} " = " ${basemod} " ]]; then
-        maven_reorder_module_process "${repostatus}" "${indexm}"
+      basemod=${indexm##*/}
+      if [[ " ${module} " = " ${indexm} "
+         || " ${module} " = " ${basemod} " ]]; then
+         yetus_debug "mrm: placying ${indexm}"
+        newlist=("${newlist[@]}" " ${indexm} ")
       fi
     done
-  done
+  done < <(sed -e 's,^.* --- .* @ \(.*\) ---$,module:\1,g' \
+    -e '/^\[INFO\]/d' "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt")
   popd >/dev/null
 
-  # at this point, any modules that we care about should have been placed
-  # before us.  now add the one we've been working on.  if the artificatids
-  # don't match, then we're effectively back to the old behavior of
-  # using fs globs and the personality will have to do the hard work
-  yetus_debug "Maven: placing ${module}"
-  MAVEN_NEWLIST=("${MAVEN_NEWLIST[@]}" " ${module} ")
+  if [[ "${needroot}" = true ]]; then
+    newlist=("${newlist[@]}" " . ")
+  fi
+
+  indexm=$(echo "${CHANGED_MODULES}" | wc -w)
+  indexn="${#newlist[@]}"
+
+  if [[ ${indexm} -ne ${indexn} ]]; then
+    yetus_debug "mrm: Missed a module"
+    for indexm in ${CHANGED_MODULES}; do
+      found=false
+      for indexn in ${newlist[*]}; do
+        if [[ "${indexn}" = "${indexm}" ]]; then
+          found=true
+        fi
+      done
+      if [[ ${found} = false ]]; then
+        yetus_debug "mrm: missed ${indexm}"
+        newlist=("${newlist[@]}" " ${indexm} ")
+      fi
+    done
+  fi
+
+  CHANGED_MODULES="${newlist[*]}"
 }
 
 ## @description  take a stab at reordering modules based upon
@@ -622,10 +619,13 @@ function maven_reorder_modules
   declare repostatus=$1
   declare index
 
-  # sidenote: this code does not get called when there is only one
-  # module, so no reason to shortcut that
-
   if [[ "${MAVEN_DEPENDENCY_ORDER}" != "true" ]]; then
+    return
+  fi
+
+  # don't bother if there is only one
+  index=$(echo "${CHANGED_MODULES}" | wc -w)
+  if [[ ${index} -eq 1 ]]; then
     return
   fi
 
@@ -633,21 +633,7 @@ function maven_reorder_modules
 
   start_clock
 
-  # this will get called again, so always make sure we start fresh
-  MAVEN_ALREADY=()
-  MAVEN_NEWLIST=()
-
-  yetus_debug "Maven: start re-ordering modules"
-  yetus_debug "Starting list: ${CHANGED_MODULES}"
-
-  # sort the list.  parents will likely get us most of the
-  # dependency list sooner/more correct, esp if . is in the list
-  # shellcheck disable=SC2086
-  for index in $(echo ${CHANGED_MODULES} | tr ' ' '\n' |  sort); do
-    maven_reorder_module_process "${repostatus}" "${index}"
-  done
-
-  CHANGED_MODULES="${MAVEN_NEWLIST[*]}"
+  maven_reorder_module_process "${repostatus}"
 
   yetus_debug "Maven: finish re-ordering modules"
   yetus_debug "Finished list: ${CHANGED_MODULES}"
