@@ -159,6 +159,7 @@ function docker_stop_exited_containers
 
   dockercmd ps -a | ${GREP} Exited > "${exitfn}"
   if [[ ! -s "${exitfn}" ]]; then
+    rm -f "${exitfn}"
     return
   fi
 
