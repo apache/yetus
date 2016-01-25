@@ -2222,7 +2222,7 @@ function error_calcdiffs
 }
 
 ## @description  Wrapper to call specific version of calcdiffs if available
-## @description  otherwise calls generic_calcdiffs
+## @description  otherwise calls error_calcdiffs
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
