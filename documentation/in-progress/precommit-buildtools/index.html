@@ -130,8 +130,25 @@
 <li><p>BUILDTOOLCWD</p>
 
 <ul>
-<li>If the build tool does not always run from the ${BASEDIR} and instead needs to change the current working directory to work on a specific module, then set this to true.  The default is false.</li>
+<li>This variable determines where the build tool&rsquo;s command (as returned by pluginname_executor) should actually execute.  It should be one of three values:</li>
+<li>basedir  - always execute at the root of the source tree</li>
+<li>module   - switch to the directory as given by the module being processed</li>
+<li>/(path)  - change to the directory as given by this absolute path. If the path does not exist, it will be created.</li>
 </ul></li>
+</ul>
+
+<p>If /(path) is used, two special substitutions may be made:</p>
+
+<ul>
+<li>@@@BASEDIR@@@ will be replaced with the root of the source tree</li>
+<li>@@@MODULEDIR@@@ will be replaced with the module name</li>
+</ul>
+
+<p>This allows for custom directories to be created and used as necessary.</p>
+<pre class="highlight plaintext"><code>The default is module.
+</code></pre>
+
+<ul>
 <li><p>UNSUPPORTED_TEST</p>
 
 <ul>
@@ -223,11 +240,27 @@
 
 <p>In Docker mode, the <code>${HOME}/.ivy2</code> directory is shared amongst all invocations.</p>
 
+<h1 id="autoconf-specific">autoconf Specific</h1>
+
+<p>autoconf requires make to be enabled.  autoreconf is always used to rebuild the configure scripte.</p>
+
+<h2 id="command-arguments">Command Arguments</h2>
+
+<p>autoconf will always run configure with prefix set to a directory in the patch processing directory.  To configure other flags, set the AUTCONF<em>CONF</em>FLAGS environment variable.</p>
+
+<h1 id="cmake-specific">CMAKE Specific</h1>
+
+<p>By default, cmake will create a &#39;build&rsquo; directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.</p>
+
 <h1 id="gradle-specific">Gradle Specific</h1>
 
 <p>The gradle plug-in always rebuilds the gradlew file and uses gradlew as the method to execute commands.</p>
 
 <p>In Docker mode, the <code>${HOME}/.gradle</code> directory is shared amongst all invocations.</p>
+
+<h1 id="make-specific">Make Specific</h1>
+
+<p>No notes.</p>
 
 <h1 id="maven-specific">Maven Specific</h1>
 
