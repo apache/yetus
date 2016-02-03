@@ -37,57 +37,9 @@ Here are some instructions on how to generate patches:
 
 The naming of the patch should be in (JIRA).(patch number).patch or, if it needs to apply to a specific branch, (JIRA).(branch name).(patch number).patch format. For example, YETUS-9.00.patch, YETUS-500.02.patch, or YETUS-23.cmake.11.patch. This way, if you need to upload another version  of the patch, you should keep the file name the same and JIRA will sort them according to date/time if multiple files have the same name. This feature is also useful to traceback the history of a patch and roll-back to an earlier version if needed.
 
-## Website
+## Task Specific Guidance
 
-We use middleman to generate the website content from markdown and other
-dynamic templates. The following steps assume you have a working
-ruby 2.x environment setup:
+Below are guides meant to give you help accomplishing specific tasks for the project:
 
-```bash
-gem install bundler
-bundle install
-```
-
-### Make changes in asf-site-src/source
-Make any changes in the source directory:
-
-```bash
-cd asf-site-src/source
-vi contribute.html.md
-```
-
-### Make changes to API Docs
-Optionally, you can update the generated API docs from other parts of the project. If they have been updated then the middleman build will pick up the changes.
-
-e.g. Precommit changes will be picked up by the Middleman build.
-
-```bash
-cd ../precommit/core.d
-vi 01-common.sh
-```
-
-
-e.g. Audience Annotations requires running Maven.
-
-```bash
-cd ../audience-annotations-component
-mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate
-cd -
-```
-
-### Generating the website
-To generate the static wesbite for Apache Yetus run the following commands at the root asf-site-src directory:
-
-```bash
-bundle exec middleman build
-```
-
-### Live Development
-Live development of the site enables automatic reload when changes are saved.
-To enable run the following command and then open a browser and navigate to
-[http://localhost:4567](http://localhost:4567/)
-
-	bundle exec middleman
-
-### Publishing the Site
-Commit the publish directory to the asf-site branch.
+   * [Maintaining the Yetus Website](contribute/website) - walks through how to view the website locally, update various static and generated pages, and render the html for publishing.
+   * [Working with Release Candiates](contribute/releases) - covers managing the release process, validating proposed release candidates, and publishing project approved artifacts.

@@ -15,18 +15,6 @@
 # limitations under the License.
 #
 
-# This allows us to set the style for tables.  It removes some of the
-# image and sizing functionality (that we don't use) of the normal
-# middleman renderer.
-class YetusMiddlemanRedcarpetHTML < ::Redcarpet::Render::HTML
-  def table(header, body)
-    '<table class=\'table table-bordered table-striped\'>' \
-      "<thead>#{header}</thead>" \
-      "<tbody>#{body}</tbody>" \
-    '</table>'
-  end
-end
-
 set :markdown_engine, :redcarpet
 set(
   :markdown,
@@ -37,10 +25,8 @@ set(
   no_intra_emphasis:            true,
   tables:                       true,
   autolink:                     true,
-  disable_indented_code_blocks: true,
   quote:                        true,
-  lax_spacing:                  true,
-  renderer:                     YetusMiddlemanRedcarpetHTML
+  lax_spacing:                  true
 )
 
 set :build_dir, 'publish'
@@ -59,7 +45,7 @@ activate :syntax
 activate :livereload
 
 # classes needed to publish our api docs
-class CopyInPlaceResource<Middleman::Sitemap::Resource
+class CopyInPlaceResource<::Middleman::Sitemap::Resource
   def initialize (sitemap, dest, src)
     super(sitemap, dest, src)
   end
@@ -77,7 +63,7 @@ class ApiDocs
   def manipulate_resource_list(resources)
     parent=Pathname.new(@source)
     build=Pathname.new(@destination)
-    Middleman::Util::all_files_under(@source).each do  |path|
+    ::Middleman::Util.all_files_under(@source).each do |path|
       dest = build + path.relative_path_from(parent)
       resources << CopyInPlaceResource.new(@sitemap, dest.to_s, path.to_s)
     end
@@ -156,6 +142,16 @@ end
 
 # Add in apidocs rendered by other parts of the repo
 after_configuration do
+  # This allows us to set the style for tables.
+  ::Middleman::Renderers::MiddlemanRedcarpetHTML.class_eval do
+    def table(header, body)
+      '<table class=\'table table-bordered table-striped\'>' \
+        "<thead>#{header}</thead>" \
+        "<tbody>#{body}</tbody>" \
+      '</table>'
+    end
+  end
+
   # For Audiene Annotations we just rely on having made javadocs with Maven
   sitemap.register_resource_list_manipulator(:audience_annotations, ApiDocs.new(sitemap, "documentation/in-progress/audience-annotations-apidocs", "../audience-annotations-component/target/site/apidocs"))
 
