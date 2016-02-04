@@ -124,6 +124,7 @@
 <li><a href="#Purpose">Purpose</a></li>
 <li><a href="#Pre-requisites">Pre-requisites</a></li>
 <li><a href="#Basic_Usage">Basic Usage</a></li>
+<li><a href="#Automation">Automation</a></li>
 <li><a href="#Build_Tool">Build Tool</a></li>
 <li><a href="#Providing_Patch_Files">Providing Patch Files</a></li>
 <li><a href="#Project-Specific_Capabilities">Project-Specific Capabilities</a></li>
@@ -151,7 +152,6 @@ as a whole.</p>
 <p>test-patch requires these installed components to execute:</p>
 
 <ul>
-<li>A project with a supported build tool (ant, gradle, maven, &hellip;)</li>
 <li>git-based project (and git 1.7.3 or higher installed)</li>
 <li>bash v3.2 or higher</li>
 <li>GNU diff</li>
@@ -172,11 +172,31 @@ as a whole.</p>
 <ul>
 <li><a href="https://github.com/">GitHub</a>-based issue tracking</li>
 <li><a href="https://www.atlassian.com/software/jira">JIRA</a>-based issue tracking</li>
+<li><a href="https://www.bugzilla.org/">Bugzilla</a>-based issue tracking (Read Only)</li>
+</ul>
+
+<p>Build Tools:</p>
+
+<ul>
+<li><a href="https://ant.apache.org">ant</a></li>
+<li><a href="https://www.gnu.org/software/autoconf/autoconf.html">autoconf</a></li>
+<li><a href="https://www.cmake.org">cmake</a></li>
+<li><a href="https://www.gradle.org">gradle</a></li>
+<li>make</li>
+<li><a href="https://maven.apache.org">maven</a></li>
+</ul>
+
+<p>Automation and Isolation:</p>
+
+<ul>
+<li><a href="https://www.docker.com">Docker</a> version 1.6.0+</li>
+<li><a href="https://www.jenkins-ci.org">Jenkins</a></li>
 </ul>
 
 <p>Unit Test Formats:</p>
 
 <ul>
+<li><a href="https://cmake.org/Wiki/CMake/Testing_With_CTest">ctest</a></li>
 <li><a href="http://junit.org/">JUnit</a></li>
 <li><a href="https://testanything.org/">TAP</a></li>
 </ul>
@@ -239,13 +259,32 @@ as a whole.</p>
 
 <p>We used two new options here.  &ndash;basedir sets the location of the repository to use for testing.  &ndash;resetrepo tells test patch that it can go into <strong>destructive</strong> mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!</p>
 
+<h1 id="automation">Automation</h1>
+
 <p>After the tests have run, there is a directory that contains all of the test-patch related artifacts.  This is generally referred to as the patchprocess directory.  By default, test-patch tries to make something off of /tmp to contain this content.  Using the <code>--patch-dir</code> option, one can specify exactly which directory to use.  This is helpful for automated precommit testing so that Jenkins or other automated workflow system knows where to look to gather up the output.</p>
 
 <p>For example:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --robot --patch-dir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchprocess --basedir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/source <span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchfile
+</code></pre>
+
+<p>&hellip; will trigger test-patch to run in fully automated mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.  This will always run the unit tests, write answers back to bug systems, remove old, stopped/exited Docker images and containers after 24 hours, forcibly use &ndash;resetrepo, and more.  The &ndash;build-url option is also useful when running in &ndash;robot mode so that emails and such
+have a location to look at the output artifacts:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --robot --build-url<span class="o">=</span>http://server.example.name:80/<span class="k">${</span><span class="nv">buildnumber</span><span class="k">}</span>/
+</code></pre>
+
+<p>Some plug-ins such as Maven have special handling if there are multiple executions of test-patch happening at once.  It is very common when using automation systems to have multiple runs on the same host. In order to assist these plug-ins, an instance identifier may be provided:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --robot --instance<span class="o">=</span>1
+</code></pre>
+
+<p>If &ndash;robot is specified without an instance, a random number is generated and used.</p>
+
+<p>There is some special handling if Jenkins is actually your automation tool.  Instead of using &ndash;robot, use &ndash;jenkins:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --jenkins --patch-dir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchprocess --basedir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/source <span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchfile
 </code></pre>
 
-<p>&hellip; will trigger test-patch to run in fully automated Jenkins mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.</p>
+<p>This will enable &ndash;robot, set the &ndash;build-url option from the ${BUILD<em>URL} environment variable, and the instance identifier is set to the ${EXECUTOR</em>NUMBER}.</p>
+
+<p>If stuck containers are a problem, a more aggressive robot may be enabled with the &ndash;sentinel option.  This option enables killing containers that have been running for over 24 hours as well.</p>
 
 <h1 id="build-tool">Build Tool</h1>
 
