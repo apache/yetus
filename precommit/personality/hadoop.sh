@@ -30,169 +30,32 @@ function personality_globals
   GITHUB_REPO="apache/hadoop"
   #shellcheck disable=SC2034
   PYLINT_OPTIONS="--indent-string='  '"
-
-  HADOOP_MODULES=""
-}
-
-function hadoop_module_manipulation
-{
-  local startingmodules=${1:-normal}
-  local full_ordered_hadoop_modules;
-  local module
-  local ordered_modules
-  local passed_modules
-  local flags
-
-  yetus_debug "hmm in: ${startingmodules}"
-
-  if [[ ${startingmodules} = normal ]]; then
-    startingmodules=${CHANGED_MODULES}
-  elif  [[ ${startingmodules} = union ]]; then
-    startingmodules=${CHANGED_UNION_MODULES}
-  fi
-
-  yetus_debug "hmm expanded to: ${startingmodules}"
-
-  # If "." is present along with other changed modules,
-  # then just choose "."
-  for module in ${startingmodules}; do
-    if [[ "${module}" = "." ]]; then
-      yetus_debug "hmm shortcut since ."
-      HADOOP_MODULES=.
-      return
-    fi
-  done
-
-  passed_modules=${startingmodules}
-
-  yetus_debug "hmm pre-ordering: ${startingmodules}"
-
-  # Build a full ordered list of modules
-  # based in maven dependency and re-arrange changed modules
-  # in dependency order.
-  # NOTE: module names with spaces not expected in hadoop
-  full_ordered_hadoop_modules=(
-    hadoop-build-tools
-    hadoop-project
-    hadoop-common-project/hadoop-annotations
-    hadoop-project-dist
-    hadoop-assemblies
-    hadoop-maven-plugins
-    hadoop-common-project/hadoop-minikdc
-    hadoop-common-project/hadoop-auth
-    hadoop-common-project/hadoop-auth-examples
-    hadoop-common-project/hadoop-common
-    hadoop-common-project/hadoop-nfs
-    hadoop-common-project/hadoop-kms
-    hadoop-common-project
-    hadoop-hdfs-project/hadoop-hdfs-client
-    hadoop-hdfs-project/hadoop-hdfs
-    hadoop-hdfs-project/hadoop-hdfs-native-client
-    hadoop-hdfs-project/hadoop-hdfs-httfs
-    hadoop-hdfs-project/hadoop-hdfs/src/contrib/bkjournal
-    hadoop-hdfs-project/hadoop-hdfs-nfs
-    hadoop-hdfs-project
-    hadoop-yarn-project/hadoop-yarn
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-api
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-common
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-common
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-nodemanager
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-web-proxy
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-applicationhistoryservice
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-resourcemanager
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-tests
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-client
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-server/hadoop-yarn-server-sharedcachemanager
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-distributedshell
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-applications/hadoop-yarn-applications-unmanaged-am-launcher
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-site
-    hadoop-yarn-project/hadoop-yarn/hadoop-yarn-registry
-    hadoop-yarn-project
-    hadoop-mapreduce-project/hadoop-mapreduce-client
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-core
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-common
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-shuffle
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-app
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-jobclient
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-hs-plugins
-    hadoop-mapreduce-project/hadoop-mapreduce-client/hadoop-mapreduce-client-nativetask
-    hadoop-mapreduce-project/hadoop-mapreduce-examples
-    hadoop-mapreduce-project
-    hadoop-tools/hadoop-streaming
-    hadoop-tools/hadoop-distcp
-    hadoop-tools/hadoop-archives
-    hadoop-tools/hadoop-archive-logs
-    hadoop-tools/hadoop-rumen
-    hadoop-tools/hadoop-gridmix
-    hadoop-tools/hadoop-datajoin
-    hadoop-tools/hadoop-ant
-    hadoop-tools/hadoop-extras
-    hadoop-tools/hadoop-pipes
-    hadoop-tools/hadoop-openstack
-    hadoop-tools/hadoop-aws
-    hadoop-tools/hadoop-azure
-    hadoop-client
-    hadoop-minicluster
-    hadoop-tools/hadoop-sls
-    hadoop-tools/hadoop-tools-dist
-    hadoop-tools/hadoop-kafka
-    hadoop-tools
-    hadoop-dist)
-
-  # For each expected ordered module,
-  # if it's in changed modules, add to HADOOP_MODULES
-  for module in "${full_ordered_hadoop_modules[@]}"; do
-    # shellcheck disable=SC2086
-    if hadoop_check_module_present "${module}" ${passed_modules}; then
-      yetus_debug "Personality ordering ${module}"
-      ordered_modules="${ordered_modules} ${module}"
-    fi
-  done
-
-  # For modules which are not in ordered list,
-  # add them at last
-  for module in $( echo "${passed_modules}" | tr ' ' '\n'); do
-    # shellcheck disable=SC2086
-    if ! hadoop_check_module_present "${module}" ${ordered_modules}; then
-      yetus_debug "Personality ordering ${module}"
-      ordered_modules="${ordered_modules} ${module}"
-    fi
-  done
-
-  HADOOP_MODULES="${ordered_modules}"
-
-  yetus_debug "hmm out: ${HADOOP_MODULES}"
-}
-
-function hadoop_check_module_present
-{
-  local module_to_check=${1}
-  shift
-  for module in "${@}"; do
-    if [[ ${module_to_check} = "${module}" ]]; then
-      return 0
-    fi
-  done
-  return 1
 }
 
 function hadoop_unittest_prereqs
 {
-  local need_common=0
-  local building_common=0
-  local module
-  local flags
-  local fn
+  declare mods=("$@")
+  declare need_common=0
+  declare building_common=0
+  declare module
+  declare flags
+  declare fn
 
-  for module in ${HADOOP_MODULES}; do
+  # prior to running unit tests, hdfs needs libhadoop.so built
+  # if we're building root, then this extra work is moot
+
+  # if module handling is ever put into arrays (YETUS-300)
+  # undo this disable and quote the array
+
+  #shellcheck disable=SC2068
+  for module in ${mods[@]}; do
     if [[ ${module} = hadoop-hdfs-project* ]]; then
       need_common=1
     elif [[ ${module} = hadoop-common-project/hadoop-common
       || ${module} = hadoop-common-project ]]; then
       building_common=1
+    elif [[ ${module} = . ]]; then
+      return
     fi
   done
 
@@ -261,14 +124,14 @@ function hadoop_native_flags
 
 function personality_modules
 {
-  local repostatus=$1
-  local testtype=$2
-  local extra=""
-  local ordering="normal"
-  local needflags=false
-  local flags
-  local fn
-  local i
+  declare repostatus=$1
+  declare testtype=$2
+  declare extra=""
+  declare ordering="normal"
+  declare needflags=false
+  declare flags
+  declare fn
+  declare i
 
   yetus_debug "Personality: ${repostatus} ${testtype}"
 
@@ -295,15 +158,19 @@ function personality_modules
         yetus_debug "hadoop personality: javac + hadoop-common = ordering set to . "
         ordering="."
       fi
-      ;;
+    ;;
     distclean)
       ordering="."
       extra="-DskipTests"
     ;;
     javadoc)
+      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+        ordering=.
+      fi
+
       if [[ ${repostatus} = patch ]]; then
         echo "javadoc pre-reqs:"
-        for i in  hadoop-project \
+        for i in hadoop-project \
           hadoop-common-project/hadoop-annotations; do
             fn=$(module_file_fragment "${i}")
             pushd "${BASEDIR}/${i}" >/dev/null
@@ -315,13 +182,27 @@ function personality_modules
       fi
       extra="-Pdocs -DskipTests"
     ;;
+    mvneclipse)
+      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+        ordering=.
+      fi
+    ;;
     mvninstall)
       extra="-DskipTests"
       if [[ ${repostatus} = branch ]]; then
         ordering=.
       fi
-      ;;
+    ;;
+    mvnsite)
+      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+        ordering=.
+      fi
+    ;;
     unit)
+      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+        ordering=.
+      fi
+
       if [[ ${TEST_PARALLEL} = "true" ]] ; then
         extra="-Pparallel-tests"
         if [[ -n ${TEST_THREADS:-} ]]; then
@@ -329,7 +210,7 @@ function personality_modules
         fi
       fi
       needflags=true
-      hadoop_unittest_prereqs
+      hadoop_unittest_prereqs "${ordering}"
 
       verify_needed_test javac
       if [[ $? == 0 ]]; then
@@ -363,7 +244,13 @@ function personality_modules
 
   extra="-Ptest-patch ${extra}"
 
-  hadoop_module_manipulation ${ordering}
+  if [[ ${ordering} = normal ]]; then
+    HADOOP_MODULES=${CHANGED_MODULES}
+  elif  [[ ${ordering} = union ]]; then
+    HADOOP_MODULES=${CHANGED_UNION_MODULES}
+  else
+    HADOOP_MODULES="${ordering}"
+  fi
 
   for module in ${HADOOP_MODULES}; do
     # shellcheck disable=SC2086
@@ -373,7 +260,7 @@ function personality_modules
 
 function personality_file_tests
 {
-  local filename=$1
+  declare filename=$1
 
   yetus_debug "Using Hadoop-specific personality_file_tests"
 
