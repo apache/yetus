@@ -17,6 +17,8 @@
 add_test_type javac
 add_test_type javadoc
 
+yetus_add_entry JDK_TEST_LIST javadoc
+
 JAVA_INITIALIZED=false
 
 function initialize_java

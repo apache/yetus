@@ -92,7 +92,8 @@ function setup_defaults
   TIMER=$(date +"%s")
   BUILDTOOL=maven
   JVM_REQUIRED=true
-  JDK_TEST_LIST="compile javadoc unit"
+  yetus_add_entry JDK_TEST_LIST compile
+  yetus_add_entry JDK_TEST_LIST unit
 }
 
 ## @description  Convert the given module name to a file fragment
@@ -649,11 +650,17 @@ function yetus_usage
 {
 
   declare bugsys
+  declare jdktlist
 
   importplugins
 
+  # shellcheck disable=SC2116,SC2086
   bugsys=$(echo ${BUGSYSTEMS})
   bugsys=${bugsys// /,}
+
+  # shellcheck disable=SC2116,SC2086
+  jdktlist=$(echo ${JDK_TEST_LIST})
+  jdktlist=${jdktlist// /,}
 
   echo "test-patch.sh [OPTIONS] patch"
   echo ""
@@ -676,7 +683,7 @@ function yetus_usage
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
   yetus_add_option "--multijdkdirs=<paths>" "Comma delimited lists of JDK paths to use for multi-JDK tests"
-  yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: javac,javadoc,unit)"
+  yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: '${jdktlist}')"
   yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
   yetus_add_option "--offline" "Avoid connecting to the Internet"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
@@ -1675,20 +1682,20 @@ function modules_reset
 ## @replaceable  no
 ## @param        repostatus
 ## @param        testtype
-## @param        mvncmdline
+## @param        summarymode
 function modules_messages
 {
-  local repostatus=$1
-  local testtype=$2
-  local summarymode=$3
-  shift 2
-  local modindex=0
-  local repo
-  local goodtime=0
-  local failure=false
-  local oldtimer
-  local statusjdk
-  local multijdkmode=false
+  declare repostatus=$1
+  declare testtype=$2
+  declare summarymode=$3
+  shift 3
+  declare modindex=0
+  declare repo
+  declare goodtime=0
+  declare failure=false
+  declare oldtimer
+  declare statusjdk
+  declare multijdkmode=false
 
   if [[ ${repostatus} == branch ]]; then
     repo=${PATCH_BRANCH}
@@ -1974,18 +1981,19 @@ function populate_test_table
 ## @return       1 on failure
 function check_unittests
 {
-  local i
-  local testsys
-  local test_logfile
-  local result=0
-  local -r savejavahome=${JAVA_HOME}
-  local multijdkmode=false
-  local jdk=""
-  local jdkindex=0
-  local statusjdk
-  local formatresult=0
-  local needlog
-  local unitlogs
+  declare i
+  declare testsys
+  declare test_logfile
+  declare result=0
+  declare -r savejavahome=${JAVA_HOME}
+  declare multijdkmode=false
+  declare jdk=""
+  declare jdkindex=0
+  declare jdklist
+  declare statusjdk
+  declare formatresult=0
+  declare needlog
+  declare unitlogs
 
   verify_needed_test unit
 
@@ -2000,7 +2008,13 @@ function check_unittests
     multijdkmode=true
   fi
 
-  for jdkindex in ${JDK_DIR_LIST}; do
+  if [[ "${multijdkmode}" = true ]]; then
+    jdklist=${JDK_DIR_LIST}
+  else
+    jdklist=${JAVA_HOME}
+  fi
+
+  for jdkindex in ${jdklist}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
       jdk=$(report_jvm_version "${JAVA_HOME}")
@@ -2381,6 +2395,7 @@ function generic_pre_handler
   declare -r savejavahome=${JAVA_HOME}
   declare multijdkmode=false
   declare jdkindex=0
+  declare jdklist
 
   verify_needed_test "${testtype}"
   if [[ $? == 0 ]]; then
@@ -2394,7 +2409,13 @@ function generic_pre_handler
     multijdkmode=true
   fi
 
-  for jdkindex in ${JDK_DIR_LIST}; do
+  if [[ "${multijdkmode}" = true ]]; then
+    jdklist=${JDK_DIR_LIST}
+  else
+    jdklist=${JAVA_HOME}
+  fi
+
+  for jdkindex in ${jdklist}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
     fi
@@ -2584,13 +2605,20 @@ function compile_jvm
   declare -r savejavahome=${JAVA_HOME}
   declare multijdkmode=false
   declare jdkindex=0
+  declare jdklist
 
   verify_multijdk_test compile
   if [[ $? == 1 ]]; then
     multijdkmode=true
   fi
 
-  for jdkindex in ${JDK_DIR_LIST}; do
+  if [[ "${multijdkmode}" = true ]]; then
+    jdklist=${JDK_DIR_LIST}
+  else
+    jdklist=${JAVA_HOME}
+  fi
+
+  for jdkindex in ${jdklist}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
     fi
