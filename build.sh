@@ -76,16 +76,11 @@ mkdir -p target
 if [ "${offline}" != "true" ]; then
   JIRA_VERSION="${YETUS_VERSION%%-SNAPSHOT}"
   echo "generating release docs."
-  # working around YETUS-214
-  # no --license flag, YETUS-215
-  rn_out=$(cd target && \
-           ../release-doc-maker/releasedocmaker.py --lint \
+  release-doc-maker/releasedocmaker.py --lint --license --outputdir target \
                                                    --project YETUS "--version=${JIRA_VERSION}" \
-                                                   --projecttitle="Apache Yetus" --usetoday && \
-           mv "${JIRA_VERSION}/RELEASENOTES.${JIRA_VERSION}.md" RELEASENOTES.md && \
-           mv "${JIRA_VERSION}/CHANGES.${JIRA_VERSION}.md" CHANGES.md \
-          )
-  echo "${rn_out}"
+                                                   --projecttitle="Apache Yetus" --usetoday
+  mv "target/${JIRA_VERSION}/RELEASENOTES.${JIRA_VERSION}.md" target/RELEASENOTES.md
+  mv "target/${JIRA_VERSION}/CHANGES.${JIRA_VERSION}.md" target/CHANGES.md
 else
   echo "in offline mode, skipping release notes."
 fi

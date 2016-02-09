@@ -450,8 +450,8 @@ def main():
                                  "in a directory named after the highest version provided.")
     parser.add_option("-i", "--index", dest="index", action="store_true",
                       default=False, help="build an index file")
-    parser.add_option("-l", "--license", dest="license", action="store_false",
-                      default=True, help="Add an ASF license")
+    parser.add_option("-l", "--license", dest="license", action="store_true",
+                      default=False, help="Add an ASF license")
     parser.add_option("-n", "--lint", dest="lint", action="store_true",
                       help="use lint flag to exit on failures")
     parser.add_option("-p", "--project", dest="projects",
