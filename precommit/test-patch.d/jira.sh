@@ -95,6 +95,7 @@ function jira_http_fetch
   declare input=$1
   declare output=$2
 
+  yetus_debug "jira_http_fetch: ${JIRA_URL}/${input}"
   if [[ -n "${JIRA_USER}"
      && -n "${JIRA_PASSWD}" ]]; then
     ${CURL} --silent --fail \
@@ -115,6 +116,8 @@ function jira_locate_patch
   declare input=$1
   declare fileloc=$2
   declare relativeurl
+  declare retval
+  declare found=false
 
   yetus_debug "jira_locate_patch: trying ${JIRA_URL}/browse/${input}"
 
@@ -124,7 +127,6 @@ function jira_locate_patch
   fi
 
   jira_http_fetch "browse/${input}" "${PATCH_DIR}/jira"
-
   if [[ $? != 0 ]]; then
     yetus_debug "jira_locate_patch: not a JIRA."
     return 1
@@ -147,16 +149,38 @@ function jira_locate_patch
     fi
   fi
 
+  # See https://jira.atlassian.com/browse/JRA-27637 as why we can't use
+  # the REST interface here. :(
+  # the assumption here is that attachment id's are given in an
+  # ascending order. so bigger # == newer file
   #shellcheck disable=SC2016
-  relativeurl=$(${AWK} 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' "${PATCH_DIR}/jira" |
-    ${GREP} -v -e 'htm[l]*$' | sort | tail -1 | ${SED} -e 's,[ ]*$,,g')
-  PATCHURL="${JIRA_URL}${relativeurl}"
+  ${AWK} 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' "${PATCH_DIR}/jira" \
+    | ${GREP} -v -e 'htm[l]*$' \
+    | ${SED} -e 's,[ ]*$,,g' \
+    | sort -n -r -k4 -t/ \
+    | uniq \
+      > "${PATCH_DIR}/jira-attachments.txt"
 
   echo "${input} patch is being downloaded at $(date) from"
-  echo "${PATCHURL}"
-  jira_http_fetch "${relativeurl}" "${fileloc}"
-  if [[ $? != 0 ]];then
-    yetus_error "ERROR: ${input}/${PATCHURL} could not be downloaded."
+  while read -r relativeurl && [[ ${found} = false ]]; do
+    PATCHURL="${JIRA_URL}${relativeurl}"
+
+    printf "  %s -> " "${PATCHURL}"
+
+    jira_http_fetch "${relativeurl}" "${fileloc}"
+    retval=$?
+    if [[ ${retval} == 0 ]]; then
+      found=true
+      echo "Downloaded"
+    elif [[ ${retval} == 22 ]]; then
+      echo "404"
+    else
+      echo "Error (curl returned ${retval})"
+    fi
+  done < <(cat "${PATCH_DIR}/jira-attachments.txt")
+
+  if [[ "${found}" = false ]]; then
+    yetus_error "ERROR: ${input} could not be downloaded."
     cleanup_and_exit 1
   fi
 
@@ -171,6 +195,7 @@ function jira_locate_patch
     fi
   fi
   add_footer_table "JIRA Patch URL" "${PATCHURL}"
+
   return 0
 }
 
