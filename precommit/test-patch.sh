@@ -311,24 +311,13 @@ function prepopulate_footer
   add_footer_table "git revision" "${PATCH_BRANCH} / ${gitrev}"
 }
 
-## @description  Put the max memory consumed by maven at the bottom of the table.
+## @description  Last minute entries on the footer table
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
 function finish_footer_table
 {
-  local maxmem
-
   add_footer_table "modules" "C: ${CHANGED_MODULES} U: ${CHANGED_UNION_MODULES}"
-
-  # `sort | head` can cause a broken pipe error, but we can ignore it just like compute_gitdiff.
-  # shellcheck disable=SC2016,SC2086
-  maxmem=$(find "${PATCH_DIR}" -type f -exec ${AWK} 'match($0, /^\[INFO\] Final Memory: [0-9]+/)
-    { print substr($0, 22, RLENGTH-21) }' {} \; | sort -nr 2>/dev/null | head -n 1)
-
-  if [[ -n ${maxmem} ]]; then
-    add_footer_table "Max memory used" "${maxmem}MB"
-  fi
 }
 
 ## @description  Put the final elapsed time at the bottom of the table.
