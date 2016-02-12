@@ -60,7 +60,7 @@ ASF_LICENSE = '''
 '''
 
 def clean(_str):
-    return tableclean(re.sub(NAME_PATTERN, "", _str))
+    return markdownsanitize(re.sub(NAME_PATTERN, "", _str))
 
 def format_components(_str):
     _str = re.sub(NAME_PATTERN, '', _str).replace("'", "")
@@ -72,22 +72,20 @@ def format_components(_str):
     return clean(ret)
 
 # convert to utf-8
-# protect some known md metachars
-# or chars that screw up doxia
-def tableclean(_str):
+def markdownsanitize(_str):
     _str = _str.encode('utf-8')
-    _str = _str.replace("_", r"\_")
     _str = _str.replace("\r", "")
     _str = _str.rstrip()
     return _str
 
-# same thing as tableclean,
-# except table metachars are also
+# same thing as markdownsanitize,
+# except markdown metachars are also
 # escaped as well as more
-# things we don't want doxia to
+# things we don't want doxia, etc, to
 # screw up
-def notableclean(_str):
-    _str = tableclean(_str)
+def textsanitize(_str):
+    _str = markdownsanitize(_str)
+    _str = _str.replace("_", r"\_")
     _str = _str.replace("|", r"\|")
     _str = _str.replace("<", r"\<")
     _str = _str.replace(">", r"\>")
@@ -100,11 +98,11 @@ def notableclean(_str):
 def processrelnote(_str):
   fmt = RELNOTE_PATTERN.match(_str)
   if fmt is None:
-      return notableclean(_str)
+      return textsanitize(_str)
   else:
       return {
-        'markdown' : tableclean(_str),
-      }.get(fmt.group(1),notableclean(_str))
+        'markdown' : markdownsanitize(_str),
+      }.get(fmt.group(1),textsanitize(_str))
 
 # clean output dir
 def clean_output_dir(directory):
@@ -434,13 +432,13 @@ class Outputs(object):
     def write_list(self, mylist):
         for jira in sorted(mylist):
             line = '| [%s](' + JIRA_BASE_URL + '/browse/%s) | %s |  %s | %s | %s | %s |\n'
-            line = line % (notableclean(jira.get_id()),
-                           notableclean(jira.get_id()),
-                           notableclean(jira.get_summary()),
-                           notableclean(jira.get_priority()),
+            line = line % (textsanitize(jira.get_id()),
+                           textsanitize(jira.get_id()),
+                           textsanitize(jira.get_summary()),
+                           textsanitize(jira.get_priority()),
                            format_components(jira.get_components()),
-                           notableclean(jira.get_reporter()),
-                           notableclean(jira.get_assignee()))
+                           textsanitize(jira.get_reporter()),
+                           textsanitize(jira.get_assignee()))
             self.write_key_raw(jira.get_project(), line)
 
 def main():
@@ -588,10 +586,10 @@ def main():
             else:
                 otherlist.append(jira)
 
-            line = '* [%s](' % (notableclean(jira.get_id())) + JIRA_BASE_URL + \
+            line = '* [%s](' % (textsanitize(jira.get_id())) + JIRA_BASE_URL + \
                    '/browse/%s) | *%s* | **%s**\n' \
-                   % (notableclean(jira.get_id()),
-                      notableclean(jira.get_priority()), notableclean(jira.get_summary()))
+                   % (textsanitize(jira.get_id()),
+                      textsanitize(jira.get_priority()), textsanitize(jira.get_summary()))
 
             if jira.get_incompatible_change() and len(jira.get_release_note()) == 0:
                 warning_count += 1
@@ -599,7 +597,7 @@ def main():
                 reloutputs.write_key_raw(jira.get_project(), line)
                 line = '\n**WARNING: No release note provided for this incompatible change.**\n\n'
                 lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
-                                (notableclean(jira.get_id()))
+                                (textsanitize(jira.get_id()))
                 reloutputs.write_key_raw(jira.get_project(), line)
 
             if jira.get_important() and len(jira.get_release_note()) == 0:
@@ -608,7 +606,7 @@ def main():
                 reloutputs.write_key_raw(jira.get_project(), line)
                 line = '\n**WARNING: No release note provided for this important issue.**\n\n'
                 lint_message += "\nWARNING: important issue %s lacks release notes." % \
-                                (notableclean(jira.get_id()))
+                                (textsanitize(jira.get_id()))
                 reloutputs.write_key_raw(jira.get_project(), line)
 
             if jira.check_version_string():
