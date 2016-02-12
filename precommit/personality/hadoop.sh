@@ -32,9 +32,25 @@ function personality_globals
   PYLINT_OPTIONS="--indent-string='  '"
 }
 
+function hadoop_order
+{
+  declare ordering=$1
+  declare hadoopm
+
+  if [[ ${ordering} = normal ]]; then
+    hadoopm=${CHANGED_MODULES}
+  elif  [[ ${ordering} = union ]]; then
+    hadoopm=${CHANGED_UNION_MODULES}
+  else
+    hadoopm="${ordering}"
+  fi
+  echo "${hadoopm}"
+}
+
 function hadoop_unittest_prereqs
 {
-  declare mods=("$@")
+  declare input=$1
+  declare mods
   declare need_common=0
   declare building_common=0
   declare module
@@ -44,11 +60,10 @@ function hadoop_unittest_prereqs
   # prior to running unit tests, hdfs needs libhadoop.so built
   # if we're building root, then this extra work is moot
 
-  # if module handling is ever put into arrays (YETUS-300)
-  # undo this disable and quote the array
+  #shellcheck disable=SC2086
+  mods=$(hadoop_order ${input})
 
-  #shellcheck disable=SC2068
-  for module in ${mods[@]}; do
+  for module in ${mods}; do
     if [[ ${module} = hadoop-hdfs-project* ]]; then
       need_common=1
     elif [[ ${module} = hadoop-common-project/hadoop-common
@@ -132,6 +147,7 @@ function personality_modules
   declare flags
   declare fn
   declare i
+  declare hadoopm
 
   yetus_debug "Personality: ${repostatus} ${testtype}"
 
@@ -244,15 +260,7 @@ function personality_modules
 
   extra="-Ptest-patch ${extra}"
 
-  if [[ ${ordering} = normal ]]; then
-    HADOOP_MODULES=${CHANGED_MODULES}
-  elif  [[ ${ordering} = union ]]; then
-    HADOOP_MODULES=${CHANGED_UNION_MODULES}
-  else
-    HADOOP_MODULES="${ordering}"
-  fi
-
-  for module in ${HADOOP_MODULES}; do
+  for module in $(hadoop_order ${ordering}); do
     # shellcheck disable=SC2086
     personality_enqueue_module ${module} ${extra}
   done
