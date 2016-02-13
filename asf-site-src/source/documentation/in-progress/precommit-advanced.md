@@ -136,6 +136,7 @@ add_test_type <pluginname>
 
     - This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have "Missing period." as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool's output (e.g., checkstyle) to provide a more accurate way to determine differences.
 
+  NOTE: If the plug-in has support for maven, the maven_add_install `pluginname` should be executed. See more information in Custom Maven Tests in the build tool documentation.
 
 # Personalities
 

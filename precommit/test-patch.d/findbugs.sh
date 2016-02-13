@@ -42,6 +42,17 @@ function findbugs_parse_args
   done
 }
 
+## @description  initialize the findbugs plug-in
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function findbugs_initialize
+{
+  if declare -f maven_add_install >/dev/null 2>&1; then
+    maven_add_install findbugs
+  fi
+}
+
 function findbugs_filefilter
 {
   local filename=$1

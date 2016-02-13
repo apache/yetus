@@ -34,11 +34,21 @@ function checkstyle_filefilter
   fi
 }
 
+## @description  usage help for checkstyle
+## @audience     private
+## @stability    evolving
+## @replaceable  no
 function checkstyle_usage
 {
   yetus_add_option "--checkstyle-goal=<goal>" "Checkstyle maven plugin goal to use, 'check' and 'checkstyle' supported. Defaults to '${CHECKSTYLE_GOAL_DEFAULT}'."
 }
 
+## @description  parse checkstyle args
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        arg
+## @param        ..
 function checkstyle_parse_args
 {
   local i
@@ -60,6 +70,17 @@ function checkstyle_parse_args
     ;;
     esac
   done
+}
+
+## @description  initialize the checkstyle plug-in
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function checkstyle_initialize
+{
+  if declare -f maven_add_install >/dev/null 2>&1; then
+    maven_add_install checkstyle
+  fi
 }
 
 ## @description  checkstyle plug-in specific difference calculator

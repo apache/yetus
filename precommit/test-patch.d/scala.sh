@@ -17,6 +17,8 @@
 add_test_type scalac
 add_test_type scaladoc
 
+SCALA_INITIALIZED=false
+
 function scalac_filefilter
 {
   declare filename=$1
@@ -36,6 +38,42 @@ function scaladoc_filefilter
     yetus_debug "tests/scaladoc: ${filename}"
     add_test scaladoc
   fi
+}
+
+## @description  initialize the scala plug-in
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function scala_initialize
+{
+  if [[ ${SCALA_INITIALIZED} == true ]]; then
+    return
+  else
+    SCALA_INITIALIZED=true
+  fi
+
+  if declare -f maven_add_install >/dev/null 2>&1; then
+    maven_add_install scaladoc
+    maven_add_install scalac
+  fi
+}
+
+## @description  initialize the scalac plug-in
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function scalac_initialize
+{
+  scala_initialize
+}
+
+## @description  initialize the scaladoc plug-in
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function scaladoc_initialize
+{
+  scala_initialize
 }
 
 ## @description

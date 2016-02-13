@@ -30,6 +30,26 @@ add_test_type mvnsite
 add_test_type mvneclipse
 add_build_tool maven
 
+## @description  Add the given test type as requiring a mvn install during the branch phase
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        test
+function maven_add_install
+{
+    yetus_add_entry MAVEN_NEED_INSTALL "${1}"
+}
+
+## @description  Remove the given test type as requiring a mvn install
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        test
+function maven_delete_install
+{
+  yetus_delete_entry MAVEN_NEED_INSTALL "${1}"
+}
+
 function maven_usage
 {
   yetus_add_option "--mvn-cmd=<cmd>" "The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
@@ -75,8 +95,12 @@ function maven_parse_args
 
 function maven_initialize
 {
-  # we need to do this before docker does it as root
 
+  maven_add_install mvneclipse
+  maven_add_install mvnsite
+  maven_add_install unit
+
+  # we need to do this before docker does it as root
   if [[ ! ${MAVEN_CUSTOM_REPOS_DIR} =~ ^/ ]]; then
     yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."
     return 1
@@ -433,7 +457,6 @@ function mvnsite_postcompile
     big_console_header "Patch maven site verification"
   fi
 
-
   personality_modules "${repostatus}" mvnsite
   modules_workers "${repostatus}" mvnsite clean site site:stage
   result=$?
@@ -490,18 +513,32 @@ function maven_precompile
 {
   declare repostatus=$1
   declare result=0
+  declare need=false
 
   if [[ ${BUILDTOOL} != maven ]]; then
     return 0
   fi
 
-  verify_needed_test javadoc
-  result=$?
-
   verify_needed_test javac
-  ((result = result + $? ))
-  if [[ ${result} == 0 ]]; then
+  if [[ $? == 1 ]]; then
+    need=true
+  else
+    # not everything needs a maven install
+    # but quite a few do ...
+    # shellcheck disable=SC2086
+    for index in ${MAVEN_NEED_INSTALL}; do
+      verify_needed_test ${index}
+      if [[ $? == 1 ]]; then
+         need=branch
+      fi
+    done
+  fi
+
+  if [[ "${need}" = false ]]; then
     return 0
+  elif [[ "${need}" = branch
+     && "${repostatus}" = patch ]]; then
+   return 0
   fi
 
   if [[ "${repostatus}" = branch ]]; then

@@ -39,6 +39,10 @@ function initialize_java
     return 0
   fi
 
+  if declare -f maven_add_install >/dev/null 2>&1; then
+    maven_add_install javadoc
+  fi
+
   if [[ -z ${JAVA_HOME:-} ]]; then
     case ${OSTYPE} in
       Darwin)
