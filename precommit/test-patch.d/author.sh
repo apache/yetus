@@ -39,12 +39,15 @@ function author_patchfile
     return 0
   fi
 
-  authorTags=$("${GREP}" -c -i '^[^-].*@author' "${patchfile}")
+  ${GREP} -i -n '^[^-].*@author' "${patchfile}" >> "${PATCH_DIR}/author-tags.txt"
+  # shellcheck disable=SC2016
+  authorTags=$(wc -l "${PATCH_DIR}/author-tags.txt" | "${AWK}" '{print $1}')
   echo "There appear to be ${authorTags} @author tags in the patch."
   if [[ ${authorTags} != 0 ]] ; then
     add_vote_table -1 @author \
       "The patch appears to contain ${authorTags} @author tags which the" \
       " community has agreed to not allow in code contributions."
+    add_footer_table @author "@@BASE@@/author-tags.txt"
     return 1
   fi
   add_vote_table +1 @author "The patch does not contain any @author tags."
