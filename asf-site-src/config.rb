@@ -15,26 +15,33 @@
 # limitations under the License.
 #
 
-# Per-page layout changes:
-#
-# With no layout
-# page "/path/to/file.html", :layout => false
-#
-# With alternative layout
-# page "/path/to/file.html", :layout => :otherlayout
-#
-# A path which all have the same layout
-# with_layout :admin do
-#   page "/admin/*"
-# end
+# This allows us to set the style for tables.  It removes some of the
+# image and sizing functionality (that we don't use) of the normal
+# middleman renderer.
+class YetusMiddlemanRedcarpetHTML < ::Redcarpet::Render::HTML
+  def table(header, body)
+    '<table class=\'table table-bordered table-striped\'>' \
+      "<thead>#{header}</thead>" \
+      "<tbody>#{body}</tbody>" \
+    '</table>'
+  end
+end
 
 set :markdown_engine, :redcarpet
-set :markdown, :layout_engine => :erb,
-               :tables => true,
-               :autolink => true,
-               :smartypants => true,
-               :fenced_code_blocks => true,
-               :with_toc_data => true
+set(
+  :markdown,
+  layout_engine:                :erb,
+  with_toc_data:                true,
+  smartypants:                  true,
+  fenced_code_blocks:           true,
+  no_intra_emphasis:            true,
+  tables:                       true,
+  autolink:                     true,
+  disable_indented_code_blocks: true,
+  quote:                        true,
+  lax_spacing:                  true,
+  renderer:                     YetusMiddlemanRedcarpetHTML
+)
 
 set :build_dir, 'publish'
 
@@ -115,8 +122,8 @@ def build_release_docs(output, version)
   # TODO get the version date from jira and do an up to date check instead of building each time.
   puts "Building docs for release #{version}"
   puts "\tcleaning up output directories in #{output}"
-  FileUtils.rm_rf("#{output}/build-#{version}", :secure => true)
-  FileUtils.rm_rf("#{output}/#{version}", :secure => true)
+  FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
+  FileUtils.rm_rf("#{output}/#{version}", secure: true)
   puts "\tcloning from tag."
   `(cd "#{output}" && git clone --depth 1 --branch "#{version}" --single-branch -- "#{GITREPO}" "build-#{version}") >"#{output}/#{version}_git_checkout.log" 2>&1`
   unless $?.exitstatus == 0
