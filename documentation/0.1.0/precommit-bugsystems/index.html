@@ -118,10 +118,11 @@
   under the License.
 -->
 
-<h1 id="bug-system-support">Bug System Support</h1>
+<h1>Bug System Support</h1>
 
 <p>test-patch has the ability to support multiple bug systems.  Bug tools have some extra hooks to fetch patches, line-level reporting, and posting a final report. Every bug system plug-in must have one line in order to be recognized:</p>
-<pre class="highlight shell"><code>add_bugsystem &lt;pluginname&gt;
+
+<pre><code class="bash">add_bugsystem &lt;pluginname&gt;
 </code></pre>
 
 <ul>
@@ -143,7 +144,7 @@
 <li><p>pluginname_write_comment</p>
 
 <ul>
-<li>Given text input, write this output to the bug system as a comment.  NOTE: It is the bug system&rsquo;s responsibility to format appropriately.</li>
+<li>Given text input, write this output to the bug system as a comment.  NOTE: It is the bug system&#39;s responsibility to format appropriately.</li>
 </ul></li>
 <li><p>pluginname_linecomments</p>
 
@@ -157,23 +158,24 @@
 </ul></li>
 </ul>
 
-<h1 id="bugzilla-specific">Bugzilla Specific</h1>
+<h1>Bugzilla Specific</h1>
 
-<p>Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with &lsquo;BZ:&rsquo;.  For example:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> BZ:4
+<p>Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with &#39;BZ:&#39;.  For example:</p>
+
+<pre><code class="bash">$ test-patch.sh (other options) BZ:4
 </code></pre>
 
-<p>&hellip; will pull down Bugzilla ID #4.</p>
+<p>... will pull down Bugzilla ID #4.</p>
 
-<p>Using the <code>--bugzilla-base-url</code> on the command line or BUGZILLA_BASE_URL in a project&rsquo;s personality will define the location of the Bugzilla instance.  By default, it is <a href="https://bz.apache.org/bugzilla">https://bz.apache.org/bugzilla</a> .</p>
+<p>Using the <code>--bugzilla-base-url</code> on the command line or BUGZILLA_BASE_URL in a project&#39;s personality will define the location of the Bugzilla instance.  By default, it is <a href="https://bz.apache.org/bugzilla">https://bz.apache.org/bugzilla</a> .</p>
 
-<h1 id="github-specific">GitHub Specific</h1>
+<h1>GitHub Specific</h1>
 
 <p>GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that test-patch.sh will require that GitHub PRs be fully rebased (i.e., a single commit) in many circumstances.</p>
 
 <p>By default, the GitHub plug-in assumes that <a href="https://github.com">https://github.com</a> is the base URL for GitHub.  Enterprise users may override this with the <code>--github-base-url</code> for the normal web user interface and <code>--github-api-url</code> for the API URL.  Personalities may use GITHUB_API_URL and GITHUB_BASE_URL.</p>
 
-<p>The specific repository on GitHub is defined with either <code>--github-repo</code> on the command line or GITHUB_REPO in a personality.  It should take the form of &ldquo;user/repo&rdquo;.</p>
+<p>The specific repository on GitHub is defined with either <code>--github-repo</code> on the command line or GITHUB_REPO in a personality.  It should take the form of <q>user/repo</q>.</p>
 
 <p>In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports two types:</p>
 
@@ -184,7 +186,7 @@
 
 <p>Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.</p>
 
-<h1 id="jira-specific">JIRA Specific</h1>
+<h1>JIRA Specific</h1>
 
 <p>JIRA support allows both patch downloads and summary writes.  It also supports branch detection-based upon the name of the attached patch file.</p>
 
@@ -199,7 +201,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
                             <div class="span12">
-                Copyright 2008-2015 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2016 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
                             </div>
             </div>
 

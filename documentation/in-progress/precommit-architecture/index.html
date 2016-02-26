@@ -118,10 +118,10 @@
   under the License.
 -->
 
-<h1 id="some-philosophy">Some Philosophy</h1>
+<h1>Some Philosophy</h1>
 
 <ul>
-<li><p>Everyone&rsquo;s time is valuable.  The quicker contributors can get feedback and iterate, the more likely and faster their contribution will get checked in.  A committer should be able to focus on the core issues of a contribution rather than details that can be determined automatically.</p></li>
+<li><p>Everyone&#39;s time is valuable.  The quicker contributors can get feedback and iterate, the more likely and faster their contribution will get checked in.  A committer should be able to focus on the core issues of a contribution rather than details that can be determined automatically.</p></li>
 <li><p>Precommit checks should be fast.  There is no value in testing parts of the source tree that are not immediately impacted by a change.  Unit testing is the target. They are not a replacement for full builds or integration tests.</p></li>
 <li><p>Many open source projects have a desire to have this capability.  Why not generalize a solution?</p></li>
 <li><p>In many build systems (especially with maven), a modular design has been picked.  Why not leverage that design to make checks faster?</p></li>
@@ -129,11 +129,11 @@
 <li><p>Portability matters.  Tooling should be as operating system and language agnostic as possible.</p></li>
 </ul>
 
-<h1 id="phases">Phases</h1>
+<h1>Phases</h1>
 
 <p>test-patch works effectively under several different phases:</p>
 
-<h2 id="initialize">Initialize</h2>
+<h2>Initialize</h2>
 
 <p>This is where test-patch configures and validates the environment.  Some things done in this phase:</p>
 
@@ -147,17 +147,17 @@
 <li>git repository management (fresh pull, branch switching, etc)</li>
 </ul>
 
-<h2 id="precheck">Precheck</h2>
+<h2>Precheck</h2>
 
 <p>Checks done here are <em>fatal</em>.</p>
 
 <p>This acts as a verification of all of the setup parts and is the final place to short-cut the full test cycle.  The most significant built-in check done here is verifying the patch file is a valid.</p>
 
-<h2 id="patch-file-tests">Patch File Tests</h2>
+<h2>Patch File Tests</h2>
 
 <p>Tests that only require the patch file are run.  Note that the repository is still from the initial checkout!</p>
 
-<h2 id="compile-cycle-branch">Compile Cycle (Branch)</h2>
+<h2>Compile Cycle (Branch)</h2>
 
 <p>When compilation must be done, we follow these five steps:</p>
 
@@ -169,7 +169,7 @@
 <li>A rebuild phase to run tests that require recompiles</li>
 </ul>
 
-<p>The first time this is done is with the pristine checkout.  This is called the &ldquo;branch compile&rdquo;.  For this pass, this is where the &lsquo;before&rsquo; work is handled.  Some things that typically get checked in this phase:</p>
+<p>The first time this is done is with the pristine checkout.  This is called the <q>branch compile</q>.  For this pass, this is where the &#39;before&#39; work is handled.  Some things that typically get checked in this phase:</p>
 
 <ul>
 <li>The first pass of files and modules that will get patched</li>
@@ -177,27 +177,27 @@
 <li>javadoc, scaladoc, etc</li>
 </ul>
 
-<h2 id="distribution-clean">Distribution Clean</h2>
+<h2>Distribution Clean</h2>
 
 <p>This step is to wipe the repository clean back to a pristine state such that the previous cycle will not impact the next cycle.</p>
 
-<h2 id="patch-application">Patch Application</h2>
+<h2>Patch Application</h2>
 
 <p>The patch gets applied.</p>
 
-<h2 id="compile-cycle-patch">Compile Cycle (Patch)</h2>
+<h2>Compile Cycle (Patch)</h2>
 
-<p>Now that the patch has been applied the steps to compile we outlined in the compilation (branch) phase are repeated but with the patch applied. This is where a lot of &#39;after&rsquo; checks are performed.</p>
+<p>Now that the patch has been applied the steps to compile we outlined in the compilation (branch) phase are repeated but with the patch applied. This is where a lot of &#39;after&#39; checks are performed.</p>
 
-<h2 id="unit-tests">Unit Tests</h2>
+<h2>Unit Tests</h2>
 
 <p>Since unit tests are generally the slowest part of the precommit process, they are run last.  At this point, all the prerequisites to running them should be in place and ready to go.</p>
 
-<h2 id="reporting">Reporting</h2>
+<h2>Reporting</h2>
 
 <p>Finally, the results are reported to the screen and, optionally, to JIRA and/or whatever bug system has been configured.</p>
 
-<h1 id="test-flow">Test Flow</h1>
+<h1>Test Flow</h1>
 
 <p>The basic workflow for many of the sub-items in individual phases are:</p>
 
@@ -219,7 +219,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
                             <div class="span12">
-                Copyright 2008-2015 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2016 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
                             </div>
             </div>
 
