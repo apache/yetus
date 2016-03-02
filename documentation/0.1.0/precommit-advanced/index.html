@@ -118,7 +118,7 @@
   under the License.
 -->
 
-<h1>test-patch</h1>
+<h1 id="test-patch">test-patch</h1>
 
 <ul>
 <li><a href="#Docker_Support">Docker Support</a></li>
@@ -127,7 +127,7 @@
 <li><a href="#Important_Variables">Important Variables</a></li>
 </ul>
 
-<h1>Docker Support</h1>
+<h1 id="docker-support">Docker Support</h1>
 
 <p>By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a container.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a Jenkins instance.</p>
 
@@ -141,37 +141,35 @@
 <li>fail - fail the test</li>
 </ul>
 
-<p>The &#39;fail&#39; setting is always the last option that test-patch will use and may be omitted unless it is the only option.</p>
+<p>The &lsquo;fail&rsquo; setting is always the last option that test-patch will use and may be omitted unless it is the only option.</p>
 
-<p>For example, <code>--dockeronfail=continue</code> means if the Dockerfile can&#39;t be found, just turn off Docker support and continue running.  <code>--dockeronfail=fallback</code> will switch to the bundled Dockerfile and then fail the build if docker fails to work. <code>--dockeronfail=fail</code> means to just fail the build and do not try any other mechanisms of recovery. The default is &#39;fallback,continue,fail&#39; which will allow test-patch to try to continue executing as much as it possibily can.</p>
+<p>For example, <code>--dockeronfail=continue</code> means if the Dockerfile can&rsquo;t be found, just turn off Docker support and continue running.  <code>--dockeronfail=fallback</code> will switch to the bundled Dockerfile and then fail the build if docker fails to work. <code>--dockeronfail=fail</code> means to just fail the build and do not try any other mechanisms of recovery. The default is &#39;fallback,continue,fail&rsquo; which will allow test-patch to try to continue executing as much as it possibily can.</p>
 
 <p>Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.</p>
 
-<p>NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the --basedir and --patch-dir options respectively), because automatically mountable directories are limited to them. See <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume">the Docker documentation</a>.</p>
+<p>NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the &ndash;basedir and &ndash;patch-dir options respectively), because automatically mountable directories are limited to them. See <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume">the Docker documentation</a>.</p>
 
-<p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in --jenkins mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.</p>
+<p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in &ndash;jenkins mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.</p>
 
-<h1>Plug-ins</h1>
+<h1 id="plug-ins">Plug-ins</h1>
 
 <p>test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d off of the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.</p>
 
-<h2>Common Plug-in Functions</h2>
+<h2 id="common-plug-in-functions">Common Plug-in Functions</h2>
 
-<p>Every plug-in must have one line in order to be recognized, usually an &#39;add&#39; statement.  Test plug-ins, for example, have this statement:</p>
-
-<pre><code class="bash">add_test_type &lt;pluginname&gt;
+<p>Every plug-in must have one line in order to be recognized, usually an &#39;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
+<pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
 
-<p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the &#39;all&#39; plug-in is reserved.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
-
-<pre><code class="bash">function pluginname_filefilter
+<p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the &#39;all&rsquo; plug-in is reserved.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
+<pre class="highlight shell"><code><span class="k">function </span>pluginname_filefilter
 </code></pre>
 
 <p>defines the filefilter for the <code>pluginname</code> plug-in.</p>
 
 <p>Similarly, there are other functions that may be defined during the test-patch run:</p>
-
-<p>HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.</p>
+<pre class="highlight plaintext"><code>HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.
+</code></pre>
 
 <ul>
 <li><p>pluginname_initialize</p>
@@ -202,7 +200,7 @@
 <li><p>pluginname_compile</p>
 
 <ul>
-<li>executed immediately after the actual compilation. This is step is intended to be used to verify the results and add extra checking of the compile phase and it&#39;s stdout/stderr.</li>
+<li>executed immediately after the actual compilation. This is step is intended to be used to verify the results and add extra checking of the compile phase and it&rsquo;s stdout/stderr.</li>
 </ul></li>
 <li><p>pluginname_postcompile</p>
 
@@ -216,7 +214,7 @@
 </ul></li>
 </ul>
 
-<h2>Plug-in Importation</h2>
+<h2 id="plug-in-importation">Plug-in Importation</h2>
 
 <p>Plug-ins are imported from several key directories:</p>
 
@@ -228,11 +226,10 @@
 
 <p>If the <code>--skip-system-plugins</code> flag is passed, then only core.d is imported.</p>
 
-<h2>Test Plug-ins</h2>
+<h2 id="test-plug-ins">Test Plug-ins</h2>
 
 <p>Plug-ins geared towards independent tests are registed via:</p>
-
-<pre><code class="bash">add_test_type &lt;pluginname&gt;
+<pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
 
 <ul>
@@ -248,9 +245,9 @@
 </ul></li>
 </ul>
 
-<h1>Personalities</h1>
+<h1 id="personalities">Personalities</h1>
 
-<h2>Configuring for Other Projects</h2>
+<h2 id="configuring-for-other-projects">Configuring for Other Projects</h2>
 
 <p>It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project <code>personality</code> should be added that enacts these custom rules.</p>
 
@@ -258,44 +255,41 @@
 
 <p>There can be only <strong>one</strong> of each personality function defined.</p>
 
-<h2>Global Definitions</h2>
+<h2 id="global-definitions">Global Definitions</h2>
 
 <p>Globals for personalities should be defined in the <code>personality_globals</code> function.  This function is called <em>after</em> the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:</p>
-
-<pre><code class="bash">funciton personality_globals
-{
-  PATCH_BRANCH_DEFAULT=master
-  GITHUB_REPO=&quot;apache/yetus&quot;
-}
+<pre class="highlight shell"><code>funciton personality_globals
+<span class="o">{</span>
+  <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>master
+  <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
+<span class="o">}</span>
 </code></pre>
 
-<h2>Test Determination</h2>
+<h2 id="test-determination">Test Determination</h2>
 
 <p>The <code>personality_file_tests</code> function determines which tests to turn on based upon the file name.  It is relatively simple.  For example, to turn on a full suite of tests for Java files:</p>
+<pre class="highlight shell"><code><span class="k">function </span>personality_file_tests
+<span class="o">{</span>
+  <span class="nb">local </span><span class="nv">filename</span><span class="o">=</span><span class="nv">$1</span>
 
-<pre><code class="bash">function personality_file_tests
-{
-  local filename=$1
-
-  if [[ ${filename} =~ \.java$ ]]; then
-    add_test findbugs
+  <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">=</span>~ <span class="se">\.</span>java<span class="nv">$ </span><span class="o">]]</span>; <span class="k">then
+    </span>add_test findbugs
     add_test javac
     add_test javadoc
     add_test mvninstall
     add_test unit
-  fi
+  <span class="k">fi</span>
 
-}
+<span class="o">}</span>
 </code></pre>
 
 <p>The <code>add_test</code> function is used to activate the standard tests.  Additional plug-ins (such as checkstyle), will get queried on their own.</p>
 
-<h2>Module &amp; Profile Determination</h2>
+<h2 id="module-amp-profile-determination">Module &amp; Profile Determination</h2>
 
-<p>Once the tests are determined, it is now time to pick which <a href="precommit-glossary.md#genericoutside-definitions">modules</a> should get used.  That&#39;s the job of the <code>personality_modules</code> function.</p>
-
-<pre><code class="bash">function personality_modules
-{
+<p>Once the tests are determined, it is now time to pick which <a href="precommit-glossary.md#genericoutside-definitions">modules</a> should get used.  That&rsquo;s the job of the <code>personality_modules</code> function.</p>
+<pre class="highlight shell"><code><span class="k">function </span>personality_modules
+<span class="o">{</span>
 
     clear_personality_queue
 
@@ -303,7 +297,7 @@
 
     personality_enqueue_module &lt;module&gt; &lt;flags&gt;
 
-}
+<span class="o">}</span>
 </code></pre>
 
 <p>It takes exactly two parameters <code>repostatus</code> and <code>testtype</code>.</p>
@@ -314,39 +308,37 @@
 
 <p>In order to communicate back to test-patch, there are two functions for the personality to use.</p>
 
-<p>The first is <code>clear_personality_queue</code>. This removes the previous test&#39;s configuration so that a new module queue may be built. Custom <code>personality_modules</code> will almost always want to do this as the first action.</p>
+<p>The first is <code>clear_personality_queue</code>. This removes the previous test&rsquo;s configuration so that a new module queue may be built. Custom <code>personality_modules</code> will almost always want to do this as the first action.</p>
 
-<p>The second is <code>personality_enqueue_module</code>.  This function takes two parameters.  The first parameter is the name of the module to add to this test&#39;s queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. <code>personality_enqueue_module</code> may be called as many times as necessary for your project.</p>
+<p>The second is <code>personality_enqueue_module</code>.  This function takes two parameters.  The first parameter is the name of the module to add to this test&rsquo;s queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. <code>personality_enqueue_module</code> may be called as many times as necessary for your project.</p>
+<pre class="highlight plaintext"><code>NOTE: A module name of . signifies the root of the repository.
+</code></pre>
 
-<p>NOTE: A module name of . signifies the root of the repository.</p>
+<p>For example, let&rsquo;s say your project uses a special configuration to skip unit tests (-DskipTests).  Running unit tests during a javadoc build isn&rsquo;t very useful and wastes a lot of time. We can write a simple personality check to disable the unit tests:</p>
+<pre class="highlight shell"><code><span class="k">function </span>personality_modules
+<span class="o">{</span>
+    <span class="nb">local </span><span class="nv">repostatus</span><span class="o">=</span><span class="nv">$1</span>
+    <span class="nb">local </span><span class="nv">testtype</span><span class="o">=</span><span class="nv">$2</span>
 
-<p>For example, let&#39;s say your project uses a special configuration to skip unit tests (-DskipTests).  Running unit tests during a javadoc build isn&#39;t very useful and wastes a lot of time. We can write a simple personality check to disable the unit tests:</p>
-
-<pre><code class="bash">function personality_modules
-{
-    local repostatus=$1
-    local testtype=$2
-
-    if [[ ${testtype} == &#39;javadoc&#39; ]]; then
-        personality_enqueue_module . -DskipTests
-        return
-    fi
+    <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">testtype</span><span class="k">}</span> <span class="o">==</span> <span class="s1">'javadoc'</span> <span class="o">]]</span>; <span class="k">then
+        </span>personality_enqueue_module . -DskipTests
+        <span class="k">return
+    fi</span>
     ...
 
 </code></pre>
 
 <p>This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.</p>
 
-<h2>Enabling Plug-ins</h2>
+<h2 id="enabling-plug-ins">Enabling Plug-ins</h2>
 
 <p>Personalities can set the base list of plug-ins to enable and disable for their project via the <code>personality_plugins</code> function. Just call it with the same pattern as the <code>--plugins</code> command line option:</p>
-
-<pre><code class="bash">personality_plugins &quot;all,-checkstyle,-findbugs,-asflicense&quot;
+<pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-findbugs,-asflicense"</span>
 </code></pre>
 
 <p>This list is used if the user does not provide a list of plug-ins.</p>
 
-<h1>Important Variables</h1>
+<h1 id="important-variables">Important Variables</h1>
 
 <p>There are a handful of extremely important system variables that make life easier for personality and plug-in writers.  Other variables may be provided by individual plug-ins.  Check their development documentation for more information.</p>
 
@@ -354,13 +346,13 @@
 <li><p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). Under Jenkins, this is always true.</p></li>
 <li><p>BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz_ARGS to pass on to the build tool command line. (e.g., MAVEN_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.</p></li>
 <li><p>CHANGED_FILES is a list of all files that appear to be added, deleted, or modified in the patch.</p></li>
-<li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &#39;.&#39;.</p></li>
+<li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
 <li><p>GITHUB_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.</p></li>
 <li><p>JIRA_ISSUE_RE is to help test-patch when talking to JIRA.  It helps determine if the given project is appropriate for the given JIRA issue.</p></li>
 <li><p>MODULE and other MODULE_* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.</p></li>
 <li><p>PATCH_BRANCH_DEFAULT is the name of the branch in the git repo that is considered the master.  This is useful to set in personalities.</p></li>
 <li><p>PATCH_DIR is the name of the temporary directory that houses test-patch artifacts (such as logs and the patch file itself)</p></li>
-<li><p>PATCH_NAMING_RULE should be a URL that points to a project&#39;s on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project&#39;s personality.</p></li>
+<li><p>PATCH_NAMING_RULE should be a URL that points to a project&rsquo;s on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project&rsquo;s personality.</p></li>
 <li><p>TEST_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST_THREADS is the number of threads that have been requested to run in parallel.</p></li>
 </ul>
 

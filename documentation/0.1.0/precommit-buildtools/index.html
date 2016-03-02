@@ -118,14 +118,13 @@
   under the License.
 -->
 
-<h1>Build Tool Support</h1>
+<h1 id="build-tool-support">Build Tool Support</h1>
 
 <p>test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:</p>
-
-<pre><code class="bash">add_build_tool &lt;pluginname&gt;
+<pre class="highlight shell"><code>add_build_tool &lt;pluginname&gt;
 </code></pre>
 
-<h1>Global Variables</h1>
+<h1 id="global-variables">Global Variables</h1>
 
 <ul>
 <li><p>BUILDTOOLCWD</p>
@@ -142,7 +141,7 @@
 
 <p>For example, the gradle build tool does not have a standard way to execute checkstyle. So when checkstyle is requested, gradle_modules_worker sets UNSUPPORTED_TEST to true and returns out of the routine.</p>
 
-<h1>Required Functions</h1>
+<h1 id="required-functions">Required Functions</h1>
 
 <ul>
 <li><p>pluginname_buildfile</p>
@@ -158,7 +157,7 @@
 <li><p>pluginname_modules_worker</p>
 
 <ul>
-<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &#39;test&#39; to trigger &#39;unit&#39; tests, then <code>module_workers</code> should be called with &#39;test&#39; appended onto its normal parameters.</li>
+<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &#39;unit&rsquo; tests, then <code>module_workers</code> should be called with &#39;test&rsquo; appended onto its normal parameters.</li>
 </ul></li>
 <li><p>pluginname_builtin_personality_modules</p>
 
@@ -172,7 +171,7 @@
 </ul></li>
 </ul>
 
-<h1>Optional Functions</h1>
+<h1 id="optional-functions">Optional Functions</h1>
 
 <ul>
 <li><p>pluginname_postapply_install</p>
@@ -204,29 +203,29 @@
 <p><strong>WARNING</strong>: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that <code>pluginname_initialize</code> be used to create the necessary directories prior to be used in the <code>docker run</code> command.</p></li>
 </ul>
 
-<h1>Ant Specific</h1>
+<h1 id="ant-specific">Ant Specific</h1>
 
-<h2>Command Arguments</h2>
+<h2 id="command-arguments">Command Arguments</h2>
 
 <p>test-patch always passes -noinput to Ant.  This forces ant to be non-interactive.</p>
 
-<h2>Docker Mode</h2>
+<h2 id="docker-mode">Docker Mode</h2>
 
 <p>In Docker mode, the <code>${HOME}/.ivy2</code> directory is shared amongst all invocations.</p>
 
-<h1>Gradle Specific</h1>
+<h1 id="gradle-specific">Gradle Specific</h1>
 
 <p>The gradle plug-in always rebuilds the gradlew file and uses gradlew as the method to execute commands.</p>
 
 <p>In Docker mode, the <code>${HOME}/.gradle</code> directory is shared amongst all invocations.</p>
 
-<h1>Maven Specific</h1>
+<h1 id="maven-specific">Maven Specific</h1>
 
-<h2>Command Arguments</h2>
+<h2 id="command-arguments">Command Arguments</h2>
 
-<p>test-patch always passes --batch-mode to maven to force it into non-interactive mode.  Additionally, some tests will also force -fae in order to get all of messages/errors during that mode. Some tests are executed with -DskipTests.  Additional arguments should be handled via the personality.</p>
+<p>test-patch always passes &ndash;batch-mode to maven to force it into non-interactive mode.  Additionally, some tests will also force -fae in order to get all of messages/errors during that mode. Some tests are executed with -DskipTests.  Additional arguments should be handled via the personality.</p>
 
-<h2>Per-instance Repositories</h2>
+<h2 id="per-instance-repositories">Per-instance Repositories</h2>
 
 <p>Under many common configurations, maven (as of 3.3.3 and lower) may not properly handle being executed by multiple processes simultaneously, especially given that some tests require the <code>mvn install</code> command to be used.</p>
 
@@ -236,15 +235,15 @@
 
 <p>The location of the <code>settings.xml</code> may be changed via the <code>--mvn-settings</code> option.</p>
 
-<h2>Docker Mode</h2>
+<h2 id="docker-mode">Docker Mode</h2>
 
 <p>In Docker mode, <code>${HOME}/.m2</code> is shared amongst all invocations.  If <code>--mvn-custom-repos</code> is used, all of <code>--mvn-custom-repos-dir</code> is shared with all invocations.  The per-instance directory will be calculated and configured after Docker has launched.</p>
 
-<h2>Test Profile</h2>
+<h2 id="test-profile">Test Profile</h2>
 
 <p>By default, test-patch will pass -Ptest-patch to Maven. This will allow you to configure special actions that should only happen when running underneath test-patch.</p>
 
-<h2>Custom Maven Tests</h2>
+<h2 id="custom-maven-tests">Custom Maven Tests</h2>
 
 <ul>
 <li>Maven will trigger a maven install as part of the precompile.</li>

@@ -118,19 +118,19 @@
   under the License.
 -->
 
-<h1>How To Contribute</h1>
+<h1 id="how-to-contribute">How To Contribute</h1>
 
-<h2>Submitting Changes</h2>
+<h2 id="submitting-changes">Submitting Changes</h2>
 
 <p>We use git as our version control system. To streamline the process of giving proper credit to the contributors when committing patches, we encourage contributors to submit patches generated using git format-patch. This has many benefits:</p>
 
 <ul>
-<li>Committers can&#39;t forget to attribute proper credit to the contributor</li>
+<li>Committers can&rsquo;t forget to attribute proper credit to the contributor</li>
 <li>The contributors name and email address shows up in git log</li>
-<li>When viewing Yetus&#39;s source code on <a href="https://github.com/apache/yetus">https://github.com/apache/yetus</a> , the commits from the contributor are linked to their github.com account if it&#39;s linked to the same email address they used when generating the git format-patch</li>
+<li>When viewing Yetus&rsquo;s source code on <a href="https://github.com/apache/yetus">https://github.com/apache/yetus</a> , the commits from the contributor are linked to their github.com account if it&rsquo;s linked to the same email address they used when generating the git format-patch</li>
 </ul>
 
-<p>Long story short, it makes both the contributors&#39; and committers&#39; lives easier, so please generate your patches using git format-patch.</p>
+<p>Long story short, it makes both the contributors&rsquo; and committers&rsquo; lives easier, so please generate your patches using git format-patch.</p>
 
 <p>Here are some instructions on how to generate patches:</p>
 
@@ -142,59 +142,14 @@
 
 <p>The naming of the patch should be in (JIRA).(patch number).patch or, if it needs to apply to a specific branch, (JIRA).(branch name).(patch number).patch format. For example, YETUS-9.00.patch, YETUS-500.02.patch, or YETUS-23.cmake.11.patch. This way, if you need to upload another version  of the patch, you should keep the file name the same and JIRA will sort them according to date/time if multiple files have the same name. This feature is also useful to traceback the history of a patch and roll-back to an earlier version if needed.</p>
 
-<h2>Website</h2>
+<h2 id="task-specific-guidance">Task Specific Guidance</h2>
 
-<p>We use middleman to generate the website content from markdown and other
-dynamic templates. The following steps assume you have a working
-ruby 2.x environment setup:</p>
+<p>Below are guides meant to give you help accomplishing specific tasks for the project:</p>
 
-<pre><code class="bash">gem install bundler
-bundle install
-</code></pre>
-
-<h3>Make changes in asf-site-src/source</h3>
-
-<p>Make any changes in the source directory:</p>
-
-<pre><code class="bash">cd asf-site-src/source
-vi contribute.html.md
-</code></pre>
-
-<h3>Make changes to API Docs</h3>
-
-<p>Optionally, you can update the generated API docs from other parts of the project. If they have been updated then the middleman build will pick up the changes.</p>
-
-<p>e.g. Precommit changes will be picked up by the Middleman build.</p>
-
-<pre><code class="bash">cd ../precommit/core.d
-vi 01-common.sh
-</code></pre>
-
-<p>e.g. Audience Annotations requires running Maven.</p>
-
-<pre><code class="bash">cd ../audience-annotations-component
-mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate
-cd -
-</code></pre>
-
-<h3>Generating the website</h3>
-
-<p>To generate the static wesbite for Apache Yetus run the following commands at the root asf-site-src directory:</p>
-
-<pre><code class="bash">bundle exec middleman build
-</code></pre>
-
-<h3>Live Development</h3>
-
-<p>Live development of the site enables automatic reload when changes are saved.
-To enable run the following command and then open a browser and navigate to
-<a href="http://localhost:4567/">http://localhost:4567</a></p>
-
-<p>bundle exec middleman</p>
-
-<h3>Publishing the Site</h3>
-
-<p>Commit the publish directory to the asf-site branch.</p>
+<ul>
+<li><a href="contribute/website">Maintaining the Yetus Website</a> - walks through how to view the website locally, update various static and generated pages, and render the html for publishing.</li>
+<li><a href="contribute/releases">Working with Release Candiates</a> - covers managing the release process, validating proposed release candidates, and publishing project approved artifacts.</li>
+</ul>
 
 	  </div>
       <div class="container">

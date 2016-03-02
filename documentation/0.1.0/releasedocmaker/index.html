@@ -118,7 +118,7 @@
   under the License.
 -->
 
-<h1>releasedocmaker</h1>
+<h1 id="releasedocmaker">releasedocmaker</h1>
 
 <ul>
 <li><a href="#Purpose">Purpose</a></li>
@@ -130,7 +130,7 @@
 <li><a href="#Index_Mode">Index Mode</a></li>
 </ul>
 
-<h1>Purpose</h1>
+<h1 id="purpose">Purpose</h1>
 
 <p>Building changelog information in a form that is human digestible but still containing as much useful information is difficult.  Many attempts over the years have resulted in a variety of methods that projects use to solve this problem:</p>
 
@@ -142,13 +142,12 @@
 
 <p>All of these methods have their pros and cons.  Some have issues with accuracy.  Some have issues with lack of details. None of these methods seem to cover all of the needs of many projects and are full of potential pitfalls.</p>
 
-<p>In order to solve these problems, releasedocmaker was written to automatically generate a changelog and release notes by querying Apache&#39;s JIRA instance.</p>
+<p>In order to solve these problems, releasedocmaker was written to automatically generate a changelog and release notes by querying Apache&rsquo;s JIRA instance.</p>
 
-<h1>Basic Usage</h1>
+<h1 id="basic-usage">Basic Usage</h1>
 
 <p>Minimally, the name of the JIRA project and a version registered in JIRA must be provided:</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project (project) --version (version)
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project <span class="o">(</span>project<span class="o">)</span> --version <span class="o">(</span>version<span class="o">)</span>
 </code></pre>
 
 <p>This will query Apache JIRA, generating two files in a directory named after the given version in an extended markdown format which can be processed by both mvn site and GitHub.</p>
@@ -165,67 +164,60 @@
 
 <p>If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGES log that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.</p>
 
-<p>For example, to build the release documentation for HBase v1.2.0...</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project HBASE --version 1.2.0
+<p>For example, to build the release documentation for HBase v1.2.0&hellip;</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0
 </code></pre>
 
-<p>... will create a 1.2.0 directory and inside that directory will be CHANGES.1.2.0.md and RELEASENOTES.1.2.0.md .</p>
+<p>&hellip; will create a 1.2.0 directory and inside that directory will be CHANGES.1.2.0.md and RELEASENOTES.1.2.0.md .</p>
 
 <p>By default, release notes are expected to be in plain text.  However, you can write them in markdown if you include a header at the top of your release note:</p>
-
-<pre><code class="xml">&lt;!-- markdown --&gt;
+<pre class="highlight xml"><code><span class="c">&lt;!-- markdown --&gt;</span>
 remaining text
 </code></pre>
 
-<h1>Changing the Header</h1>
+<h1 id="changing-the-header">Changing the Header</h1>
 
 <p>By default, it will use a header that matches the project name.  But that is kind of ugly and the case may be wrong.  Luckily, the title can be changed:</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project HBASE --version 1.2.0 --projecttitle &quot;Apache HBase&quot;
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0 --projecttitle <span class="s2">"Apache HBase"</span>
 </code></pre>
 
 <p>Now instead of <q>HBASE</q>, it will use <q>Apache HBASE</q> for some titles and headers.</p>
 
-<h1>Multiple Versions</h1>
+<h1 id="multiple-versions">Multiple Versions</h1>
 
 <p>The script can also generate multiple versions at once, by</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0
 </code></pre>
 
 <p>This will create the files for versions 1.0.0 and versions 1.2.0 in their own directories.</p>
 
 <p>But what if the version numbers are not known?  releasedocmaker can also generate version data based upon ranges:</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0 --range
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0 --range
 </code></pre>
 
 <p>In this form, releasedocmaker will query JIRA, discover all versions that alphabetically appear to be between 1.0.0 and 1.2.0, inclusive, and generate all of the relative release documents.  This is especially useful when bootstrapping an existing project.</p>
 
-<h1>Unreleased Dates</h1>
+<h1 id="unreleased-dates">Unreleased Dates</h1>
 
 <p>For released versions, releasedocmaker will pull the date of the release from JIRA.  However, for unreleased versions it marks the release as <q>Unreleased</q>. This can be inconvenient when actually building a release and wanting to include it inside the source package.</p>
 
-<p>The --usetoday option can be used to signify that instead of using Unreleased, releasedocmaker should use today&#39;s date.</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
+<p>The &ndash;usetoday option can be used to signify that instead of using Unreleased, releasedocmaker should use today&rsquo;s date.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
 </code></pre>
 
-<p>After using this option and release, don&#39;t forget to change JIRA&#39;s release date to match!</p>
+<p>After using this option and release, don&rsquo;t forget to change JIRA&rsquo;s release date to match!</p>
 
-<h1>Lint Mode</h1>
+<h1 id="lint-mode">Lint Mode</h1>
 
 <p>In order to ensure proper formatting while using mvn site, releasedocmaker puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.</p>
 
-<p>In order to help release managers from having to scan through potentially large documents, releasedocmaker features a lint mode, triggered via --lint:</p>
-
-<pre><code class="bash">$ releasedocmaker.py --project HBASE --version 1.0.0 --lint
+<p>In order to help release managers from having to scan through potentially large documents, releasedocmaker features a lint mode, triggered via &ndash;lint:</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --lint
 </code></pre>
 
 <p>This will do the normal JIRA querying, looking for items it considers problematic.  It will print the information to the screen and then exit with either success or failure, depending upon if any issues were discovered.</p>
 
-<h1>Index Mode</h1>
+<h1 id="index-mode">Index Mode</h1>
 
 <p>There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor.micro-style version numbering system, where all fields are numeric.</p>
 

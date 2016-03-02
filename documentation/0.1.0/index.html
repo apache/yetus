@@ -118,44 +118,43 @@
   under the License.
 -->
 
-<h1>Yetus Precommit</h1>
+<h1 id="yetus-precommit">Yetus Precommit</h1>
 
 <p>The Yetus Precommit Patch Tester allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.</p>
 
 <ul>
-<li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we&#39;ll use as terminology specific to this project.</li>
-<li>For an overview of Yetus&#39; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
-<li>To get started on your project, including an explanation of what we&#39;ll expect in a runtime environment and what optional utilities we&#39;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
+<li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we&rsquo;ll use as terminology specific to this project.</li>
+<li>For an overview of Yetus&rsquo; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
+<li>To get started on your project, including an explanation of what we&rsquo;ll expect in a runtime environment and what optional utilities we&rsquo;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
 <li>Customize how precommit interacts with your project by choosing amongst <a href="precommit-buildtools">build systems</a>, <a href="precommit-bugsystems">bug systems</a> and <a href="precommit-testformats">test formats</a>.</li>
-<li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&#39;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
+<li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&rsquo;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
 </ul>
 
 <p>For a complete guide to the Precommit API, see <a href="precommit-apidocs/">the generated API documentation</a>.</p>
 
-<h1>Yetus Release Doc Maker</h1>
+<h1 id="yetus-release-doc-maker">Yetus Release Doc Maker</h1>
 
 <p>The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
 documenation <a href="releasedocmaker">here</a>.</p>
 
-<h1>Yetus Shelldocs</h1>
+<h1 id="yetus-shelldocs">Yetus Shelldocs</h1>
 
 <p>Shelldocs provides generation of html formatted api documentation based on comments on Bash functions. Currently supports documenting API status (public / private) as well as parameters and return values.</p>
 
 <p>See the shelldocs cli help for more information on usage.</p>
-
-<pre><code class="bash">$ ./shelldocs/shelldocs.py --help
-Usage: shelldocs.py --skipprnorep --output OUTFILE --input INFILE [--input INFILE ...]
+<pre class="highlight shell"><code><span class="gp">$ </span>./shelldocs/shelldocs.py --help
+Usage: shelldocs.py --skipprnorep --output OUTFILE --input INFILE <span class="o">[</span>--input INFILE ...]
 
 Options:
-  -h, --help            show this help message and exit
-  -o OUTFILE, --output=OUTFILE
+  -h, --help            show this <span class="nb">help </span>message and <span class="nb">exit</span>
+  -o OUTFILE, --output<span class="o">=</span>OUTFILE
                         file to create
-  -i INFILE, --input=INFILE
-                        file to read
+  -i INFILE, --input<span class="o">=</span>INFILE
+                        file to <span class="nb">read</span>
   --skipprnorep         Skip Private &amp; Not Replaceable
 </code></pre>
 
-<h1>Yetus Audience Annotations</h1>
+<h1 id="yetus-audience-annotations">Yetus Audience Annotations</h1>
 
 <p>Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.</p>
 
