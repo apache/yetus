@@ -20,6 +20,7 @@ from glob import glob
 from optparse import OptionParser
 from time import gmtime, strftime
 from distutils.version import LooseVersion
+import errno
 import os
 import re
 import sys
@@ -441,7 +442,8 @@ class Outputs(object):
                            textsanitize(jira.get_assignee()))
             self.write_key_raw(jira.get_project(), line)
 
-def main():
+def parse_args():
+    """Parse command-line arguments with optparse."""
     usage = "usage: %prog --project PROJECT [--project PROJECT] --version VERSION [--version VERSION2 ...]"
     parser = OptionParser(usage=usage,
                           epilog="Markdown-formatted CHANGES and RELEASENOTES files will be stored"
@@ -471,37 +473,54 @@ def main():
                       help="specify base URL of the JIRA instance.")
     (options, _) = parser.parse_args()
 
+    # Validate options
+    if options.versions is None:
+        parser.error("At least one version needs to be supplied")
+    if options.projects is None:
+        parser.error("At least one project needs to be supplied")
+    if options.base_url is not None:
+        if len(options.base_url) > 1:
+            parser.error("Only one base URL should be given")
+        else:
+            options.base_url = options.base_url[0]
+    if options.output_directory is not None:
+        if len(options.output_directory) > 1:
+            parser.error("Only one output directory should be given")
+        else:
+            options.output_directory = options.output_directory[0]
+
+    return options
+
+def main():
+    options = parse_args()
     if options.release_version:
         with open(os.path.join(os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
             print ver_file.read()
         sys.exit(0)
 
-    if options.versions is None:
-        parser.error("At least one version needs to be supplied")
-
     if options.output_directory is not None:
-        if len(options.output_directory) > 1:
-            parser.error("Only one output directory should be given")
-        if not os.path.isdir(options.output_directory[0]):
-            try:
-                os.makedirs(options.output_directory[0])
-            except OSError:
-                parser.error("Unable to create output directory that does not exist")
+        # Create the output directory if it does not exist.
+        # Equivalent to `mkdir -p`.
+        try:
+            os.makedirs(options.output_directory)
+        except OSError as exc:
+            if exc.errno == errno.EEXIST and os.path.isdir(options.output_directory):
+                pass
+            else:
+                print "Unable to create output directory %s: %s" % \
+                        (options.output_directory, exc.message)
+                sys.exit(1)
         os.chdir(options.output_directory[0])
 
     if options.base_url is not None:
-        if len(options.base_url) > 1:
-            parser.error("Only one base URL should be given")
         global JIRA_BASE_URL
-        JIRA_BASE_URL = options.base_url[0]
+        JIRA_BASE_URL = options.base_url
 
     proxy = urllib2.ProxyHandler()
     opener = urllib2.build_opener(proxy)
     urllib2.install_opener(opener)
 
     projects = options.projects
-    if projects is None:
-        parser.error("At least one project needs to be supplied")
 
     if options.range is True:
         versions = [Version(v) for v in GetVersions(options.versions, projects).getlist()]
