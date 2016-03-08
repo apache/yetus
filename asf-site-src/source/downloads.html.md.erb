@@ -35,7 +35,7 @@ third-party repositories (e.g. Maven Central).
 
 ## Releases
 
-<%   data.versions.releases.each do | release | %>
+<%   data.versions.releases.reverse.each do | release | %>
   * <%= release %>
     * [Release Notes](/documentation/<%= release %>/RELEASENOTES)
     * [CHANGES](/documentation/<%= release %>/CHANGES)
