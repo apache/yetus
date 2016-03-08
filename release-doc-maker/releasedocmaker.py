@@ -23,6 +23,7 @@ from distutils.version import LooseVersion
 import errno
 import os
 import re
+import shutil
 import sys
 import urllib
 import urllib2
@@ -104,13 +105,6 @@ def processrelnote(_str):
       return {
         'markdown' : markdownsanitize(_str),
       }.get(fmt.group(1),textsanitize(_str))
-
-# clean output dir
-def clean_output_dir(directory):
-    files = os.listdir(directory)
-    for name in files:
-        os.remove(os.path.join(directory, name))
-    os.rmdir(directory)
 
 def mstr(obj):
     if obj is None:
@@ -442,6 +436,54 @@ class Outputs(object):
                            textsanitize(jira.get_assignee()))
             self.write_key_raw(jira.get_project(), line)
 
+class Linter(object):
+    """Encapsulates lint-related functionality.
+    Maintains running lint statistics about JIRAs."""
+
+    def __init__(self, version):
+        self._warning_count = 0
+        self._error_count = 0
+        self._lint_message = ""
+        self._version = version
+
+    def had_errors(self):
+        """Returns True if a lint error was encountered, else False."""
+        return self._error_count > 0
+
+    def message(self):
+        """Return summary lint message suitable for printing to stdout."""
+        return self._lint_message + \
+                "\n=======================================" + \
+                "\n%s: Error:%d, Warning:%d \n" % \
+                (self._version, self._error_count, self._warning_count)
+
+    def lint(self, jira):
+        """Run lint check on a JIRA."""
+        if len(jira.get_release_note()) == 0:
+            if jira.get_incompatible_change():
+                self._warning_count += 1
+                self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
+                                (textsanitize(jira.get_id()))
+            if jira.get_important():
+                self._warning_count += 1
+                self._lint_message += "\nWARNING: important issue %s lacks release notes." % \
+                                (textsanitize(jira.get_id()))
+
+        if jira.check_version_string():
+            self._warning_count += 1
+            self._lint_message += "\nWARNING: Version string problem for %s " % jira.get_id()
+
+        if jira.check_missing_component() or jira.check_missing_assignee():
+            self._error_count += 1
+            error_message = []
+            if jira.check_missing_component():
+                error_message.append("component")
+            if jira.check_missing_assignee():
+                error_message.append("assignee")
+            self._lint_message += "\nERROR: missing %s for %s " \
+                            % (" and ".join(error_message), jira.get_id())
+
+
 def parse_args():
     """Parse command-line arguments with optparse."""
     usage = "usage: %prog --project PROJECT [--project PROJECT] --version VERSION [--version VERSION2 ...]"
@@ -572,9 +614,9 @@ def main():
 
         reloutputs.write_all(relhead)
         choutputs.write_all(chhead)
-        error_count = 0
-        warning_count = 0
-        lint_message = ""
+
+        linter = Linter(vstr)
+
         incompatlist = []
         importantlist = []
         buglist = []
@@ -610,51 +652,23 @@ def main():
                    % (textsanitize(jira.get_id()),
                       textsanitize(jira.get_priority()), textsanitize(jira.get_summary()))
 
-            if jira.get_incompatible_change() and len(jira.get_release_note()) == 0:
-                warning_count += 1
+            if len(jira.get_release_note()) > 0 or \
+               jira.get_incompatible_change() or jira.get_important():
                 reloutputs.write_key_raw(jira.get_project(), "\n---\n\n")
                 reloutputs.write_key_raw(jira.get_project(), line)
-                line = '\n**WARNING: No release note provided for this incompatible change.**\n\n'
-                lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
-                                (textsanitize(jira.get_id()))
+                if len(jira.get_release_note()) == 0:
+                    line = '\n**WARNING: No release note provided for this change.**\n\n'
+                else:
+                    line = '\n%s\n\n' % (processrelnote(jira.get_release_note()))
                 reloutputs.write_key_raw(jira.get_project(), line)
 
-            if jira.get_important() and len(jira.get_release_note()) == 0:
-                warning_count += 1
-                reloutputs.write_key_raw(jira.get_project(), "\n---\n\n")
-                reloutputs.write_key_raw(jira.get_project(), line)
-                line = '\n**WARNING: No release note provided for this important issue.**\n\n'
-                lint_message += "\nWARNING: important issue %s lacks release notes." % \
-                                (textsanitize(jira.get_id()))
-                reloutputs.write_key_raw(jira.get_project(), line)
-
-            if jira.check_version_string():
-                warning_count += 1
-                lint_message += "\nWARNING: Version string problem for %s " % jira.get_id()
-
-            if jira.check_missing_component() or jira.check_missing_assignee():
-                error_count += 1
-                error_message = []
-                if jira.check_missing_component():
-                    error_message.append("component")
-                if jira.check_missing_assignee():
-                    error_message.append("assignee")
-                lint_message += "\nERROR: missing %s for %s " \
-                                % (" and ".join(error_message), jira.get_id())
-
-            if len(jira.get_release_note()) > 0:
-                reloutputs.write_key_raw(jira.get_project(), "\n---\n\n")
-                reloutputs.write_key_raw(jira.get_project(), line)
-                line = '\n%s\n\n' % (processrelnote(jira.get_release_note()))
-                reloutputs.write_key_raw(jira.get_project(), line)
+            linter.lint(jira)
 
         if options.lint is True:
-            print lint_message
-            print "======================================="
-            print "%s: Error:%d, Warning:%d \n" % (vstr, error_count, warning_count)
-            if error_count > 0:
+            print linter.message()
+            if linter.had_errors():
                 haderrors = True
-                clean_output_dir(vstr)
+                shutil.rmtree(vstr)
                 continue
 
         reloutputs.write_all("\n\n")
