@@ -1,0 +1,317 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		    <meta name="description" content="">
+		    <meta name="author" content="">
+
+		    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+		    <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
+                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+
+		    <!-- JS -->
+		    <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
+		    <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+	</head>
+    <body>
+      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.1.0/">Docs for v0.1.0</a></li>
+                      <li><a href="/documentation/0.2.0/">Docs for v0.2.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="http://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+
+<h1 id="apache-yetus-0-2-0-release-notes">Apache Yetus  0.2.0 Release Notes</h1>
+
+<p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-297">YETUS-297</a> | <em>Major</em> | <strong>when verify_multijdk_test is no, use JAVA_HOME, not JDK_DIR_LIST</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>For downstream users:</p>
+
+<p>The cli for configuring which tests should be run during Multi-JDK mode now works correctly. e.g. <q>&ndash;multijdktests=compile</q> will cause just compilation against additional jdk versions.</p>
+
+<p>Note that the full suite of tests is always run against the java version given in JAVA_HOME.</p>
+
+<p>For plugin developers:</p>
+
+<p>Authors of new plugins that wish to make them multi-jdk aware can add them to the default list by calling the <code>yetus_add_entry</code> function. i.e.:</p>
+<pre class="highlight shell"><code>yetus_add_entry JDK_TEST_LIST my_foo_test
+</code></pre>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-285">YETUS-285</a> | <em>Blocker</em> | <strong>flag to enable/disable docker privileged mode</strong></li>
+</ul>
+
+<p>By default, Yetus now runs docker in privileged execution mode (when docker support is enabled).</p>
+
+<p>To opt instead for the previous behavior, use the cli option {{&ndash;dockerprivd=false}}.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-282">YETUS-282</a> | <em>Major</em> | <strong>Allow the specification of a base JIRA URL</strong></li>
+</ul>
+
+<p>Allow specification of the Base JIRA URL as a command line option</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-280">YETUS-280</a> | <em>Major</em> | <strong>build systems should be able to predetermine module order</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>Users:</p>
+
+<ul>
+<li>Maven will now attempt to do a better job of determining the order with which modules should be handled.</li>
+</ul>
+
+<p>Developers:</p>
+
+<ul>
+<li>There is now a hook to allow build tools to re-order the module listing.</li>
+</ul>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-241">YETUS-241</a> | <em>Major</em> | <strong>revamp parameterized site</strong></li>
+</ul>
+
+<p>Website layout was changed to better accommodate multiple versions.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-229">YETUS-229</a> | <em>Major</em> | <strong>split &ndash;jenkins up</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>User-impacting:</p>
+
+<ul>
+<li>Docker 1.6.0 or higher is now required.</li>
+<li>&ndash;robot has been added to provide the same functionality as the older &ndash;jenkins flags, but without the assumptions of actually running underneath Jenkins.</li>
+<li>&ndash;jenkins is now effectively &ndash;robot + some specific handling in messages and instances when running under Jenkins.</li>
+<li>&ndash;sentinel has been added to provide cleaning of non-Yetus-based Docker containers and images.  It automatically enables &ndash;robot.</li>
+<li>&ndash;dockerdelrep has been added to only print what would be cleaned in &ndash;robot, &ndash;jenkins, and &ndash;sentinel.</li>
+<li>Options have been added to override the Jenkins-specific defaults for various settings:<br>
+
+<ul>
+<li>&ndash;build-url to provide the base URL of the robot&rsquo;s web server</li>
+<li>&ndash;build-url-console to provide the relative URL to the console for this run</li>
+<li>&ndash;build-url-patchdir to provide the relative URL to the patch directory</li>
+<li>&ndash;instance to provide a string for parallelization differentiation</li>
+</ul></li>
+<li>&ndash;console-urls option has been added to print locations using the &ndash;build-url on the console instead of absolute file system locations.  This is useful when looking at the test-patch console via something like the Jenkins console so that locations become clickable.</li>
+<li>In rare situations, Docker images may not have been unique per run.  This should now be fixed.</li>
+<li>The time reported for switching execution modes (reexec and docker) were missing.  This should now be fixed.</li>
+<li>If &ndash;docker was the last option on the command line, it was not being removed when test-patch was being re-invoked inside the container.  This should now be fixed.</li>
+<li>test-patch is now much better about telling you what options have been turned on.  This is useful when looking at test-patch&rsquo;s console when the actual command line options may not be visible.</li>
+<li>Hadoop personality no longer has special options to run outside of it&rsquo;s Dockerfile on the ASF Jenkins.</li>
+<li>The default project is now set to &lsquo;unknown&rsquo;.</li>
+</ul>
+
+<p>Dev-impacting:</p>
+
+<ul>
+<li>A ton of Docker-specific arg handling has been moved out of test-patch and into docker.sh, where it really belongs.</li>
+<li>This removes a lot more hard-coded, ASF-specific Jenkins setup bits.  In some cases it was simply removed and in others, configurable.</li>
+<li> New EXEC_MODES may be manipulated via the standard yetus_add_entry to list additional modes that test-patch may be running under.  Note that this gets printed to the screen <em>very</em> soon in the bootstrap process.</li>
+</ul>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-214">YETUS-214</a> | <em>Major</em> | <strong>release doc maker should have option to specify output directory</strong></li>
+</ul>
+
+<p>Allow specifying of output directory in releasedocmaker</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-187">YETUS-187</a> | <em>Blocker</em> | <strong>maven javac/javadoc can&rsquo;t use calcdiffs</strong></li>
+</ul>
+
+<p>The calcdiff function has been changed to be pluggable to allow for a variety of difference calculators to allow for greater accuracy when more information is available.  As a result, this fixes some (but not all!) instances where pre-existing errors were reported as new in some reports.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-173">YETUS-173</a> | <em>Major</em> | <strong>report fixed issues</strong></li>
+</ul>
+
+<p>There is now code in place to allow for plug-ins to report a much more nuanced report in the form of an equation.  This equation tells exactly how many new, unchanged, and fixed issues a patch causes/removes as well as the old and new totals for issues.  For patches where the totals are unchanged, the generic <q>passed</q> message is returned. Summarization is automatically as appropriate turned off as well. </p>
+
+<p>With this change, most plug-ins have been updated to report these numbers.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-144">YETUS-144</a> | <em>Blocker</em> | <strong>mvn install usually required on mvn builds</strong></li>
+</ul>
+
+<p>Plug-ins that use maven services should now use maven_add_install to be certain that a mvn install has been executed prior to their plug-in.  This will help guarantee that all root-level maven dependencies have been satisfied.  See the build system documentation for more information.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-70">YETUS-70</a> | <em>Major</em> | <strong>add support for make, including cmake and autoconf</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>User-facing:</p>
+
+<ul>
+<li>make, cmake, and autoconf are now supported build tools</li>
+<li>ctest is now a supported test format</li>
+<li>Dockerfile content has been slimmed down and enhanced to just what is needed to run Apache Yetus</li>
+</ul>
+
+<p>Developer-facing:</p>
+
+<ul>
+<li>BUILDTOOLCWD has changed in an incompatible way: instead of true/false it nows takes several different types of values.  See documentation for more information</li>
+<li><code>modules_workers</code> now supports @@@BASEDIR@@@@ and @@@MODULEDIR@@@ as replaceable parameters on the command line</li>
+<li>New <code>buildtool_changed_modules</code> function support to allow build tools to change the module list</li>
+</ul>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-62">YETUS-62</a> | <em>Major</em> | <strong>add auto-formatting of usage options</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>test-patch and smart-apply-patch now have variable size output to match the screen dimensions when printing the usage information.  As a result, the <code>plugin_usage</code> functions now use the <code>yetus_add_option</code> to add options to output. Plug-ins written to use raw echos will still work, but the output will be strange looking.</p>
+
+	  </div>
+      <div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+                            <div class="span12">
+                Copyright 2008-2016 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                            </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+	</body>
+</html>
