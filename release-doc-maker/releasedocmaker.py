@@ -552,7 +552,7 @@ def main():
                 print "Unable to create output directory %s: %s" % \
                         (options.output_directory, exc.message)
                 sys.exit(1)
-        os.chdir(options.output_directory[0])
+        os.chdir(options.output_directory)
 
     if options.base_url is not None:
         global JIRA_BASE_URL
