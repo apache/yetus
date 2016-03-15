@@ -610,12 +610,13 @@ function maven_reorder_module_process
       basemod=${indexm##*/}
       if [[ " ${module} " = " ${indexm} "
          || " ${module} " = " ${basemod} " ]]; then
-         yetus_debug "mrm: placying ${indexm}"
+         yetus_debug "mrm: placing ${indexm}"
         newlist=("${newlist[@]}" " ${indexm} ")
       fi
     done
-  done < <(sed -e 's,^.* --- .* @ \(.*\) ---$,module:\1,g' \
-    -e '/^\[INFO\]/d' "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt")
+  done < <(${GREP} maven-enforcer "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt" |
+    ${SED} -e 's,^.* --- .* @ \(.*\) ---$,module:\1,g' \
+    -e '/^\[INFO\]/d' )
   popd >/dev/null
 
   if [[ "${needroot}" = true ]]; then
