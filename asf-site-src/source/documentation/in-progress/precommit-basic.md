@@ -171,7 +171,7 @@ For example:
 $ test-patch.sh --robot --patch-dir=${WORKSPACE}/patchprocess --basedir=${WORKSPACE}/source ${WORKSPACE}/patchfile
 ```
 
-... will trigger test-patch to run in fully automated mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.  This will always run the unit tests, write answers back to bug systems, remove old, stopped/exited Docker images and containers after 24 hours, forcibly use --resetrepo, and more.  The --build-url option is also useful when running in --robot mode so that emails and such
+... will trigger test-patch to run in fully automated mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.  This will always run the unit tests, write answers back to bug systems, remove old, stopped/exited Docker containers after 24 hours and images after 1 week, forcibly use --resetrepo, and more.  The --build-url option is also useful when running in --robot mode so that emails and such
 have a location to look at the output artifacts:
 
 ```bash

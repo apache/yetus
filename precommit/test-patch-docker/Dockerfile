@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     build-essential libtool \
     autoconf automake \
     python python2.7 pylint \
-    ruby openjdk-7-jdk \
+    openjdk-7-jdk \
     libperl-critic-perl
 
 # Fixing the Apache commons / Maven dependency problem under Ubuntu:
@@ -68,14 +68,31 @@ RUN apt-get install -y cabal-install
 RUN cabal update && cabal install shellcheck --global
 
 ####
+# Install ruby
+###
+RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc
+RUN apt-get install -y ruby2.0
+#
+# on trusty, the above installs ruby2.0 and ruby (1.9.3) exes
+# but update-alternatives is broken, so we need to do some work
+# to make 2.0 actually the default without the system flipping out
+#
+# See https://bugs.launchpad.net/ubuntu/+source/ruby2.0/+bug/1310292
+#
+RUN dpkg-divert --add --rename --divert /usr/bin/ruby.divert /usr/bin/ruby
+RUN dpkg-divert --add --rename --divert /usr/bin/gem.divert /usr/bin/gemrc
+RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.0 1
+RUN update-alternatives --install /usr/bin/gem gem /usr/bin/gem2.0 1
+
+####
 # Install rubocop
 ###
-RUN gem install rubocop --no-ri --no-rdoc
+RUN gem install rubocop
 
 ####
 # Install ruby-lint
 ###
-RUN gem install ruby-lint --no-ri --no-rdoc
+RUN gem install ruby-lint
 
 ####
 # Install bats

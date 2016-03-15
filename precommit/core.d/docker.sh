@@ -32,8 +32,8 @@ DOCKER_ENABLE_PRIVILEGED=true
 # stopped, exited, running, for 24 hours
 DOCKER_CONTAINER_PURGE=("86400" "86400" "86400")
 
-# keep images for 24 hours
-DOCKER_IMAGE_PURGE=86400
+# keep images for 1 week
+DOCKER_IMAGE_PURGE=604800
 
 ## @description  Docker-specific usage
 ## @stability    stable
