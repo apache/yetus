@@ -60,8 +60,7 @@ function rubocop_preapply
 {
   local i
 
-  verify_needed_test rubocop
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test rubocop; then
     return 0
   fi
 
@@ -103,8 +102,7 @@ function rubocop_postapply
   declare fixedpatch
   declare statstring
 
-  verify_needed_test rubocop
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test rubocop; then
     return 0
   fi
 

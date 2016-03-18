@@ -284,8 +284,7 @@ function checkstyle_preapply
 {
   local result
 
-  verify_needed_test checkstyle
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test checkstyle; then
     return 0
   fi
 
@@ -318,8 +317,7 @@ function checkstyle_postapply
   declare addpatch=0
   declare summarize=true
 
-  verify_needed_test checkstyle
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test checkstyle; then
     return 0
   fi
 

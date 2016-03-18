@@ -270,22 +270,22 @@ function report_jvm_version
 ## @stability    stable
 ## @replaceable  yes
 ## @param        test
-## @return       1 = yes
-## @return       0 = no
+## @return       0 = yes
+## @return       1 = no
 function verify_multijdk_test
 {
   local i=$1
 
   if [[ "${JDK_DIR_LIST}" == "${JAVA_HOME}" ]]; then
     yetus_debug "MultiJDK not configured."
-    return 0
+    return 1
   fi
 
   if [[ ${JDK_TEST_LIST} =~ $i ]]; then
     yetus_debug "${i} is in ${JDK_TEST_LIST} and MultiJDK configured."
-    return 1
+    return 0
   fi
-  return 0
+  return 1
 }
 
 ## @description  Put the opening environment information at the bottom
@@ -1703,8 +1703,7 @@ function modules_messages
     repo="the patch"
   fi
 
-  verify_multijdk_test "${testtype}"
-  if [[ $? == 1 ]]; then
+  if verify_multijdk_test "${testtype}"; then
     multijdkmode=true
   fi
 
@@ -1823,8 +1822,7 @@ function modules_workers
 
   modules_reset
 
-  verify_multijdk_test "${testtype}"
-  if [[ $? == 1 ]]; then
+  if verify_multijdk_test "${testtype}"; then
     jdk=$(report_jvm_version "${JAVA_HOME}")
     statusjdk=" with JDK v${jdk}"
     jdk="-jdk${jdk}"
@@ -1986,7 +1984,7 @@ function check_unittests
   declare test_logfile
   declare result=0
   declare -r savejavahome=${JAVA_HOME}
-  declare multijdkmode=false
+  declare multijdkmode
   declare jdk=""
   declare jdkindex=0
   declare jdklist
@@ -1995,22 +1993,17 @@ function check_unittests
   declare needlog
   declare unitlogs
 
-  verify_needed_test unit
-
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test unit; then
     return 0
   fi
 
   big_console_header "Running unit tests"
 
-  verify_multijdk_test unit
-  if [[ $? == 1 ]]; then
+  if verify_multijdk_test unit; then
     multijdkmode=true
-  fi
-
-  if [[ "${multijdkmode}" = true ]]; then
     jdklist=${JDK_DIR_LIST}
   else
+    multijdkmode=false
     jdklist=${JAVA_HOME}
   fi
 
@@ -2393,25 +2386,21 @@ function generic_pre_handler
   declare multijdkmode=$2
   declare result=0
   declare -r savejavahome=${JAVA_HOME}
-  declare multijdkmode=false
+  declare multijdkmode
   declare jdkindex=0
   declare jdklist
 
-  verify_needed_test "${testtype}"
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test "${testtype}"; then
      return 0
   fi
 
   big_console_header "Pre-patch ${testtype} verification on ${PATCH_BRANCH}"
 
-  verify_multijdk_test "${testtype}"
-  if [[ $? == 1 ]]; then
+  if verify_multijdk_test "${testtype}"; then
     multijdkmode=true
-  fi
-
-  if [[ "${multijdkmode}" = true ]]; then
     jdklist=${JDK_DIR_LIST}
   else
+    multijdkmode=false
     jdklist=${JAVA_HOME}
   fi
 
@@ -2556,8 +2545,7 @@ function generic_post_handler
   declare -i numbranch=0
   declare -i numpatch=0
 
-  verify_needed_test "${testtype}"
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test "${testtype}"; then
     yetus_debug "${testtype} not needed"
     return 0
   fi
@@ -2603,18 +2591,15 @@ function compile_jvm
   declare codebase=$1
   declare result=0
   declare -r savejavahome=${JAVA_HOME}
-  declare multijdkmode=false
+  declare multijdkmode
   declare jdkindex=0
   declare jdklist
 
-  verify_multijdk_test compile
-  if [[ $? == 1 ]]; then
+  if verify_multijdk_test compile; then
     multijdkmode=true
-  fi
-
-  if [[ "${multijdkmode}" = true ]]; then
     jdklist=${JDK_DIR_LIST}
   else
+    multijdkmode=false
     jdklist=${JAVA_HOME}
   fi
 
@@ -2681,8 +2666,7 @@ function compile
 {
   declare codebase=$1
 
-  verify_needed_test compile
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test compile; then
      return 0
   fi
 

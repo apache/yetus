@@ -29,9 +29,7 @@ function test4tests_patchfile
 
   big_console_header "Checking there are new or changed tests in the patch."
 
-  verify_needed_test unit
-
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test unit; then
     echo "Patch does not appear to need new or modified tests."
     return 0
   fi

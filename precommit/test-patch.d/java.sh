@@ -157,8 +157,7 @@ function javac_compile
   declare codebase=$1
   declare multijdkmode=$2
 
-  verify_needed_test javac
-  if [[ $? = 0 ]]; then
+  if ! verify_needed_test javac; then
     return 0
   fi
 
@@ -179,9 +178,10 @@ function javadoc_rebuild
   declare codebase=$1
   declare multijdkmode
 
-  verify_multijdk_test javadoc
-  if [[ $? == 1 ]]; then
+  if verify_multijdk_test javadoc; then
     multijdkmode=true
+  else
+    multijdkmode=false
   fi
 
   if [[ "${codebase}" = branch ]]; then

@@ -446,8 +446,7 @@ function mvnsite_postcompile
     return 0
   fi
 
-  verify_needed_test mvnsite
-  if [[ $? == 0 ]];then
+  if ! verify_needed_test mvnsite; then
     return 0
   fi
 
@@ -482,8 +481,7 @@ function mvneclipse_postcompile
     return 0
   fi
 
-  verify_needed_test javac
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test javac; then
     return 0
   fi
 
@@ -519,16 +517,14 @@ function maven_precompile
     return 0
   fi
 
-  verify_needed_test javac
-  if [[ $? == 1 ]]; then
+  if verify_needed_test javac; then
     need=true
   else
     # not everything needs a maven install
     # but quite a few do ...
     # shellcheck disable=SC2086
     for index in ${MAVEN_NEED_INSTALL}; do
-      verify_needed_test ${index}
-      if [[ $? == 1 ]]; then
+      if verify_needed_test ${index}; then
          need=branch
       fi
     done

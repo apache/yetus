@@ -228,20 +228,16 @@ function personality_modules
       needflags=true
       hadoop_unittest_prereqs "${ordering}"
 
-      verify_needed_test javac
-      if [[ $? == 0 ]]; then
+      if ! verify_needed_test javac; then
         yetus_debug "hadoop: javac not requested"
-        verify_needed_test native
-        if [[ $? == 0 ]]; then
+        if ! verify_needed_test native; then
           yetus_debug "hadoop: native not requested"
           yetus_debug "hadoop: adding -DskipTests to unit test"
           extra="-DskipTests"
         fi
       fi
 
-      verify_needed_test shellcheck
-      if [[ $? == 0
-          && ! ${CHANGED_FILES} =~ \.bats ]]; then
+      if ! verify_needed_test shellcheck && [[ ! ${CHANGED_FILES} =~ \.bats ]]; then
         yetus_debug "hadoop: NO shell code change detected; disabling shelltest profile"
         extra="${extra} -P!shelltest"
       else

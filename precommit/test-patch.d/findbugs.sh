@@ -244,8 +244,7 @@ function findbugs_preapply
   declare result=0
   declare msg
 
-  verify_needed_test findbugs
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test findbugs; then
     return 0
   fi
 
@@ -326,8 +325,7 @@ function findbugs_postinstall
   declare summarize=true
   declare statstring
 
-  verify_needed_test findbugs
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test findbugs; then
     return 0
   fi
 

@@ -59,8 +59,7 @@ function ruby_lint_preapply
 {
   local i
 
-  verify_needed_test ruby_lint
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test ruby_lint; then
     return 0
   fi
 
@@ -133,8 +132,7 @@ function ruby_lint_postapply
   declare fixedpatch
   declare statstring
 
-  verify_needed_test ruby_lint
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test ruby_lint; then
     return 0
   fi
 

@@ -87,8 +87,7 @@ function scalac_compile
   declare codebase=$1
   declare multijdkmode=$2
 
-  verify_needed_test scalac
-  if [[ $? = 0 ]]; then
+  if ! verify_needed_test scalac; then
     return 0
   fi
 

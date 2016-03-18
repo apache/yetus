@@ -49,15 +49,11 @@ function unitveto_parse_args
 
 function unitveto_patchfile
 {
-  verify_needed_test unit
-
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test unit; then
     return 0
   fi
 
-  verify_needed_test unitveto
-
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test unitveto; then
     return 0
   fi
 

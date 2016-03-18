@@ -74,8 +74,7 @@ function shellcheck_preapply
   declare i
   declare msg
 
-  verify_needed_test shellcheck
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test shellcheck; then
     return 0
   fi
 
@@ -126,8 +125,7 @@ function shellcheck_postapply
   declare fixedpatch
   declare statstring
 
-  verify_needed_test shellcheck
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test shellcheck; then
     return 0
   fi
 

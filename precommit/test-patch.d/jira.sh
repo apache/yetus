@@ -239,8 +239,7 @@ function jira_determine_branch
     PATCH_BRANCH=$(echo "${patchnamechunk}" | cut -f3- -d- | cut -f1,2 -d-)
     yetus_debug "Determine branch: ISSUE-branch-## = ${PATCH_BRANCH}"
     if [[ -n "${PATCH_BRANCH}" ]]; then
-      verify_valid_branch  "${PATCH_BRANCH}"
-      if [[ $? == 0 ]]; then
+      if verify_valid_branch  "${PATCH_BRANCH}"; then
         return 0
       fi
     fi
@@ -255,8 +254,7 @@ function jira_determine_branch
       yetus_debug "Determine branch: ISSUE[.##].branch = ${PATCH_BRANCH}"
       ((total=total-1))
       if [[ -n "${PATCH_BRANCH}" ]]; then
-        verify_valid_branch  "${PATCH_BRANCH}"
-        if [[ $? == 0 ]]; then
+        if verify_valid_branch  "${PATCH_BRANCH}"; then
           return 0
         fi
       fi
@@ -272,8 +270,7 @@ function jira_determine_branch
       yetus_debug "Determine branch: ISSUE.branch[.##] = ${PATCH_BRANCH}"
       ((total=total-1))
       if [[ -n "${PATCH_BRANCH}" ]]; then
-        verify_valid_branch  "${PATCH_BRANCH}"
-        if [[ $? == 0 ]]; then
+        if verify_valid_branch  "${PATCH_BRANCH}"; then
           return 0
         fi
       fi
@@ -289,8 +286,7 @@ function jira_determine_branch
       yetus_debug "Determine branch: ISSUE-branch[.##] = ${PATCH_BRANCH}"
       ((total=total-1))
       if [[ -n "${PATCH_BRANCH}" ]]; then
-        verify_valid_branch  "${PATCH_BRANCH}"
-        if [[ $? == 0 ]]; then
+        if verify_valid_branch  "${PATCH_BRANCH}"; then
           return 0
         fi
       fi

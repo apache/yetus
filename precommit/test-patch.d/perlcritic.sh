@@ -60,8 +60,7 @@ function perlcritic_preapply
 {
   local i
 
-  verify_needed_test perlcritic
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test perlcritic; then
     return 0
   fi
 
@@ -103,8 +102,7 @@ function perlcritic_postapply
   declare fixedpatch
   declare statstring
 
-  verify_needed_test perlcritic
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test perlcritic; then
     return 0
   fi
 

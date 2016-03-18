@@ -69,10 +69,10 @@ function yetus_add_entry
 ## @audience     public
 ## @stability    stable
 ## @replaceable  no
-## @return       1 = yes, 0 = no
+## @return       0 = yes, 1 = no
 function yetus_verify_entry
 {
-  [[ ! ${!1} =~ \ ${2}\  ]]
+  [[ ${!1} =~ \ ${2}\  ]]
 }
 
 ## @description  run the command, sending stdout and stderr to the given filename

@@ -354,8 +354,8 @@ function delete_test
 ## @stability    stable
 ## @replaceable  yes
 ## @param        test
-## @return       1 = yes
-## @return       0 = no
+## @return       0 = yes
+## @return       1 = no
 function verify_needed_test
 {
   yetus_verify_entry NEEDED_TESTS "${1}"

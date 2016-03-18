@@ -40,8 +40,7 @@ function xml_postcompile
   declare i
   declare count
 
-  verify_needed_test xml
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test xml; then
     return 0
   fi
 

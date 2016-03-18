@@ -67,8 +67,7 @@ function pylint_preapply
   local count
   local pylintStderr=branch-pylint-stderr.txt
 
-  verify_needed_test pylint
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test pylint; then
     return 0
   fi
 
@@ -110,8 +109,7 @@ function pylint_postapply
   declare fixedpatch
   declare statstring
 
-  verify_needed_test pylint
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test pylint; then
     return 0
   fi
 

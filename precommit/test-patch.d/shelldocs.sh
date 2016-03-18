@@ -99,8 +99,7 @@ function shelldocs_preapply
 {
   declare i
 
-  verify_needed_test shelldocs
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test shelldocs; then
     return 0
   fi
 
@@ -131,8 +130,7 @@ function shelldocs_postapply
   declare fixedpatch
   declare statstring
 
-  verify_needed_test shelldocs
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test shelldocs; then
     return 0
   fi
 

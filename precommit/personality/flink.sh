@@ -52,8 +52,7 @@ function flinklib_preapply
   start_clock
   big_console_header "${PATCH_BRANCH} flink library dependencies"
 
-  verify_needed_test flinklib
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test flinklib; then
     echo "Patch does not need flinklib testing."
     return 0
   fi
@@ -73,8 +72,7 @@ function flinklib_postapply
   start_clock
   big_console_header "Patch flink library dependencies"
 
-  verify_needed_test flinklib
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test flinklib; then
     echo "Patch does not need flinklib testing."
     return 0
   fi

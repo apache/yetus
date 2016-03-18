@@ -43,8 +43,7 @@ function cc_compile
   declare codebase=$1
   declare multijdkmode=$2
 
-  verify_needed_test cc
-  if [[ $? = 0 ]]; then
+  if ! verify_needed_test cc; then
     return 0
   fi
 

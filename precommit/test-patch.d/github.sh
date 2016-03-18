@@ -208,11 +208,7 @@ function github_determine_branch
 
   yetus_debug "Github determine branch: starting with ${PATCH_BRANCH}"
 
-  verify_valid_branch  "${PATCH_BRANCH}"
-  if [[ $? == 0 ]]; then
-    return 0
-  fi
-  return 1
+  verify_valid_branch "${PATCH_BRANCH}"
 }
 
 function github_locate_patch
