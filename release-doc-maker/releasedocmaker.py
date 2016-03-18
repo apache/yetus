@@ -36,10 +36,16 @@ try:
 except NameError:
     from sets import Set as set
 
+import dateutil.parser
+
+
+
 RELEASE_VERSION = {}
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
 RELNOTE_PATTERN = re.compile('^\<\!\-\- ([a-z]+) \-\-\>')
 JIRA_BASE_URL = "https://issues.apache.org/jira"
+SORTTYPE = 'resolutiondate'
+SORTORDER = 'older'
 
 ASF_LICENSE = '''
 <!---
@@ -98,13 +104,14 @@ def textsanitize(_str):
 # if release notes have a special marker,
 # we'll treat them as already in markdown format
 def processrelnote(_str):
-  fmt = RELNOTE_PATTERN.match(_str)
-  if fmt is None:
-      return textsanitize(_str)
-  else:
-      return {
-        'markdown' : markdownsanitize(_str),
-      }.get(fmt.group(1),textsanitize(_str))
+    fmt = RELNOTE_PATTERN.match(_str)
+    if fmt is None:
+        return textsanitize(_str)
+    else:
+        return {
+            'markdown': markdownsanitize(_str),
+        }.get(
+            fmt.group(1), textsanitize(_str))
 
 def mstr(obj):
     if obj is None:
@@ -260,17 +267,32 @@ class Jira(object):
         return mstr(ret)
 
     def __cmp__(self, other):
-        selfsplit = self.get_id().split('-')
-        othersplit = other.get_id().split('-')
-        result = cmp(selfsplit[0], othersplit[0])
-        if result != 0:
-            return result
-        else:
-            if selfsplit[1] < othersplit[1]:
-                return True
-            elif selfsplit[1] > othersplit[1]:
-                return False
-        return False
+        result = 0
+
+        if SORTTYPE == 'issueid':
+            # compare by issue name-number
+            selfsplit = self.get_id().split('-')
+            othersplit = other.get_id().split('-')
+            result = cmp(selfsplit[0], othersplit[0])
+            if result == 0:
+                result = cmp(int(selfsplit[1]), int(othersplit[1]))
+                if result != 0:
+                    if SORTORDER == 'dec':
+                        if result == 1:
+                            result = -1
+                        else:
+                            result = 1
+        elif SORTTYPE == 'resolutiondate':
+            dts = dateutil.parser.parse(self.fields['resolutiondate'])
+            dto = dateutil.parser.parse(other.fields['resolutiondate'])
+            result = cmp(dts, dto)
+            if result != 0:
+                if SORTORDER == 'newer':
+                    if result == 1:
+                        result = -1
+                    else:
+                        result = 1
+        return result
 
     def get_incompatible_change(self):
         if self.incompat is None:
@@ -398,21 +420,21 @@ class Outputs(object):
         if params is None:
             params = {}
         self.params = params
-        self.base = open(base_file_name%params, 'w')
+        self.base = open(base_file_name % params, 'w')
         self.others = {}
         for key in keys:
             both = dict(params)
             both['key'] = key
-            self.others[key] = open(file_name_pattern%both, 'w')
+            self.others[key] = open(file_name_pattern % both, 'w')
 
     def write_all(self, pattern):
         both = dict(self.params)
         both['key'] = ''
-        self.base.write(pattern%both)
+        self.base.write(pattern % both)
         for key in self.others.keys():
             both = dict(self.params)
             both['key'] = key
-            self.others[key].write(pattern%both)
+            self.others[key].write(pattern % both)
 
     def write_key_raw(self, key, _str):
         self.base.write(_str)
@@ -501,6 +523,10 @@ def parse_args():
                       help="projects in JIRA to include in releasenotes", metavar="PROJECT")
     parser.add_option("-r", "--range", dest="range", action="store_true",
                       default=False, help="Given versions are a range")
+    parser.add_option("--sortorder", dest="sortorder", type="string", metavar="TYPE",
+                      default=SORTORDER, help="Sorting order for sort type (default: %s)"%SORTORDER)
+    parser.add_option("--sorttype", dest="sorttype", type="string", metavar="TYPE",
+                      default=SORTTYPE, help="Sorting type for issues (default: %s)"%SORTTYPE)
     parser.add_option("-t", "--projecttitle", dest="title", type="string",
                       help="Title to use for the project (default is Apache PROJECT)")
     parser.add_option("-u", "--usetoday", dest="usetoday", action="store_true",
@@ -569,6 +595,11 @@ def main():
     else:
         versions = [Version(v) for v in options.versions]
     versions.sort()
+
+    global SORTTYPE
+    SORTTYPE = options.sorttype
+    global SORTORDER
+    SORTORDER = options.sortorder
 
     if options.title is None:
         title = projects[0]

@@ -114,6 +114,44 @@ $ releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
 
 After using this option and release, don't forget to change JIRA's release date to match!
 
+# Sorted Output
+
+Different projects may find one type of sort better than another, depending upon their needs.  releasedocmaker supports two types of sorts and each provides two different options in the direction for that sort.
+
+## Resolution Date-base Sort
+
+By default, releasedocmaker will sort the output based upon the resolution date of the issue starting with older resolutions.  This is the same as giving these options:
+
+```bash
+$ releasedocmaker --sorttype=releasedate --sortorder=older
+```
+
+The order can be reversed so that newer issues appear on top by providing the 'newer' flag:
+
+```bash
+$ releasedocmaker --sorttype=releasedate --sortorder=newer
+```
+
+In the case of multiple projects given on the command line, the projects will be interspersed.
+
+## Issue Number-based Sort
+
+An alternative to the date-based sort is to sort based upon the issue id.  This may be accomplished via:
+
+```bash
+$ releasedocmaker --sorttype=issueid --sortorder=asc
+```
+
+This will now sort by the issue id, listing them in lowest to highest (or ascending) order.
+
+The order may be reversed to list them in highest to lowest (or descending) order by providing the appropriate flag:
+
+```bash
+$ releasedocmaker --sorttype=issueid --sortorder=dec
+```
+
+In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.
+
 # Lint Mode
 
 In order to ensure proper formatting while using mvn site, releasedocmaker puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.
