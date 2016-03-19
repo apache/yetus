@@ -27,13 +27,18 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     cmake gcc g++ pkg-config \
     build-essential libtool \
     autoconf automake \
-    python python2.7 pylint \
+    python python2.7 python-pip \
     openjdk-7-jdk \
     libperl-critic-perl
 
 # Fixing the Apache commons / Maven dependency problem under Ubuntu:
 # See http://wiki.apache.org/commons/VfsProblems
 RUN cd /usr/share/maven/lib && ln -s ../../java/commons-lang.jar .
+
+####
+# Pylint
+####
+RUN pip install pylint
 
 #######
 # Oracle Java
