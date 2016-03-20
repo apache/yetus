@@ -98,6 +98,12 @@ function locate_patch
   if [[ -f ${PATCH_OR_ISSUE} ]]; then
     patchfile="${PATCH_OR_ISSUE}"
     PATCH_SYSTEM=generic
+    if [[ -f "${PATCH_DIR}/patch" ]]; then
+      "${DIFF}" -q "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch" >/dev/null
+      if [[ $? -eq 1 ]]; then
+        rm "${PATCH_DIR}/patch"
+      fi
+    fi
   else
     # run through the bug systems.  maybe they know?
     for bugsys in ${BUGSYSTEMS}; do
