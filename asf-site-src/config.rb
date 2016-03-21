@@ -111,7 +111,10 @@ def build_release_docs(output, version)
   FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
   FileUtils.rm_rf("#{output}/#{version}", secure: true)
   puts "\tcloning from tag."
-  `(cd "#{output}" && git clone --depth 1 --branch "#{version}" --single-branch -- "#{GITREPO}" "build-#{version}") >"#{output}/#{version}_git_checkout.log" 2>&1`
+  `(cd "#{output}" && \
+    git clone --depth 1 --branch "rel/#{version}" --single-branch -- \
+        "#{GITREPO}" "build-#{version}" \
+   ) >"#{output}/#{version}_git_checkout.log" 2>&1`
   unless $?.exitstatus == 0
     abort("building docs failed to for #{version}.")
   end
