@@ -70,7 +70,7 @@ function rubocop_preapply
 
   echo "Running rubocop against modified ruby scripts."
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
       ${RUBOCOP} -f e "${i}" | ${AWK} '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/branch-rubocop-result.txt"
     fi
@@ -117,7 +117,7 @@ function rubocop_postapply
   echo "Running rubocop against modified ruby scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
       ${RUBOCOP} -f e "${i}" | ${AWK} '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/patch-rubocop-result.txt"
     fi

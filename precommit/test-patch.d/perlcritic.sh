@@ -70,7 +70,7 @@ function perlcritic_preapply
 
   echo "Running perlcritic against modified perl scripts/modules."
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
       ${PERLCRITIC} -1 --verbose 1 "${i}" 2>/dev/null >> "${PATCH_DIR}/branch-perlcritic-result.txt"
     fi
@@ -117,7 +117,7 @@ function perlcritic_postapply
   echo "Running perlcritic against modified perl scripts/modules."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
       ${PERLCRITIC} -1 --verbose 1 "${i}" 2>/dev/null >> "${PATCH_DIR}/patch-perlcritic-result.txt"
     fi

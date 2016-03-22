@@ -38,9 +38,9 @@ function hadoop_order
   declare hadoopm
 
   if [[ ${ordering} = normal ]]; then
-    hadoopm=${CHANGED_MODULES}
+    hadoopm="${CHANGED_MODULES[*]}"
   elif  [[ ${ordering} = union ]]; then
-    hadoopm=${CHANGED_UNION_MODULES}
+    hadoopm="${CHANGED_UNION_MODULES}"
   else
     hadoopm="${ordering}"
   fi
@@ -144,6 +144,7 @@ function personality_modules
   declare extra=""
   declare ordering="normal"
   declare needflags=false
+  declare foundbats=false
   declare flags
   declare fn
   declare i
@@ -170,7 +171,7 @@ function personality_modules
       needflags=true
 
       # if something in common changed, we build the whole world
-      if [[ ${CHANGED_MODULES} =~ hadoop-common ]]; then
+      if [[ "${CHANGED_MODULES[*]}" =~ hadoop-common ]]; then
         yetus_debug "hadoop personality: javac + hadoop-common = ordering set to . "
         ordering="."
       fi
@@ -180,7 +181,7 @@ function personality_modules
       extra="-DskipTests"
     ;;
     javadoc)
-      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+      if [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
         ordering=.
       fi
 
@@ -199,7 +200,7 @@ function personality_modules
       extra="-Pdocs -DskipTests"
     ;;
     mvneclipse)
-      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+      if [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
         ordering=.
       fi
     ;;
@@ -210,12 +211,12 @@ function personality_modules
       fi
     ;;
     mvnsite)
-      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+      if [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
         ordering=.
       fi
     ;;
     unit)
-      if [[ "${CHANGED_MODULES}" =~ \. ]]; then
+      if [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
         ordering=.
       fi
 
@@ -237,7 +238,13 @@ function personality_modules
         fi
       fi
 
-      if ! verify_needed_test shellcheck && [[ ! ${CHANGED_FILES} =~ \.bats ]]; then
+      for i in "${CHANGED_FILES[@]}"; do
+        if [[ "${i}" =~ \.bats ]]; then
+          foundbats=true
+        fi
+      done
+
+      if ! verify_needed_test shellcheck && [[ ${foundbats} = false ]]; then
         yetus_debug "hadoop: NO shell code change detected; disabling shelltest profile"
         extra="${extra} -P!shelltest"
       else

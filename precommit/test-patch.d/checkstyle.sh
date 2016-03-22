@@ -215,7 +215,7 @@ function checkstyle_runner
       # this will grealy cut down how much work we
       # have to do later
 
-      for j in ${CHANGED_FILES}; do
+      for j in "${CHANGED_FILES[@]}"; do
         ${GREP} "${j}" "${tmp}" >> "${tmp}.1"
       done
 

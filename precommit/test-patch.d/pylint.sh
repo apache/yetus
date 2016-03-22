@@ -77,7 +77,7 @@ function pylint_preapply
 
   echo "Running pylint against modified python scripts."
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
       # shellcheck disable=SC2086
       eval "${PYLINT} ${PYLINT_OPTIONS} --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' --reports=n ${i}" \
@@ -124,7 +124,7 @@ function pylint_postapply
   echo "Running pylint against modified python scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
       # shellcheck disable=SC2086
       eval "${PYLINT} ${PYLINT_OPTIONS} --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' --reports=n ${i}" \

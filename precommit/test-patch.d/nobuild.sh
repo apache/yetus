@@ -40,9 +40,8 @@ function nobuild_builtin_personality_modules
   yetus_debug "built-in personality for no build system: ${status} ${testtype}"
 
   clear_personality_queue
-  for module in ${CHANGED_MODULES}; do
-    # shellcheck disable=SC2086
-    personality_enqueue_module ${module}
+  for module in "${CHANGED_MODULES[@]}"; do
+    personality_enqueue_module "${module}"
   done
 }
 

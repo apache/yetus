@@ -32,6 +32,8 @@ GLOBALTIMER=$(date +"%s")
 QATESTMODE=false
 
 # global arrays
+declare -a CHANGED_FILES
+declare -a CHANGED_MODULES
 declare -a TP_HEADER
 declare -a TP_VOTE_TABLE
 declare -a TP_TEST_TABLE
@@ -42,6 +44,7 @@ declare -a MODULE_STATUS_MSG
 declare -a MODULE_STATUS_LOG
 declare -a MODULE_COMPILE_LOG
 declare -a MODULE
+declare -a USER_MODULE_LIST
 
 TP_HEADER_COUNTER=0
 TP_VOTE_COUNTER=0
@@ -80,12 +83,7 @@ function setup_defaults
   BUILDTOOLCWD=module
 
   # shellcheck disable=SC2034
-  CHANGED_MODULES=""
-
-  # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
-  USER_MODULE_LIST=""
-  CHANGED_FILES=""
   REEXECED=false
   RESETREPO=false
   ISSUE=""
@@ -318,7 +316,7 @@ function prepopulate_footer
 ## @replaceable  no
 function finish_footer_table
 {
-  add_footer_table "modules" "C: ${CHANGED_MODULES} U: ${CHANGED_UNION_MODULES}"
+  add_footer_table "modules" "C: ${CHANGED_MODULES[*]} U: ${CHANGED_UNION_MODULES}"
 }
 
 ## @description  Put the final elapsed time at the bottom of the table.
@@ -570,16 +568,16 @@ function compute_unidiff
   # finally rewriting the line so that it is in
   # './filename:diff line:content' format
 
-  for fn in ${CHANGED_FILES}; do
+  for fn in "${CHANGED_FILES[@]}"; do
     filen=${fn##./}
 
     if [[ -f "${filen}" ]]; then
-      ${GIT} diff ${filen} \
+      ${GIT} diff "${filen}" \
         | tail -n +6 \
         | ${GREP} -n '^+' \
         | ${GREP} -vE '^[0-9]*:\+\+\+' \
         | ${SED} -e 's,^\([0-9]*:\)\+,\1,g' \
-          -e s,^,./${filen}:,g \
+          -e "s,^,./${filen}:,g" \
               >>  "${tmpfile}"
     fi
   done
@@ -810,9 +808,8 @@ function parse_args
         BUGLINECOMMENTS=${BUGLINECOMMENTS//,/ }
       ;;
       --modulelist=*)
-        USER_MODULE_LIST=${i#*=}
-        USER_MODULE_LIST=${USER_MODULE_LIST//,/ }
-        yetus_debug "Manually forcing modules ${USER_MODULE_LIST}"
+        yetus_comma_to_array USER_MODULE_LIST "${i#*=}"
+        yetus_debug "Manually forcing modules ${USER_MODULE_LIST[*]}"
       ;;
       --multijdkdirs=*)
         JDK_DIR_LIST=${i#*=}
@@ -1007,14 +1004,19 @@ function find_buildfile_dir
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
-## @return       None; sets ${CHANGED_FILES}
+## @return       None; sets ${CHANGED_FILES[@]}
 function find_changed_files
 {
+  declare line
+
   # get a list of all of the files that have been changed,
   # except for /dev/null (which would be present for new files).
   # Additionally, remove any a/ b/ patterns at the front of the patch filenames.
   # shellcheck disable=SC2016
-  CHANGED_FILES=$(${AWK} 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"){print s}}
+  while read -r line; do
+    CHANGED_FILES=("${CHANGED_FILES[@]}" "${line}")
+  done < <(
+    ${AWK} 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"){print s}}
     /^diff --git /   { p($3); p($4) }
     /^(\+\+\+|---) / { p($2) }' "${PATCH_DIR}/patch" | sort -u)
 }
@@ -1060,19 +1062,19 @@ function module_skipdir
 ## @stability    stable
 ## @replaceable  no
 ## @param        repostatus
-## @return       None; sets ${CHANGED_MODULES}
+## @return       None; sets ${CHANGED_MODULES[@]}
 function find_changed_modules
 {
-  local repostatus=$1
-  local i
-  local changed_dirs
-  local builddirs
-  local builddir
-  local module
-  local prev_builddir
-  local i=1
-  local dir
-  local buildfile
+  declare repostatus=$1
+  declare i
+  declare builddir
+  declare module
+  declare prev_builddir
+  declare i=1
+  declare dir
+  declare dirt
+  declare buildfile
+  declare -a tmpmods
 
   buildfile=$("${BUILDTOOL}_buildfile")
 
@@ -1082,55 +1084,51 @@ function find_changed_modules
     cleanup_and_exit 1
   fi
 
-  changed_dirs=$(for i in ${CHANGED_FILES}; do dirname "${i}"; done | sort -u)
-
   #  Empty string indicates the build system wants to disable module detection
   if [[ -z ${buildfile} ]]; then
-    builddirs="."
+    tmpmods=(".")
   else
     # Now find all the modules that were changed
-    for i in ${changed_dirs}; do
+    for i in "${CHANGED_FILES[@]}"; do
+      dirt=$(dirname "${i}")
 
-      module_skipdir "${i}"
+      module_skipdir "${dirt}"
       if [[ $? != 0 ]]; then
         continue
       fi
 
-      builddir=$(find_buildfile_dir "${buildfile}" "${i}")
+      builddir=$(find_buildfile_dir "${buildfile}" "${dirt}")
       if [[ -z ${builddir} ]]; then
         yetus_error "ERROR: ${buildfile} is not found. Make sure the target is a ${BUILDTOOL}-based project."
         bugsystem_finalreport 1
         cleanup_and_exit 1
       fi
-      builddirs="${builddirs} ${builddir}"
+      tmpmods=("${tmpmods[@]}" "${builddir}")
     done
   fi
 
-  #shellcheck disable=SC2086,SC2034
-  CHANGED_MODULES=$(echo ${builddirs} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
-  #shellcheck disable=SC2086,SC2034
-  CHANGED_MODULES=$(echo ${CHANGED_MODULES} ${USER_MODULE_LIST} | tr ' ' '\n' | sort -u)
+  tmpmods=("${tmpmods[@]}" "${USER_MODULE_LIST[@]}")
 
-  # turn it back into a list so that anyone printing doesn't
-  # generate multiline output
-  #shellcheck disable=SC2086,SC2116
-  CHANGED_MODULES=$(echo ${CHANGED_MODULES})
+  CHANGED_MODULES=($(printf "%s\n" "${tmpmods[@]}" | sort -u))
 
-  yetus_debug "Locate the union of ${CHANGED_MODULES}"
-  # shellcheck disable=SC2086
-  count=$(echo ${CHANGED_MODULES} | wc -w)
+  yetus_debug "Locate the union of ${CHANGED_MODULES[*]}"
+  count=${#CHANGED_MODULES[@]}
   if [[ ${count} -lt 2 ]]; then
-    yetus_debug "Only one entry, so keeping it ${CHANGED_MODULES}"
+    yetus_debug "Only one entry, so keeping it ${CHANGED_MODULES[0]}"
     # shellcheck disable=SC2034
-    CHANGED_UNION_MODULES=${CHANGED_MODULES}
-
+    CHANGED_UNION_MODULES="${CHANGED_MODULES[0]}"
   else
-
     i=1
     while [[ ${i} -lt 100 ]]
     do
-      module=$(echo "${CHANGED_MODULES}" | tr ' ' '\n' | cut -f1-${i} -d/ | uniq)
-      count=$(echo "${module}" | wc -w)
+      tmpmods=()
+      for j in "${CHANGED_MODULES[@]}"; do
+        tmpmods=("${tmpmods[@]}" $(echo "${j}" | cut -f1-${i} -d/))
+      done
+      tmpmods=($(printf "%s\n" "${tmpmods[@]}" | sort -u))
+
+      module=${tmpmods[0]}
+      count=${#tmpmods[@]}
       if [[ ${count} -eq 1
         && -f ${module}/${buildfile} ]]; then
         prev_builddir=${module}
@@ -1389,7 +1387,7 @@ function determine_needed_tests
   local i
   local plugin
 
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     yetus_debug "Determining needed tests for ${i}"
     personality_file_tests "${i}"
 
@@ -1575,7 +1573,7 @@ function check_reexec
       "${DOCKERFILE}"; do
     tpdir=$(relative_dir "${testdir}")
     if [[ $? == 0
-        && ${CHANGED_FILES} =~ ${tpdir} ]]; then
+        && "${CHANGED_FILES[*]}" =~ ${tpdir} ]]; then
       copy=true
     fi
   done

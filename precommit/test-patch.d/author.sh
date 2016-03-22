@@ -28,16 +28,19 @@ function author_patchfile
   declare authorTags
   # shellcheck disable=SC2155
   declare -r appname=$(basename "${BASH_SOURCE-$0}")
+  declare i
 
   big_console_header "Checking there are no @author tags in the patch."
 
   start_clock
 
-  if [[ ${CHANGED_FILES} =~ ${appname} ]]; then
-    echo "Skipping @author checks as ${appname} has been patched."
-    add_vote_table 0 @author "Skipping @author checks as ${appname} has been patched."
-    return 0
-  fi
+  for i in "${CHANGED_FILES[@]}"; do
+    if [[ ${i} =~ ${appname} ]]; then
+      echo "Skipping @author checks as ${appname} has been patched."
+      add_vote_table 0 @author "Skipping @author checks as ${appname} has been patched."
+      return 0
+    fi
+  done
 
   ${GREP} -i -n '^[^-].*@author' "${patchfile}" >> "${PATCH_DIR}/author-tags.txt"
   # shellcheck disable=SC2016

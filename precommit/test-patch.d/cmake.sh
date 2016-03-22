@@ -77,7 +77,7 @@ function cmake_reorder_modules
     #shellcheck disable=SC2034
     BUILDTOOLCWD="@@@BASEDIR@@@/${CMAKE_BUILD_DIR}"
     #shellcheck disable=SC2034
-    CHANGED_MODULES="."
+    CHANGED_MODULES=(".")
     #shellcheck disable=SC2034
     CHANGED_UNION_MODULES="."
   else

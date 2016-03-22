@@ -356,10 +356,10 @@ function maven_javadoc_calcdiffs
 
 function maven_builtin_personality_modules
 {
-  local repostatus=$1
-  local testtype=$2
+  declare repostatus=$1
+  declare testtype=$2
 
-  local module
+  declare module
 
   yetus_debug "Using builtin personality_modules"
   yetus_debug "Personality: ${repostatus} ${testtype}"
@@ -369,14 +369,13 @@ function maven_builtin_personality_modules
   # this always makes sure the local repo has a fresh
   # copy of everything per pom rules.
   if [[ ${repostatus} == branch
-     && ${testtype} == mvninstall ]];then
-     personality_enqueue_module "${CHANGED_UNION_MODULES}"
-     return
-   fi
+        && ${testtype} == mvninstall ]];then
+    personality_enqueue_module "${CHANGED_UNION_MODULES}"
+    return
+  fi
 
-  for module in ${CHANGED_MODULES}; do
-    # shellcheck disable=SC2086
-    personality_enqueue_module ${module}
+  for module in "${CHANGED_MODULES[@]}"; do
+    personality_enqueue_module "${module}"
   done
 }
 
@@ -581,9 +580,11 @@ function maven_reorder_module_process
   declare needroot=false
   declare found
 
-  if [[ ${CHANGED_MODULES} =~ \. ]]; then
-    needroot=true
-  fi
+  for module in "${CHANGED_MODULES[@]}"; do
+    if [[ "${module}" =~ \. ]]; then
+      needroot=true
+    fi
+  done
 
   fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
   pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null
@@ -600,7 +601,7 @@ function maven_reorder_module_process
     else
       continue
     fi
-    for indexm in ${CHANGED_MODULES}; do
+    for indexm in "${CHANGED_MODULES[@]}"; do
       # modules could be foo/bar, where bar is the artifactid
       # so get the basename and compare that too
       basemod=${indexm##*/}
@@ -619,12 +620,12 @@ function maven_reorder_module_process
     newlist=("${newlist[@]}" " . ")
   fi
 
-  indexm=$(echo "${CHANGED_MODULES}" | wc -w)
+  indexm="${#CHANGED_MODULES[@]}"
   indexn="${#newlist[@]}"
 
   if [[ ${indexm} -ne ${indexn} ]]; then
     yetus_debug "mrm: Missed a module"
-    for indexm in ${CHANGED_MODULES}; do
+    for indexm in "${CHANGED_MODULES[@]}"; do
       found=false
       for indexn in ${newlist[*]}; do
         if [[ "${indexn}" = "${indexm}" ]]; then
@@ -638,7 +639,7 @@ function maven_reorder_module_process
     done
   fi
 
-  CHANGED_MODULES="${newlist[*]}"
+  CHANGED_MODULES=("${newlist[@]}")
 }
 
 ## @description  take a stab at reordering modules based upon
@@ -658,7 +659,7 @@ function maven_reorder_modules
   fi
 
   # don't bother if there is only one
-  index=$(echo "${CHANGED_MODULES}" | wc -w)
+  index="${#CHANGED_MODULES[@]}"
   if [[ ${index} -eq 1 ]]; then
     return
   fi
@@ -670,7 +671,7 @@ function maven_reorder_modules
   maven_reorder_module_process "${repostatus}"
 
   yetus_debug "Maven: finish re-ordering modules"
-  yetus_debug "Finished list: ${CHANGED_MODULES}"
+  yetus_debug "Finished list: ${CHANGED_MODULES[*]}"
 
   add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
 }

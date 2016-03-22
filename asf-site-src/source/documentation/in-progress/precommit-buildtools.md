@@ -90,7 +90,7 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_reorder\_modules
 
-    - This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED\_MODULES already contains all changed modules. It must be altered to have an effect.
+    - This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED\_MODULES[@] already contains all changed modules. It must be altered to have an effect.
 
 * pluginname\_(test)\_logfilter
 

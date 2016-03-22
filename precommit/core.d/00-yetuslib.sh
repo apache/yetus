@@ -224,3 +224,19 @@ function yetus_generic_columnprinter
     ((i=i+1))
   done
 }
+
+## @description  Convert a comma-delimited string to an array
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        arrayname
+## @param        string
+function yetus_comma_to_array
+{
+  declare var=$1
+  declare string=$2
+
+  oldifs="${IFS}"
+  IFS=',' read -r -a "${var}" <<< "${string}"
+  IFS="${oldifs}"
+}

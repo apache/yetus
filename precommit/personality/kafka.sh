@@ -56,8 +56,8 @@ function personality_modules
     ;;
   esac
 
-  for module in ${CHANGED_MODULES}; do
+  for module in "${CHANGED_MODULES[@]}"; do
     # shellcheck disable=SC2086
-    personality_enqueue_module ${module} ${extra}
+    personality_enqueue_module "${module}" ${extra}
   done
 }

@@ -55,7 +55,7 @@ function xml_postcompile
   start_clock
 
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.xml$ && -f ${i} ]]; then
       ${js} -e "XMLDocument(arguments[0])" "${i}" >> "${PATCH_DIR}/xml.txt" 2>&1
       if [[ $? != 0 ]]; then

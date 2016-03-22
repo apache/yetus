@@ -51,7 +51,7 @@ function personality_modules
    fi
 
   if [[ ${testtype} = findbugs ]]; then
-    for module in ${CHANGED_MODULES}; do
+    for module in "${CHANGED_MODULES[@]}"; do
       # skip findbugs on hbase-shell
       if [[ ${module} == hbase-shell ]]; then
         continue
@@ -63,7 +63,7 @@ function personality_modules
     return
   fi
 
-  for module in ${CHANGED_MODULES}; do
+  for module in "${CHANGED_MODULES[@]}"; do
     # shellcheck disable=SC2086
     personality_enqueue_module ${module} ${extra}
   done

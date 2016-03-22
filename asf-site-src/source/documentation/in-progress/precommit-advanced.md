@@ -249,9 +249,9 @@ There are a handful of extremely important system variables that make life easie
 
 * BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz\_ARGS to pass on to the build tool command line. (e.g., MAVEN\_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.
 
-* CHANGED\_FILES is a list of all files that appear to be added, deleted, or modified in the patch.
+* CHANGED\_FILES[@] is an array of all files that appear to be added, deleted, or modified in the patch.
 
-* CHANGED\_MODULES is a list of all modules that house all of the CHANGED\_FILES.  Be aware that the root of the source tree is reported as '.'.
+* CHANGED\_MODULES[@] is an array of all modules that house all of the CHANGED\_FILES[@].  Be aware that the root of the source tree is reported as '.'.
 
 * GITHUB\_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.
 

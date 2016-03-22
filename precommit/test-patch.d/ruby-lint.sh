@@ -69,7 +69,7 @@ function ruby_lint_preapply
 
   echo "Running ruby-lint against modified ruby scripts."
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
       ${RUBY_LINT} -p syntastic "${i}" | sort -t : -k 1,1 -k 3,3n -k 4,4n >> "${PATCH_DIR}/branch-ruby-lint-result.txt"
     fi
@@ -147,7 +147,7 @@ function ruby_lint_postapply
   echo "Running ruby-lint against modified ruby scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
-  for i in ${CHANGED_FILES}; do
+  for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
       ${RUBY_LINT} -p syntastic "${i}" | sort -t : -k 1,1 -k 3,3n -k 4,4n >> "${PATCH_DIR}/patch-ruby-lint-result.txt"
     fi

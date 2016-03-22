@@ -50,8 +50,7 @@ function personality_modules
   fi
 
   # Make sure we re-add the changed modules if we didn't short-circuit out
-  for module in ${CHANGED_MODULES}; do
-    # shellcheck disable=SC2086
-    personality_enqueue_module ${module}
+  for module in "${CHANGED_MODULES[@]}"; do
+    personality_enqueue_module "${module}"
   done
 }
