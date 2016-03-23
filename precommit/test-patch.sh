@@ -104,7 +104,7 @@ function setup_defaults
 function module_file_fragment
 {
   local mod=$1
-  if [[ ${mod} == . ]]; then
+  if [[ ${mod} = \. ]]; then
     echo root
   else
     echo "$1" | tr '/' '_' | tr '\\' '_'
@@ -1840,7 +1840,7 @@ function modules_workers
     modulesuffix=$(basename "${MODULE[${modindex}]}")
     buildtool_cwd "${modindex}"
 
-    if [[ ${modulesuffix} == . ]]; then
+    if [[ ${modulesuffix} = \. ]]; then
       modulesuffix="root"
     fi
 

@@ -367,7 +367,7 @@ function checkstyle_postapply
     statstring=$(generic_calcdiff_status "${numbranch}" "${numpatch}" "${addpatch}" )
 
     mod=${module}
-    if [[ ${mod} == . ]]; then
+    if [[ ${mod} = \. ]]; then
       mod=root
     fi
 
