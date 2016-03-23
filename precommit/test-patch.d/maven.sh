@@ -581,7 +581,7 @@ function maven_reorder_module_process
   declare found
 
   for module in "${CHANGED_MODULES[@]}"; do
-    if [[ "${module}" =~ \. ]]; then
+    if [[ "${module}" = \. ]]; then
       needroot=true
     fi
   done
@@ -604,20 +604,22 @@ function maven_reorder_module_process
     for indexm in "${CHANGED_MODULES[@]}"; do
       # modules could be foo/bar, where bar is the artifactid
       # so get the basename and compare that too
-      basemod=${indexm##*/}
-      if [[ " ${module} " = " ${indexm} "
-         || " ${module} " = " ${basemod} " ]]; then
+      basemod="${indexm##*/}"
+      if [[ "${module}" = "${indexm}"
+         || "${module}" = "${basemod}" ]]; then
          yetus_debug "mrm: placing ${indexm}"
-        newlist=("${newlist[@]}" " ${indexm} ")
+        newlist=("${newlist[@]}" "${indexm}")
+        break
       fi
     done
-  done < <(${GREP} maven-enforcer "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt" |
-    ${SED} -e 's,^.* --- .* @ \(.*\) ---$,module:\1,g' \
-    -e '/^\[INFO\]/d' )
+  done < <(${GREP} '\[INFO\]' \
+      "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt" |
+    ${SED} -e 's,^.* --- .* @ \(.*\) ---$,module:\1,g' -e '/^\[INFO\]/d' |
+    uniq )
   popd >/dev/null
 
   if [[ "${needroot}" = true ]]; then
-    newlist=("${newlist[@]}" " . ")
+    newlist=("${newlist[@]}" ".")
   fi
 
   indexm="${#CHANGED_MODULES[@]}"
@@ -627,14 +629,15 @@ function maven_reorder_module_process
     yetus_debug "mrm: Missed a module"
     for indexm in "${CHANGED_MODULES[@]}"; do
       found=false
-      for indexn in ${newlist[*]}; do
+      for indexn in "${newlist[@]}"; do
         if [[ "${indexn}" = "${indexm}" ]]; then
           found=true
+          break
         fi
       done
       if [[ ${found} = false ]]; then
         yetus_debug "mrm: missed ${indexm}"
-        newlist=("${newlist[@]}" " ${indexm} ")
+        newlist=("${newlist[@]}" "${indexm}")
       fi
     done
   fi
