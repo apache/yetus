@@ -2502,14 +2502,14 @@ function generic_postlog_compare
 
     if [[ ${addpatch} -gt 0 ]]; then
       ((result = result + 1))
-      add_vote_table -1 "${testtype}" "${fn}${statusjdk} ${statstring}"
-      add_footer_table "${testtype}" "${fn}: @@BASE@@/diff-${origlog}-${testtype}-${fn}.txt"
+      module_status "${i}" -1 "diff-${origlog}-${testtype}-${fn}.txt" "${fn}${statusjdk} ${statstring}"
     elif [[ ${fixedpatch} -gt 0 ]]; then
-      add_vote_table +1 "${testtype}" "${fn}${statusjdk} ${statstring}"
+      module_status "${i}" +1 "${MODULE_STATUS_LOG[${i}]}" "${fn}${statusjdk} ${statstring}"
       summarize=false
     fi
     ((i=i+1))
   done
+
   modules_messages patch "${testtype}" "${summarize}"
   if [[ ${result} -gt 0 ]]; then
     return 1
