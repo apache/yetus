@@ -61,7 +61,7 @@ function asflicense_tests
   local numpatch
   local btfails=true
 
-  big_console_header "Determining number of patched ASF License errors"
+  big_console_header "Determining number of ASF License errors"
 
   start_clock
 
@@ -105,7 +105,7 @@ function asflicense_tests
   # RAT fails the build if there are license problems.
   # so let's take advantage of that a bit.
   if [[ $? == 0 && ${btfails} = true ]]; then
-    add_vote_table 1 asflicense "Patch does not generate ASF License warnings."
+    add_vote_table 1 asflicense "${BUILDMODEMSG} does not generate ASF License warnings."
     return 0
   fi
 
@@ -134,7 +134,7 @@ function asflicense_tests
   echo "There appear to be ${numpatch} ASF License warnings after applying the patch."
   if [[ -n ${numpatch}
      && ${numpatch} -gt 0 ]] ; then
-    add_vote_table -1 asflicense "Patch generated ${numpatch} ASF License warnings."
+    add_vote_table -1 asflicense "${BUILDMODEMSG} generated ${numpatch} ASF License warnings."
 
     echo "Lines that start with ????? in the ASF License "\
         "report indicate files that do not have an Apache license header:" \
@@ -146,7 +146,7 @@ function asflicense_tests
     add_footer_table asflicense "@@BASE@@/patch-asflicense-problems.txt"
     return 1
   fi
-  add_vote_table 1 asflicense "Patch does not generate ASF License warnings."
+  add_vote_table 1 asflicense "${BUILDMODEMSG} does not generate ASF License warnings."
   return 0
 }
 

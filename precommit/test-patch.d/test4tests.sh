@@ -27,6 +27,10 @@ function test4tests_patchfile
   declare testReferences=0
   declare i
 
+  if [[ "${BUILDMODE}" = full ]]; then
+    return
+  fi
+
   big_console_header "Checking there are new or changed tests in the patch."
 
   if ! verify_needed_test unit; then

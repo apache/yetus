@@ -140,7 +140,6 @@ function checkstyle_runner
   declare savestop
   declare output
   declare logfile
-  declare repo
   declare modulesuffix
   declare cmd
   declare logline
@@ -150,12 +149,6 @@ function checkstyle_runner
 
   # first, let's clear out any previous run information
   modules_reset
-
-  if [[ ${repostatus} == branch ]]; then
-    repo=${PATCH_BRANCH}
-  else
-    repo="the patch"
-  fi
 
   # loop through the modules we've been given
   #shellcheck disable=SC2153
@@ -200,14 +193,14 @@ function checkstyle_runner
       > "${tmp}"
 
     if [[ $? == 0 ]] ; then
-      module_status ${i} +1 "${logfile}" "${modulesuffix} in ${repo} passed checkstyle"
+      module_status ${i} +1 "${logfile}" "${BUILDMODEMSG} ${modulesuffix} passed checkstyle"
     else
-      module_status ${i} -1 "${logfile}" "${modulesuffix} in ${repo} failed checkstyle"
+      module_status ${i} -1 "${logfile}" "${BUILDMODEMSG} ${modulesuffix} failed checkstyle"
       ((result = result + 1))
     fi
 
     # if we have some output, we need to do more work:
-    if [[ -s ${tmp} ]]; then
+    if [[ -s ${tmp} && "${BUILDMODE}" = patch ]]; then
 
       # first, let's pull out all of the files that
       # we actually care about, esp since that run
@@ -218,6 +211,7 @@ function checkstyle_runner
       for j in "${CHANGED_FILES[@]}"; do
         ${GREP} "${j}" "${tmp}" >> "${tmp}.1"
       done
+
 
       # now that we have just the files we care about,
       # let's unscrew it. You see...
@@ -248,7 +242,8 @@ function checkstyle_runner
       popd >/dev/null
       # later on, calcdiff will turn this into code(:column):error
       # compare, and then put the file:line back onto it.
-
+    else
+      cp -p "${tmp}" "${output}"
     fi
 
     rm "${tmp}" "${tmp}.1" 2>/dev/null
@@ -288,7 +283,7 @@ function checkstyle_preapply
     return 0
   fi
 
-  big_console_header "${PATCH_BRANCH} checkstyle"
+  big_console_header "checkstyle: ${PATCH_BRANCH}"
 
   start_clock
 
@@ -321,7 +316,7 @@ function checkstyle_postapply
     return 0
   fi
 
-  big_console_header "Patch checkstyle plugin"
+  big_console_header "checkstyle: ${BUILDMODE}"
 
   start_clock
 
@@ -371,9 +366,9 @@ function checkstyle_postapply
 
     if [[ ${addpatch} -gt 0 ]] ; then
       ((result = result + 1))
-      module_status ${i} -1 "diff-checkstyle-${fn}.txt" "${mod}: patch ${statstring}"
+      module_status ${i} -1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
     elif [[ ${fixedpatch} -gt 0 ]]; then
-      module_status ${i} +1 "diff-checkstyle-${fn}.txt" "${mod}: patch ${statstring}"
+      module_status ${i} +1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
       summarize=false
     fi
     ((i=i+1))

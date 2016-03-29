@@ -63,7 +63,7 @@ function ruby_lint_preapply
     return 0
   fi
 
-  big_console_header "ruby-lint plugin: prepatch"
+  big_console_header "ruby-lint plugin: ${PATCH_BRANCH}"
 
   start_clock
 
@@ -136,7 +136,7 @@ function ruby_lint_postapply
     return 0
   fi
 
-  big_console_header "ruby-lint plugin: postpatch"
+  big_console_header "ruby-lint plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -176,11 +176,11 @@ function ruby_lint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 ruby-lint "The applied patch ${statstring}"
+    add_vote_table -1 ruby-lint "${BUILDMODEMSG} ${statstring}"
     add_footer_table ruby-lint "@@BASE@@/diff-patch-ruby-lint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 ruby-lint "The applied patch ${statstring}"
+    add_vote_table +1 ruby-lint "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 

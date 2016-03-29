@@ -106,9 +106,9 @@ function gradle_precompile
 
   if [[ "${repostatus}" = branch ]]; then
     # shellcheck disable=SC2153
-    big_console_header "${PATCH_BRANCH} gradle bootstrap"
+    big_console_header "gradle boostrap: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch gradle bootstrap"
+    big_console_header "gradle bootstrap: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" gradleboot

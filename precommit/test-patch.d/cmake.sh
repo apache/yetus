@@ -128,9 +128,9 @@ function cmake_precompile
 
   if [[ "${repostatus}" = branch ]]; then
     # shellcheck disable=SC2153
-    big_console_header "${PATCH_BRANCH} cmake CMakeLists.txt"
+    big_console_header "cmake CMakeLists.txt: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch cmake CMakeLists.txt"
+    big_console_header "cmake CMakeLists.txt: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" CMakeLists.txt

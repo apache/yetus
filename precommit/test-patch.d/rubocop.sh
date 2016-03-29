@@ -64,7 +64,7 @@ function rubocop_preapply
     return 0
   fi
 
-  big_console_header "rubocop plugin: prepatch"
+  big_console_header "rubocop plugin: ${PATCH_BRANCH}"
 
   start_clock
 
@@ -106,7 +106,7 @@ function rubocop_postapply
     return 0
   fi
 
-  big_console_header "rubocop plugin: postpatch"
+  big_console_header "rubocop plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -146,11 +146,11 @@ function rubocop_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 rubocop "The applied patch ${statstring}"
+    add_vote_table -1 rubocop "${BUILDMODEMSG} ${statstring}"
     add_footer_table rubocop "@@BASE@@/diff-patch-rubocop.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 rubocop "The applied patch ${statstring}"
+    add_vote_table +1 rubocop "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 

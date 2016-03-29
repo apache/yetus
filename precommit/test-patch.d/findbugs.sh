@@ -95,10 +95,8 @@ function findbugs_precheck
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @param        repostatus
 function findbugs_maven_skipper
 {
-  declare repostat=$1
   declare -i i=0
   declare skiplist=()
   declare modname
@@ -122,7 +120,11 @@ function findbugs_maven_skipper
   done
 
   if [[ -n "${modname}" ]]; then
-    add_vote_table 0 findbugs "Skipped ${repostat} modules with no Java source: ${skiplist[*]}"
+    if [[ "${BUILDMODE}" = patch ]]; then
+      add_vote_table 0 findbugs "Skipped patched modules with no Java source: ${skiplist[*]}"
+    else
+      add_vote_table 0 findbugs "Skipped ${#skiplist[@]} modules in the source tree with no Java source."
+    fi
   fi
 }
 
@@ -132,6 +134,7 @@ function findbugs_maven_skipper
 ## @replaceable  no
 ## @return       0 on success
 ## @return       1 on failure
+## @param        repostatus
 function findbugs_runner
 {
   local name=$1
@@ -147,7 +150,7 @@ function findbugs_runner
   # strip out any modules that aren't actually java modules
   # this can save a lot of time during testing
   if [[ "${BUILDTOOL}" = maven ]]; then
-    findbugs_maven_skipper "${name}"
+    findbugs_maven_skipper
   fi
 
   "${BUILDTOOL}_modules_worker" "${name}" findbugs
@@ -248,7 +251,7 @@ function findbugs_preapply
     return 0
   fi
 
-  big_console_header "Pre-patch findbugs detection"
+  big_console_header "findbugs detection: ${PATCH_BRANCH}"
 
   findbugs_runner branch
   result=$?
@@ -329,7 +332,7 @@ function findbugs_postinstall
     return 0
   fi
 
-  big_console_header "Patch findbugs detection"
+  big_console_header "findbugs detection: ${BUILDMODE}"
 
   findbugs_runner patch
 

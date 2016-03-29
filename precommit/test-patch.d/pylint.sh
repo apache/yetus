@@ -71,7 +71,7 @@ function pylint_preapply
     return 0
   fi
 
-  big_console_header "pylint plugin: prepatch"
+  big_console_header "pylint plugin: ${PATCH_BRANCH}"
 
   start_clock
 
@@ -87,7 +87,7 @@ function pylint_preapply
   if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
     count=$(${GREP} -vc "^No config file found" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
-      add_footer_table pylint "prepatch stderr: @@BASE@@/${pylintStderr}"
+      add_footer_table pylint "${PATCH_BRANCH} stderr: @@BASE@@/${pylintStderr}"
       return 1
     fi
   fi
@@ -113,7 +113,7 @@ function pylint_postapply
     return 0
   fi
 
-  big_console_header "pylint plugin: postpatch"
+  big_console_header "pylint plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -135,7 +135,7 @@ function pylint_postapply
     count=$(${GREP} -vc "^No config file found" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
       add_vote_table -1 pylint "Something bad seems to have happened in running pylint. Please check pylint stderr files."
-      add_footer_table pylint "postpatch stderr: @@BASE@@/${pylintStderr}"
+      add_footer_table pylint "${BUILDMODEMSG} stderr: @@BASE@@/${pylintStderr}"
       return 1
     fi
   fi
@@ -158,11 +158,11 @@ function pylint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 pylint "The applied patch ${statstring}"
+    add_vote_table -1 pylint "${BUILDMODEMSG} ${statstring}"
     add_footer_table pylint "@@BASE@@/diff-patch-pylint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 pylint "The applied patch ${statstring}"
+    add_vote_table +1 pylint "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 

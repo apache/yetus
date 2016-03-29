@@ -106,7 +106,7 @@ function shellcheck_preapply
     return 0
   fi
 
-  big_console_header "shellcheck plugin: prepatch"
+  big_console_header "shellcheck plugin: ${PATCH_BRANCH}"
 
   start_clock
 
@@ -157,7 +157,7 @@ function shellcheck_postapply
     return 0
   fi
 
-  big_console_header "shellcheck plugin: postpatch"
+  big_console_header "shellcheck plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -194,12 +194,12 @@ function shellcheck_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 shellcheck "The applied patch ${statstring}"
+    add_vote_table -1 shellcheck "${BUILDMODEMSG} ${statstring}"
     add_footer_table shellcheck "@@BASE@@/diff-patch-shellcheck.txt"
     bugsystem_linecomments "shellcheck" "${PATCH_DIR}/diff-patch-shellcheck.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 shellcheck "The applied patch ${statstring}"
+    add_vote_table +1 shellcheck "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
