@@ -169,6 +169,7 @@ cp -r shelldocs "${bin_tarball}/lib/"
 cp -r release-doc-maker "${bin_tarball}/lib/"
 
 cp -r precommit "${bin_tarball}/lib/"
+ln -s test-patch.sh "${bin_tarball}/lib/precommit/qbt.sh"
 
 mkdir -p "${bin_tarball}/bin"
 
@@ -204,7 +205,7 @@ exec "\$(dirname -- "\${BASH_SOURCE-0}")/../lib/release-doc-maker/releasedocmake
 EOF
 chmod +x "${bin_tarball}/bin/releasedocmaker"
 
-for utility in shelldocs/shelldocs.py \
+for utility in shelldocs/shelldocs.py precommit/qbt.sh \
                precommit/smart-apply-patch.sh precommit/test-patch.sh
 do
   wrapper=${utility##*/}

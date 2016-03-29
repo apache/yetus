@@ -58,6 +58,9 @@ function jmeter_parse_args
   done
 }
 
+## @description  Download jmetere dependencies
+## @audience     private
+## @stability    evolving
 function jmeter_precheck
 {
   if [[ ${JMETER_DOWNLOAD_JARS} = true ]]; then

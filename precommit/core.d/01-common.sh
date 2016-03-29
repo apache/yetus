@@ -536,6 +536,9 @@ function verify_command
     yetus_error "executable for '${cmd_name}' was not specified."
     return 1
   fi
+  if [[ ! "${cmd_path}" =~ / ]]; then
+    cmd_path=$(command -v "${cmd_path}")
+  fi
   if [[ ! -f ${cmd_path} ]]; then
     yetus_error "executable '${cmd_path}' for '${cmd_name}' does not exist."
     return 1
@@ -545,4 +548,23 @@ function verify_command
     return 1
   fi
   return 0
+}
+
+## @description  Faster dirname, given the assumption that
+## @description  dirs are always absolute (e.g., start with /)
+## @description  DO NOT USE with relative paths or where
+## @description  assumption may not be valid!
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        fileobj
+function faster_dirname
+{
+  declare o=$1
+
+  if [[ "${o}" =~ / ]]; then
+    echo "${o%/*}"
+  else
+    echo .
+  fi
 }

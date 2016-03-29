@@ -102,7 +102,7 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_docker\_support
 
-    - If this build tool requires extra settings on the `docker run` command line, this function should be defined and write those options into a file called `${PATCH_DIR}/buildtool-docker-params.txt`.  This is particularly useful for things like mounting volumes for repository caches.
+    - If this build tool requires extra settings on the `docker run` command line, this function should be defined and add those options into an array called `${DOCKER_EXTRAARGS[@]}`. This is particularly useful for things like mounting volumes for repository caches.
 
        **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that `pluginname_initialize` be used to create the necessary directories prior to be used in the `docker run` command.
 

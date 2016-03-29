@@ -106,9 +106,9 @@ function gradle_precompile
 
   if [[ "${repostatus}" = branch ]]; then
     # shellcheck disable=SC2153
-    big_console_header "${PATCH_BRANCH} gradle bootstrap"
+    big_console_header "gradle boostrap: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch gradle bootstrap"
+    big_console_header "gradle bootstrap: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" gradleboot
@@ -277,5 +277,5 @@ function gradle_builtin_personality_file_tests
 
 function gradle_docker_support
 {
-  echo "-v ${HOME}/.gradle:${HOME}/.gradle" > "${PATCH_DIR}/buildtool-docker-params.txt"
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.gradle:${HOME}/.gradle")
 }

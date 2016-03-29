@@ -46,8 +46,12 @@ function hadoop_order
 
   if [[ ${ordering} = normal ]]; then
     hadoopm="${CHANGED_MODULES[*]}"
-  elif  [[ ${ordering} = union ]]; then
+  elif [[ ${ordering} = union ]]; then
     hadoopm="${CHANGED_UNION_MODULES}"
+  elif [[ ${ordering} = mvnsrc ]]; then
+    hadoopm="${MAVEN_SRC_MODULES[*]}"
+  elif [[ ${ordering} = mvnsrctest ]]; then
+    hadoopm="${MAVEN_SRCTEST_MODULES[*]}"
   else
     hadoopm="${ordering}"
   fi
@@ -205,7 +209,7 @@ function personality_modules
         ordering=.
       fi
 
-      if [[ ${repostatus} = patch ]]; then
+      if [[ "${repostatus}" = patch && "${BUILDMODE}" = patch ]]; then
         echo "javadoc pre-reqs:"
         for i in hadoop-project \
           hadoop-common-project/hadoop-annotations; do
@@ -226,7 +230,7 @@ function personality_modules
     ;;
     mvninstall)
       extra="-DskipTests"
-      if [[ ${repostatus} = branch ]]; then
+      if [[ "${repostatus}" = branch || "${BUILDMODE}" = full ]]; then
         ordering=.
       fi
     ;;
@@ -236,7 +240,9 @@ function personality_modules
       fi
     ;;
     unit)
-      if [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
+      if [[ "${BUILDMODE}" = full ]]; then
+        ordering=mvnsrc
+      elif [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
         ordering=.
       fi
 

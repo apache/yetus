@@ -91,9 +91,9 @@ function autoconf_precompile
   fi
 
   if [[ "${repostatus}" = branch ]]; then
-    big_console_header "Pre-patch ${PATCH_BRANCH} autoconf verification"
+    big_console_header "autoconf verification: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch autoconf verification"
+    big_console_header "autoconf verification: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" autoreconf
@@ -108,7 +108,7 @@ function autoconf_precompile
       # shellcheck disable=SC2153
       add_vote_table -1 autoreconf "${PATCH_BRANCH} unable to autoreconf"
     else
-      add_vote_table -1 autoreconf "${repostatus} unable to autoreconf"
+      add_vote_table -1 autoreconf "${BUILDMODEMSG} is unable to autoreconf"
     fi
     add_footer_table "autoreconf" "@@BASE@@/${repostatus}-autoconf-autoreconf"
     return 1
@@ -117,7 +117,7 @@ function autoconf_precompile
       # shellcheck disable=SC2153
       add_vote_table +1 autoreconf "${PATCH_BRANCH} autoreconf successful"
     else
-      add_vote_table +1 autoreconf "${repostatus} autoreconf successful"
+      add_vote_table +1 autoreconf "${BUILDMODEMSG} can autoreconf"
     fi
   fi
 
@@ -138,7 +138,7 @@ function autoconf_precompile
       # shellcheck disable=SC2153
       add_vote_table -1 configure "${PATCH_BRANCH} unable to configure"
     else
-      add_vote_table -1 configure "${repostatus} unable to configure"
+      add_vote_table -1 configure "${BUILDMODEMSG} is unable to configure"
     fi
     add_footer_table "configure" "@@BASE@@/${repostatus}-autoconf-configure"
     return 1
@@ -147,7 +147,7 @@ function autoconf_precompile
       # shellcheck disable=SC2153
       add_vote_table +1 configure "${PATCH_BRANCH} configure successful"
     else
-      add_vote_table +1 configure "${repostatus} configure successful"
+      add_vote_table +1 configure "${BUILDMODEMSG} can configure"
     fi
   fi
   return 0

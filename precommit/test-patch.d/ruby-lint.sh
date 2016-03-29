@@ -63,11 +63,11 @@ function ruby_lint_preapply
     return 0
   fi
 
-  big_console_header "ruby-lint plugin: prepatch"
+  big_console_header "ruby-lint plugin: ${PATCH_BRANCH}"
 
   start_clock
 
-  echo "Running ruby-lint against modified ruby scripts."
+  echo "Running ruby-lint against identified ruby scripts."
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
@@ -136,7 +136,7 @@ function ruby_lint_postapply
     return 0
   fi
 
-  big_console_header "ruby-lint plugin: postpatch"
+  big_console_header "ruby-lint plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -144,7 +144,7 @@ function ruby_lint_postapply
   # by setting the clock back
   offset_clock "${RUBY_LINT_TIMER}"
 
-  echo "Running ruby-lint against modified ruby scripts."
+  echo "Running ruby-lint against identified ruby scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
@@ -176,11 +176,11 @@ function ruby_lint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 ruby-lint "The applied patch ${statstring}"
+    add_vote_table -1 ruby-lint "${BUILDMODEMSG} ${statstring}"
     add_footer_table ruby-lint "@@BASE@@/diff-patch-ruby-lint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 ruby-lint "The applied patch ${statstring}"
+    add_vote_table +1 ruby-lint "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 

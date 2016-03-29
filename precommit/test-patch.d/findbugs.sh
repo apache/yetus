@@ -95,10 +95,8 @@ function findbugs_precheck
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-## @param        repostatus
 function findbugs_maven_skipper
 {
-  declare repostat=$1
   declare -i i=0
   declare skiplist=()
   declare modname
@@ -122,7 +120,11 @@ function findbugs_maven_skipper
   done
 
   if [[ -n "${modname}" ]]; then
-    add_vote_table 0 findbugs "Skipped ${repostat} modules with no Java source: ${skiplist[*]}"
+    if [[ "${BUILDMODE}" = patch ]]; then
+      add_vote_table 0 findbugs "Skipped patched modules with no Java source: ${skiplist[*]}"
+    else
+      add_vote_table 0 findbugs "Skipped ${#skiplist[@]} modules in the source tree with no Java source."
+    fi
   fi
 }
 
@@ -132,6 +134,7 @@ function findbugs_maven_skipper
 ## @replaceable  no
 ## @return       0 on success
 ## @return       1 on failure
+## @param        repostatus
 function findbugs_runner
 {
   local name=$1
@@ -147,7 +150,7 @@ function findbugs_runner
   # strip out any modules that aren't actually java modules
   # this can save a lot of time during testing
   if [[ "${BUILDTOOL}" = maven ]]; then
-    findbugs_maven_skipper "${name}"
+    findbugs_maven_skipper
   fi
 
   "${BUILDTOOL}_modules_worker" "${name}" findbugs
@@ -248,7 +251,7 @@ function findbugs_preapply
     return 0
   fi
 
-  big_console_header "Pre-patch findbugs detection"
+  big_console_header "findbugs detection: ${PATCH_BRANCH}"
 
   findbugs_runner branch
   result=$?
@@ -278,9 +281,19 @@ function findbugs_preapply
 
     if [[ ${module_findbugs_warnings} -gt 0 ]] ; then
       msg="${module} in ${PATCH_BRANCH} has ${module_findbugs_warnings} extant Findbugs warnings."
-      if [[ "${FINDBUGS_WARNINGS_FAIL_PRECHECK}" == "true" ]]; then
+      if [[ "${FINDBUGS_WARNINGS_FAIL_PRECHECK}" = "true" ]]; then
         module_status ${modindex} -1 "branch-findbugs-${fn}-warnings.html" "${msg}"
         ((result=result+1))
+      elif [[ "${BUILDMODE}" = full ]]; then
+        module_status ${modindex} -1 "branch-findbugs-${fn}-warnings.html" "${msg}"
+        ((result=result+1))
+        populate_test_table FindBugs "module:${module}"
+        #shellcheck disable=SC2162
+        while read line; do
+          firstpart=$(echo "${line}" | cut -f2 -d:)
+          secondpart=$(echo "${line}" | cut -f9- -d' ')
+          add_test_table "" "${firstpart}:${secondpart}"
+        done < <("${FINDBUGS_HOME}/bin/convertXmlToText" "${warnings_file}.xml")
       else
         module_status ${modindex} 0 "branch-findbugs-${fn}-warnings.html" "${msg}"
       fi
@@ -329,7 +342,7 @@ function findbugs_postinstall
     return 0
   fi
 
-  big_console_header "Patch findbugs detection"
+  big_console_header "findbugs detection: ${BUILDMODE}"
 
   findbugs_runner patch
 
@@ -463,7 +476,7 @@ function findbugs_rebuild
 {
   declare repostatus=$1
 
-  if [[ "${repostatus}" = branch ]]; then
+  if [[ "${repostatus}" = branch || "${BUILDMODE}" = full ]]; then
     findbugs_preapply
   else
     findbugs_postinstall

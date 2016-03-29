@@ -48,7 +48,7 @@ function xml_postcompile
     return 0
   fi
 
-  big_console_header "Checking if XML files are well-formed"
+  big_console_header "XML verification: ${BUILDMODE}"
 
   js="${JAVA_HOME}/bin/jrunscript"
 
@@ -65,13 +65,13 @@ function xml_postcompile
   done
 
   if [[ ${count} -gt 0 ]]; then
-    add_vote_table -1 xml "The patch has ${count} ill-formed XML file(s)."
+    add_vote_table -1 xml "${BUILDMODEMSG} has ${count} ill-formed XML file(s)."
     add_footer_table xml "@@BASE@@/xml.txt"
     popd >/dev/null
     return 1
   fi
 
   popd >/dev/null
-  add_vote_table +1 xml "The patch has no ill-formed XML file."
+  add_vote_table +1 xml "${BUILDMODEMSG} has no ill-formed XML file."
   return 0
 }

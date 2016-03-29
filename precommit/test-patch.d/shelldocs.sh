@@ -103,7 +103,7 @@ function shelldocs_preapply
     return 0
   fi
 
-  big_console_header "shelldocs plugin: prepatch"
+  big_console_header "shelldocs plugin: ${PATCH_BRANCH}"
 
   start_clock
 
@@ -134,7 +134,7 @@ function shelldocs_postapply
     return 0
   fi
 
-  big_console_header "shelldocs plugin: postpatch"
+  big_console_header "shelldocs plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -170,12 +170,12 @@ function shelldocs_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 shelldocs "The applied patch ${statstring}"
+    add_vote_table -1 shelldocs "${BUILDMODEMSG} ${statstring}"
     add_footer_table shelldocs "@@BASE@@/diff-patch-shelldocs.txt"
     bugsystem_linecomments "shelldocs" "${PATCH_DIR}/diff-patch-shelldocs.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 shelldocs "The applied patch ${statstring}"
+    add_vote_table +1 shelldocs "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 

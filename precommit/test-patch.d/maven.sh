@@ -95,6 +95,11 @@ function maven_parse_args
 
 function maven_initialize
 {
+  if ! verify_command "maven" "${MAVEN}"; then
+    return 1
+  fi
+
+  # we need to do this before docker does it as root
 
   maven_add_install mvneclipse
   maven_add_install mvnsite
@@ -139,7 +144,7 @@ function maven_precheck
   fi
 
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
-    MAVEN_LOCAL_REPO="${MAVEN_CUSTOM_REPOS_DIR}/${PROJECT_NAME}-${PATCH_BRANCH}-${INSTANCE}"
+    MAVEN_LOCAL_REPO="${MAVEN_CUSTOM_REPOS_DIR}/${PROJECT_NAME}-${PATCH_BRANCH}-${BUILDMODE}-${INSTANCE}"
     if [[ -e "${MAVEN_LOCAL_REPO}"
        && ! -d "${MAVEN_LOCAL_REPO}" ]]; then
       yetus_error "ERROR: ${MAVEN_LOCAL_REPO} is not a directory."
@@ -369,7 +374,8 @@ function maven_builtin_personality_modules
   # this always makes sure the local repo has a fresh
   # copy of everything per pom rules.
   if [[ ${repostatus} == branch
-        && ${testtype} == mvninstall ]];then
+        && ${testtype} == mvninstall ]] ||
+     [[ "${BUILDMODE}" = full ]];then
     personality_enqueue_module "${CHANGED_UNION_MODULES}"
     return
   fi
@@ -450,9 +456,9 @@ function mvnsite_postcompile
   fi
 
   if [[ "${repostatus}" = branch ]]; then
-    big_console_header "Pre-patch ${PATCH_BRANCH} maven site verification"
+    big_console_header "maven site verification: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch maven site verification"
+    big_console_header "maven site verification: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" mvnsite
@@ -485,9 +491,9 @@ function mvneclipse_postcompile
   fi
 
   if [[ "${repostatus}" = branch ]]; then
-    big_console_header "Pre-patch ${PATCH_BRANCH} maven eclipse verification"
+    big_console_header "maven eclipse verification: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch maven eclipse verification"
+    big_console_header "maven eclipse verification: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" mvneclipse
@@ -537,9 +543,9 @@ function maven_precompile
   fi
 
   if [[ "${repostatus}" = branch ]]; then
-    big_console_header "Pre-patch ${PATCH_BRANCH} maven install"
+    big_console_header "maven install: ${PATCH_BRANCH}"
   else
-    big_console_header "Patch maven install"
+    big_console_header "maven install: ${BUILDMODE}"
   fi
 
   personality_modules "${repostatus}" mvninstall
@@ -554,11 +560,10 @@ function maven_precompile
 
 function maven_docker_support
 {
-  echo "-v ${HOME}/.m2:${HOME}/.m2" > "${PATCH_DIR}/buildtool-docker-params.txt"
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.m2:${HOME}/.m2")
 
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
-    echo "-v ${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}" \
-      >> "${PATCH_DIR}/buildtool-docker-params.txt"
+    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}")
   fi
 }
 
@@ -676,5 +681,19 @@ function maven_reorder_modules
   yetus_debug "Maven: finish re-ordering modules"
   yetus_debug "Finished list: ${CHANGED_MODULES[*]}"
 
-  add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
+  # build some utility module lists for maven modules
+  for index in "${CHANGED_MODULES[@]}"; do
+    if [[ -d "${index}/src" ]]; then
+      MAVEN_SRC_MODULES=("${MAVEN_SRC_MODULES[@]}" "${index}")
+      if [[ -d "${index}/src/test" ]]; then
+        MAVEN_SRCTEST_MODULES=("${MAVEN_SRCTEST_MODULES[@]}" "${index}")
+      fi
+    fi
+  done
+
+  if [[ "${BUILDMODE}" = patch ]]; then
+    add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
+  else
+    add_vote_table 0 mvndep "Maven dependency ordering"
+  fi
 }

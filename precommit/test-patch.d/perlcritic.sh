@@ -64,11 +64,11 @@ function perlcritic_preapply
     return 0
   fi
 
-  big_console_header "Perl::Critic plugin: prepatch"
+  big_console_header "Perl::Critic plugin: ${PATCH_BRANCH}"
 
   start_clock
 
-  echo "Running perlcritic against modified perl scripts/modules."
+  echo "Running perlcritic against identified perl scripts/modules."
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
@@ -106,7 +106,7 @@ function perlcritic_postapply
     return 0
   fi
 
-  big_console_header "Perl::Critic plugin: postpatch"
+  big_console_header "Perl::Critic plugin: ${BUILDMODE}"
 
   start_clock
 
@@ -114,7 +114,7 @@ function perlcritic_postapply
   # by setting the clock back
   offset_clock "${PERLCRITIC_TIMER}"
 
-  echo "Running perlcritic against modified perl scripts/modules."
+  echo "Running perlcritic against identified perl scripts/modules."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
@@ -147,11 +147,11 @@ function perlcritic_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]]; then
-    add_vote_table -1 perlcritic "The applied patch ${statstring}"
+    add_vote_table -1 perlcritic "${BUILDMODEMSG} ${statstring}"
     add_footer_table perlcritic "@@BASE@@/diff-patch-perlcritic.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 perlcritic "The applied patch ${statstring}"
+    add_vote_table +1 perlcritic "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 

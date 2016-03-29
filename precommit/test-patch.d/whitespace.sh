@@ -49,21 +49,37 @@ function whitespace_postcompile
   start_clock
 
   pushd "${BASEDIR}" >/dev/null
-  # shellcheck disable=SC2016
-  ${AWK} '/\t/ {print $0}' \
-      "${GITDIFFCONTENT}" \
-    | ${GREP} -v Makefile: >> "${PATCH_DIR}/whitespace-tabs.txt"
 
-   ${GREP} -E '[[:blank:]]$' \
-     "${GITDIFFCONTENT}" \
-      >> "${PATCH_DIR}/whitespace-eol.txt"
+  case "${BUILDMODE}" in
+    patch)
+      # shellcheck disable=SC2016
+      ${AWK} '/\t/ {print $0}' \
+          "${GITDIFFCONTENT}" \
+        | ${GREP} -v Makefile: >> "${PATCH_DIR}/whitespace-tabs.txt"
+
+       ${GREP} -E '[[:blank:]]$' \
+         "${GITDIFFCONTENT}" \
+          >> "${PATCH_DIR}/whitespace-eol.txt"
+    ;;
+    full)
+      ${GIT} grep -n -I --extended-regexp '[[:blank:]]$' \
+         >> "${PATCH_DIR}/whitespace-eol.txt"
+      ${GIT} grep -n -I $'\t' \
+        | "${GREP}" -v Makefile \
+        >> "${PATCH_DIR}/whitespace-tabs.txt"
+    ;;
+  esac
 
   # shellcheck disable=SC2016
   count=$(wc -l "${PATCH_DIR}/whitespace-eol.txt" | ${AWK} '{print $1}')
 
   if [[ ${count} -gt 0 ]]; then
-    add_vote_table -1 whitespace "The patch has ${count}"\
-      " line(s) that end in whitespace. Use git apply --whitespace=fix."
+    if [[ "${BUILDMODE}" = full ]]; then
+      add_vote_table -1 whitespace "${BUILDMODEMSG} has ${count} line(s) that end in whitespace."
+    else
+      add_vote_table -1 whitespace \
+        "${BUILDMODEMSG} has ${count} line(s) that end in whitespace. Use git apply --whitespace=fix."
+    fi
 
     whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-eol.txt" "end of line"
     add_footer_table whitespace "@@BASE@@/whitespace-eol.txt"
@@ -74,7 +90,7 @@ function whitespace_postcompile
   count=$(wc -l "${PATCH_DIR}/whitespace-tabs.txt" | ${AWK} '{print $1}')
 
   if [[ ${count} -gt 0 ]]; then
-    add_vote_table -1 whitespace "The patch has ${count}"\
+    add_vote_table -1 whitespace "${BUILDMODEMSG} ${count}"\
       " line(s) with tabs."
     add_footer_table whitespace "@@BASE@@/whitespace-tabs.txt"
     whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-tabs.txt" "tabs in line"
@@ -87,6 +103,6 @@ function whitespace_postcompile
   fi
 
   popd >/dev/null
-  add_vote_table +1 whitespace "Patch has no whitespace issues."
+  add_vote_table +1 whitespace "${BUILDMODEMSG} has no whitespace issues."
   return 0
 }
