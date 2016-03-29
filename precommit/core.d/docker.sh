@@ -23,6 +23,8 @@ DOCKERFAIL="fallback,continue,fail"
 DOCKERSUPPORT=false
 DOCKER_ENABLE_PRIVILEGED=true
 
+declare -a DOCKER_EXTRAARGS
+
 ####
 #### IMPORTANT
 ####
@@ -531,7 +533,7 @@ function docker_run_image
     cleanup_and_exit 1
   fi
 
-  big_console_header "Building patch image: ${patchimagename}"
+  big_console_header "Building ${BUILDMODE} image: ${patchimagename}"
   start_clock
   # using the base image, make one that is patch specific
   dockercmd build \
@@ -564,14 +566,8 @@ PatchSpecificDocker
     cleanup_and_exit 1
   fi
 
-  if [[ -f "${PATCH_DIR}/buildtool-docker-params.txt" ]]; then
-    extraargs=$(cat "${PATCH_DIR}/buildtool-docker-params.txt")
-  else
-    extraargs=""
-  fi
-
   if [[ "${DOCKER_ENABLE_PRIVILEGED}" = true ]]; then
-    extraargs="${extraargs} --privileged "
+    DOCKER_EXTRAARGS=("--privileged" "${DOCKER_EXTRAARGS[@]}")
   fi
 
   client=$(docker_version Client)
@@ -579,9 +575,8 @@ PatchSpecificDocker
 
   dockerversion="Client=${client} Server=${server}"
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
-    # shellcheck disable=SC2086
     exec "${DOCKERCMD}" run --rm=true -i \
-      ${extraargs} \
+      "${DOCKER_EXTRAARGS[@]}" \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -v "${PATCH_DIR}:/testptch/patchprocess" \
       -u "${USER_NAME}" \
@@ -596,9 +591,8 @@ PatchSpecificDocker
       --name "${containername}" \
       "${patchimagename}"
   else
-    # shellcheck disable=SC2086
     exec "${DOCKERCMD}" run --rm=true -i \
-      ${extraargs} \
+      "${DOCKER_EXTRAARGS[@]}" \
       -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -u "${USER_NAME}" \
       -w "/testptch/${PROJECT_NAME}" \
@@ -612,6 +606,9 @@ PatchSpecificDocker
       --name "${containername}" \
       "${patchimagename}"
   fi
+
+  # this should never get reached, but we put it here just in case
+  cleanup_and_exit 1
 }
 
 ## @description  Switch over to a Docker container

@@ -277,5 +277,5 @@ function gradle_builtin_personality_file_tests
 
 function gradle_docker_support
 {
-  echo "-v ${HOME}/.gradle:${HOME}/.gradle" > "${PATCH_DIR}/buildtool-docker-params.txt"
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.gradle:${HOME}/.gradle")
 }

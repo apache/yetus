@@ -200,5 +200,5 @@ function ant_builtin_personality_file_tests
 
 function ant_docker_support
 {
-  echo "-v ${HOME}/.ivy2:${HOME}/.ivy2" > "${PATCH_DIR}/buildtool-docker-params.txt"
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS}" "-v" "${HOME}/.ivy2:${HOME}/.ivy2")
 }

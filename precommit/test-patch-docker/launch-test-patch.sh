@@ -14,6 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+declare -a OVERWRITEARGS
+
+OVERWRITEARGS=("--reexec")
+OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--dockermode")
+OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--basedir=${BASEDIR}")
+
 cd "${BASEDIR}" || exit 1
 
 if [[ -n ${JAVA_HOME}
@@ -25,6 +31,10 @@ fi
 if [[ -z ${JAVA_HOME} ]]; then
   JAVA_HOME=$(find /usr/lib/jvm/ -name "java-*" -type d | tail -1)
   export JAVA_HOME
+  if [[ -n "${JAVA_HOME}" ]]; then
+    OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--java-home=${JAVA_HOME}")
+    echo "Setting ${JAVA_HOME} as the JAVA_HOME."
+  fi
 fi
 
 # Avoid out of memory errors in builds
@@ -35,9 +45,9 @@ export MAVEN_OPTS
 TESTPATCHMODE=${TESTPATCHMODE/--docker }
 TESTPATCHMODE=${TESTPATCHMODE%--docker}
 
-
-cd "${BASEDIR}" || exit 1
 PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
+OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--patch-dir=${PATCH_DIR}")
+OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--user-plugins=${PATCH_DIR}/precommit/user-plugins")
 
 # if patch system is generic, then it's either a local
 # patch file or was in some other way not pulled from a bug
@@ -45,16 +55,11 @@ PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
 # test-patch where to find it.
 if [[ "${PATCH_SYSTEM}" = generic ]]; then
   cp -p "${PATCH_DIR}/patch" /testptch/extras/patch
-  patchfile="/testptch/extras/patch"
+  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "/testptch/extras/patch")
 fi
 
 cd "${PATCH_DIR}/precommit/" || exit 1
 #shellcheck disable=SC2086
 "${PATCH_DIR}/precommit/test-patch.sh" \
-   --reexec \
-   --dockermode ${TESTPATCHMODE} \
-   --basedir="${BASEDIR}" \
-   --patch-dir="${PATCH_DIR}" \
-   --java-home="${JAVA_HOME}" \
-   --user-plugins="${PATCH_DIR}/precommit/user-plugins" \
-   ${patchfile}
+   ${TESTPATCHMODE} \
+  "${OVERWRITEARGS[@]}"

@@ -554,11 +554,10 @@ function maven_precompile
 
 function maven_docker_support
 {
-  echo "-v ${HOME}/.m2:${HOME}/.m2" > "${PATCH_DIR}/buildtool-docker-params.txt"
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.m2:${HOME}/.m2")
 
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
-    echo "-v ${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}" \
-      >> "${PATCH_DIR}/buildtool-docker-params.txt"
+    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}")
   fi
 }
 
