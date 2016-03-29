@@ -58,6 +58,10 @@ if [[ "${PATCH_SYSTEM}" = generic ]]; then
   OVERWRITEARGS=("${OVERWRITEARGS[@]}" "/testptch/extras/patch")
 fi
 
+if [[ -f /testptch/console.txt ]]; then
+  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--console-report-file=/testptch/console.txt")
+fi
+
 cd "${PATCH_DIR}/precommit/" || exit 1
 #shellcheck disable=SC2086
 "${PATCH_DIR}/precommit/test-patch.sh" \

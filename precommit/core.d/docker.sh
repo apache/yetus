@@ -570,6 +570,11 @@ PatchSpecificDocker
     DOCKER_EXTRAARGS=("--privileged" "${DOCKER_EXTRAARGS[@]}")
   fi
 
+  if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
+    touch "${CONSOLE_REPORT_FILE}"
+    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${CONSOLE_REPORT_FILE}:/testptch/console.txt")
+  fi
+
   client=$(docker_version Client)
   server=$(docker_version Server)
 

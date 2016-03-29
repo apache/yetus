@@ -45,6 +45,11 @@ function console_finalreport
   declare seccoladj=0
   declare spcfx=${PATCH_DIR}/spcl.txt
 
+  if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
+    exec 6>&1
+    exec >"${CONSOLE_REPORT_FILE}"
+  fi
+
   if [[ ${result} == 0 ]]; then
     if [[ ${ROBOT} == false ]]; then
       if declare -f ${PROJECT_NAME}_console_success >/dev/null; then
@@ -154,4 +159,9 @@ function console_finalreport
     printf "%s\n" "${comment}"
     ((i=i+1))
   done
+
+  if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
+    exec 1>&6 6>&-
+    cat "${CONSOLE_REPORT_FILE}"
+  fi
 }

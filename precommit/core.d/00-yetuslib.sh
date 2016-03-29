@@ -101,7 +101,7 @@ function yetus_run_and_redirect
 ## @description  Given a filename or dir, return the absolute version of it
 ## @audience     public
 ## @stability    stable
-## @param        directory
+## @param        fsobj
 ## @replaceable  no
 ## @return       0 success
 ## @return       1 failure

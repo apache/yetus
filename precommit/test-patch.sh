@@ -651,7 +651,6 @@ function relative_dir
 ## @replaceable  no
 function yetus_usage
 {
-
   declare bugsys
   declare jdktlist
 
@@ -725,6 +724,7 @@ function yetus_usage
   yetus_add_option "--build-url=<url>" "Set the build location web page (Default: '${BUILD_URL}')"
   yetus_add_option "--build-url-console=<location>" "Location relative to --build-url of the console (Default: '${BUILD_URL_CONSOLE}')"
   yetus_add_option "--build-url-patchdir=<location>" "Location relative to --build-url of the --patch-dir (Default: '${BUILD_URL_ARTIFACTS}')"
+  yetus_add_option "--console-report-file=<file>" "Save the final console-based report to a file in addition to the screen"
   yetus_add_option "--console-urls" "Use the build URL instead of path on the console report"
   yetus_add_option "--instance=<string>" "Parallel execution identifier string"
   yetus_add_option "--jenkins" "Enable Jenkins-specifc handling (auto: --robot)"
@@ -788,6 +788,9 @@ function parse_args
       --build-url-console=*)
         # shellcheck disable=SC2034
         BUILD_URL_CONSOLE=${i#*=}
+      ;;
+      --console-report-file=*)
+        CONSOLE_REPORT_FILE=${i#*=}
       ;;
       --console-urls)
         # shellcheck disable=SC2034
@@ -940,6 +943,7 @@ function parse_args
     PATCH_DIR="${USER_PATCH_DIR}"
   fi
 
+  # we need absolute dir for PATCH_DIR
   cd "${STARTINGDIR}" || cleanup_and_exit 1
   if [[ ! -d ${PATCH_DIR} ]]; then
     mkdir -p "${PATCH_DIR}"
@@ -950,9 +954,19 @@ function parse_args
       cleanup_and_exit 1
     fi
   fi
-
-  # we need absolute dir for PATCH_DIR
   PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
+
+  # we need absolute dir for ${CONSOLE_REPORT_FILE}
+  if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
+    touch "${CONSOLE_REPORT_FILE}"
+    if [[ $? != 0 ]]; then
+      yetus_error "ERROR: cannot write to ${CONSOLE_REPORT_FILE}. Disabling console report file."
+      unset CONSOLE_REPORT_FILE
+    else
+      j="${CONSOLE_REPORT_FILE}"
+      CONSOLE_REPORT_FILE=$(yetus_abs "${j}")
+    fi
+  fi
 
   if [[ ${RESETREPO} == "true" ]] ; then
     yetus_add_entry EXEC_MODES ResetRepo
