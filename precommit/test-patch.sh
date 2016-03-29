@@ -91,6 +91,9 @@ function setup_defaults
   CHANGED_UNION_MODULES=""
   REEXECED=false
   RESETREPO=false
+  BUILDMODE=patch
+  # shellcheck disable=SC2034
+  BUILDMODEMSG="The patch"
   ISSUE=""
   TIMER=$(date +"%s")
   BUILDTOOL=maven
@@ -664,10 +667,14 @@ function yetus_usage
   jdktlist=$(echo ${JDK_TEST_LIST})
   jdktlist=${jdktlist// /,}
 
-  echo "test-patch.sh [OPTIONS] patch"
-  echo ""
-  echo "Where:"
-  echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"
+  if [[ "${BUILDMODE}" = patch ]]; then
+    echo "${BINNAME} [OPTIONS] patch"
+    echo ""
+    echo "Where:"
+    echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"
+  else
+    echo "${BINNAME} [OPTIONS]"
+  fi
   echo ""
   echo "Options:"
   echo ""
@@ -681,6 +688,7 @@ function yetus_usage
   yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
+  yetus_add_option "--empty-patch" "Create a summary of the current source tree"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
@@ -805,6 +813,11 @@ function parse_args
       --instance=*)
         INSTANCE=${i#*=}
       ;;
+      --empty-patch)
+        BUILDMODE=full
+        # shellcheck disable=SC2034
+        BUILDMODEMSG="The source tree"
+      ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
       ;;
@@ -895,7 +908,8 @@ function parse_args
 
   docker_parse_args "$@"
 
-  if [[ -z "${PATCH_OR_ISSUE}" ]]; then
+  if [[ -z "${PATCH_OR_ISSUE}"
+       && "${BUILDMODE}" = patch ]]; then
     yetus_usage
     exit 1
   fi
@@ -1014,7 +1028,7 @@ function find_buildfile_dir
       yetus_debug "ERROR: ${buildfile} is not found."
       return 1
     else
-      dir=$(dirname "${dir}")
+      dir=$(faster_dirname "${dir}")
     fi
   done
 }
@@ -1027,17 +1041,29 @@ function find_buildfile_dir
 function find_changed_files
 {
   declare line
+  declare oldifs
 
-  # get a list of all of the files that have been changed,
-  # except for /dev/null (which would be present for new files).
-  # Additionally, remove any a/ b/ patterns at the front of the patch filenames.
-  # shellcheck disable=SC2016
-  while read -r line; do
-    CHANGED_FILES=("${CHANGED_FILES[@]}" "${line}")
-  done < <(
-    ${AWK} 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"){print s}}
-    /^diff --git /   { p($3); p($4) }
-    /^(\+\+\+|---) / { p($2) }' "${PATCH_DIR}/patch" | sort -u)
+  case "${BUILDMODE}" in
+    full)
+      echo "Building a list of all files in the source tree"
+      oldifs=${IFS}
+      IFS=$'\n'
+      CHANGED_FILES=($(git ls-files))
+      IFS=${oldifs}
+    ;;
+    patch)
+      # get a list of all of the files that have been changed,
+      # except for /dev/null (which would be present for new files).
+      # Additionally, remove any a/ b/ patterns at the front of the patch filenames.
+      # shellcheck disable=SC2016
+      while read -r line; do
+        CHANGED_FILES=("${CHANGED_FILES[@]}" "${line}")
+      done < <(
+        ${AWK} 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"){print s}}
+        /^diff --git /   { p($3); p($4) }
+        /^(\+\+\+|---) / { p($2) }' "${PATCH_DIR}/patch" | sort -u)
+      ;;
+    esac
 }
 
 ## @description Check for directories to skip during
@@ -1070,7 +1096,7 @@ function module_skipdir
     if [[ ${dir} == "." || ${dir} == "/" ]]; then
       return 0
     else
-      dir=$(dirname "${dir}")
+      dir=$(faster_dirname "${dir}")
       yetus_debug "Trying to skip: ${dir}"
     fi
   done
@@ -1107,8 +1133,15 @@ function find_changed_modules
   if [[ -z ${buildfile} ]]; then
     tmpmods=(".")
   else
+
     # Now find all the modules that were changed
     for i in "${CHANGED_FILES[@]}"; do
+
+      # TODO: optimize this
+      if [[ "${BUILDMODE}" = full && ! "${i}" =~ ${buildfile} ]]; then
+        continue
+      fi
+
       dirt=$(dirname "${i}")
 
       module_skipdir "${dirt}"
@@ -1277,8 +1310,10 @@ function git_checkout
 
     currentbranch=$(${GIT} rev-parse --abbrev-ref HEAD)
     if [[ "${currentbranch}" != "${PATCH_BRANCH}" ]];then
-      echo "WARNING: Current git branch is ${currentbranch} but patch is built for ${PATCH_BRANCH}."
-      echo "WARNING: Continuing anyway..."
+      if [[ "${BUILDMODE}" = patch ]]; then
+        echo "WARNING: Current git branch is ${currentbranch} but patch is built for ${PATCH_BRANCH}."
+        echo "WARNING: Continuing anyway..."
+      fi
       PATCH_BRANCH=${currentbranch}
     fi
   fi
@@ -1403,8 +1438,11 @@ function determine_issue
 ## @replaceable  no
 function determine_needed_tests
 {
-  local i
-  local plugin
+  declare i
+  declare plugin
+
+  big_console_header "Determining needed tests"
+  echo "(Depending upon input size and number of plug-ins, this may take a while)"
 
   for i in "${CHANGED_FILES[@]}"; do
     yetus_debug "Determining needed tests for ${i}"
@@ -1597,7 +1635,7 @@ function check_reexec
     fi
   done
 
-  if [[ ${copy} == true ]]; then
+  if [[ ${copy} == true && "${BUILDMODE}" != full ]]; then
     big_console_header "precommit patch detected"
 
     if [[ ${RESETREPO} == false ]]; then
@@ -1740,8 +1778,10 @@ function modules_messages
   declare statusjdk
   declare multijdkmode=false
 
-  if [[ ${repostatus} == branch ]]; then
+  if [[ "${repostatus}" == branch ]]; then
     repo=${PATCH_BRANCH}
+  elif [[ "${BUILDMODE}" == full ]]; then
+    repo="the source"
   else
     repo="the patch"
   fi
@@ -2382,12 +2422,16 @@ function generic_calcdiff_status
   ((samepatch=numpatch-addpatch))
   ((fixedpatch=numbranch-numpatch+addpatch))
 
-  printf "generated %i new + %i unchanged - %i fixed = %i total (was %i)" \
-    "${addpatch}" \
-    "${samepatch}" \
-    "${fixedpatch}" \
-    "${numpatch}" \
-    "${numbranch}"
+  if [[ "${BUILDMODE}" = full ]]; then
+    printf "has %i issues." "${addpatch}"
+  else
+    printf "generated %i new + %i unchanged - %i fixed = %i total (was %i)" \
+      "${addpatch}" \
+      "${samepatch}" \
+      "${fixedpatch}" \
+      "${numpatch}" \
+      "${numbranch}"
+  fi
 }
 
 ## @description  Helper routine for plugins to ask projects, etc
@@ -2595,7 +2639,7 @@ function generic_post_handler
     return 0
   fi
 
-  big_console_header "Patch ${testtype} verification"
+  big_console_header "${testtype} verification: ${BUILDMODE}"
 
   for jdkindex in ${JDK_DIR_LIST}; do
     if [[ ${multijdkmode} == true ]]; then
@@ -2719,9 +2763,9 @@ function compile
   fi
 
   if [[ ${codebase} = "branch" ]]; then
-    big_console_header "Pre-patch ${PATCH_BRANCH} compilation"
+    big_console_header "${PATCH_BRANCH} compilation: pre-patch"
   else
-    big_console_header "Patch compilation"
+    big_console_header "${PATCH_BRANCH} compilation: ${BUILDMODE}"
   fi
 
   yetus_debug "Is JVM Required? ${JVM_REQUIRED}"
@@ -2894,26 +2938,33 @@ function initialize
 
   echo "Modes: ${EXEC_MODES}"
 
-  locate_patch
+  if [[ "${BUILDMODE}" = patch ]]; then
+    locate_patch
 
-  # from here on out, we'll be in ${BASEDIR} for cwd
-  # plugins need to pushd/popd if they change.
-  git_checkout
+    # from here on out, we'll be in ${BASEDIR} for cwd
+    # plugins need to pushd/popd if they change.
+    git_checkout
 
-  determine_issue
-  if [[ "${ISSUE}" == 'Unknown' ]]; then
-    echo "Testing patch on ${PATCH_BRANCH}."
+    determine_issue
+    if [[ "${ISSUE}" == 'Unknown' ]]; then
+      echo "Testing patch on ${PATCH_BRANCH}."
+    else
+      echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
+    fi
+
+    patchfile_dryrun_driver "${PATCH_DIR}/patch"
+    if [[ $? != 0 ]]; then
+      ((RESULT = RESULT + 1))
+      yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
+      add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+    fi
+
   else
-    echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
-  fi
 
-  patchfile_dryrun_driver "${PATCH_DIR}/patch"
-  if [[ $? != 0 ]]; then
-    ((RESULT = RESULT + 1))
-    yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
-    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
-    bugsystem_finalreport 1
-    cleanup_and_exit 1
+    git_checkout
+
   fi
 
   find_changed_files
@@ -2984,17 +3035,19 @@ initialize "$@"
 
 prechecks
 
-patchfiletests
-((RESULT=RESULT+$?))
+if [[ "${BUILDMODE}" = patch ]]; then
+  patchfiletests
+  ((RESULT=RESULT+$?))
 
-compile_cycle branch
-((RESULT=RESULT+$?))
+  compile_cycle branch
+  ((RESULT=RESULT+$?))
 
-distclean
+  distclean
 
-apply_patch_file
+  apply_patch_file
 
-compute_gitdiff
+  compute_gitdiff
+fi
 
 compile_cycle patch
 ((RESULT=RESULT+$?))
