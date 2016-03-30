@@ -25,6 +25,8 @@ fi
 
 this="${BASH_SOURCE-$0}"
 BINDIR=$(cd -P -- "$(dirname -- "${this}")" >/dev/null && pwd -P)
+BINNAME=${this##*/}
+BINNAME=${BINNAME%.sh}
 STARTINGDIR=$(pwd)
 USER_PARAMS=("$@")
 GLOBALTIMER=$(date +"%s")
@@ -3031,7 +3033,11 @@ function import_core
 
 import_core
 
-initialize "$@"
+if [[ "${BINNAME}" =~ qbt ]]; then
+  initialize --empty-patch "$@"
+else
+  initialize "$@"
+fi
 
 prechecks
 
