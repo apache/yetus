@@ -205,7 +205,7 @@ function personality_modules
         ordering=.
       fi
 
-      if [[ ${repostatus} = patch ]]; then
+      if [[ "${repostatus}" = patch && "${BUILDMODE}" = patch ]]; then
         echo "javadoc pre-reqs:"
         for i in hadoop-project \
           hadoop-common-project/hadoop-annotations; do
@@ -226,7 +226,7 @@ function personality_modules
     ;;
     mvninstall)
       extra="-DskipTests"
-      if [[ ${repostatus} = branch ]]; then
+      if [[ "${repostatus}" = branch || "${BUILDMODE}" = full ]]; then
         ordering=.
       fi
     ;;
