@@ -29,10 +29,12 @@
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
+## @param        true iff this is a release build
 ## @return       1 - Some dependencies are missing
 ## @return       0 - All dependencies exist
 function detect_dependencies
 {
+  declare is_release=$1
   local exit_code=0
   if ! [ -x "$(command -v java)" ]; then
     echo "Java not found! Must install JDK version >= 1.7" >&2
@@ -46,6 +48,16 @@ function detect_dependencies
   if ! [ -x "$(command -v bundle)" ]; then
     echo "building docs requires a Ruby executable bundle." >&2
     echo "Install it by executing 'gem install bundler && bundle install'" >&2
+    exit_code=1
+  fi
+
+  if ! [ -x "$(command -v tar)" ]; then
+    echo "Building archives requires the 'tar' command." >&2
+    exit_code=1
+  fi
+
+  if [ "${is_release}" = "true" ] && ! [ -x "$(command -v bsdtar)" ]; then
+    echo "building the release source archive requires the 'bsdtar' command." >&2
     exit_code=1
   fi
 
@@ -70,7 +82,7 @@ done
 
 echo "working on version '${YETUS_VERSION}'"
 
-detect_dependencies
+detect_dependencies "${release}"
 mkdir -p target
 
 if [ "${offline}" != "true" ]; then
@@ -106,8 +118,8 @@ if [ "${release}" = "true" ]; then
   echo "creating source tarball at '$(pwd)/target/'"
   rm "target/yetus-${YETUS_VERSION}-src".tar* 2>/dev/null || true
   current=$(basename "$(pwd)")
-  tar -s "/${current}/yetus-${YETUS_VERSION}/" -C ../ -cf "target/yetus-${YETUS_VERSION}-src.tar" --exclude '*/target/*' --exclude '*/publish/*' --exclude '*/.git/*' "${current}"
-  tar -s "/target/yetus-${YETUS_VERSION}/" -rf "target/yetus-${YETUS_VERSION}-src.tar" target/RELEASENOTES.md target/CHANGES.md
+  bsdtar -s "/${current}/yetus-${YETUS_VERSION}/" -C ../ -cf "target/yetus-${YETUS_VERSION}-src.tar" --exclude '*/target/*' --exclude '*/publish/*' --exclude '*/.git/*' "${current}"
+  bsdtar -s "/target/yetus-${YETUS_VERSION}/" -rf "target/yetus-${YETUS_VERSION}-src.tar" target/RELEASENOTES.md target/CHANGES.md
   gzip "target/yetus-${YETUS_VERSION}-src.tar"
 fi
 
