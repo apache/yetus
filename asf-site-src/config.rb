@@ -95,7 +95,7 @@ def releasenotes(output, version)
   #       file timestamp
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
-                                       --usetoday --license --lint)`
+                                       --usetoday --license --lint=all)`
   unless $CHILD_STATUS.exitstatus == 0
     abort("releasedocmaker failed to generate release notes for #{version}.")
   end

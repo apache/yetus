@@ -88,7 +88,9 @@ mkdir -p target
 if [ "${offline}" != "true" ]; then
   JIRA_VERSION="${YETUS_VERSION%%-SNAPSHOT}"
   echo "generating release docs."
-  release-doc-maker/releasedocmaker.py --lint --license --outputdir target \
+  # Note that we use the bare python here instead of the wrapper script, since we
+  # create said script.
+  release-doc-maker/releasedocmaker.py --lint=all --license --outputdir target \
                                                    --project YETUS "--version=${JIRA_VERSION}" \
                                                    --projecttitle="Apache Yetus" --usetoday
   mv "target/${JIRA_VERSION}/RELEASENOTES.${JIRA_VERSION}.md" target/RELEASENOTES.md
@@ -170,7 +172,39 @@ cp -r precommit "${bin_tarball}/lib/"
 
 mkdir -p "${bin_tarball}/bin"
 
-for utility in shelldocs/shelldocs.py release-doc-maker/releasedocmaker.py \
+# Make a special version of the shell wrapper for releasedocmaker
+# that maintains the ability to have '--lint' mean '--lint=all'
+cat >"${bin_tarball}/bin/releasedocmaker" <<EOF
+#!/usr/bin/env bash
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+args=()
+for arg in "\${@}"; do
+  if [ "\${arg}" = "-n" ] || [ "\${arg}" = "--lint" ]; then
+    args=("\${args[@]}" "--lint=all")
+  else
+    args=("\${args[@]}" "\${arg}")
+  fi
+done
+
+exec "\$(dirname -- "\${BASH_SOURCE-0}")/../lib/release-doc-maker/releasedocmaker.py" "\${args[@]}"
+EOF
+chmod +x "${bin_tarball}/bin/releasedocmaker"
+
+for utility in shelldocs/shelldocs.py \
                precommit/smart-apply-patch.sh precommit/test-patch.sh
 do
   wrapper=${utility##*/}
