@@ -319,24 +319,6 @@ class Jira(object):
                             self.important = True
         return self.important
 
-    def check_missing_component(self):
-        if len(self.fields['components']) > 0:
-            return False
-        return True
-
-    def check_missing_assignee(self):
-        if self.fields['assignee'] is not None:
-            return False
-        return True
-
-    def check_version_string(self):
-        field = self.parent.field_id_map['Fix Version/s']
-        for ver in self.fields[field]:
-            found = re.match(r'^((\d+)(\.\d+)*).*$|^(\w+\-\d+)$', ver['name'])
-            if not found:
-                return True
-        return False
-
     def get_release_date(self, version):
         fix_versions = self.fields['fixVersions']
         for j in range(len(fix_versions)):
@@ -462,11 +444,65 @@ class Linter(object):
     """Encapsulates lint-related functionality.
     Maintains running lint statistics about JIRAs."""
 
-    def __init__(self, version):
+    _valid_filters = ["incompatible", "important", "version", "component", "assignee"]
+
+    def __init__(self, version, options):
         self._warning_count = 0
         self._error_count = 0
         self._lint_message = ""
         self._version = version
+
+        self._filters = dict(zip(self._valid_filters, [False]*len(self._valid_filters)))
+
+        self.enabled = False
+        self._parse_options(options)
+
+    @staticmethod
+    def add_parser_options(parser):
+        """Add Linter options to passed optparse parser."""
+        filter_string = ", ".join("'" + f + "'" for f in Linter._valid_filters)
+        parser.add_option("-n", "--lint", dest="lint", action="append", type="string",
+                          help="Specify lint filters. Valid filters are " + \
+                          filter_string + ". " + \
+                          "'all' enables all lint filters. " + \
+                          "Multiple filters can be specified comma-delimited and " + \
+                          "filters can be negated, e.g. 'all,-component'.")
+
+    def _parse_options(self, options):
+        """Parse options from optparse."""
+
+        if options.lint is None or len(options.lint) == 0:
+            return
+        self.enabled = True
+
+        # Valid filter specifications are self._valid_filters, negations, and "all"
+        valid_list = self._valid_filters
+        valid_list += ["-" + v for v in valid_list]
+        valid_list += ["all"]
+        valid = set(valid_list)
+
+        enabled = []
+        disabled = []
+
+        for o in options.lint:
+            for token in o.split(","):
+                if token not in valid:
+                    print "Unknown lint filter '%s', valid options are: %s" % \
+                            (token, ", ".join(v for v in sorted(valid)))
+                    sys.exit(1)
+                if token.startswith("-"):
+                    disabled.append(token[1:])
+                else:
+                    enabled.append(token)
+
+        for e in enabled:
+            if e == "all":
+                for f in self._valid_filters:
+                    self._filters[f] = True
+            else:
+                self._filters[e] = True
+        for d in disabled:
+            self._filters[d] = False
 
     def had_errors(self):
         """Returns True if a lint error was encountered, else False."""
@@ -474,33 +510,67 @@ class Linter(object):
 
     def message(self):
         """Return summary lint message suitable for printing to stdout."""
+        if not self.enabled:
+            return
         return self._lint_message + \
                 "\n=======================================" + \
                 "\n%s: Error:%d, Warning:%d \n" % \
                 (self._version, self._error_count, self._warning_count)
 
+    def _check_missing_component(self, jira):
+        """Return if JIRA has a 'missing component' lint error."""
+        if not self._filters["component"]:
+            return False
+
+        if len(jira.fields['components']) > 0:
+            return False
+        return True
+
+    def _check_missing_assignee(self, jira):
+        """Return if JIRA has a 'missing assignee' lint error."""
+        if not self._filters["assignee"]:
+            return False
+
+        if jira.fields['assignee'] is not None:
+            return False
+        return True
+
+    def _check_version_string(self, jira):
+        """Return if JIRA has a version string lint error."""
+        if not self._filters["version"]:
+            return False
+
+        field = jira.parent.field_id_map['Fix Version/s']
+        for ver in jira.fields[field]:
+            found = re.match(r'^((\d+)(\.\d+)*).*$|^(\w+\-\d+)$', ver['name'])
+            if not found:
+                return True
+        return False
+
     def lint(self, jira):
         """Run lint check on a JIRA."""
+        if not self.enabled:
+            return
         if len(jira.get_release_note()) == 0:
-            if jira.get_incompatible_change():
+            if self._filters["incompatible"] and jira.get_incompatible_change():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
                                 (textsanitize(jira.get_id()))
-            if jira.get_important():
+            if self._filters["important"] and jira.get_important():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: important issue %s lacks release notes." % \
                                 (textsanitize(jira.get_id()))
 
-        if jira.check_version_string():
+        if self._check_version_string(jira):
             self._warning_count += 1
             self._lint_message += "\nWARNING: Version string problem for %s " % jira.get_id()
 
-        if jira.check_missing_component() or jira.check_missing_assignee():
+        if self._check_missing_component(jira) or self._check_missing_assignee(jira):
             self._error_count += 1
             error_message = []
-            if jira.check_missing_component():
+            if self._check_missing_component(jira):
                 error_message.append("component")
-            if jira.check_missing_assignee():
+            if self._check_missing_assignee(jira):
                 error_message.append("assignee")
             self._lint_message += "\nERROR: missing %s for %s " \
                             % (" and ".join(error_message), jira.get_id())
@@ -516,8 +586,6 @@ def parse_args():
                       default=False, help="build an index file")
     parser.add_option("-l", "--license", dest="license", action="store_true",
                       default=False, help="Add an ASF license")
-    parser.add_option("-n", "--lint", dest="lint", action="store_true",
-                      help="use lint flag to exit on failures")
     parser.add_option("-p", "--project", dest="projects",
                       action="append", type="string",
                       help="projects in JIRA to include in releasenotes", metavar="PROJECT")
@@ -539,6 +607,9 @@ def parse_args():
                       help="specify output directory to put release docs to.")
     parser.add_option("-B", "--baseurl", dest="base_url", action="append", type="string",
                       help="specify base URL of the JIRA instance.")
+
+    Linter.add_parser_options(parser)
+
     (options, _) = parser.parse_args()
 
     # Validate options
@@ -610,6 +681,7 @@ def main():
 
     for version in versions:
         vstr = str(version)
+        linter = Linter(vstr, options)
         jlist = sorted(JiraIter(vstr, projects))
         if len(jlist) == 0:
             print "There is no issue which has the specified version: %s" % version
@@ -645,8 +717,6 @@ def main():
 
         reloutputs.write_all(relhead)
         choutputs.write_all(chhead)
-
-        linter = Linter(vstr)
 
         incompatlist = []
         importantlist = []
@@ -695,7 +765,7 @@ def main():
 
             linter.lint(jira)
 
-        if options.lint is True:
+        if linter.enabled:
             print linter.message()
             if linter.had_errors():
                 haderrors = True
