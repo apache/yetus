@@ -1780,10 +1780,10 @@ function modules_messages
   declare statusjdk
   declare multijdkmode=false
 
-  if [[ "${repostatus}" == branch ]]; then
-    repo=${PATCH_BRANCH}
-  elif [[ "${BUILDMODE}" == full ]]; then
+  if [[ "${BUILDMODE}" == full ]]; then
     repo="the source"
+  elif [[ "${repostatus}" == branch ]]; then
+    repo=${PATCH_BRANCH}
   else
     repo="the patch"
   fi
@@ -1899,7 +1899,9 @@ function modules_workers
   declare result=0
   declare argv
 
-  if [[ ${repostatus} == branch ]]; then
+  if [[ "${BUILDMODE}" = full ]]; then
+    repo="the source"
+  elif [[ ${repostatus} == branch ]]; then
     repo=${PATCH_BRANCH}
   else
     repo="the patch"
