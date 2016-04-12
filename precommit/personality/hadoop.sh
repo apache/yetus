@@ -46,8 +46,12 @@ function hadoop_order
 
   if [[ ${ordering} = normal ]]; then
     hadoopm="${CHANGED_MODULES[*]}"
-  elif  [[ ${ordering} = union ]]; then
+  elif [[ ${ordering} = union ]]; then
     hadoopm="${CHANGED_UNION_MODULES}"
+  elif [[ ${ordering} = mvnsrc ]]; then
+    hadoopm="${MAVEN_SRC_MODULES[*]}"
+  elif [[ ${ordering} = mvnsrctest ]]; then
+    hadoopm="${MAVEN_SRCTEST_MODULES[*]}"
   else
     hadoopm="${ordering}"
   fi
@@ -236,7 +240,9 @@ function personality_modules
       fi
     ;;
     unit)
-      if [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
+      if [[ "${BUILDMODE}" = full ]]; then
+        ordering=mvnsrc
+      elif [[ "${CHANGED_MODULES[*]}" =~ \. ]]; then
         ordering=.
       fi
 

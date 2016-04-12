@@ -685,6 +685,16 @@ function maven_reorder_modules
   yetus_debug "Maven: finish re-ordering modules"
   yetus_debug "Finished list: ${CHANGED_MODULES[*]}"
 
+  # build some utility module lists for maven modules
+  for index in "${CHANGED_MODULES[@]}"; do
+    if [[ -d "${index}/src" ]]; then
+      MAVEN_SRC_MODULES=("${MAVEN_SRC_MODULES[@]}" "${index}")
+      if [[ -d "${index}/src/test" ]]; then
+        MAVEN_SRCTEST_MODULES=("${MAVEN_SRCTEST_MODULES[@]}" "${index}")
+      fi
+    fi
+  done
+
   if [[ "${BUILDMODE}" = patch ]]; then
     add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
   else
