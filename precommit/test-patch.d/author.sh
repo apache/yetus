@@ -26,10 +26,17 @@ function author_generic
 {
   declare authortags
   declare i
+  declare msg
+
+  if [[ "${BUILDMODE}" = full ]]; then
+    msg="patch"
+  else
+    msg="source tree"
+  fi
 
   # shellcheck disable=SC2016
   authortags=$(wc -l "${PATCH_DIR}/author-tags.txt" | "${AWK}" '{print $1}')
-  echo "There appear to be ${authortags} @author tags in the patch."
+  echo "There appear to be ${authortags} @author tags in the ${msg}."
   if [[ ${authortags} != 0 ]] ; then
     add_vote_table -1 @author \
       "${BUILDMODEMSG} appears to contain ${authortags} @author tags which the" \
