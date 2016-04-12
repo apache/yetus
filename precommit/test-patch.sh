@@ -38,12 +38,17 @@ declare -a TP_HEADER
 declare -a TP_VOTE_TABLE
 declare -a TP_TEST_TABLE
 declare -a TP_FOOTER_TABLE
+declare -a MODULE
+declare -a MODULE_BACKUP_STATUS
+declare -a MODULE_BACKUP_STATUS_TIMER
+declare -a MODULE_BACKUP_STATUS_MSG
+declare -a MODULE_BACKUP_STATUS_LOG
+declare -a MODULE_BACKUP_COMPILE_LOG
 declare -a MODULE_STATUS
 declare -a MODULE_STATUS_TIMER
 declare -a MODULE_STATUS_MSG
 declare -a MODULE_STATUS_LOG
 declare -a MODULE_COMPILE_LOG
-declare -a MODULE
 declare -a USER_MODULE_LIST
 
 TP_HEADER_COUNTER=0
@@ -1674,6 +1679,32 @@ function modules_reset
   MODULE_COMPILE_LOG=()
 }
 
+## @description  Backup the MODULE globals prior to loop processing
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function modules_backup
+{
+  MODULE_BACKUP_STATUS=("${MODULE_STATUS[@]}")
+  MODULE_BACKUP_STATUS_TIMER=("${MODULE_STATUS_TIMER[@]}")
+  MODULE_BACKUP_STATUS_MSG=("${MODULE_STATUS_MSG[@]}")
+  MODULE_BACKUP_STATUS_LOG=("${MODULE_STATUS_LOG[@]}")
+  MODULE_BACKUP_COMPILE_LOG=("${MODULE_COMPILE_LOG[@]}")
+}
+
+## @description  Restore the backup
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function modules_restore
+{
+  MODULE_STATUS=("${MODULE_BACKUP_STATUS[@]}")
+  MODULE_STATUS_TIMER=("${MODULE_BACKUP_STATUS_TIMER[@]}")
+  MODULE_STATUS_MSG=("${MODULE_BACKUP_STATUS_MSG[@]}")
+  MODULE_STATUS_LOG=("${MODULE_BACKUP_STATUS_LOG[@]}")
+  MODULE_COMPILE_LOG=("${MODULE_BACKUP_COMPILE_LOG[@]}")
+}
+
 ## @description  Utility to print standard module errors
 ## @audience     public
 ## @stability    evolving
@@ -1873,7 +1904,7 @@ function modules_workers
     # compile is special
     if [[ ${testtype} = compile ]]; then
       MODULE_COMPILE_LOG[${modindex}]="${PATCH_DIR}/${repostatus}-${testtype}-${fn}.txt"
-      yetus_debug "Comile log set to ${MODULE_COMPILE_LOG[${modindex}]}"
+      yetus_debug "Compile log set to ${MODULE_COMPILE_LOG[${modindex}]}"
     fi
 
     savestop=$(stop_clock)
@@ -2328,11 +2359,11 @@ function calcdiffs
 ## @return      errorstring
 function generic_calcdiff_status
 {
-  declare numbranch=$1
-  declare numpatch=$2
-  declare addpatch=$3
-  declare samepatch
-  declare fixedpatch
+  declare -i numbranch=$1
+  declare -i numpatch=$2
+  declare -i addpatch=$3
+  declare -i samepatch
+  declare -i fixedpatch
 
   ((samepatch=numpatch-addpatch))
   ((fixedpatch=numbranch-numpatch+addpatch))
@@ -2441,11 +2472,11 @@ function generic_postlog_compare
   declare fn
   declare jdk
   declare statusjdk
-  declare numbranch
-  declare numpatch
-  declare addpatch
-  declare samepatch
-  declare fixedpatch
+  declare -i numbranch=0
+  declare -i numpatch=0
+  declare -i addpatch=0
+  declare -i samepatch=0
+  declare -i fixedpatch=0
   declare summarize=true
 
   if [[ ${multijdk} == true ]]; then
@@ -2637,7 +2668,10 @@ function compile_nonjvm
   "${BUILDTOOL}_modules_worker" "${codebase}" compile
   modules_messages "${codebase}" compile true
 
+  modules_backup
+
   for plugin in ${TESTTYPES}; do
+    modules_restore
     verify_patchdir_still_exists
     if declare -f ${plugin}_compile >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_compile ${codebase} ${multijdkmode}"
