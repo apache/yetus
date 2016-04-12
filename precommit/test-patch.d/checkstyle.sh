@@ -341,12 +341,21 @@ function checkstyle_postapply
     module=${MODULE[$i]}
     fn=$(module_file_fragment "${module}")
 
-    # call calcdiffs to allow overrides
-    calcdiffs \
-      "${PATCH_DIR}/branch-checkstyle-${fn}.txt" \
-      "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
-      checkstyle \
-      > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+    # if there is no comparison to be done,
+    # we can speed this up tremendously
+    if [[ "${BUILDMODE}" = full ]]; then
+      touch  "${PATCH_DIR}/branch-checkstyle-${fn}.txt"
+      cp -p "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
+        "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+    else
+
+      # call calcdiffs to allow overrides
+      calcdiffs \
+        "${PATCH_DIR}/branch-checkstyle-${fn}.txt" \
+        "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
+        checkstyle \
+        > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+    fi
 
     #shellcheck disable=SC2016
     numbranch=$(wc -l "${PATCH_DIR}/branch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
