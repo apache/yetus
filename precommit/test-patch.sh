@@ -236,12 +236,15 @@ function add_header_line
 ## @return       Elapsed time display
 function add_vote_table
 {
-  local value=$1
-  local subsystem=$2
+  declare value=$1
+  declare subsystem=$2
   shift 2
 
-  local calctime
-  local -r elapsed=$(stop_clock)
+  declare calctime
+  # apparently shellcheck doesn't know about declare -r
+  #shellcheck disable=SC2155
+  declare -r elapsed=$(stop_clock)
+  declare filt
 
   yetus_debug "add_vote_table ${value} ${subsystem} ${*}"
 
@@ -251,6 +254,12 @@ function add_vote_table
     value="+1"
   fi
 
+  for filt in "${VOTE_FILTER[@]}"; do
+    if [[ "${subsystem}" = "${filt}" ]]; then
+      value=0
+    fi
+  done
+
   if [[ -z ${value} ]]; then
     # shellcheck disable=SC2034
     TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="|  | ${subsystem} | | ${*:-} |"
@@ -259,6 +268,10 @@ function add_vote_table
     TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| ${value} | ${subsystem} | ${calctime} | $* |"
   fi
   ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
+
+  if [[ "${value}" = -1 ]]; then
+    ((RESULT = RESULT + 1))
+  fi
 }
 
 ## @description  Report the JVM version of the given directory
@@ -709,6 +722,7 @@ function yetus_usage
   yetus_add_option "--summarize=<bool>" "Allow tests to summarize results"
   yetus_add_option "--test-parallel=<bool>" "Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   yetus_add_option "--test-threads=<int>" "Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
+  yetus_add_option "--tests-filter=<list>" "Lists of tests to turn failures into warnings"
   yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
 
@@ -883,6 +897,9 @@ function parse_args
       --test-threads=*)
         # shellcheck disable=SC2034
         TEST_THREADS=${i#*=}
+      ;;
+      --tests-filter=*)
+        yetus_comma_to_array VOTE_FILTER "${i#*=}"
       ;;
       --tpglobaltimer=*)
         GLOBALTIMER=${i#*=}
@@ -2272,8 +2289,6 @@ function runtests
 
     verify_patchdir_still_exists
     check_unittests
-
-    (( RESULT = RESULT + $? ))
   fi
 
   for plugin in ${TESTTYPES}; do
@@ -2283,7 +2298,6 @@ function runtests
       yetus_debug "Running ${plugin}_tests"
       #shellcheck disable=SC2086
       ${plugin}_tests
-      (( RESULT = RESULT + $? ))
     fi
   done
 }
@@ -3045,10 +3059,8 @@ prechecks
 
 if [[ "${BUILDMODE}" = patch ]]; then
   patchfiletests
-  ((RESULT=RESULT+$?))
 
   compile_cycle branch
-  ((RESULT=RESULT+$?))
 
   distclean
 
@@ -3058,10 +3070,8 @@ if [[ "${BUILDMODE}" = patch ]]; then
 fi
 
 compile_cycle patch
-((RESULT=RESULT+$?))
 
 runtests
-((RESULT=RESULT+$?))
 
 finish_vote_table
 
