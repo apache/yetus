@@ -523,14 +523,7 @@ function maven_precompile
   fi
 
   if verify_needed_test javac; then
-    # if we are in full build mode, then
-    # there is no need to do an initial install
-    # since we will be doing a full compile from basedir
-    # for projects like hadoop, this saves quite a bit
-    # of time
-    if [[ "${BUILDMODE}" = patch ]]; then
-      need=true
-    fi
+    need=true
   else
     # not everything needs a maven install
     # but quite a few do ...
