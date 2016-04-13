@@ -29,9 +29,9 @@ function author_generic
   declare msg
 
   if [[ "${BUILDMODE}" = full ]]; then
-    msg="patch"
-  else
     msg="source tree"
+  else
+    msg="patch"
   fi
 
   # shellcheck disable=SC2016
