@@ -21,6 +21,7 @@ releasedocmaker
 ===============
 
 * [Purpose](#Purpose)
+* [Requirements](#Requirements)
 * [Basic Usage](#Basic_Usage)
 * [Changing the Header](#Changing_the_Header)
 * [Multiple Versions](#Multiple_Versions)
@@ -39,6 +40,12 @@ Building changelog information in a form that is human digestible but still cont
 All of these methods have their pros and cons.  Some have issues with accuracy.  Some have issues with lack of details. None of these methods seem to cover all of the needs of many projects and are full of potential pitfalls.
 
 In order to solve these problems, releasedocmaker was written to automatically generate a changelog and release notes by querying Apache's JIRA instance.
+
+# Requirements
+
+* Python 2.5 with dateutil extension
+
+dateutil may be installed via pip:  `pip install python.dateutil`
 
 # Basic Usage
 
