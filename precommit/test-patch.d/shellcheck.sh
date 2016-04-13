@@ -40,9 +40,37 @@ function shellcheck_filefilter
 
 function shellcheck_precheck
 {
+  declare langs
+
   if ! verify_command "shellcheck" "${SHELLCHECK}"; then
     add_vote_table 0 shellcheck "Shellcheck was not available."
     delete_test shellcheck
+  fi
+
+  if [[ -z "${LANG}" ]]; then
+    langs=$(locale -a)
+    if [[ ${langs}  =~ C.UTF-8 ]]; then
+      yetus_error "WARNING: shellcheck needs UTF-8 locale support. Forcing C.UTF-8."
+      export LANG=C.UTF-8
+      export LC_ALL=C.UTF-8
+    elif [[ ${langs}  =~ en_US.UTF-8 ]]; then
+      yetus_error "WARNING: shellcheck needs UTF-8 locale support. Forcing en_US.UTF-8."
+      export LANG=en_US.UTF-8
+      export LC_ALL=en_US.UTF-8
+    else
+      for i in ${langs}; do
+        if [[ "${i}" =~ UTF-8 ]]; then
+          yetus_error "WARNING: shellcheck needs UTF-8 locale support. Forcing ${i}."
+          export LANG="${i}"
+          export LC_ALL="${i}"
+          break
+        fi
+      done
+    fi
+  fi
+
+  if [[ ! "${LANG}" =~ UTF-8 ]]; then
+    yetus_error "WARNING: shellcheck may fail without UTF-8 locale setting."
   fi
 }
 
