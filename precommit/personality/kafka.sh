@@ -16,6 +16,9 @@
 
 personality_plugins "all,-checkstyle,-asflicense"
 
+## @description  Globals specific to this personality
+## @audience     private
+## @stability    evolving
 function personality_globals
 {
   #shellcheck disable=SC2034
@@ -30,6 +33,11 @@ function personality_globals
   GITHUB_REPO="apache/kafka"
 }
 
+## @description  Queue up modules for this personality
+## @audience     private
+## @stability    evolving
+## @param        repostatus
+## @param        testtype
 function personality_modules
 {
   declare repostatus=$1

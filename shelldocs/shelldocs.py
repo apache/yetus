@@ -66,7 +66,8 @@ def toc(tlist):
 
 class ShellFunction(object):
     """a shell function"""
-    def __init__(self):
+
+    def __init__(self, filename):
         '''Initializer'''
         self.name = None
         self.audience = None
@@ -75,6 +76,8 @@ class ShellFunction(object):
         self.returnt = None
         self.desc = None
         self.params = None
+        self.filename = filename
+        self.linenum = 0
 
     def __cmp__(self, other):
         '''comparison'''
@@ -102,6 +105,15 @@ class ShellFunction(object):
         self.returnt = None
         self.desc = None
         self.params = None
+        self.linenum = 0
+        self.filename = None
+
+    def getfilename(self):
+        '''get the name of the function'''
+        if self.filename is None:
+            return "undefined"
+        else:
+            return self.filename
 
     def setname(self, text):
         '''set the name of the function'''
@@ -114,6 +126,14 @@ class ShellFunction(object):
             return "None"
         else:
             return self.name
+
+    def setlinenum(self, linenum):
+        '''set the line number of the function'''
+        self.linenum = linenum
+
+    def getlinenum(self):
+        '''get the line number of the function'''
+        return self.linenum
 
     def setaudience(self, text):
         '''set the audience of the function'''
@@ -249,13 +269,15 @@ class ShellFunction(object):
         for attr in ("audience", "stability", "replaceable"):
             value = getfuncs[attr]()
             if value == "None":
-                messages.append("ERROR: function %s has no @%s" %
-                                (self.getname(), attr.lower()))
+                messages.append("%s:%u: ERROR: function %s has no @%s" %
+                                (self.getfilename(), self.getlinenum(),
+                                 self.getname(), attr.lower()))
             elif value not in validvalues[attr]:
                 validvalue = "|".join(v.lower() for v in validvalues[attr])
                 messages.append(
-                    "ERROR: function %s has invalid value (%s) for @%s (%s)" %
-                    (self.getname(), value.lower(), attr.lower(), validvalue))
+                    "%s:%u: ERROR: function %s has invalid value (%s) for @%s (%s)"
+                    % (self.getfilename(), self.getlinenum(), self.getname(),
+                       value.lower(), attr.lower(), validvalue))
         return "\n".join(messages)
 
     def __str__(self):
@@ -271,8 +293,8 @@ class ShellFunction(object):
 def main():
     '''main entry point'''
     parser = OptionParser(
-        usage=
-        "usage: %prog [--skipprnorep] --output OUTFILE --input INFILE [--input INFILE ...]")
+        usage="usage: %prog [--skipprnorep] " + "[--output OUTFILE|--lint] " +
+        "--input INFILE " + "[--input INFILE ...]")
     parser.add_option("-o",
                       "--output",
                       dest="outfile",
@@ -303,12 +325,12 @@ def main():
         default=False,
         help="display version information for shelldocs and exit.")
 
-    (options, args) = parser.parse_args()
+    (options, dummy_args) = parser.parse_args()
 
     if options.release_version:
         with open(
-            os.path.join(
-                os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+                os.path.join(
+                    os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
             print ver_file.read()
         sys.exit(0)
 
@@ -322,8 +344,10 @@ def main():
     try:
         for filename in options.infile:
             with open(filename, "r") as shellcode:
-                funcdef = ShellFunction()
+                funcdef = ShellFunction(filename)
+                linenum = 0
                 for line in shellcode:
+                    linenum = linenum + 1
                     if line.startswith('## @description'):
                         funcdef.adddesc(line)
                     elif line.startswith('## @audience'):
@@ -338,13 +362,14 @@ def main():
                         funcdef.addreturn(line)
                     elif line.startswith('function'):
                         funcdef.setname(line)
+                        funcdef.setlinenum(linenum)
                         if options.skipprnorep and \
                           funcdef.getaudience() == "Private" and \
                           funcdef.getreplace() == "No":
                             pass
                         else:
                             allfuncs.append(funcdef)
-                        funcdef = ShellFunction()
+                        funcdef = ShellFunction(filename)
     except IOError, err:
         print >> sys.stderr, "ERROR: Failed to read from file: %s. Aborting." % err.filename
         sys.exit(1)

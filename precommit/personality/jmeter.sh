@@ -16,6 +16,9 @@
 
 personality_plugins "all,-javadoc,-findbugs,-asflicense"
 
+## @description  Globals specific to this personality
+## @audience     private
+## @stability    evolving
 function personality_globals
 {
   # shellcheck disable=SC2034
@@ -30,11 +33,18 @@ function personality_globals
 
 add_test_type jmeter
 
+## @description  Personality usage options
+## @audience     private
+## @stability    evolving
 function jmeter_usage
 {
   yetus_add_option "--jmeter-download-jars=<bool>"  "download third-party jars needed by ant build"
 }
 
+## @description  Process personality options
+## @audience     private
+## @stability    evolving
+## @param        arguments
 function jmeter_parse_args
 {
   declare i

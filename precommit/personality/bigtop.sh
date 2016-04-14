@@ -16,6 +16,9 @@
 
 personality_plugins "all,-checkstyle,-findbugs"
 
+## @description  Globals specific to this personality
+## @audience     private
+## @stability    evolving
 function personality_globals
 {
   # shellcheck disable=SC2034
@@ -26,44 +29,4 @@ function personality_globals
   BUILDTOOL=gradle
   # shellcheck disable=SC2034
   GITHUB_REPO="apache/bigtop"
-  # shellcheck disable=SC2034
-  BIGTOP_PUPPETSETUP=false
-}
-
-add_test_type bigtop
-
-function bigtop_usage
-{
-  yetus_add_option "--bigtop-puppet=[false|true]" "execute the bigtop puppet setup (needs sudo to root)"
-}
-
-function bigtop_parse_args
-{
-  local i
-
-  for i in "$@"; do
-    case ${i} in
-      --bigtop-puppet=*)
-        BIGTOP_PUPPETSETUP=${i#*=}
-      ;;
-    esac
-  done
-}
-
-function bigtop_precheck_postinstall
-{
-  if [[ ${BIGTOP_PUPPETSETUP} = "true" ]]; then
-    pushd "${BASEDIR}" >/dev/null
-    echo_and_redirect "${PATCH_DIR}/bigtop-branch-toolchain.txt" "${GRADLEW}" toolchain
-    popd >/dev/null
-  fi
-}
-
-function bigtop_postapply_postinstall
-{
-  if [[ ${BIGTOP_PUPPETSETUP} = "true" ]]; then
-    pushd "${BASEDIR}" >/dev/null
-    echo_and_redirect "${PATCH_DIR}/bigtop-patch-toolchain.txt" "${GRADLEW}" toolchain
-    popd >/dev/null
-  fi
 }

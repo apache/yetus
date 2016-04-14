@@ -18,6 +18,9 @@
 
 personality_plugins "all,-ant,-gradle,-scalac,-scaladoc"
 
+## @description  Globals specific to this personality
+## @audience     private
+## @stability    evolving
 function personality_globals
 {
   #shellcheck disable=SC2034
@@ -32,6 +35,10 @@ function personality_globals
   PYLINT_OPTIONS="--indent-string='  '"
 }
 
+## @description  Calculate the actual module ordering
+## @audience     private
+## @stability    evolving
+## @param        ordering
 function hadoop_order
 {
   declare ordering=$1
@@ -47,6 +54,10 @@ function hadoop_order
   echo "${hadoopm}"
 }
 
+## @description  Install extra modules for unit tests
+## @audience     private
+## @stability    evolving
+## @param        ordering
 function hadoop_unittest_prereqs
 {
   declare input=$1
@@ -88,6 +99,10 @@ function hadoop_unittest_prereqs
   fi
 }
 
+## @description  Calculate the flags/settings for native code
+## @description  based upon the OS
+## @audience     private
+## @stability    evolving
 function hadoop_native_flags
 {
 
@@ -137,6 +152,11 @@ function hadoop_native_flags
   esac
 }
 
+## @description  Queue up modules for this personality
+## @audience     private
+## @stability    evolving
+## @param        repostatus
+## @param        testtype
 function personality_modules
 {
   declare repostatus=$1
@@ -269,6 +289,10 @@ function personality_modules
   done
 }
 
+## @description  Add tests based upon personality needs
+## @audience     private
+## @stability    evolving
+## @param        filename
 function personality_file_tests
 {
   declare filename=$1
@@ -332,6 +356,9 @@ function personality_file_tests
   fi
 }
 
+## @description  Image to print on success
+## @audience     private
+## @stability    evolving
 function hadoop_console_success
 {
   printf "IF9fX19fX19fX18gCjwgU3VjY2VzcyEgPgogLS0tLS0tLS0tLSAKIFwgICAg";

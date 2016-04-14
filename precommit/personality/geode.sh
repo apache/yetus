@@ -16,6 +16,9 @@
 
 personality_plugins "all,-ant,-javac,-scalac,-scaladoc"
 
+## @description  Globals specific to this personality
+## @audience     private
+## @stability    evolving
 function personality_globals
 {
   #shellcheck disable=SC2034

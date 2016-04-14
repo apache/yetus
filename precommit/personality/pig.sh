@@ -16,6 +16,9 @@
 
 personality_plugins "all"
 
+## @description  Globals specific to this personality
+## @audience     private
+## @stability    evolving
 function personality_globals
 {
   #shellcheck disable=SC2034
@@ -28,6 +31,11 @@ function personality_globals
   BUILDTOOL=ant
 }
 
+## @description  Queue up modules for this personality
+## @audience     private
+## @stability    evolving
+## @param        repostatus
+## @param        testtype
 function personality_modules
 {
   local repostatus=$1
