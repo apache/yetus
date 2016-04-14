@@ -139,6 +139,7 @@ function yetus_add_header
 {
   declare text=$1
 
+  #shellcheck disable=SC2034
   YETUS_USAGE_HEADER="${text}"
 }
 
@@ -163,6 +164,7 @@ function yetus_add_option
 ## @replaceable  no
 function yetus_reset_usage
 {
+  # shellcheck disable=SC2034
   YETUS_OPTION_USAGE=()
   YETUS_OPTION_USAGE_COUNTER=0
 }

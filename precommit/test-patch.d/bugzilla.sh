@@ -40,8 +40,6 @@ function bugzilla_parse_args
 function bugzilla_determine_issue
 {
   declare input=$1
-  declare patchnamechunk
-  declare maybeissue
 
   if [[ ! "${input}" =~ ^BZ: ]]; then
     return 1

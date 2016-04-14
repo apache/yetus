@@ -16,7 +16,7 @@
 
 # Make sure that bash version meets the pre-requisite
 
-if [[ -z "${BASH_VERSINFO}" ]] \
+if [[ -z "${BASH_VERSINFO[0]}" ]] \
    || [[ "${BASH_VERSINFO[0]}" -lt 3 ]] \
    || [[ "${BASH_VERSINFO[0]}" -eq 3 && "${BASH_VERSINFO[1]}" -lt 2 ]]; then
   echo "bash v3.2+ is required. Sorry."
@@ -933,14 +933,14 @@ function parse_args
   fi
 
   # we need absolute dir for ${BASEDIR}
-  cd "${STARTINGDIR}"
+  cd "${STARTINGDIR}" || cleanup_and_exit 1
   BASEDIR=$(yetus_abs "${BASEDIR}")
 
   if [[ -n ${USER_PATCH_DIR} ]]; then
     PATCH_DIR="${USER_PATCH_DIR}"
   fi
 
-  cd "${STARTINGDIR}"
+  cd "${STARTINGDIR}" || cleanup_and_exit 1
   if [[ ! -d ${PATCH_DIR} ]]; then
     mkdir -p "${PATCH_DIR}"
     if [[ $? == 0 ]] ; then
@@ -1177,7 +1177,7 @@ function git_checkout
 
   big_console_header "Confirming git environment"
 
-  cd "${BASEDIR}"
+  cd "${BASEDIR}" || cleanup_and_exit 1
   if [[ ! -d .git ]]; then
     yetus_error "ERROR: ${BASEDIR} is not a git repo."
     cleanup_and_exit 1
@@ -2515,7 +2515,9 @@ function generic_postlog_compare
     generic_logfilter "${testtype}" "${PATCH_DIR}/branch-${origlog}-${fn}.txt" "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt"
     generic_logfilter "${testtype}" "${PATCH_DIR}/patch-${origlog}-${fn}.txt" "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt"
 
+    # shellcheck disable=SC2016
     numbranch=$(wc -l "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
+    # shellcheck disable=SC2016
     numpatch=$(wc -l "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt" | ${AWK} '{print $1}')
 
     calcdiffs \

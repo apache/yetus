@@ -16,7 +16,7 @@
 
 # Make sure that bash version meets the pre-requisite
 
-if [[ -z "${BASH_VERSINFO}" ]] \
+if [[ -z "${BASH_VERSINFO[0]}" ]] \
    || [[ "${BASH_VERSINFO[0]}" -lt 3 ]] \
    || [[ "${BASH_VERSINFO[0]}" -eq 3 && "${BASH_VERSINFO[1]}" -lt 2 ]]; then
   echo "bash v3.2+ is required. Sorry."

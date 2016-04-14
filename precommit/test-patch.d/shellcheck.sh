@@ -52,7 +52,7 @@ function shellcheck_private_findbash
   local value
   local list
 
-  while read line; do
+  while read -r line; do
     value=$(find "${line}" ! -name '*.cmd' -type f \
       | ${GREP} -E -v '(.orig$|.rej$)')
 
