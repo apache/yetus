@@ -55,6 +55,7 @@
                     <ul class="dropdown-menu" role="menu">
                       <li><a href="/documentation/0.1.0/">Docs for v0.1.0</a></li>
                       <li><a href="/documentation/0.2.0/">Docs for v0.2.0</a></li>
+                      <li><a href="/documentation/0.2.1/">Docs for v0.2.1</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,40 +126,36 @@
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-297">YETUS-297</a> | <em>Major</em> | <strong>when verify_multijdk_test is no, use JAVA_HOME, not JDK_DIR_LIST</strong></li>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-62">YETUS-62</a> | <em>Major</em> | <strong>add auto-formatting of usage options</strong></li>
 </ul>
 
 <!-- markdown -->
 
-<p>For downstream users:</p>
-
-<p>The cli for configuring which tests should be run during Multi-JDK mode now works correctly. e.g. <q>&ndash;multijdktests=compile</q> will cause just compilation against additional jdk versions.</p>
-
-<p>Note that the full suite of tests is always run against the java version given in JAVA_HOME.</p>
-
-<p>For plugin developers:</p>
-
-<p>Authors of new plugins that wish to make them multi-jdk aware can add them to the default list by calling the <code>yetus_add_entry</code> function. i.e.:</p>
-<pre class="highlight shell"><code>yetus_add_entry JDK_TEST_LIST my_foo_test
-</code></pre>
+<p>test-patch and smart-apply-patch now have variable size output to match the screen dimensions when printing the usage information.  As a result, the <code>plugin_usage</code> functions now use the <code>yetus_add_option</code> to add options to output. Plug-ins written to use raw echos will still work, but the output will be strange looking.</p>
 
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-285">YETUS-285</a> | <em>Blocker</em> | <strong>flag to enable/disable docker privileged mode</strong></li>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-241">YETUS-241</a> | <em>Major</em> | <strong>revamp parameterized site</strong></li>
 </ul>
 
-<p>By default, Yetus now runs docker in privileged execution mode (when docker support is enabled).</p>
-
-<p>To opt instead for the previous behavior, use the cli option {{&ndash;dockerprivd=false}}.</p>
+<p>Website layout was changed to better accommodate multiple versions.</p>
 
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-282">YETUS-282</a> | <em>Major</em> | <strong>Allow the specification of a base JIRA URL</strong></li>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-187">YETUS-187</a> | <em>Blocker</em> | <strong>maven javac/javadoc can&rsquo;t use calcdiffs</strong></li>
 </ul>
 
-<p>Allow specification of the Base JIRA URL as a command line option</p>
+<p>The calcdiff function has been changed to be pluggable to allow for a variety of difference calculators to allow for greater accuracy when more information is available.  As a result, this fixes some (but not all!) instances where pre-existing errors were reported as new in some reports.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-214">YETUS-214</a> | <em>Major</em> | <strong>release doc maker should have option to specify output directory</strong></li>
+</ul>
+
+<p>Allow specifying of output directory in releasedocmaker</p>
 
 <hr>
 
@@ -183,10 +180,44 @@
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-241">YETUS-241</a> | <em>Major</em> | <strong>revamp parameterized site</strong></li>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-173">YETUS-173</a> | <em>Major</em> | <strong>report fixed issues</strong></li>
 </ul>
 
-<p>Website layout was changed to better accommodate multiple versions.</p>
+<p>There is now code in place to allow for plug-ins to report a much more nuanced report in the form of an equation.  This equation tells exactly how many new, unchanged, and fixed issues a patch causes/removes as well as the old and new totals for issues.  For patches where the totals are unchanged, the generic <q>passed</q> message is returned. Summarization is automatically as appropriate turned off as well. </p>
+
+<p>With this change, most plug-ins have been updated to report these numbers.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-70">YETUS-70</a> | <em>Major</em> | <strong>add support for make, including cmake and autoconf</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>User-facing:</p>
+
+<ul>
+<li>make, cmake, and autoconf are now supported build tools</li>
+<li>ctest is now a supported test format</li>
+<li>Dockerfile content has been slimmed down and enhanced to just what is needed to run Apache Yetus</li>
+</ul>
+
+<p>Developer-facing:</p>
+
+<ul>
+<li>BUILDTOOLCWD has changed in an incompatible way: instead of true/false it nows takes several different types of values.  See documentation for more information</li>
+<li><code>modules_workers</code> now supports @@@BASEDIR@@@@ and @@@MODULEDIR@@@ as replaceable parameters on the command line</li>
+<li>New <code>buildtool_changed_modules</code> function support to allow build tools to change the module list</li>
+</ul>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-282">YETUS-282</a> | <em>Major</em> | <strong>Allow the specification of a base JIRA URL</strong></li>
+</ul>
+
+<p>Allow specification of the Base JIRA URL as a command line option</p>
 
 <hr>
 
@@ -232,32 +263,6 @@
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-214">YETUS-214</a> | <em>Major</em> | <strong>release doc maker should have option to specify output directory</strong></li>
-</ul>
-
-<p>Allow specifying of output directory in releasedocmaker</p>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-187">YETUS-187</a> | <em>Blocker</em> | <strong>maven javac/javadoc can&rsquo;t use calcdiffs</strong></li>
-</ul>
-
-<p>The calcdiff function has been changed to be pluggable to allow for a variety of difference calculators to allow for greater accuracy when more information is available.  As a result, this fixes some (but not all!) instances where pre-existing errors were reported as new in some reports.</p>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-173">YETUS-173</a> | <em>Major</em> | <strong>report fixed issues</strong></li>
-</ul>
-
-<p>There is now code in place to allow for plug-ins to report a much more nuanced report in the form of an equation.  This equation tells exactly how many new, unchanged, and fixed issues a patch causes/removes as well as the old and new totals for issues.  For patches where the totals are unchanged, the generic <q>passed</q> message is returned. Summarization is automatically as appropriate turned off as well. </p>
-
-<p>With this change, most plug-ins have been updated to report these numbers.</p>
-
-<hr>
-
-<ul>
 <li><a href="https://issues.apache.org/jira/browse/YETUS-144">YETUS-144</a> | <em>Blocker</em> | <strong>mvn install usually required on mvn builds</strong></li>
 </ul>
 
@@ -266,36 +271,32 @@
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-70">YETUS-70</a> | <em>Major</em> | <strong>add support for make, including cmake and autoconf</strong></li>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-285">YETUS-285</a> | <em>Blocker</em> | <strong>flag to enable/disable docker privileged mode</strong></li>
 </ul>
 
-<!-- markdown -->
+<p>By default, Yetus now runs docker in privileged execution mode (when docker support is enabled).</p>
 
-<p>User-facing:</p>
-
-<ul>
-<li>make, cmake, and autoconf are now supported build tools</li>
-<li>ctest is now a supported test format</li>
-<li>Dockerfile content has been slimmed down and enhanced to just what is needed to run Apache Yetus</li>
-</ul>
-
-<p>Developer-facing:</p>
-
-<ul>
-<li>BUILDTOOLCWD has changed in an incompatible way: instead of true/false it nows takes several different types of values.  See documentation for more information</li>
-<li><code>modules_workers</code> now supports @@@BASEDIR@@@@ and @@@MODULEDIR@@@ as replaceable parameters on the command line</li>
-<li>New <code>buildtool_changed_modules</code> function support to allow build tools to change the module list</li>
-</ul>
+<p>To opt instead for the previous behavior, use the cli option {{&ndash;dockerprivd=false}}.</p>
 
 <hr>
 
 <ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-62">YETUS-62</a> | <em>Major</em> | <strong>add auto-formatting of usage options</strong></li>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-297">YETUS-297</a> | <em>Major</em> | <strong>when verify_multijdk_test is no, use JAVA_HOME, not JDK_DIR_LIST</strong></li>
 </ul>
 
 <!-- markdown -->
 
-<p>test-patch and smart-apply-patch now have variable size output to match the screen dimensions when printing the usage information.  As a result, the <code>plugin_usage</code> functions now use the <code>yetus_add_option</code> to add options to output. Plug-ins written to use raw echos will still work, but the output will be strange looking.</p>
+<p>For downstream users:</p>
+
+<p>The cli for configuring which tests should be run during Multi-JDK mode now works correctly. e.g. <q>&ndash;multijdktests=compile</q> will cause just compilation against additional jdk versions.</p>
+
+<p>Note that the full suite of tests is always run against the java version given in JAVA_HOME.</p>
+
+<p>For plugin developers:</p>
+
+<p>Authors of new plugins that wish to make them multi-jdk aware can add them to the default list by calling the <code>yetus_add_entry</code> function. i.e.:</p>
+<pre class="highlight shell"><code>yetus_add_entry JDK_TEST_LIST my_foo_test
+</code></pre>
 
 	  </div>
       <div class="container">

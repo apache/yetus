@@ -55,6 +55,7 @@
                     <ul class="dropdown-menu" role="menu">
                       <li><a href="/documentation/0.1.0/">Docs for v0.1.0</a></li>
                       <li><a href="/documentation/0.2.0/">Docs for v0.2.0</a></li>
+                      <li><a href="/documentation/0.2.1/">Docs for v0.2.1</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -368,8 +369,8 @@
 <ul>
 <li><p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). Under Jenkins, this is always true.</p></li>
 <li><p>BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz_ARGS to pass on to the build tool command line. (e.g., MAVEN_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.</p></li>
-<li><p>CHANGED_FILES is a list of all files that appear to be added, deleted, or modified in the patch.</p></li>
-<li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
+<li><p>CHANGED_FILES[@] is an array of all files that appear to be added, deleted, or modified in the patch.</p></li>
+<li><p>CHANGED_MODULES[@] is an array of all modules that house all of the CHANGED_FILES[@].  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
 <li><p>GITHUB_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.</p></li>
 <li><p>JIRA_ISSUE_RE is to help test-patch when talking to JIRA.  It helps determine if the given project is appropriate for the given JIRA issue.</p></li>
 <li><p>MODULE and other MODULE_* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.</p></li>
