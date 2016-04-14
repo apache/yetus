@@ -1633,6 +1633,7 @@ function check_reexec
   declare tpdir
   declare copy=false
   declare testdir
+  declare plugin
 
   if [[ ${REEXECED} == true ]]; then
     big_console_header "Re-exec mode detected. Continuing."
@@ -1693,9 +1694,11 @@ function check_reexec
     # if we are doing docker, then we re-exec, but underneath the
     # container
 
-    if declare -f ${BUILDTOOL}_docker_support >/dev/null; then
-      "${BUILDTOOL}_docker_support"
-    fi
+    for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${BUGSYSTEMS} ${TESTTYPES} ${TESTFORMATS}; do
+      if declare -f ${plugin}_docker_support >/dev/null; then
+        "${plugin}_docker_support"
+      fi
+    done
 
     TESTPATCHMODE="${USER_PARAMS[*]}"
     if [[ -n "${BUILD_URL}" ]]; then

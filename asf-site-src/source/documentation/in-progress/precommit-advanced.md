@@ -80,6 +80,9 @@ Similarly, there are other functions that may be defined during the test-patch r
 * pluginname\_initialize
     - After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
 
+* pluginname\_docker\_support
+    - Perform any necessary setup to configure Docker support for the given plugin.  Typically this means adding parameters to the docker run command line via adding to the DOCKER\_EXTRAARGS array.
+
 * pluginname\_precheck
     - executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.
 
@@ -252,6 +255,8 @@ There are a handful of extremely important system variables that make life easie
 * CHANGED\_FILES[@] is an array of all files that appear to be added, deleted, or modified in the patch.
 
 * CHANGED\_MODULES[@] is an array of all modules that house all of the CHANGED\_FILES[@].  Be aware that the root of the source tree is reported as '.'.
+
+* DOCKER\_EXTRAARGS[@] is an array of command line arguments to apply to the `docker run` command.
 
 * GITHUB\_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.
 
