@@ -18,12 +18,12 @@
 -->
 
 <div class="masthead">
-	<div class="jumbotron">
+  <div class="jumbotron">
           <h1>Apache Yetus</h1>
-	  <div>
-	    <p>... is a collection of libraries and tools that enable contribution and release processes for software projects.</p>
-	  </div>
-	</div>
+    <div>
+      <p>... is a collection of libraries and tools that enable contribution and release processes for software projects.</p>
+    </div>
+  </div>
 </div>
 
 It provides:
