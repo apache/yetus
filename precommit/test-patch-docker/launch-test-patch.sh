@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cd "${BASEDIR}"
+cd "${BASEDIR}" || exit 1
 
 if [[ -n ${JAVA_HOME}
   && ! -d ${JAVA_HOME} ]]; then
@@ -36,7 +36,7 @@ TESTPATCHMODE=${TESTPATCHMODE/--docker }
 TESTPATCHMODE=${TESTPATCHMODE%--docker}
 
 
-cd "${BASEDIR}"
+cd "${BASEDIR}" || exit 1
 PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
 
 # if patch system is generic, then it's either a local
@@ -48,7 +48,7 @@ if [[ "${PATCH_SYSTEM}" = generic ]]; then
   patchfile="/testptch/extras/patch"
 fi
 
-cd "${PATCH_DIR}/precommit/"
+cd "${PATCH_DIR}/precommit/" || exit 1
 #shellcheck disable=SC2086
 "${PATCH_DIR}/precommit/test-patch.sh" \
    --reexec \
