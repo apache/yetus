@@ -45,41 +45,44 @@ activate :syntax
 activate :livereload
 
 # classes needed to publish our api docs
-class CopyInPlaceResource<::Middleman::Sitemap::Resource
-  def initialize (sitemap, dest, src)
+class CopyInPlaceResource < ::Middleman::Sitemap::Resource
+  def initialize(sitemap, dest, src)
     super(sitemap, dest, src)
   end
+
   def binary?
-    return true
+    true
   end
 end
 
+# Generate API documentation from the rest of the source tree
 class ApiDocs
-  def initialize (sitemap, destination, source)
-    @sitemap=sitemap
-    @destination=destination
-    @source=source
+  def initialize(sitemap, destination, source)
+    @sitemap = sitemap
+    @destination = destination
+    @source = source
   end
+
   def manipulate_resource_list(resources)
-    parent=Pathname.new(@source)
-    build=Pathname.new(@destination)
+    parent = Pathname.new(@source)
+    build = Pathname.new(@destination)
     ::Middleman::Util.all_files_under(@source).each do |path|
       dest = build + path.relative_path_from(parent)
       resources << CopyInPlaceResource.new(@sitemap, dest.to_s, path.to_s)
     end
     # to make clear what we return
-    return resources
+    resources
   end
 end
 
 SHELLDOCS = File.absolute_path('../shelldocs/shelldocs.py')
 
-def shelldocs(output, docs=[])
+def shelldocs(output, docs = [])
   unless FileUtils.uptodate?(output, docs) &&
          FileUtils.uptodate?(output, [SHELLDOCS])
-    inputs=docs.map do |entry| "--input=#{entry}" end
+    inputs = docs.map { |entry| "--input=#{entry}" }
     `#{SHELLDOCS} --skipprnorep --output #{output} #{inputs.join ' '}`
-    unless $?.exitstatus == 0
+    unless $CHILD_STATUS.exitstatus == 0
       abort("shelldocs failed to generate docs for '#{docs}'")
     end
   end
@@ -93,7 +96,7 @@ def releasenotes(output, version)
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
                                        --usetoday --license --lint)`
-  unless $?.exitstatus == 0
+  unless $CHILD_STATUS.exitstatus == 0
     abort("releasedocmaker failed to generate release notes for #{version}.")
   end
   FileUtils.mv("#{output}/#{version}/RELEASENOTES.#{version}.md",
@@ -102,10 +105,10 @@ def releasenotes(output, version)
                "#{output}/#{version}/CHANGES.md")
 end
 
-GITREPO = 'https://git-wip-us.apache.org/repos/asf/yetus.git'
+GITREPO = 'https://git-wip-us.apache.org/repos/asf/yetus.git'.freeze
 
-def build_release_docs(output, version)
-  # TODO get the version date from jira and do an up to date check instead of building each time.
+def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize
+  # TODO: get the version date from jira and do an up to date check instead of building each time.
   puts "Building docs for release #{version}"
   puts "\tcleaning up output directories in #{output}"
   FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
@@ -115,20 +118,24 @@ def build_release_docs(output, version)
     git clone --depth 1 --branch "rel/#{version}" --single-branch -- \
         "#{GITREPO}" "build-#{version}" \
    ) >"#{output}/#{version}_git_checkout.log" 2>&1`
-  unless $?.exitstatus == 0
-    abort("building docs failed to for #{version}.")
-  end
+  abort("building docs failed to for #{version}.") unless $CHILD_STATUS.exitstatus == 0
   puts "\tsetting up markdown docs"
   FileUtils.mkdir "#{output}/#{version}"
-  FileUtils.mv(Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"), "#{output}/#{version}/")
-  FileUtils.mv("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md", "#{output}/#{version}.html.md")
+  FileUtils.mv(
+    Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"),
+    "#{output}/#{version}/")
+  FileUtils.mv(
+    "#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md",
+    "#{output}/#{version}.html.md")
   FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
-  precommit_shelldocs("#{output}/#{version}/precommit-apidocs", "#{output}/build-#{version}/precommit")
+  precommit_shelldocs(
+    "#{output}/#{version}/precommit-apidocs",
+    "#{output}/build-#{version}/precommit")
 
   puts "\tgenerating javadocs"
-  `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1`
-  unless $?.exitstatus == 0
-    puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log"
+  `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Metrics/LineLength
+  unless $CHILD_STATUS.exitstatus == 0
+    puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log" # rubocop:disable Metrics/LineLength
   end
 end
 
@@ -156,7 +163,12 @@ after_configuration do
   end
 
   # For Audiene Annotations we just rely on having made javadocs with Maven
-  sitemap.register_resource_list_manipulator(:audience_annotations, ApiDocs.new(sitemap, "documentation/in-progress/audience-annotations-apidocs", "../audience-annotations-component/target/site/apidocs"))
+  sitemap.register_resource_list_manipulator(
+    :audience_annotations,
+    ApiDocs.new(
+      sitemap,
+      'documentation/in-progress/audience-annotations-apidocs',
+      '../audience-annotations-component/target/site/apidocs'))
 
   # For Precommit we regenerate source files so they can be rendered.
   # we rely on a symlink. to avoid an error from the file watcher, our target
@@ -170,7 +182,12 @@ after_configuration do
       build_release_docs('../target', release)
       releasenotes('../target', release)
       # stitch the javadoc in place
-      sitemap.register_resource_list_manipulator("#{release}_javadocs".to_sym, ApiDocs.new(sitemap, "documentation/#{release}/audience-annotations-apidocs", "../target/build-#{release}/audience-annotations-component/target/site/apidocs"))
+      sitemap.register_resource_list_manipulator(
+        "#{release}_javadocs".to_sym,
+        ApiDocs.new(
+          sitemap,
+          "documentation/#{release}/audience-annotations-apidocs",
+          "../target/build-#{release}/audience-annotations-component/target/site/apidocs"))
     end
   end
 end
