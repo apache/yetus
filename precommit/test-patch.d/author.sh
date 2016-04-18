@@ -16,6 +16,32 @@
 
 add_test_type author
 
+## @description  author usage hook
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function author_usage
+{
+  yetus_add_option "--author-ignore-list=<list>" "list of filenames to ignore (full build mode only)"
+}
+
+## @description  author parse args hook
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function author_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --author-ignore-list=*)
+        yetus_comma_to_array AUTHOR_IGNORE_LIST "${i#*=}"
+      ;;
+    esac
+  done
+}
+
 ## @description  helper function for @author tags check
 ## @audience     private
 ## @stability    evolving
@@ -93,7 +119,7 @@ function author_postcompile
 {
   # shellcheck disable=SC2155
   declare -r appname=$(basename "${BASH_SOURCE-$0}")
-  declare i
+  declare fn
 
   if [[ "${BUILDMODE}" != full ]]; then
     return
@@ -103,9 +129,20 @@ function author_postcompile
 
   start_clock
 
-  "${GIT}" grep -n -I --extended-regexp -i '^[^-].*@author' \
+  "${GIT}" grep -n -I --extended-regexp -i -e '^[^-].*@author' \
     | ${GREP} -v "${appname}" \
-    >> "${PATCH_DIR}/author-tags.txt"
+    >> "${PATCH_DIR}/author-tags-git.txt"
+
+  if [[ -z "${AUTHOR_IGNORE_LIST[0]}" ]]; then
+    cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/author-tags.txt"
+  else
+    cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/author-tags.1"
+    for fn in "${AUTHOR_IGNORE_LIST[@]}"; do
+      ${GREP} -v -E "^${fn}" "${PATCH_DIR}/author-tags.1" >> "${PATCH_DIR}/author-tags.2"
+      mv "${PATCH_DIR}/author-tags.2" "${PATCH_DIR}/author-tags.1"
+    done
+    mv "${PATCH_DIR}/author-tags.1" "${PATCH_DIR}/author-tags.txt"
+  fi
 
   author_generic
 }
