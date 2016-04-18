@@ -31,6 +31,10 @@ function personality_globals
 
 add_test_type flinklib
 
+## @description  flinklib file filter
+## @audience     private
+## @stability    evolving
+## @param        filename
 function flinklib_filefilter
 {
   local filename=$1
@@ -42,6 +46,9 @@ function flinklib_filefilter
   fi
 }
 
+## @description  count files in the lib dir
+## @audience     private
+## @stability    evolving
 function flinklib_count
 {
   find "${BASEDIR}" \
@@ -50,42 +57,46 @@ function flinklib_count
     | wc -l
 }
 
-function flinklib_preapply
+## @description  check fliblib
+## @audience     private
+## @stability    evolving
+## @param        repostatus
+function flinklib_rebuild
 {
+  declare repostatus=$1
+
   start_clock
   big_console_header "${PATCH_BRANCH} flink library dependencies"
 
   if ! verify_needed_test flinklib; then
-    echo "Patch does not need flinklib testing."
+    echo "${BUILDMODEMSG} does not need flinklib testing."
     return 0
   fi
 
   pushd "${BASEDIR}" >/dev/null
-  echo_and_redirect "${PATCH_DIR}/branch-flinklib-root.txt" \
+  echo_and_redirect "${PATCH_DIR}/${repostatus}-flinklib-root.txt" \
      "${MAVEN}" "${MAVEN_ARGS[@]}" package -DskipTests -Dmaven.javadoc.skip=true -Ptest-patch
   if [[ $? != 0 ]]; then
      add_vote_table -1 flinklib "Unable to determine flink libs in ${PATCH_BRANCH}."
   fi
-  FLINK_PRE_LIB_FILES=$(flinklib_count)
-  popd >/dev/null
-}
 
-function flinklib_postapply
-{
-  start_clock
-  big_console_header "Patch flink library dependencies"
-
-  if ! verify_needed_test flinklib; then
-    echo "Patch does not need flinklib testing."
+  if [[ ${repostatus} = branch ]]; then
+    FLINK_PRE_LIB_FILES=$(flinklib_count)
     return 0
+  else
+    FLINK_POST_LIB_FILES=$(flinklib_count)
   fi
-
-  pushd "${BASEDIR}" >/dev/null
-  echo_and_redirect "${PATCH_DIR}/patch-flinklib-root.txt" \
-     "${MAVEN}" "${MAVEN_ARGS[@]}" package -DskipTests -Dmaven.javadoc.skip=true -Ptest-patch
-  FLINK_POST_LIB_FILES=$(flinklib_count)
   popd >/dev/null
 
+  if [[ "${BUILDMODE}" = full ]]; then
+    if [[ ${FLINK_POST_LIB_FILES} -gt 0 ]]; then
+      add_vote_table -1 flinklib "Lib folder dependencies are currently ${FLINK_POST_LIB_FILES}"
+      return 1
+    else
+      add_vote_table +1 flinklib "No lib folder dependencies!"
+      return 0
+    fi
+  fi
 
   if [[ "${FLINK_POST_LIB_FILES}" -gt "${FLINK_PRE_LIB_FILES}" ]]; then
     add_vote_table -1 flinklib "Patch increases lib folder dependencies from " \
@@ -100,15 +111,3 @@ function flinklib_postapply
   fi
   return 0
 }
-
-function flinklib_rebuild
-{
-  declare repostatus=$1
-
-  if [[ "${repostatus}" = branch ]]; then
-    flinklib_preapply
-  else
-    flinklib_postinstall
-  fi
-}
-
