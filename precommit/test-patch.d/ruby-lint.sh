@@ -67,7 +67,7 @@ function ruby_lint_preapply
 
   start_clock
 
-  echo "Running ruby-lint against modified ruby scripts."
+  echo "Running ruby-lint against identified ruby scripts."
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
@@ -144,7 +144,7 @@ function ruby_lint_postapply
   # by setting the clock back
   offset_clock "${RUBY_LINT_TIMER}"
 
-  echo "Running ruby-lint against modified ruby scripts."
+  echo "Running ruby-lint against identified ruby scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do

@@ -68,7 +68,7 @@ function perlcritic_preapply
 
   start_clock
 
-  echo "Running perlcritic against modified perl scripts/modules."
+  echo "Running perlcritic against identified perl scripts/modules."
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
@@ -114,7 +114,7 @@ function perlcritic_postapply
   # by setting the clock back
   offset_clock "${PERLCRITIC_TIMER}"
 
-  echo "Running perlcritic against modified perl scripts/modules."
+  echo "Running perlcritic against identified perl scripts/modules."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do

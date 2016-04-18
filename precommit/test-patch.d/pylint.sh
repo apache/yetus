@@ -75,7 +75,7 @@ function pylint_preapply
 
   start_clock
 
-  echo "Running pylint against modified python scripts."
+  echo "Running pylint against identified python scripts."
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
@@ -121,7 +121,7 @@ function pylint_postapply
   # by setting the clock back
   offset_clock "${PYLINT_TIMER}"
 
-  echo "Running pylint against modified python scripts."
+  echo "Running pylint against identified python scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do

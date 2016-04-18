@@ -68,7 +68,7 @@ function rubocop_preapply
 
   start_clock
 
-  echo "Running rubocop against modified ruby scripts."
+  echo "Running rubocop against identified ruby scripts."
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
@@ -114,7 +114,7 @@ function rubocop_postapply
   # by setting the clock back
   offset_clock "${RUBOCOP_TIMER}"
 
-  echo "Running rubocop against modified ruby scripts."
+  echo "Running rubocop against identified ruby scripts."
   # we re-check this in case one has been added
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
