@@ -56,8 +56,8 @@ function detect_dependencies
     exit_code=1
   fi
 
-  if [ "${is_release}" = "true" ] && ! [ -x "$(command -v bsdtar)" ]; then
-    echo "building the release source archive requires the 'bsdtar' command." >&2
+  if [ "${is_release}" = "true" ] && ! [ -x "$(command -v pax)" ]; then
+    echo "building the release source archive requires the 'pax' command." >&2
     exit_code=1
   fi
 
@@ -119,9 +119,10 @@ if [ "${release}" = "true" ]; then
   fi
   echo "creating source tarball at '$(pwd)/target/'"
   rm "target/yetus-${YETUS_VERSION}-src".tar* 2>/dev/null || true
+  pax -w -f "target/yetus-${YETUS_VERSION}-src.tar" -s "/target/yetus-${YETUS_VERSION}/" target/RELEASENOTES.md target/CHANGES.md
   current=$(basename "$(pwd)")
-  bsdtar -s "/${current}/yetus-${YETUS_VERSION}/" -C ../ -cf "target/yetus-${YETUS_VERSION}-src.tar" --exclude '*/target/*' --exclude '*/publish/*' --exclude '*/.git/*' "${current}"
-  bsdtar -s "/target/yetus-${YETUS_VERSION}/" -rf "target/yetus-${YETUS_VERSION}-src.tar" target/RELEASENOTES.md target/CHANGES.md
+  #shellcheck disable=SC2038
+  (cd ..; find "${current}" \( -name target -o -name publish -o -name .git \) -prune -o ! -type d -print | xargs pax -w -a -f "${current}/target/yetus-${YETUS_VERSION}-src.tar" -s "/${current}/yetus-${YETUS_VERSION}/")
   gzip "target/yetus-${YETUS_VERSION}-src.tar"
 fi
 
