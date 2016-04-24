@@ -35,3 +35,30 @@ email-ext plug-in to send the output as an emailed report:
 ```
 ${FILE,path="<report-file-path>"}
 ```
+
+For something a bit more structured, there is also the `--html-report-file`
+option.  Using this output, again with Jenkins' email-ext plug-in, it is
+possible to build some very nice looking output that is easily customized:
+
+```
+<html>
+<head>
+<style>
+table {
+    border-collapse: collapse;
+}
+table, th, td {
+   border: 1px solid black;
+}
+tr:nth-child(even){background-color: #f2f2f2}
+</style>
+</head>
+<body>
+<p>See the <a href="${BUILD_URL}">Jenkins Build</a> for more information.</p>
+<p>${CHANGES, format="<div>[%d] (%a) %m</div>"}</p>
+<p></p>
+${FILE,path="<report-file-path>"}
+</body></html>
+```
+
+NOTE: Be aware that ASF mailing lists do not allow HTML formatted email.
