@@ -178,6 +178,8 @@ Depending on how candidate evaluation goes, you may end up performing these step
           done
 1. Push the release candidate to staging distribution. This will make the artifacts visible for the vote.
 
+        $ cd ..
+        $ svn add 0.2.0-RC1
         $ svn commit -m "stage Apache Yetus 0.2.0-RC1"
 Afterwards, the artifacts should be visible via the web under the same URL used when checking out. In the case of 0.2.0-RC1: https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/
 1. Call a vote on the release candidate. At this point you have everything you need to call a vote. Your vote thread must contain "[VOTE]" in the subject line, a link to the candidate staging area you created, a source repository commit hash, and voting rules. It should also contain hashes for the artifacts. Here is an example draft for 0.2.0-RC1, update it as appropriate for your release:
@@ -429,6 +431,8 @@ If you've gone through all of the ASF required checks, you'll already have made 
 
 Once a release candidate obtains majority approval from the PMC, there are several final maintenance tasks you must perform to close out the release.
 
+1. Create short cut links to the vote thread (e.g., http://s.apache.org/yetus-0.2.0-rc1-vote) and the result (e.g., http://s.apache.org/yetus-0.2.0-vote-passes) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.
+
 1. Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag's message should include an asf-shortened links to the vote and results. It should be named 'rel/_version_' so that it will be immutable due to ASF infra's git configuration. Presuming we're working on the 0.2.0 release and the RC1 example above has passed:
 
         $ git tag --sign rel/0.2.0 1e8f4588906a51317207092bd97b35687f2e3fa3
@@ -447,6 +451,7 @@ Then push:
         $ svn co https://dist.apache.org/repos/dist/release/yetus/ yetus-dist-release
         $ cd yetus-dist-release
         $ cp path/to/yetus-dist-dev/0.2.0-RC1 0.2.0
+        $ svn add 0.2.0
         $ svn commit -m "Publish Apache Yetus 0.2.0"
 It may take up to 24 hours for the artifacts to make their way to the various mirrors. You should not announce the release until after this period.
 1. Add the release to the ASF reporter tool. To make our project reports for the ASF Board easier, you should include the release in the [Apache Committee Report Helper website](https://reporter.apache.org/addrelease.html?yetus). Be sure to use the date release artifacts first were pushed to the distribution area, which should be the  same release date as in JIRA. Note that this website is only available to PMC members. If you are not yet in the PMC, please ask them to add the release information.
@@ -561,7 +566,7 @@ This should result in a fairly small diff
         +../../../target/0.2.0.html.md
         \ No newline at end of file
 You should then post this patch for review. Once you've gotten feedback, it's fine to push the patch to the ASF git repo immediately so long as the updated website is not published.
-1. Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in [Maintaing the Yetus Website](website).
+1. Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in [Maintaining the Yetus Website](../website).
 1. Remove old releases from distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintanence for an earlier minor or major release line, you should delete those versions from the distribution area.
 1. Publish convenience artifacts (maven, homebrew, etc). Specifics to be documented later; see [YETUS-316](issues.apache.org/jira/browse/YETUS-316).
 1. Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
