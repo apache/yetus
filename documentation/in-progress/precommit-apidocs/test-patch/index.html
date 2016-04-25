@@ -21,18 +21,18 @@
     <head>
         <meta charset="utf-8">
         <title>Apache Yetus</title>
-		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-		    <meta name="description" content="">
-		    <meta name="author" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
 
-		    <link href="/assets/css/bootstrap.css" rel="stylesheet">
-		    <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="/assets/css/bootstrap.css" rel="stylesheet">
+        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
                     <link href="/assets/css/font-awesome.css" rel="stylesheet">
 
-		    <!-- JS -->
-		    <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-		    <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
-	</head>
+        <!-- JS -->
+        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  </head>
     <body>
       <div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
@@ -167,8 +167,10 @@
 <li><a href="#generic_pre_handler">generic_pre_handler</a></li>
 <li><a href="#initialize">initialize</a></li>
 <li><a href="#module_status">module_status</a></li>
+<li><a href="#modules_backup">modules_backup</a></li>
 <li><a href="#modules_messages">modules_messages</a></li>
 <li><a href="#modules_reset">modules_reset</a></li>
+<li><a href="#modules_restore">modules_restore</a></li>
 <li><a href="#modules_workers">modules_workers</a></li>
 <li><a href="#patchfiletests">patchfiletests</a></li>
 <li><a href="#personality_enqueue_module">personality_enqueue_module</a></li>
@@ -1512,6 +1514,42 @@
 <td style="text-align: left">No</td>
 </tr>
 </tbody></table>
+<h3 id="modules_backup"><code>modules_backup</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>modules_backup
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Backup the MODULE globals prior to loop processing</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
 <h3 id="modules_messages"><code>modules_messages</code></h3>
 
 <ul>
@@ -1561,6 +1599,42 @@
 </ul>
 
 <p>Reset the test results</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
+<h3 id="modules_restore"><code>modules_restore</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>modules_restore
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Restore the backup</p>
 
 <ul>
 <li>Returns</li>
@@ -1806,15 +1880,15 @@
 <td style="text-align: left">Yes</td>
 </tr>
 </tbody></table>
-	  </div>
+    </div>
       <div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">
             <div class="span12 text-left">
-                            <div class="span12">
+              <div class="span12">
                 Copyright 2008-2016 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
-                            </div>
+              </div>
             </div>
 
         </div>
@@ -1822,5 +1896,5 @@
     </footer>
 </div>
 
-	</body>
+  </body>
 </html>
