@@ -23,6 +23,8 @@ personality_plugins "all,-ant,-gradle,-scalac,-scaladoc"
 ## @stability    evolving
 function personality_globals
 {
+  # shellcheck disable=SC2034
+  BUILDTOOL=maven
   #shellcheck disable=SC2034
   PATCH_BRANCH_DEFAULT=trunk
   #shellcheck disable=SC2034

@@ -23,6 +23,7 @@ function common_defaults
   #shellcheck disable=SC2034
   BASEDIR=$(pwd)
   BUGSYSTEMS=""
+  BUILDTOOL="nobuild"
   BUILDTOOLS=""
   #shellcheck disable=SC2034
   EXEC_MODES=""
@@ -258,7 +259,7 @@ function plugins_initialize
 {
   declare plugin
 
-  for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
+  for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOL}; do
     if declare -f ${plugin}_initialize >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_initialize"
       #shellcheck disable=SC2086

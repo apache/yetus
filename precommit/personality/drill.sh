@@ -21,6 +21,8 @@ personality_plugins "all"
 ## @stability    evolving
 function personality_globals
 {
+  # shellcheck disable=SC2034
+  BUILDTOOL=maven
   #shellcheck disable=SC2034
   GITHUB_REPO="apache/drill"
   #shellcheck disable=SC2034

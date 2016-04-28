@@ -21,6 +21,7 @@ personality_plugins "all"
 ## @stability    evolving
 function personality_globals
 {
+  BUILDTOOL=maven
   #shellcheck disable=SC2034
   PROJECT_NAME=hbase
   #shellcheck disable=SC2034

@@ -98,7 +98,6 @@ function setup_defaults
   BUILDMODEMSG="The patch"
   ISSUE=""
   TIMER=$(date +"%s")
-  BUILDTOOL=maven
   JVM_REQUIRED=true
   yetus_add_entry JDK_TEST_LIST compile
   yetus_add_entry JDK_TEST_LIST unit
