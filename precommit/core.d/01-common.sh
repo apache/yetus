@@ -203,7 +203,7 @@ function common_args
   version=$(echo "${version}" | ${AWK} '{print $NF}')
   if [[ ${version} =~ ^0
      || ${version} =~ ^1.[0-6]
-     || ${version} =~ ^1.7.[0-2]
+     || ${version} =~ ^1.7.[0-2]$
     ]]; then
     yetus_error "ERROR: ${GIT} v1.7.3 or higher is required (found ${version})."
     exit 1
