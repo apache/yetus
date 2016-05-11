@@ -59,7 +59,7 @@ cd -
 ```
 
 ## Generating the website
-To generate the static wesbite for Apache Yetus run the following commands at the root asf-site-src directory:
+To generate the static website for Apache Yetus run the following commands at the root asf-site-src directory:
 
 ```bash
 bundle exec middleman build

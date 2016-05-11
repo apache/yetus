@@ -33,9 +33,9 @@ Here are some instructions on how to generate patches:
 
    * Ensure that you have all of your change as 1 commit which has the correct commit message - something like `YETUS-1. Update shellcheck plug-in to support bats files`
    * Then run a command like: `git format-patch HEAD^..HEAD --stdout > YETUS-1.00.patch`
-   * Upload the YETUS-1.00.patch file to the aformenentioned JIRA
+   * Upload the YETUS-1.00.patch file to the aforementioned JIRA
 
-The naming of the patch should be in (JIRA).(patch number).patch or, if it needs to apply to a specific branch, (JIRA).(branch name).(patch number).patch format. For example, YETUS-9.00.patch, YETUS-500.02.patch, or YETUS-23.cmake.11.patch. This way, if you need to upload another version  of the patch, you should keep the file name the same and JIRA will sort them according to date/time if multiple files have the same name. This feature is also useful to traceback the history of a patch and roll-back to an earlier version if needed.
+The naming of the patch should be in (JIRA).(patch number).patch or, if it needs to apply to a specific branch, (JIRA).(branch name).(patch number).patch format. For example, YETUS-9.00.patch, YETUS-500.02.patch, or YETUS-23.cmake.11.patch. This way, if you need to upload another version of the patch, you should keep the file name the same and JIRA will sort them according to date/time if multiple files have the same name. This feature is also useful to traceback the history of a patch and roll-back to an earlier version if needed.
 
 ## Task Specific Guidance
 
