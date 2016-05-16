@@ -144,7 +144,7 @@ function docker_initialize
 
   dockvers=$(docker_version Client)
   if [[ "${dockvers}" =~ ^0
-     || "${dockvers}" =~ ^1\.[0-5] ]]; then
+     || "${dockvers}" =~ ^1\.[0-5]$ || "${dockvers}" =~ ^1\.[0-5]\. ]]; then
     if [[ "${DOCKERFAIL}" =~ ^12
        || "${DOCKERFAIL}" =~ ^2 ]]; then
       add_vote_table 0 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 1.6.0). Disabling docker."
