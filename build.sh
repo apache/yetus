@@ -24,6 +24,7 @@
 #   * maven 3.2.0+
 #   * jdk 1.7+ (1.7 in --release)
 #   * ruby + gems needed to run middleman
+#   * python + python-dateutil
 
 ## @description  Verify that all required dependencies exist
 ## @audience     private
@@ -48,6 +49,13 @@ function detect_dependencies
   if ! [ -x "$(command -v bundle)" ]; then
     echo "building docs requires a Ruby executable bundle." >&2
     echo "Install it by executing 'gem install bundler && bundle install'" >&2
+    exit_code=1
+  fi
+
+  ! python -c 'import dateutil.parser' 2>/dev/null
+  if [ "$?" -eq "0" ]; then
+    echo "Building release docs requires the python-dateutil module" >&2
+    echo "Install it by executing 'pip install python-dateutil'" >&2
     exit_code=1
   fi
 
