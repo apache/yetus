@@ -55,6 +55,12 @@
         <revision>0.2.1</revision>
       </Version>
     </release>
+      <Version>
+        <name>Apache Yetus</name>
+        <created>2016-05-23</created>
+        <revision>0.3.0</revision>
+      </Version>
+    </release>
     <repository>
       <GitRepository>
         <location rdf:resource="https://git-wip-us.apache.org/repos/asf/yetus.git"/>

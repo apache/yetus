@@ -56,6 +56,7 @@
                       <li><a href="/documentation/0.1.0/">Docs for v0.1.0</a></li>
                       <li><a href="/documentation/0.2.0/">Docs for v0.2.0</a></li>
                       <li><a href="/documentation/0.2.1/">Docs for v0.2.1</a></li>
+                      <li><a href="/documentation/0.3.0/">Docs for v0.3.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -294,7 +295,9 @@ $ cp path/to/yetus/target/RELEASENOTES.md path/to/yetus/target/CHANGES.md path/t
   done
 </code></pre></li>
 <li><p>Push the release candidate to staging distribution. This will make the artifacts visible for the vote.</p>
-<pre class="highlight plaintext"><code>$ svn commit -m "stage Apache Yetus 0.2.0-RC1"
+<pre class="highlight plaintext"><code>$ cd ..
+$ svn add 0.2.0-RC1
+$ svn commit -m "stage Apache Yetus 0.2.0-RC1"
 </code></pre>
 
 <p>Afterwards, the artifacts should be visible via the web under the same URL used when checking out. In the case of 0.2.0-RC1: <a href="https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/">https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/</a></p></li>
@@ -555,6 +558,7 @@ $ mvn verify
 <p>Once a release candidate obtains majority approval from the PMC, there are several final maintenance tasks you must perform to close out the release.</p>
 
 <ol>
+<li><p>Create short cut links to the vote thread (e.g., <a href="http://s.apache.org/yetus-0.2.0-rc1-vote">http://s.apache.org/yetus-0.2.0-rc1-vote</a>) and the result (e.g., <a href="http://s.apache.org/yetus-0.2.0-vote-passes">http://s.apache.org/yetus-0.2.0-vote-passes</a>) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.</p></li>
 <li><p>Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag&rsquo;s message should include an asf-shortened links to the vote and results. It should be named &#39;rel/<em>version</em>&rsquo; so that it will be immutable due to ASF infra&rsquo;s git configuration. Presuming we&rsquo;re working on the 0.2.0 release and the RC1 example above has passed:</p>
 <pre class="highlight plaintext"><code>$ git tag --sign rel/0.2.0 1e8f4588906a51317207092bd97b35687f2e3fa3
 </code></pre>
@@ -574,6 +578,7 @@ results: http://s.apache.org/yetus-0.2.0-vote-passes
 <pre class="highlight plaintext"><code>$ svn co https://dist.apache.org/repos/dist/release/yetus/ yetus-dist-release
 $ cd yetus-dist-release
 $ cp path/to/yetus-dist-dev/0.2.0-RC1 0.2.0
+$ svn add 0.2.0
 $ svn commit -m "Publish Apache Yetus 0.2.0"
 </code></pre>
 
@@ -693,7 +698,7 @@ index 0000000..c14ca73
 </code></pre>
 
 <p>You should then post this patch for review. Once you&rsquo;ve gotten feedback, it&rsquo;s fine to push the patch to the ASF git repo immediately so long as the updated website is not published.</p></li>
-<li><p>Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in <a href="website">Maintaing the Yetus Website</a>.</p></li>
+<li><p>Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in <a href="../website">Maintaining the Yetus Website</a>.</p></li>
 <li><p>Remove old releases from distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintanence for an earlier minor or major release line, you should delete those versions from the distribution area.</p></li>
 <li><p>Publish convenience artifacts (maven, homebrew, etc). Specifics to be documented later; see <a href="issues.apache.org/jira/browse/YETUS-316">YETUS-316</a>.</p></li>
 <li><p>Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
