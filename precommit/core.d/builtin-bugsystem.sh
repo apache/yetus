@@ -44,6 +44,7 @@ function console_finalreport
   declare line
   declare seccoladj=0
   declare spcfx=${PATCH_DIR}/spcl.txt
+  declare calctime
 
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
     exec 6>&1
@@ -114,6 +115,7 @@ function console_finalreport
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    calctime=$(clock_display "${ela}")
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
 
     echo "${comment}" | fold -s -w $((78-seccoladj-22)) > "${commentfile1}"
@@ -121,7 +123,7 @@ function console_finalreport
     ${SED} -e '1d' "${commentfile1}"  > "${commentfile2}"
 
     printf "| %4s | %*s | %-10s |%-s\n" "${vote}" ${seccoladj} \
-      "${subs}" "${ela}" "${normaltop}"
+      "${subs}" "${calctime}" "${normaltop}"
     while read -r line; do
       printf "|      | %*s |            | %-s\n" ${seccoladj} " " "${line}"
     done < "${commentfile2}"

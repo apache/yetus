@@ -357,6 +357,7 @@ function jira_finalreport
   declare subs
   declare color
   declare comment
+  declare calctime
 
   rm "${commentfile}" 2>/dev/null
 
@@ -395,6 +396,7 @@ function jira_finalreport
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    calctime=$(clock_display "${ela}")
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
 
     # summary line
@@ -416,6 +418,9 @@ function jira_finalreport
         0)
           color="blue"
         ;;
+        -0)
+          color="orange"
+        ;;
         *)
           color="black"
         ;;
@@ -425,7 +430,7 @@ function jira_finalreport
     printf "| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} |\n" \
       "${color}" "${vote}" \
       "${color}" "${subs}" \
-      "${color}" "${ela}" \
+      "${color}" "${calctime}" \
       "${color}" "${comment}" \
       >> "${commentfile}"
     ((i=i+1))

@@ -220,52 +220,41 @@ function add_header_line
 
 ## @description  Add to the output table. If the first parameter is a number
 ## @description  that is the vote for that column and calculates the elapsed time
-## @description  based upon the last start_clock().  If it the string null, then it is
-## @description  a special entry that signifies extra
-## @description  content for the final column.  The second parameter is the reporting
+## @description  based upon the last start_clock().  The second parameter is the reporting
 ## @description  subsystem (or test) that is providing the vote.  The second parameter
 ## @description  is always required.  The third parameter is any extra verbage that goes
 ## @description  with that subsystem.
 ## @audience     public
 ## @stability    stable
 ## @replaceable  no
-## @param        +1/0/-1/null
+## @param        +1/0/-1
 ## @param        subsystem
 ## @param        string
-## @return       Elapsed time display
 function add_vote_table
 {
   declare value=$1
   declare subsystem=$2
   shift 2
 
-  declare calctime
   # apparently shellcheck doesn't know about declare -r
   #shellcheck disable=SC2155
   declare -r elapsed=$(stop_clock)
   declare filt
 
-  yetus_debug "add_vote_table ${value} ${subsystem} ${*}"
-
-  calctime=$(clock_display "${elapsed}")
+  yetus_debug "add_vote_table ${value} ${subsystem} ${elapsed} ${*}"
 
   if [[ ${value} == "1" ]]; then
     value="+1"
   fi
 
   for filt in "${VOTE_FILTER[@]}"; do
-    if [[ "${subsystem}" = "${filt}" ]]; then
-      value=0
+    if [[ "${subsystem}" == "${filt}" && "${value}" == -1 ]]; then
+      value=-0
     fi
   done
 
-  if [[ -z ${value} ]]; then
-    # shellcheck disable=SC2034
-    TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="|  | ${subsystem} | | ${*:-} |"
-  else
-    # shellcheck disable=SC2034
-    TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| ${value} | ${subsystem} | ${calctime} | $* |"
-  fi
+  # shellcheck disable=SC2034
+  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| ${value} | ${subsystem} | ${elapsed} | $* |"
   ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
 
   if [[ "${value}" = -1 ]]; then
@@ -358,7 +347,7 @@ function finish_vote_table
   echo ""
 
   # shellcheck disable=SC2034
-  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| | | ${calctime} | |"
+  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| | | ${elapsed} | |"
   ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1 ))
 }
 
@@ -1863,29 +1852,40 @@ function modules_messages
   TIMER=${oldtimer}
 }
 
-## @description  Add a test result
+## @description  Add or update a test result. Update requires
+## @description  at least the first two parameters.
+## @description  WARNING: If the message is updated,
+## @description  then the JDK version is also calculated to match
+## @description  the current JAVA_HOME.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
-## @param        module
-## @param        runtime
+## @param        moduleindex
+## @param        -1-0|0|+1
+## @param        logvalue
+## @param        message
 function module_status
 {
-  local index=$1
-  local value=$2
-  local log=$3
-  shift 3
+  declare index=$1
+  declare value=$2
+  shift 2
+  declare log=$1
+  shift
 
-  local jdk
+  declare jdk
 
   jdk=$(report_jvm_version "${JAVA_HOME}")
 
   if [[ -n ${index}
     && ${index} =~ ^[0-9]+$ ]]; then
     MODULE_STATUS[${index}]="${value}"
-    MODULE_STATUS_LOG[${index}]="${log}"
-    MODULE_STATUS_JDK[${index}]=" with JDK v${jdk}"
-    MODULE_STATUS_MSG[${index}]="${*}"
+    if [[ -n ${log} ]]; then
+      MODULE_STATUS_LOG[${index}]="${log}"
+    fi
+    if [[ -n $1 ]]; then
+      MODULE_STATUS_JDK[${index}]=" with JDK v${jdk}"
+      MODULE_STATUS_MSG[${index}]="${*}"
+    fi
   else
     yetus_error "ASSERT: module_status given bad index: ${index}"
     yetus_error "ASSERT: module_stats $*"
@@ -2097,7 +2097,6 @@ function check_unittests
   declare statusjdk
   declare formatresult=0
   declare needlog
-  declare unitlogs
 
   if ! verify_needed_test unit; then
     return 0
@@ -2127,11 +2126,6 @@ function check_unittests
 
     ((result=result+$?))
 
-    modules_messages patch unit false
-    if [[ ${result} == 0 ]]; then
-      continue
-    fi
-
     i=0
     until [[ $i -eq ${#MODULE[@]} ]]; do
       module=${MODULE[${i}]}
@@ -2155,7 +2149,7 @@ function check_unittests
       done
 
       if [[ ${needlog} == 1 ]]; then
-        unitlogs="${unitlogs} @@BASE@@/patch-unit-${fn}.txt"
+        module_status ${i} -1 "patch-unit-${fn}.txt"
       fi
 
       popd >/dev/null
@@ -2173,9 +2167,7 @@ function check_unittests
   done
   JAVA_HOME=${savejavahome}
 
-  if [[ -n "${unitlogs}" ]]; then
-    add_footer_table "unit test logs" "${unitlogs}"
-  fi
+  modules_messages patch unit false
 
   if [[ ${JENKINS} == true ]]; then
     add_footer_table "${statusjdk} Test Results" "${BUILD_URL}testReport/"

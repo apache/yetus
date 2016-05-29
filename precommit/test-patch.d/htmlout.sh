@@ -81,6 +81,7 @@ function htmlout_finalreport
   declare subs
   declare color
   declare comment
+  declare calctime
 
   rm "${commentfile}" 2>/dev/null
 
@@ -98,7 +99,7 @@ function htmlout_finalreport
     else
       echo "<tr><th><font color=\"red\">-1 overall</font></th></tr>"
     fi
-    echo "</table></tbody>"
+    echo "</tbody></table>"
     echo "<p></p>"
   } >  "${commentfile}"
 
@@ -126,6 +127,7 @@ function htmlout_finalreport
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    calctime=$(clock_display "${ela}")
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
 
     # summary line
@@ -147,6 +149,9 @@ function htmlout_finalreport
         0)
           color="blue"
         ;;
+        -0)
+          color="orange"
+        ;;
         *)
           color="black"
         ;;
@@ -157,7 +162,7 @@ function htmlout_finalreport
       echo "<tr>"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${vote}"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${subs}"
-      printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${ela}"
+      printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${calctime}"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${comment}"
       echo "</tr>"
     } >> "${commentfile}"
