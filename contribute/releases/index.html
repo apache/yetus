@@ -560,7 +560,8 @@ $ mvn verify
 <ol>
 <li><p>Create short cut links to the vote thread (e.g., <a href="http://s.apache.org/yetus-0.2.0-rc1-vote">http://s.apache.org/yetus-0.2.0-rc1-vote</a>) and the result (e.g., <a href="http://s.apache.org/yetus-0.2.0-vote-passes">http://s.apache.org/yetus-0.2.0-vote-passes</a>) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.</p></li>
 <li><p>Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag&rsquo;s message should include an asf-shortened links to the vote and results. It should be named &#39;rel/<em>version</em>&rsquo; so that it will be immutable due to ASF infra&rsquo;s git configuration. Presuming we&rsquo;re working on the 0.2.0 release and the RC1 example above has passed:</p>
-<pre class="highlight plaintext"><code>$ git tag --sign rel/0.2.0 1e8f4588906a51317207092bd97b35687f2e3fa3
+<pre class="highlight plaintext"><code>$ git config --global user.signingkey &lt;your-key-id&gt; # if you've never configured
+$ git tag --sign rel/0.2.0 1e8f4588906a51317207092bd97b35687f2e3fa3
 </code></pre>
 
 <p>Example commit message:</p>
@@ -577,7 +578,8 @@ results: http://s.apache.org/yetus-0.2.0-vote-passes
 <li><p>Move release artifacts to the distribution area. The release officially happens once the artifacts are pushed to the ASF distribution servers. From this server, the artifacts will automatically be copied to the long-term archive as well as the various mirrors that will be used by downstream users. These must be <em>exactly</em> the artifacts from the RC that passed. Please note that currently only Yetus PMC members have write access to this space. If you are not yet on the PMC, please ask the PMC to post the artifacts.</p>
 <pre class="highlight plaintext"><code>$ svn co https://dist.apache.org/repos/dist/release/yetus/ yetus-dist-release
 $ cd yetus-dist-release
-$ cp path/to/yetus-dist-dev/0.2.0-RC1 0.2.0
+$ mkdir 0.2.0
+$ cp path/to/yetus-dist-dev/0.2.0-RC1/* 0.2.0
 $ svn add 0.2.0
 $ svn commit -m "Publish Apache Yetus 0.2.0"
 </code></pre>
@@ -635,7 +637,7 @@ $ git commit
 </code></pre>
 
 <p>Example commit message:</p>
-<pre class="highlight plaintext"><code>YETUS-XXX. add release 0.1.0.
+<pre class="highlight plaintext"><code>YETUS-XXX. add release 0.2.0.
 
     - list in releases
     - update doap
@@ -700,7 +702,7 @@ index 0000000..c14ca73
 <p>You should then post this patch for review. Once you&rsquo;ve gotten feedback, it&rsquo;s fine to push the patch to the ASF git repo immediately so long as the updated website is not published.</p></li>
 <li><p>Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in <a href="../website">Maintaining the Yetus Website</a>.</p></li>
 <li><p>Remove old releases from distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintanence for an earlier minor or major release line, you should delete those versions from the distribution area.</p></li>
-<li><p>Publish convenience artifacts (maven, homebrew, etc). Specifics to be documented later; see <a href="issues.apache.org/jira/browse/YETUS-316">YETUS-316</a>.</p></li>
+<li><p>Publish convenience artifacts (maven, homebrew, etc). Specifics to be documented later; see <a href="https://issues.apache.org/jira/browse/YETUS-316">YETUS-316</a>.</p></li>
 <li><p>Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
     Subject: [ANNOUNCE] Apache Yetus 0.2.0 release</p>
 <pre class="highlight plaintext"><code>Apache Yetus 0.2.0 Released!
@@ -737,9 +739,10 @@ PGP signatures are available at:
     https://www.apache.org/dist/yetus/0.2.0/yetus-0.2.0-src.tar.gz.asc
     https://www.apache.org/dist/yetus/0.2.0/yetus-0.2.0-bin.tar.gz.asc
 
-The list of changes included in this release can be browsed at:
+The list of changes included in this release and release notes can be browsed at:
 
     https://yetus.apache.org/documentation/0.2.0/CHANGES/
+    https://yetus.apache.org/documentation/0.2.0/RELEASENOTES/
 
 Documentation for this release is at:
 
