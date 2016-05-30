@@ -613,7 +613,7 @@ You should then post this patch for review. Once you've gotten feedback, it's fi
         The list of changes included in this release and release notes can be browsed at:
 
             https://yetus.apache.org/documentation/0.2.0/CHANGES/
-            https://yetus.apache.org/documentation/0.3.0/RELEASENOTES/
+            https://yetus.apache.org/documentation/0.2.0/RELEASENOTES/
 
         Documentation for this release is at:
 
