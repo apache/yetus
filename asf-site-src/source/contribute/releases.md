@@ -435,6 +435,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 
 1. Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag's message should include an asf-shortened links to the vote and results. It should be named 'rel/_version_' so that it will be immutable due to ASF infra's git configuration. Presuming we're working on the 0.2.0 release and the RC1 example above has passed:
 
+        $ git config --global user.signingkey <your-key-id> # if you've never configured
         $ git tag --sign rel/0.2.0 1e8f4588906a51317207092bd97b35687f2e3fa3
 Example commit message:
 
@@ -450,7 +451,8 @@ Then push:
 
         $ svn co https://dist.apache.org/repos/dist/release/yetus/ yetus-dist-release
         $ cd yetus-dist-release
-        $ cp path/to/yetus-dist-dev/0.2.0-RC1 0.2.0
+        $ mkdir 0.2.0
+        $ cp path/to/yetus-dist-dev/0.2.0-RC1/* 0.2.0
         $ svn add 0.2.0
         $ svn commit -m "Publish Apache Yetus 0.2.0"
 It may take up to 24 hours for the artifacts to make their way to the various mirrors. You should not announce the release until after this period.
@@ -506,7 +508,7 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
         $ git commit
 Example commit message:
 
-        YETUS-XXX. add release 0.1.0.
+        YETUS-XXX. add release 0.2.0.
 
             - list in releases
             - update doap
@@ -568,7 +570,7 @@ This should result in a fairly small diff
 You should then post this patch for review. Once you've gotten feedback, it's fine to push the patch to the ASF git repo immediately so long as the updated website is not published.
 1. Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in [Maintaining the Yetus Website](../website).
 1. Remove old releases from distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintanence for an earlier minor or major release line, you should delete those versions from the distribution area.
-1. Publish convenience artifacts (maven, homebrew, etc). Specifics to be documented later; see [YETUS-316](issues.apache.org/jira/browse/YETUS-316).
+1. Publish convenience artifacts (maven, homebrew, etc). Specifics to be documented later; see [YETUS-316](https://issues.apache.org/jira/browse/YETUS-316).
 1. Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
         Subject: [ANNOUNCE] Apache Yetus 0.2.0 release
 
@@ -608,9 +610,10 @@ You should then post this patch for review. Once you've gotten feedback, it's fi
             https://www.apache.org/dist/yetus/0.2.0/yetus-0.2.0-src.tar.gz.asc
             https://www.apache.org/dist/yetus/0.2.0/yetus-0.2.0-bin.tar.gz.asc
 
-        The list of changes included in this release can be browsed at:
+        The list of changes included in this release and release notes can be browsed at:
 
             https://yetus.apache.org/documentation/0.2.0/CHANGES/
+            https://yetus.apache.org/documentation/0.3.0/RELEASENOTES/
 
         Documentation for this release is at:
 
