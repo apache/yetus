@@ -35,6 +35,11 @@ function personality_globals
   GITHUB_REPO="apache/hadoop"
   #shellcheck disable=SC2034
   PYLINT_OPTIONS="--indent-string='  '"
+
+  HADOOP_HOMEBREW_DIR=${HADOOP_HOMEBREW_DIR:-$(brew --prefix 2>/dev/null)}
+  if [[ -z "${HADOOP_HOMEBREW_DIR}" ]]; then
+    HADOOP_HOMEBREW_DIR=/usr/local
+  fi
 }
 
 ## @description  Calculate the actual module ordering
@@ -136,16 +141,16 @@ function hadoop_native_flags
         -Drequire.test.libhadoop
     ;;
     Darwin)
-      JANSSON_INCLUDE_DIR=/usr/local/opt/jansson/include
-      JANSSON_LIBRARY=/usr/local/opt/jansson/lib
+      JANSSON_INCLUDE_DIR="${HADOOP_HOMEBREW_DIR}/opt/jansson/include"
+      JANSSON_LIBRARY="${HADOOP_HOMEBREW_DIR}/opt/jansson/lib"
       export JANSSON_LIBRARY JANSSON_INCLUDE_DIR
       # shellcheck disable=SC2086
       echo \
       -Pnative -Drequire.snappy  \
       -Drequire.openssl \
-        -Dopenssl.prefix=/usr/local/opt/openssl/ \
-        -Dopenssl.include=/usr/local/opt/openssl/include \
-        -Dopenssl.lib=/usr/local/opt/openssl/lib \
+        -Dopenssl.prefix=${HADOOP_HOMEBREW_DIR}/opt/openssl/ \
+        -Dopenssl.include=${HADOOP_HOMEBREW_DIR}/opt/openssl/include \
+        -Dopenssl.lib=${HADOOP_HOMEBREW_DIR}/opt/openssl/lib \
       -Drequire.libwebhdfs -Drequire.test.libhadoop
     ;;
     *)
