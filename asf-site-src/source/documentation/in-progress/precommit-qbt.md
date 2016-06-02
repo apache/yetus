@@ -27,6 +27,8 @@ It is meant to be a way to easily get test-patch's output on your
 current source tree.  It is suitable to be run as a regularly
 scheduled build as part of your overall development strategy.
 
+# Reporting
+
 When using an automation tool, it may be useful to use the
 `--console-report-file` option to send the summary email to a
 file. This can then be used with systems like Jenkin's
@@ -67,3 +69,16 @@ suitable for email.  It contains just the barebones information needed to get
 information on failures: what voted -1, what tests failed, what subsystems are long
 running (configurable with the `--brief-report-long` opton), and a list of any
 attached log files.
+
+NOTE: Be aware that ASF mailing lists do not allow HTML formatted email.
+
+# Archiving
+
+It may be useful to save off certain files while qbt is running for more
+post-processing by another utility.  If the `rsync` command is available,
+then the archiving functionality may be used.
+
+The `--archive-list` option takes a comma separated list of `find -name`
+patterns and copies them to the patch directory's archiver subdirectory.
+It will preserve the directory structure of the source tree so that
+multiple matching file names will be preserved.

@@ -681,6 +681,7 @@ function yetus_usage
   echo ""
   echo "Options:"
   echo ""
+  yetus_add_option "--archive-list=<list>" "Comma delimited list of pattern matching notations to copy to patch-dir"
   yetus_add_option "--basedir=<dir>" "The directory to apply the patch to (default current directory)"
   yetus_add_option "--branch=<ref>" "Forcibly set the branch"
   yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
@@ -780,6 +781,10 @@ function parse_args
 
   for i in "$@"; do
     case ${i} in
+      --archive-list=*)
+        yetus_comma_to_array ARCHIVE_LIST "${i#*=}"
+        yetus_debug "Set to archive: ${ARCHIVE_LIST[*]}"
+      ;;
       --bugcomments=*)
         BUGCOMMENTS=${i#*=}
         BUGCOMMENTS=${BUGCOMMENTS//,/ }
@@ -1728,6 +1733,53 @@ function check_reexec
   fi
 }
 
+## @description  Save file names and directory to the patch dir
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function archive
+{
+  declare pmn
+  declare fn
+  declare line
+  declare srcdir
+  declare tmpfile="${PATCH_DIR}/tmp.$$.${RANDOM}"
+
+  if [[ ${#ARCHIVE_LIST[@]} -eq 0 ]]; then
+    return
+  fi
+
+  if ! verify_command "rsync" "${RSYNC}"; then
+    yetus_error "WARNING: Cannot use the archive function"
+    return
+  fi
+
+  yetus_debug "Starting archiving process"
+  # get the list of files. these will be with
+  # the full path
+  # (this is pretty expensive)
+
+  rm "${tmpfile}" 2>/dev/null
+  for pmn in "${ARCHIVE_LIST[@]}"; do
+    find "${BASEDIR}" -name "${pmn}" >> "${tmpfile}"
+  done
+
+  # read the list, stripping of both
+  # the BASEDIR and any leading /.
+  # with our filename fragment,
+  # call faster_dirname with a prepended /
+  while read -r line; do
+    yetus_debug "Archiving: ${line}"
+    srcdir=$(faster_dirname "/${line}")
+    mkdir -p "${PATCH_DIR}/archiver${srcdir}"
+    "${RSYNC}" -av "${BASEDIR}/${line}" "${PATCH_DIR}/archiver${srcdir}" >/dev/null 2>&1
+  done < <("${SED}" -e "s,${BASEDIR},,g" \
+      -e "s,^/,,g" "${tmpfile}")
+  rm "${tmpfile}" 2>/dev/null
+  yetus_debug "Ending archiving process"
+
+}
+
 ## @description  Reset the test results
 ## @audience     public
 ## @stability    evolving
@@ -2294,6 +2346,7 @@ function runtests
       ${plugin}_tests
     fi
   done
+  archive
 }
 
 ## @description  Calculate the differences between the specified files
@@ -2749,6 +2802,7 @@ function compile_nonjvm
       yetus_debug "Running ${plugin}_compile ${codebase} ${multijdkmode}"
       "${plugin}_compile" "${codebase}" "${multijdkmode}"
       ((result = result + $?))
+      archive
     fi
   done
 
@@ -2812,6 +2866,7 @@ function compile_cycle
       if [[ $? -gt 0 ]]; then
         ((result = result+1))
       fi
+      archive
     fi
   done
 
@@ -2825,6 +2880,7 @@ function compile_cycle
       if [[ $? -gt 0 ]]; then
         ((result = result+1))
       fi
+      archive
     fi
   done
 
@@ -2836,6 +2892,7 @@ function compile_cycle
       if [[ $? -gt 0 ]]; then
         ((result = result+1))
       fi
+      archive
     fi
   done
 
@@ -2866,6 +2923,7 @@ function patchfiletests
       if [[ $? -gt 0 ]]; then
         ((result = result+1))
       fi
+      archive
     fi
   done
 

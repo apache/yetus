@@ -46,7 +46,8 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     pkg-config \
     python \
     python2.7 \
-    python-pip
+    python-pip \
+    rsync
 
 # Fixing the Apache commons / Maven dependency problem under Ubuntu:
 # See http://wiki.apache.org/commons/VfsProblems

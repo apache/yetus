@@ -87,6 +87,8 @@ function common_defaults
       SED=${SED:-sed}
     ;;
   esac
+
+  RSYNC=${RSYNC:-rsync}
 }
 
 ## @description  Interpret the common command line parameters used by test-patch,
@@ -162,6 +164,9 @@ function common_args
       ;;
       --project=*)
         PROJECT_NAME=${i#*=}
+      ;;
+      --rsync-cmd=*)
+        RSYNC=${i#*=}
       ;;
       --skip-system-plugins)
         LOAD_SYSTEM_PLUGINS=false
