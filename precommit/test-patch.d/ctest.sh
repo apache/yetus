@@ -16,8 +16,6 @@
 
 add_test_format ctest
 
-CTEST_FAILED_TESTS=""
-
 ## @description  initialize ctest
 ## @audience     private
 ## @stability    evolving
@@ -46,21 +44,36 @@ function ctest_process_tests
   declare result=0
   declare module_failed_tests
   declare filenames
-  declare shortlog
+  declare fn
   declare reallog
 
-  filenames=$(find "${BASEDIR}" -type f -name LastTestsFailed.log)
+  # this file contains the lists of tests that failed
+  # cwd should be the module that we were executing in
+  # so no need to do anything fancy here
+  filenames=$(find . -type f -name LastTestsFailed.log)
 
   if [[ -n "${filenames}" ]]; then
-    for shortlog in ${filenames}; do
-      #shellcheck disable=2086
-      reallog="$(dirname ${shortlog})/LastTest.log"
+    for fn in ${filenames}; do
+
+      # let's record what tests failed and be able to report those
+      module_failed_tests=$(cut -f2 -d: "${fn}")
+      CTEST_FAILED_TESTS="${CTEST_FAILED_TESTS} ${module_failed_tests}"
+      ((result=result+1))
+
+      # next, let's do some extra log processing
+      # this file contains the log of the tests that were run
+      # when the failures happened. it will be in the same dir
+      # as the lasttestsfailed.log file
+      reallog=$(dirname "${fn}")/LastTest.log
+
+      # this should always be true, but....
       if [[ -f "${reallog}" ]]; then
-        module_failed_tests=$(cut -f2 -d: "${shortlog}")
-        cp "${reallog}" "${PATCH_DIR}/patch-${filefrag}.ctest"
-        CTEST_LOGS="${CTEST_LOGS} @@BASE@@/patch-${filefrag}.ctest"
-        CTEST_FAILED_TESTS="${CTEST_FAILED_TESTS} ${module_failed_tests}"
-        ((result=result+1))
+        module_failed_tests=$(cut -f2 -d: "${fn}")
+
+        # let's copy it to the patchdir so that people can find the failures
+        # long after the build has been done
+        cp "${reallog}" "${PATCH_DIR}/patch-${filefrag}-ctest.txt"
+        CTEST_LOGS=("${CTEST_LOGS[@]}" "@@BASE@@/patch-${filefrag}-ctest.txt")
       fi
     done
   fi
@@ -79,11 +92,15 @@ function ctest_process_tests
 function ctest_finalize_results
 {
   declare jdk=$1
+  declare fn
 
   if [[ -n "${CTEST_FAILED_TESTS}" ]] ; then
     # shellcheck disable=SC2086
     populate_test_table "${jdk}Failed CTEST tests" ${CTEST_FAILED_TESTS}
     CTEST_FAILED_TESTS=""
-    add_footer_table "CTEST logs" "${CTEST_LOGS}"
+    for fn in "${CTEST_LOGS[@]}"; do
+      add_footer_table "CTEST" "${fn}"
+    done
+    CTEST_LOGS=()
   fi
 }
