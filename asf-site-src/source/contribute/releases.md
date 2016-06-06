@@ -495,8 +495,6 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
         $ vim data/versions.yml
         $ # create symlinks for where the documentation generation will go
         $ cd source/documentation
-        $ # Add release metadata to our project description; ensure the date matches JIRA and when artifacts were added to the distribution area.
-        $ vim doap_yetus.rdf
         $ ln -s ../../../target/0.2.0/ 0.2.0
         $ ln -s ../../../target/0.2.0.html.md 0.2.0.html.md
         $ # add these symlinks to our rat exclusion file
@@ -511,7 +509,6 @@ Example commit message:
         YETUS-XXX. add release 0.2.0.
 
             - list in releases
-            - update doap
             - add symlinks for markdown 3 workaround of per-version generated docs
 This should result in a fairly small diff
 
@@ -535,22 +532,6 @@ This should result in a fairly small diff
          releases:
            - '0.1.0'
         +  - '0.2.0'
-        diff --git a/asf-site-src/source/doap_yetus.rdf b/asf-site-src/source/doap_yetus.rdf
-        index e3d4457..0f4e05e 100644
-        --- a/asf-site-src/source/doap_yetus.rdf
-        +++ b/asf-site-src/source/doap_yetus.rdf
-        @@ -44,6 +44,11 @@
-                 <created>2015-12-14</created>
-                 <revision>0.1.0</revision>
-               </Version>
-        +      <Version>
-        +        <name>Apache Yetus</name>
-        +        <created>2016-04-07</created>
-        +        <revision>0.2.0</revision>
-        +      </Version>
-             </release>
-             <repository>
-               <GitRepository>
         diff --git a/asf-site-src/source/documentation/0.2.0 b/asf-site-src/source/documentation/0.2.0
         new file mode 120000
         index 0000000..158dc23
