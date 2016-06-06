@@ -79,7 +79,7 @@ Next, create a shortened link to the JIRA version's release notes. This should u
 
 1. Browse to the Yetus JIRA versions page: https://issues.apache.org/jira/browse/YETUS/?selectedTab=com.atlassian.jira.jira-projects-plugin:versions-panel
 1. Click on the Name of the release you are managing
-1. Click on the "Release Notes" button
+1. Click on the "Release Notes" button. If it isn't shown, click on the "Summary" button in the left menu
 1. Copy this URL
 1. Browse to the ASF URL shortener: http://s.apache.org/
 1. Paste the URL into the "URI" field
