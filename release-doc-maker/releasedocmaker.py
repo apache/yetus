@@ -18,7 +18,7 @@
 
 from glob import glob
 from optparse import OptionParser
-from time import gmtime, strftime
+from time import gmtime, strftime, sleep
 from distutils.version import LooseVersion
 import errno
 import os
@@ -27,6 +27,7 @@ import shutil
 import sys
 import urllib
 import urllib2
+import httplib
 try:
     import json
 except ImportError:
@@ -44,6 +45,7 @@ RELNOTE_PATTERN = re.compile('^\<\!\-\- ([a-z]+) \-\-\>')
 JIRA_BASE_URL = "https://issues.apache.org/jira"
 SORTTYPE = 'resolutiondate'
 SORTORDER = 'older'
+NUM_RETRIES = 5
 CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
              "Component | Reporter | Contributor |\n"
 CHANGEHDR2 = "|:---- |:---- | :--- |:---- |:---- |:---- |\n"
@@ -364,6 +366,11 @@ class JiraIter(object):
         params = urllib.urlencode({'jql': jql,
                                    'startAt': pos,
                                    'maxResults': count})
+        return JiraIter.load_jira(params, 0)
+
+    @staticmethod
+    def load_jira(params, fail_count):
+        """send query to JIRA and collect with retries"""
         try:
             resp = urllib2.urlopen(JIRA_BASE_URL + "/rest/api/2/search?%s" %
                                    params)
@@ -373,8 +380,26 @@ class JiraIter(object):
             if code == 400:
                 print "Please make sure the specified projects are correct."
             sys.exit(1)
-        data = json.loads(resp.read())
+        except httplib.BadStatusLine as err:
+            return JiraIter.retry_load(err, params, fail_count)
+        try:
+            data = json.loads(resp.read())
+        except httplib.IncompleteRead as err:
+            return JiraIter.retry_load(err, params, fail_count)
         return data
+
+    @staticmethod
+    def retry_load(err, params, fail_count):
+        """Retry connection up to NUM_RETRIES times."""
+        print(err)
+        fail_count += 1
+        if fail_count <= NUM_RETRIES:
+            print "Connection failed %d times. Retrying." % (fail_count)
+            sleep(1)
+            return JiraIter.load_jira(params, fail_count)
+        else:
+            print "Connection failed %d times. Aborting." % (fail_count)
+            sys.exit(1)
 
     @staticmethod
     def collect_jiras(ver, projects):
@@ -694,6 +719,12 @@ def parse_args():
                       action="append",
                       type="string",
                       help="specify base URL of the JIRA instance.")
+    parser.add_option(
+        "--retries",
+        dest="retries",
+        action="append",
+        type="int",
+        help="Specify how many times to retry connection for each URL.")
 
     Linter.add_parser_options(parser)
 
@@ -768,6 +799,10 @@ def main():
         title = projects[0]
     else:
         title = options.title
+
+    if options.retries is not None:
+        global NUM_RETRIES
+        NUM_RETRIES = options.retries[0]
 
     haderrors = False
 
