@@ -623,8 +623,6 @@ $ # Add the release to the releases data file
 $ vim data/versions.yml
 $ # create symlinks for where the documentation generation will go
 $ cd source/documentation
-$ # Add release metadata to our project description; ensure the date matches JIRA and when artifacts were added to the distribution area.
-$ vim doap_yetus.rdf
 $ ln -s ../../../target/0.2.0/ 0.2.0
 $ ln -s ../../../target/0.2.0.html.md 0.2.0.html.md
 $ # add these symlinks to our rat exclusion file
@@ -640,7 +638,6 @@ $ git commit
 <pre class="highlight plaintext"><code>YETUS-XXX. add release 0.2.0.
 
     - list in releases
-    - update doap
     - add symlinks for markdown 3 workaround of per-version generated docs
 </code></pre>
 
@@ -665,22 +662,6 @@ index ac9861c..4a4d4b5 100644
  releases:
    - '0.1.0'
 +  - '0.2.0'
-diff --git a/asf-site-src/source/doap_yetus.rdf b/asf-site-src/source/doap_yetus.rdf
-index e3d4457..0f4e05e 100644
---- a/asf-site-src/source/doap_yetus.rdf
-+++ b/asf-site-src/source/doap_yetus.rdf
-@@ -44,6 +44,11 @@
-         &lt;created&gt;2015-12-14&lt;/created&gt;
-         &lt;revision&gt;0.1.0&lt;/revision&gt;
-       &lt;/Version&gt;
-+      &lt;Version&gt;
-+        &lt;name&gt;Apache Yetus&lt;/name&gt;
-+        &lt;created&gt;2016-04-07&lt;/created&gt;
-+        &lt;revision&gt;0.2.0&lt;/revision&gt;
-+      &lt;/Version&gt;
-     &lt;/release&gt;
-     &lt;repository&gt;
-       &lt;GitRepository&gt;
 diff --git a/asf-site-src/source/documentation/0.2.0 b/asf-site-src/source/documentation/0.2.0
 new file mode 120000
 index 0000000..158dc23

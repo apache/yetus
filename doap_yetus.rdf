@@ -38,28 +38,6 @@
     <category rdf:resource="http://projects.apache.org/category/build-management" />
     <category rdf:resource="http://projects.apache.org/category/library" />
     <category rdf:resource="http://projects.apache.org/category/testing" />
-    <release>
-      <Version>
-        <name>Apache Yetus</name>
-        <created>2015-12-14</created>
-        <revision>0.1.0</revision>
-      </Version>
-      <Version>
-        <name>Apache Yetus</name>
-        <created>2016-03-07</created>
-        <revision>0.2.0</revision>
-      </Version>
-      <Version>
-        <name>Apache Yetus</name>
-        <created>2016-04-07</created>
-        <revision>0.2.1</revision>
-      </Version>
-      <Version>
-        <name>Apache Yetus</name>
-        <created>2016-05-23</created>
-        <revision>0.3.0</revision>
-      </Version>
-    </release>
     <repository>
       <GitRepository>
         <location rdf:resource="https://git-wip-us.apache.org/repos/asf/yetus.git"/>
