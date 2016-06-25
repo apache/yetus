@@ -123,14 +123,17 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize
   FileUtils.mkdir "#{output}/#{version}"
   FileUtils.mv(
     Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"),
-    "#{output}/#{version}/")
+    "#{output}/#{version}/"
+  )
   FileUtils.mv(
     "#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md",
-    "#{output}/#{version}.html.md")
+    "#{output}/#{version}.html.md"
+  )
   FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
   precommit_shelldocs(
     "#{output}/#{version}/precommit-apidocs",
-    "#{output}/build-#{version}/precommit")
+    "#{output}/build-#{version}/precommit"
+  )
 
   puts "\tgenerating javadocs"
   `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Metrics/LineLength
@@ -168,7 +171,9 @@ after_configuration do
     ApiDocs.new(
       sitemap,
       'documentation/in-progress/audience-annotations-apidocs',
-      '../audience-annotations-component/target/site/apidocs'))
+      '../audience-annotations-component/target/site/apidocs'
+    )
+  )
 
   # For Precommit we regenerate source files so they can be rendered.
   # we rely on a symlink. to avoid an error from the file watcher, our target
@@ -187,7 +192,9 @@ after_configuration do
         ApiDocs.new(
           sitemap,
           "documentation/#{release}/audience-annotations-apidocs",
-          "../target/build-#{release}/audience-annotations-component/target/site/apidocs"))
+          "../target/build-#{release}/audience-annotations-component/target/site/apidocs"
+        )
+      )
     end
   end
 end
