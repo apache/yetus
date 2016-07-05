@@ -45,7 +45,7 @@ In order to solve these problems, releasedocmaker was written to automatically g
 
 * Python 2.5 with dateutil extension
 
-dateutil may be installed via pip:  `pip install python.dateutil`
+dateutil may be installed via pip:  `pip install python-dateutil`
 
 # Basic Usage
 
