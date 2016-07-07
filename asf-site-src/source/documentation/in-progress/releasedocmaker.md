@@ -154,7 +154,7 @@ This will now sort by the issue id, listing them in lowest to highest (or ascend
 The order may be reversed to list them in highest to lowest (or descending) order by providing the appropriate flag:
 
 ```bash
-$ releasedocmaker --sorttype=issueid --sortorder=dec
+$ releasedocmaker --sorttype=issueid --sortorder=desc
 ```
 
 In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.

@@ -301,22 +301,17 @@ class Jira(object):
             result = cmp(selfsplit[0], othersplit[0])
             if result == 0:
                 result = cmp(int(selfsplit[1]), int(othersplit[1]))
-                if result != 0:
-                    if SORTORDER == 'dec':
-                        if result == 1:
-                            result = -1
-                        else:
-                            result = 1
+                # dec is supported for backward compatibility
+                if SORTORDER in ['dec', 'desc']:
+                        result *= -1
+
         elif SORTTYPE == 'resolutiondate':
             dts = dateutil.parser.parse(self.fields['resolutiondate'])
             dto = dateutil.parser.parse(other.fields['resolutiondate'])
             result = cmp(dts, dto)
-            if result != 0:
-                if SORTORDER == 'newer':
-                    if result == 1:
-                        result = -1
-                    else:
-                        result = 1
+            if SORTORDER == 'newer':
+                    result *= -1
+
         return result
 
     def get_incompatible_change(self):
@@ -676,15 +671,16 @@ def parse_args():
     parser.add_option(
         "--sortorder",
         dest="sortorder",
-        type="string",
         metavar="TYPE",
         default=SORTORDER,
+        # dec is supported for backward compatibility
+        choices=["asc", "dec", "desc", "newer", "older"],
         help="Sorting order for sort type (default: %s)" % SORTORDER)
     parser.add_option("--sorttype",
                       dest="sorttype",
-                      type="string",
                       metavar="TYPE",
                       default=SORTTYPE,
+                      choices=["resolutiondate", "issueid"],
                       help="Sorting type for issues (default: %s)" % SORTTYPE)
     parser.add_option(
         "-t",
