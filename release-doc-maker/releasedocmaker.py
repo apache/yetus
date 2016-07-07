@@ -36,8 +36,12 @@ try:
     set
 except NameError:
     from sets import Set as set  # pylint: disable=redefined-builtin
-
-import dateutil.parser
+try:
+    import dateutil.parser
+except ImportError:
+    print "This script requires python-dateutil module to be installed. " \
+          "You can install it using:\n\t pip install python-dateutil"
+    sys.exit(1)
 
 RELEASE_VERSION = {}
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
