@@ -911,46 +911,54 @@ def main():
         reloutputs.write_all("\n\n")
         reloutputs.close()
 
-        choutputs.write_all("### INCOMPATIBLE CHANGES:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(incompatlist)
+        if incompatlist:
+            choutputs.write_all("### INCOMPATIBLE CHANGES:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(incompatlist)
 
-        choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(importantlist)
+        if importantlist:
+            choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(importantlist)
 
-        choutputs.write_all("\n\n### NEW FEATURES:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(newfeaturelist)
+        if newfeaturelist:
+            choutputs.write_all("\n\n### NEW FEATURES:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(newfeaturelist)
 
-        choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(improvementlist)
+        if improvementlist:
+            choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(improvementlist)
 
-        choutputs.write_all("\n\n### BUG FIXES:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(buglist)
+        if buglist:
+            choutputs.write_all("\n\n### BUG FIXES:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(buglist)
 
-        choutputs.write_all("\n\n### TESTS:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(testlist)
+        if testlist:
+            choutputs.write_all("\n\n### TESTS:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(testlist)
 
-        choutputs.write_all("\n\n### SUB-TASKS:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(subtasklist)
+        if subtasklist:
+            choutputs.write_all("\n\n### SUB-TASKS:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(subtasklist)
 
-        choutputs.write_all("\n\n### OTHER:\n\n")
-        choutputs.write_all(CHANGEHDR1)
-        choutputs.write_all(CHANGEHDR2)
-        choutputs.write_list(otherlist)
-        choutputs.write_list(tasklist)
+        if tasklist or otherlist:
+            choutputs.write_all("\n\n### OTHER:\n\n")
+            choutputs.write_all(CHANGEHDR1)
+            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_list(otherlist)
+            choutputs.write_list(tasklist)
 
         choutputs.write_all("\n\n")
         choutputs.close()
