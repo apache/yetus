@@ -177,3 +177,11 @@ There is basic support for an autoindexer.  It will create two files that contai
 
   * index.md: a file suitable for conversion to HTML via mvn site
   * README.md: a file suitable for display on Github and other Markdown rendering websites
+
+# Release Version
+
+You can find the version of the releasedocmaker that you are using by giving the -V option. This may be helpful in finding documentation for the version you are using.
+
+```bash
+$ releasedocmaker.py -V
+```
