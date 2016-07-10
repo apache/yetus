@@ -731,20 +731,21 @@ def parse_args():
     (options, _) = parser.parse_args()
 
     # Validate options
-    if options.versions is None:
-        parser.error("At least one version needs to be supplied")
-    if options.projects is None:
-        parser.error("At least one project needs to be supplied")
-    if options.base_url is not None:
-        if len(options.base_url) > 1:
-            parser.error("Only one base URL should be given")
-        else:
-            options.base_url = options.base_url[0]
-    if options.output_directory is not None:
-        if len(options.output_directory) > 1:
-            parser.error("Only one output directory should be given")
-        else:
-            options.output_directory = options.output_directory[0]
+    if not options.release_version:
+        if options.versions is None:
+            parser.error("At least one version needs to be supplied")
+        if options.projects is None:
+            parser.error("At least one project needs to be supplied")
+        if options.base_url is not None:
+            if len(options.base_url) > 1:
+                parser.error("Only one base URL should be given")
+            else:
+                options.base_url = options.base_url[0]
+        if options.output_directory is not None:
+            if len(options.output_directory) > 1:
+                parser.error("Only one output directory should be given")
+            else:
+                options.output_directory = options.output_directory[0]
 
     return options
 
