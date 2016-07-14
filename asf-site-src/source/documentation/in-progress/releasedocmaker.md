@@ -159,6 +159,22 @@ $ releasedocmaker --sorttype=issueid --sortorder=desc
 
 In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.
 
+# Backward Incompatible Changes
+
+To check if an issue is backward-incompatible the releasedocmaker script first checks the "Hadoop Flags" field in the
+issue. If this field is found to be blank then it searches for the 'backward-incompatible' label. You can override the
+default value for this label by using -L option e.g.
+
+```bash
+$ releasedocmaker --project=falcon --version 0.6 --incompatiblelabel not-compatible
+```
+
+or equivalently using the shorter -X option
+
+```bash
+$ releasedocmaker --project=falcon --version 0.6 -X not-compatible
+```
+
 # Lint Mode
 
 In order to ensure proper formatting while using mvn site, releasedocmaker puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.

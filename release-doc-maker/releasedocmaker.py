@@ -50,6 +50,9 @@ JIRA_BASE_URL = "https://issues.apache.org/jira"
 SORTTYPE = 'resolutiondate'
 SORTORDER = 'older'
 NUM_RETRIES = 5
+
+# label to be used to mark an issue as Incompatible change.
+BACKWARD_INCOMPATIBLE_LABEL = 'backward-incompatible'
 CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
              "Component | Reporter | Contributor |\n"
 CHANGEHDR2 = "|:---- |:---- | :--- |:---- |:---- |:---- |\n"
@@ -326,6 +329,14 @@ class Jira(object):
                             self.incompat = True
                         if flag['value'] == "Reviewed":
                             self.reviewed = True
+            else:
+                # Custom field 'Hadoop Flags' is not defined,
+                # search for 'backward-incompatible' label
+                field = self.parent.field_id_map['Labels']
+                if field in self.fields and self.fields[field]:
+                    if BACKWARD_INCOMPATIBLE_LABEL in self.fields[field]:
+                        self.incompat = True
+                        self.reviewed = True
         return self.incompat
 
     def get_important(self):
@@ -725,6 +736,12 @@ def parse_args():
         action="append",
         type="int",
         help="Specify how many times to retry connection for each URL.")
+    parser.add_option("-X",
+                      "--incompatiblelabel",
+                      dest="incompatible_label",
+                      default="backward-incompatible",
+                      type="string",
+                      help="Specify the label to indicate backward incompatibility.")
 
     Linter.add_parser_options(parser)
 
@@ -777,6 +794,10 @@ def main():
     if options.base_url is not None:
         global JIRA_BASE_URL
         JIRA_BASE_URL = options.base_url
+
+    if options.incompatible_label is not None:
+        global BACKWARD_INCOMPATIBLE_LABEL
+        BACKWARD_INCOMPATIBLE_LABEL = options.incompatible_label
 
     proxy = urllib2.ProxyHandler()
     opener = urllib2.build_opener(proxy)
