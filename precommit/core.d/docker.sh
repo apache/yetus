@@ -31,8 +31,8 @@ declare -a DOCKER_EXTRAARGS
 #### If these times are updated, the documentation needs to
 #### be changed too!
 
-# stopped, exited, running, for 24 hours
-DOCKER_CONTAINER_PURGE=("86400" "86400" "86400")
+# created, stopped, exited, running, for 24 hours
+DOCKER_CONTAINER_PURGE=("86400" "86400" "86400" "86400" )
 
 # keep images for 1 week
 DOCKER_IMAGE_PURGE=604800
@@ -272,6 +272,7 @@ function docker_container_maintenance
   declare name
   declare status
   declare tmptime
+  declare createtime
   declare starttime
   declare stoptime
   declare remove
@@ -294,31 +295,39 @@ function docker_container_maintenance
 
   while read -r line; do
     id=$(echo "${line}" | cut -f1 -d, )
-    name=$(echo "${line}" | cut -f2 -d, )
-    status=$(echo "${line}" | cut -f3 -d, )
+    status=$(echo "${line}" | cut -f2 -d, )
+    tmptime=$(echo "${line}" | cut -f3 -d, | cut -f1 -d. )
+    createtime=$(dockerdate_to_ctime "${tmptime}")
     tmptime=$(echo "${line}" | cut -f4 -d, | cut -f1 -d. )
     starttime=$(dockerdate_to_ctime "${tmptime}")
     tmptime=$(echo "${line}" | cut -f5 -d, | cut -f1 -d. )
     stoptime=$(dockerdate_to_ctime "${tmptime}")
+    name=$(echo "${line}" | cut -f6 -d, )
     curtime=$(TZ=UTC date "+%s")
     remove=false
 
     case ${status} in
-      stopped)
-        ((difftime = curtime - stoptime))
+      created)
+        ((difftime = curtime - createtime))
         if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[0]} ]]; then
           remove=true
         fi
       ;;
-      exited)
+      stopped)
         ((difftime = curtime - stoptime))
         if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[1]} ]]; then
           remove=true
         fi
       ;;
+      exited)
+        ((difftime = curtime - stoptime))
+        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[2]} ]]; then
+          remove=true
+        fi
+      ;;
       running)
         ((difftime = curtime - starttime))
-        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[2]}
+        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[3]}
              && "${SENTINEL}" = true ]]; then
           remove=true
           echo "Attempting to kill docker container ${name} [${id}]"
@@ -337,7 +346,7 @@ function docker_container_maintenance
   done < <(
      # shellcheck disable=SC2086
      dockercmd inspect \
-        --format '{{.Id}},{{.Name}},{{.State.Status}},{{.State.StartedAt}},{{.State.FinishedAt}}' \
+        --format '{{.Id}},{{.State.Status}},{{.Created}},{{.State.StartedAt}},{{.State.FinishedAt}},{{.Name}}' \
        ${data})
 }
 
