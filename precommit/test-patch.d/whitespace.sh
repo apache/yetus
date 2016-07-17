@@ -78,7 +78,7 @@ function whitespace_postcompile
       add_vote_table -1 whitespace "${BUILDMODEMSG} has ${count} line(s) that end in whitespace."
     else
       add_vote_table -1 whitespace \
-        "${BUILDMODEMSG} has ${count} line(s) that end in whitespace. Use git apply --whitespace=fix."
+        "${BUILDMODEMSG} has ${count} line(s) that end in whitespace. Use git apply --whitespace=fix <<patch_file>>. Refer https://git-scm.com/docs/git-apply"
     fi
 
     whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-eol.txt" "end of line"
