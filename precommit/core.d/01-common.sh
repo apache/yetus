@@ -256,7 +256,7 @@ function parse_args_plugins
   done
 }
 
-## @description  Let plugins also get a copy of the arguments
+## @description  Initialize all enabled plugins
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -274,7 +274,7 @@ function plugins_initialize
   done
 }
 
-## @description  Determine if a plugin was enabeld by the user
+## @description  Determine if a plugin was enabled by the user
 ## @description  ENABLED_PLUGINS must be defined
 ## @audience     public
 ## @stability    stable
@@ -455,11 +455,6 @@ function delete_build_tool
   yetus_delete_entry BUILDTOOLS "${1}"
 }
 
-## @description  Import content from test-patch.d and optionally
-## @description  from user provided plugin directory
-## @audience     private
-## @stability    evolving
-## @replaceable  no
 ## @description  Import content from test-patch.d and optionally
 ## @description  from user provided plugin directory
 ## @audience     private
