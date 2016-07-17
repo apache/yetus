@@ -76,10 +76,6 @@ For example, the gradle build tool does not have a standard way to execute check
 
 # Optional Functions
 
-* pluginname\_postapply\_install
-
-    - After the install step, this allows the build tool plug-in to do extra work.
-
 * pluginname\_parse\_args
 
     - executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
