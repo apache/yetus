@@ -290,11 +290,36 @@ class ShellFunction(object):
         return line
 
 
+def marked_as_ignored(file_path):
+    """Checks for the presence of the marker(SHELLDOC-IGNORE) to ignore the file.
+
+    Marker needs to be in a line of its own and can not
+    be an inline comment.
+
+    A leading '#' and white-spaces(leading or trailing)
+    are trimmed before checking equality.
+
+    Comparison is case sensitive and the comment must be in
+    UPPERCASE.
+    """
+    with open(file_path) as input_file:
+        for line_num, line in enumerate(input_file, 1):
+            if line.startswith("#") and line[1:].strip() == "SHELLDOC-IGNORE":
+                print >> sys.stderr, "Yo! Got an ignore directive in",\
+                                    "file:{} on line number:{}".format(file_path, line_num)
+                return True
+        return False
+
+
 def main():
     '''main entry point'''
     parser = OptionParser(
         usage="usage: %prog [--skipprnorep] " + "[--output OUTFILE|--lint] " +
-        "--input INFILE " + "[--input INFILE ...]")
+        "--input INFILE " + "[--input INFILE ...]",
+        epilog=
+        "You can mark a file to be ignored by shelldocs by adding"
+        " 'SHELLDOC-IGNORE' as comment in its own line."
+        )
     parser.add_option("-o",
                       "--output",
                       dest="outfile",
@@ -344,6 +369,10 @@ def main():
     try:
         for filename in options.infile:
             with open(filename, "r") as shellcode:
+                # if the file contains a comment containing
+                # only "SHELLDOC-IGNORE" then skip that file
+                if marked_as_ignored(filename):
+                    continue
                 funcdef = ShellFunction(filename)
                 linenum = 0
                 for line in shellcode:
