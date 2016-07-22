@@ -68,11 +68,11 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_builtin_personality\_modules
 
-    - Default method to determine how to enqueue modules for processing.  Note that personalities may override this function.
+    - Default method to determine how to enqueue modules for processing.  Note that personalities may override this function. Requires two arguments: repo status and test desired. For example, in a maven build, values may be 'branch' and 'mvninstall'.
 
 * pluginname\_builtin_personality\_file\_tests
 
-    - Default method to determine which tests to trigger.  Note that personalities may override this function.
+    - Default method to determine which tests to trigger.  Note that personalities may override this function. Requires a single argument: the file in which the tests exist.
 
 # Optional Functions
 

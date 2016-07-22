@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+## @description  Generate a list of all personality modules for a given
+## @description  buildtool for the system to invoke
+## @audience     private
+## @stability    evolving
+## @replaceable  no
 function personality_modules
 {
   if declare -f "${BUILDTOOL}_builtin_personality_modules" >/dev/null; then
@@ -21,6 +26,11 @@ function personality_modules
   fi
 }
 
+## @description  Generate a list of all personality file tests for a given
+## @description  buildtool for the system to invoke
+## @audience     private
+## @stability    evolving
+## @replaceable  no
 function personality_file_tests
 {
   if declare -f "${BUILDTOOL}_builtin_personality_file_tests" >/dev/null; then
