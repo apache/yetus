@@ -213,6 +213,9 @@ will tell test-patch to use ant instead of maven to drive the project.
 
 It is a fairly common practice within the Apache community to use Apache's JIRA instance to store potential patches.  As a result, test-patch supports providing just a JIRA issue number.  test-patch will find the *last* attachment, download it, then process it.
 
+**NOTE: test-patch expects the patch files to follow a particular naming convention. For complete details
+ on the naming convention please refer to [patch-naming-conventions](./precommit-patchnames/)**
+
 For example:
 
 ```bash
