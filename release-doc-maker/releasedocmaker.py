@@ -137,7 +137,7 @@ def mstr(obj):
 
 def buildindex(title, asf_license):
     """Write an index file for later conversion using mvn site"""
-    versions = glob("[0-9]*.[0-9]*.[0-9]*")
+    versions = glob("[0-9]*.[0-9]*")
     versions.sort(key=LooseVersion, reverse=True)
     with open("index.md", "w") as indexfile:
         if asf_license is True:
@@ -152,7 +152,7 @@ def buildindex(title, asf_license):
 
 def buildreadme(title, asf_license):
     """Write an index file for Github using README.md"""
-    versions = glob("[0-9]*.[0-9]*.[0-9]*")
+    versions = glob("[0-9]*.[0-9]*")
     versions.sort(key=LooseVersion, reverse=True)
     with open("README.md", "w") as indexfile:
         if asf_license is True:

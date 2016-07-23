@@ -192,7 +192,8 @@ This will do the normal JIRA querying, looking for items it considers problemati
 
 # Index Mode
 
-There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor.micro-style version numbering system, where all fields are numeric.
+There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor*-style version numbering system.
+For example directories with names like 0.6, 1.2.2, 1.2alpha etc. will all be linked.
 
   * index.md: a file suitable for conversion to HTML via mvn site
   * README.md: a file suitable for display on Github and other Markdown rendering websites
