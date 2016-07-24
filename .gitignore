@@ -17,3 +17,4 @@ target
 build
 publish
 *.swp
+*.pyc
