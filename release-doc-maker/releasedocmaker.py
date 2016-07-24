@@ -28,14 +28,10 @@ import sys
 import urllib
 import urllib2
 import httplib
-try:
-    import json
-except ImportError:
-    import simplejson as json
-try:
-    set
-except NameError:
-    from sets import Set as set  # pylint: disable=redefined-builtin
+import json
+from utils import to_unicode, text_sanitize, processrelnote, Outputs
+
+
 try:
     import dateutil.parser
 except ImportError:
@@ -44,8 +40,7 @@ except ImportError:
     sys.exit(1)
 
 RELEASE_VERSION = {}
-NAME_PATTERN = re.compile(r' \([0-9]+\)')
-RELNOTE_PATTERN = re.compile('^\<\!\-\- ([a-z]+) \-\-\>')
+
 JIRA_BASE_URL = "https://issues.apache.org/jira"
 SORTTYPE = 'resolutiondate'
 SORTORDER = 'older'
@@ -76,63 +71,6 @@ ASF_LICENSE = '''
 # limitations under the License.
 -->
 '''
-
-
-def clean(_str):
-    return markdownsanitize(re.sub(NAME_PATTERN, "", _str))
-
-
-def format_components(_str):
-    _str = re.sub(NAME_PATTERN, '', _str).replace("'", "")
-    if _str != "":
-        ret = _str
-    else:
-        # some markdown parsers don't like empty tables
-        ret = "."
-    return clean(ret)
-
-
-# convert to utf-8
-def markdownsanitize(_str):
-    _str = _str.encode('utf-8')
-    _str = _str.replace("\r", "")
-    _str = _str.rstrip()
-    return _str
-
-
-# same thing as markdownsanitize,
-# except markdown metachars are also
-# escaped as well as more
-# things we don't want doxia, etc, to
-# screw up
-def textsanitize(_str):
-    _str = markdownsanitize(_str)
-    _str = _str.replace("_", r"\_")
-    _str = _str.replace("|", r"\|")
-    _str = _str.replace("<", r"\<")
-    _str = _str.replace(">", r"\>")
-    _str = _str.replace("*", r"\*")
-    _str = _str.rstrip()
-    return _str
-
-
-# if release notes have a special marker,
-# we'll treat them as already in markdown format
-def processrelnote(_str):
-    fmt = RELNOTE_PATTERN.match(_str)
-    if fmt is None:
-        return textsanitize(_str)
-    else:
-        return {
-            'markdown': markdownsanitize(_str),
-        }.get(
-            fmt.group(1), textsanitize(_str))
-
-
-def mstr(obj):
-    if obj is None:
-        return ""
-    return unicode(obj)
 
 
 def buildindex(title, asf_license):
@@ -233,16 +171,16 @@ class Jira(object):
         self.important = None
 
     def get_id(self):
-        return mstr(self.key)
+        return to_unicode(self.key)
 
     def get_description(self):
-        return mstr(self.fields['description'])
+        return to_unicode(self.fields['description'])
 
     def get_release_note(self):
         if self.notes is None:
             field = self.parent.field_id_map['Release Note']
             if field in self.fields:
-                self.notes = mstr(self.fields[field])
+                self.notes = to_unicode(self.fields[field])
             elif self.get_incompatible_change() or self.get_important():
                 self.notes = self.get_description()
             else:
@@ -254,14 +192,14 @@ class Jira(object):
         pri = self.fields['priority']
         if pri is not None:
             ret = pri['name']
-        return mstr(ret)
+        return to_unicode(ret)
 
     def get_assignee(self):
         ret = ""
         mid = self.fields['assignee']
         if mid is not None:
             ret = mid['displayName']
-        return mstr(ret)
+        return to_unicode(ret)
 
     def get_components(self):
         if len(self.fields['components']) > 0:
@@ -278,21 +216,21 @@ class Jira(object):
         mid = self.fields['issuetype']
         if mid is not None:
             ret = mid['name']
-        return mstr(ret)
+        return to_unicode(ret)
 
     def get_reporter(self):
         ret = ""
         mid = self.fields['reporter']
         if mid is not None:
             ret = mid['displayName']
-        return mstr(ret)
+        return to_unicode(ret)
 
     def get_project(self):
         ret = ""
         mid = self.fields['project']
         if mid is not None:
             ret = mid['key']
-        return mstr(ret)
+        return to_unicode(ret)
 
     def __cmp__(self, other):
         result = 0
@@ -452,53 +390,6 @@ class JiraIter(object):
         return j
 
 
-class Outputs(object):
-    """Several different files to output to at the same time"""
-
-    def __init__(self, base_file_name, file_name_pattern, keys, params=None):
-        if params is None:
-            params = {}
-        self.params = params
-        self.base = open(base_file_name % params, 'w')
-        self.others = {}
-        for key in keys:
-            both = dict(params)
-            both['key'] = key
-            self.others[key] = open(file_name_pattern % both, 'w')
-
-    def write_all(self, pattern):
-        both = dict(self.params)
-        both['key'] = ''
-        self.base.write(pattern % both)
-        for key in self.others.keys():
-            both = dict(self.params)
-            both['key'] = key
-            self.others[key].write(pattern % both)
-
-    def write_key_raw(self, key, _str):
-        self.base.write(_str)
-        if key in self.others:
-            self.others[key].write(_str)
-
-    def close(self):
-        self.base.close()
-        for value in self.others.values():
-            value.close()
-
-    def write_list(self, mylist):
-        for jira in sorted(mylist):
-            line = '| [%s](' + JIRA_BASE_URL + '/browse/%s) ' +\
-                   '| %s |  %s | %s | %s | %s |\n'
-            line = line % (textsanitize(jira.get_id()),
-                           textsanitize(jira.get_id()),
-                           textsanitize(jira.get_summary()),
-                           textsanitize(jira.get_priority()),
-                           format_components(jira.get_components()),
-                           textsanitize(jira.get_reporter()),
-                           textsanitize(jira.get_assignee()))
-            self.write_key_raw(jira.get_project(), line)
-
-
 class Linter(object):
     """Encapsulates lint-related functionality.
     Maintains running lint statistics about JIRAs."""
@@ -621,11 +512,11 @@ class Linter(object):
             if self._filters["incompatible"] and jira.get_incompatible_change():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
-                                (textsanitize(jira.get_id()))
+                                (text_sanitize(jira.get_id()))
             if self._filters["important"] and jira.get_important():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: important issue %s lacks release notes." % \
-                                (textsanitize(jira.get_id()))
+                                (text_sanitize(jira.get_id()))
 
         if self._check_version_string(jira):
             self._warning_count += 1
@@ -901,10 +792,10 @@ def main():
             else:
                 otherlist.append(jira)
 
-            line = '* [%s](' % (textsanitize(jira.get_id())) + JIRA_BASE_URL + \
+            line = '* [%s](' % (text_sanitize(jira.get_id())) + JIRA_BASE_URL + \
                    '/browse/%s) | *%s* | **%s**\n' \
-                   % (textsanitize(jira.get_id()),
-                      textsanitize(jira.get_priority()), textsanitize(jira.get_summary()))
+                   % (text_sanitize(jira.get_id()),
+                      text_sanitize(jira.get_priority()), text_sanitize(jira.get_summary()))
 
             if len(jira.get_release_note()) > 0 or \
                jira.get_incompatible_change() or jira.get_important():
