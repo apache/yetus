@@ -149,6 +149,7 @@
 <li>Public/Evolving/Not Replaceable
 
 <ul>
+<li><a href="#archive">archive</a></li>
 <li><a href="#bugsystem_linecomments">bugsystem_linecomments</a></li>
 <li><a href="#buildtool_cwd">buildtool_cwd</a></li>
 <li><a href="#calcdiffs">calcdiffs</a></li>
@@ -384,20 +385,20 @@
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>add_vote_table +1/0/-1/null subsystem string
+<pre class="highlight plaintext"><code>add_vote_table +1/0/-1 subsystem string
 </code></pre>
 
 <ul>
 <li>Description</li>
 </ul>
 
-<p>Add to the output table. If the first parameter is a number that is the vote for that column and calculates the elapsed time based upon the last start_clock().  If it the string null, then it is a special entry that signifies extra content for the final column.  The second parameter is the reporting subsystem (or test) that is providing the vote.  The second parameter is always required.  The third parameter is any extra verbage that goes with that subsystem.</p>
+<p>Add to the output table. If the first parameter is a number that is the vote for that column and calculates the elapsed time based upon the last start_clock().  The second parameter is the reporting subsystem (or test) that is providing the vote.  The second parameter is always required.  The third parameter is any extra verbage that goes with that subsystem.</p>
 
 <ul>
 <li>Returns</li>
 </ul>
 
-<p>Elapsed time display</p>
+<p>Nothing</p>
 <table class='table table-bordered table-striped'><thead><tr>
 <th style="text-align: left">Classification</th>
 <th style="text-align: left">Level</th>
@@ -813,6 +814,42 @@
 </tbody></table>
 <h2 id="public-evolving-not-replaceable">Public/Evolving/Not Replaceable</h2>
 
+<h3 id="archive"><code>archive</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>archive
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Save file names and directory to the patch dir</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
 <h3 id="bugsystem_linecomments"><code>bugsystem_linecomments</code></h3>
 
 <ul>
@@ -1484,14 +1521,14 @@
 <ul>
 <li>Synopsis</li>
 </ul>
-<pre class="highlight plaintext"><code>module_status module runtime
+<pre class="highlight plaintext"><code>module_status moduleindex -1-0|0|+1 logvalue message
 </code></pre>
 
 <ul>
 <li>Description</li>
 </ul>
 
-<p>Add a test result</p>
+<p>Add or update a test result. Update requires at least the first two parameters. WARNING: If the message is updated, then the JDK version is also calculated to match the current JAVA_HOME.</p>
 
 <ul>
 <li>Returns</li>

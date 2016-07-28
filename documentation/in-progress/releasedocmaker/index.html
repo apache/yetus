@@ -151,7 +151,7 @@
 <h1 id="requirements">Requirements</h1>
 
 <ul>
-<li>Python 2.5 with dateutil extension</li>
+<li>Python 2.6 with dateutil extension</li>
 </ul>
 
 <p>dateutil may be installed via pip:  <code>pip install python-dateutil</code></p>
@@ -244,10 +244,22 @@ remaining text
 <p>This will now sort by the issue id, listing them in lowest to highest (or ascending) order.</p>
 
 <p>The order may be reversed to list them in highest to lowest (or descending) order by providing the appropriate flag:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker --sorttype<span class="o">=</span>issueid --sortorder<span class="o">=</span>dec
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker --sorttype<span class="o">=</span>issueid --sortorder<span class="o">=</span>desc
 </code></pre>
 
 <p>In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.</p>
+
+<h1 id="backward-incompatible-changes">Backward Incompatible Changes</h1>
+
+<p>To check if an issue is backward-incompatible the releasedocmaker script first checks the <q>Hadoop Flags</q> field in the
+issue. If this field is found to be blank then it searches for the &#39;backward-incompatible&rsquo; label. You can override the
+default value for this label by using -L option e.g.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker --project<span class="o">=</span>falcon --version 0.6 --incompatiblelabel not-compatible
+</code></pre>
+
+<p>or equivalently using the shorter -X option</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker --project<span class="o">=</span>falcon --version 0.6 -X not-compatible
+</code></pre>
 
 <h1 id="lint-mode">Lint Mode</h1>
 
@@ -267,6 +279,12 @@ remaining text
 <li>index.md: a file suitable for conversion to HTML via mvn site</li>
 <li>README.md: a file suitable for display on Github and other Markdown rendering websites</li>
 </ul>
+
+<h1 id="release-version">Release Version</h1>
+
+<p>You can find the version of the releasedocmaker that you are using by giving the -V option. This may be helpful in finding documentation for the version you are using.</p>
+<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py -V
+</code></pre>
 
     </div>
       <div class="container">
