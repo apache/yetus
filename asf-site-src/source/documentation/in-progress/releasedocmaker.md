@@ -26,8 +26,11 @@ releasedocmaker
 * [Changing the Header](#changing-the-header)
 * [Multiple Versions](#multiple-versions)
 * [Unreleased Dates](#unreleased-dates)
+* [Sorted Output](#sorted-output)
+* [Backward Incompatible Changes](#backward-incompatible-changes)
 * [Lint Mode](#lint-mode)
 * [Index Mode](#index-mode)
+* [Release Version](#release-version)
 
 # Purpose
 
@@ -130,13 +133,13 @@ Different projects may find one type of sort better than another, depending upon
 By default, releasedocmaker will sort the output based upon the resolution date of the issue starting with older resolutions.  This is the same as giving these options:
 
 ```bash
-$ releasedocmaker --sorttype=releasedate --sortorder=older
+$ releasedocmaker.py --project falcon --version 0.6 --sorttype resolutiondate --sortorder older
 ```
 
 The order can be reversed so that newer issues appear on top by providing the 'newer' flag:
 
 ```bash
-$ releasedocmaker --sorttype=releasedate --sortorder=newer
+$ releasedocmaker.py --project falcon --version 0.6 --sorttype resolutiondate --sortorder newer
 ```
 
 In the case of multiple projects given on the command line, the projects will be interspersed.
@@ -146,7 +149,7 @@ In the case of multiple projects given on the command line, the projects will be
 An alternative to the date-based sort is to sort based upon the issue id.  This may be accomplished via:
 
 ```bash
-$ releasedocmaker --sorttype=issueid --sortorder=asc
+$ releasedocmaker.py --project falcon --version 0.6 --sorttype issueid --sortorder asc
 ```
 
 This will now sort by the issue id, listing them in lowest to highest (or ascending) order.
@@ -154,7 +157,7 @@ This will now sort by the issue id, listing them in lowest to highest (or ascend
 The order may be reversed to list them in highest to lowest (or descending) order by providing the appropriate flag:
 
 ```bash
-$ releasedocmaker --sorttype=issueid --sortorder=desc
+$ releasedocmaker.py --project falcon --version 0.6 --sorttype issueid --sortorder desc
 ```
 
 In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.
@@ -163,16 +166,16 @@ In the case of multiple projects given on the command line, the projects will be
 
 To check if an issue is backward-incompatible the releasedocmaker script first checks the "Hadoop Flags" field in the
 issue. If this field is found to be blank then it searches for the 'backward-incompatible' label. You can override the
-default value for this label by using -L option e.g.
+default value for this label by using --incompatiblelabel option e.g.
 
 ```bash
-$ releasedocmaker --project=falcon --version 0.6 --incompatiblelabel not-compatible
+$ releasedocmaker.py --project falcon --version 0.6 --incompatiblelabel not-compatible
 ```
 
 or equivalently using the shorter -X option
 
 ```bash
-$ releasedocmaker --project=falcon --version 0.6 -X not-compatible
+$ releasedocmaker.py --project falcon --version 0.6 -X not-compatible
 ```
 
 # Lint Mode
