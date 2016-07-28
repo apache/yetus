@@ -20,15 +20,16 @@
 test-patch
 ==========
 
-* [Purpose](#Purpose)
-* [Pre-requisites](#Pre-requisites)
-* [Basic Usage](#Basic_Usage)
-* [Automation](#Automation)
-* [Build Tool](#Build_Tool)
-* [Providing Patch Files](#Providing_Patch_Files)
-* [Project-Specific Capabilities](#Project-Specific_Capabilities)
-* [MultiJDK](#MultiJDK)
-* [Docker](#Docker)
+* [Purpose](#purpose)
+* [Pre-requisites](#pre-requisites)
+* [Basic Usage](#basic-usage)
+* [Automation](#automation)
+* [Build Tool](#build-tool)
+* [Providing Patch Files](#providing-patch-files)
+* [Project-Specific Capabilities](#project-specific-capabilities)
+* [MultiJDK](#multijdk)
+* [Docker](#docker)
+* [In Closing](#in-closing)
 
 # Purpose
 

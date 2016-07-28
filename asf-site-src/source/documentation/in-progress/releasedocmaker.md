@@ -20,14 +20,14 @@
 releasedocmaker
 ===============
 
-* [Purpose](#Purpose)
-* [Requirements](#Requirements)
-* [Basic Usage](#Basic_Usage)
-* [Changing the Header](#Changing_the_Header)
-* [Multiple Versions](#Multiple_Versions)
-* [Unreleased Dates](#Unreleased_Dates)
-* [Lint Mode](#Lint_Mode)
-* [Index Mode](#Index_Mode)
+* [Purpose](#purpose)
+* [Requirements](#requirements)
+* [Basic Usage](#basic-usage)
+* [Changing the Header](#changing-the-header)
+* [Multiple Versions](#multiple-versions)
+* [Unreleased Dates](#unreleased-dates)
+* [Lint Mode](#lint-mode)
+* [Index Mode](#index-mode)
 
 # Purpose
 

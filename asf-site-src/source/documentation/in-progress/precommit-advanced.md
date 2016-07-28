@@ -20,10 +20,10 @@
 test-patch
 ==========
 
-* [Docker Support](#Docker_Support)
-* [Plug-ins](#Plug-ins)
-* [Personalities](#Personalities)
-* [Important Variables](#Important_Variables)
+* [Docker Support](#docker-support)
+* [Plug-ins](#plug-ins)
+* [Personalities](#personalities)
+* [Important Variables](#important-variables)
 
 # Docker Support
 
