@@ -58,5 +58,4 @@ You can mark a file to be ignored by shelldocs by adding "SHELLDOC-IGNORE" as a 
 # Yetus Audience Annotations
 
 Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.
-
-See [the javadocs](audience-annotations-apidocs/) for details.
+You can refer the user documentation [here](interface-classification) and the javadocs [here](audience-annotations-apidocs/).

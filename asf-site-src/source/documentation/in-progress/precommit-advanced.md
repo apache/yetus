@@ -103,7 +103,7 @@ Similarly, there are other functions that may be defined during the test-patch r
 
 Plug-ins are imported from several key directories:
 
-* core.d is an internal-to-Yetus directory that first loads the basic Yetus library, followed by the common routines used by all of the precommit shell code.  This order is dictated by prefixing the plug-in files with a number.  Other files in this directory are loaded in shell collated order.
+* core.d is an internal-to-Yetus directory that first loads the basic Apache Yetus library, followed by the common routines used by all of the precommit shell code.  This order is dictated by prefixing the plug-in files with a number.  Other files in this directory are loaded in shell collated order.
 
 * personality contains bundled personalities for various projects.  These will be imported individually based upon either a project name or if specifically identified with the `--personality` flag.
 
