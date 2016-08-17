@@ -151,7 +151,8 @@ function pylint_postapply
             pylint > "${PATCH_DIR}/diff-patch-pylint.txt"
   numPrepatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/branch-pylint-result.txt")
   numPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/patch-pylint-result.txt")
-  diffPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/diff-patch-pylint.txt")
+  # Exclude Pylint messages from the information category to avoid false positives (see YETUS-309).
+  diffPostpatch=$(${GREP} -c "^.*:.*: \[[^I].*\] " "${PATCH_DIR}/diff-patch-pylint.txt")
 
   ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
 
