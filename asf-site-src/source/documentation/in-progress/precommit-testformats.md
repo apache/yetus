@@ -26,6 +26,8 @@ test-patch has the ability to support multiple test formats. Test formats have s
 add_test_format <pluginname>
 ```
 
+Test format plugins can provide following two methods, which will be called by test-patch if defined.
+
 * pluginname\_process\_tests
 
     - Given a path to the log file and tested module name, parse that file and store the test result into global variables and/or files.
@@ -33,3 +35,5 @@ add_test_format <pluginname>
 * pluginname\_finalize\_results
 
     - Using the results stored by pluginname\_process\_tests, write them to the test result table and/or the footer table for reporting.
+
+For an example of how to write a test-format plugin, you can look at [junit plugin](https://github.com/apache/yetus/blob/master/precommit/test-patch.d/junit.sh) bundled in Apache Yetus.
