@@ -133,14 +133,21 @@ function jira_locate_patch
   fi
 
   # if github is configured and we see what looks like a URL,
-  # send this to the github plugin to process.
+  # check the github plugin to see if the URL is a patch or pull request
+  # before continuing further
   if [[ -n "${GITHUB_BASE_URL}"
       && $(${GREP} -c  "${GITHUB_BASE_URL}"'[^ ]*patch' "${PATCH_DIR}/jira") != 0 ]]; then
     jira_determine_issue "${input}"
-    echo "${input} appears to be a Github PR. Switching Modes."
     github_jira_bridge "${fileloc}"
-    return $?
-  elif [[ $(${GREP} -c "${JIRA_STATUS_RE}" "${PATCH_DIR}/jira") == 0 ]]; then
+    if [[ $? -eq 0 ]]; then
+      echo "${input} appears to be a Github PR. Switching Modes."
+      return 0
+    fi
+    yetus_debug "jira_locate_patch: ${input} seemed like a Github PR, but there was a failure."
+  fi
+
+  # Not reached if there is a successful github plugin return
+  if [[ $(${GREP} -c "${JIRA_STATUS_RE}" "${PATCH_DIR}/jira") == 0 ]]; then
     if [[ ${ROBOT} == true ]]; then
       yetus_error "ERROR: ${input} issue status is not matched with \"${JIRA_STATUS_RE}\"."
       cleanup_and_exit 1

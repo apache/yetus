@@ -91,6 +91,7 @@ function github_jira_bridge
   # the JIRA issue has already been downloaded. So let's find the URL.
   # shellcheck disable=SC2016
   urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch\"){print substr(\$0,RSTART,RLENGTH)}" "${PATCH_DIR}/jira" | tail -1)
+  yetus_debug "github_jira_bridge: Checking url ${urlfromjira}"
   github_breakup_url "${urlfromjira}"
   github_locate_patch "${GITHUB_ISSUE}" "${fileloc}"
 }
