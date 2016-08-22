@@ -132,11 +132,9 @@ function jira_locate_patch
     return 1
   fi
 
-  # if github is configured and we see what looks like a URL,
-  # check the github plugin to see if the URL is a patch or pull request
-  # before continuing further
-  if [[ -n "${GITHUB_BASE_URL}"
-      && $(${GREP} -c  "${GITHUB_BASE_URL}"'[^ ]*patch' "${PATCH_DIR}/jira") != 0 ]]; then
+  # if github is configured check to see if there is a URL in the text
+  # that is a github patch file or pull request
+  if [[ -n "${GITHUB_BASE_URL}" ]]; then
     jira_determine_issue "${input}"
     github_jira_bridge "${fileloc}"
     if [[ $? -eq 0 ]]; then

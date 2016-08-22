@@ -77,6 +77,7 @@ function github_parse_args
   done
 }
 
+
 ## @description this gets called when JIRA thinks this
 ## @description issue is just a pointer to github
 ## @description WARNING: Called from JIRA plugin!
@@ -85,12 +86,18 @@ function github_jira_bridge
   declare fileloc=$1
   declare urlfromjira
 
-  # we use this to prevent loops later on
-  GITHUB_BRIDGED=true
-
   # the JIRA issue has already been downloaded. So let's find the URL.
   # shellcheck disable=SC2016
-  urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch\"){print substr(\$0,RSTART,RLENGTH)}" "${PATCH_DIR}/jira" | tail -1)
+
+  urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch[ &\\\"]\"){url=substr(\$0,RSTART,RLENGTH-1)}
+                        END{if (url) print url}" "${PATCH_DIR}/jira" )
+  if [[ -n $urlfromjira ]]; then
+    # This is currently the expected path, as github pull requests are not common
+    return 1
+  fi
+
+  # we use this to prevent loops later on
+  GITHUB_BRIDGED=true
   yetus_debug "github_jira_bridge: Checking url ${urlfromjira}"
   github_breakup_url "${urlfromjira}"
   github_locate_patch "${GITHUB_ISSUE}" "${fileloc}"
