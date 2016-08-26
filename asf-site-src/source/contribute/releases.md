@@ -42,9 +42,9 @@ The Subversion project provides a nice set of pointers to installing on various 
 To create our convenience binary artifact, you'll need to build both our project docs and all of individual components. If you normally only work on one part of the project, say Yetus Precommit, this might require some additional programming languages and tools.
 
 - Yetus Audience Annotations will require Maven 3.2.0+ and Java 7.
-- Yetus Precommit will require Python 2.7 for generating documentation on its API via Yetus Shelldocs.
+- Yetus Precommit will require Python 2.6+ for generating documentation on its API via Yetus Shelldocs.
 - The project documentation will require Ruby 2.x+ for rendering.
-- We'll build release notes with Yetus Release Doc Maker, which will require Python 2.7.
+- We'll build release notes with Yetus Release Doc Maker, which will require Python 2.6+.
 - Assembling release artifacts will make use of bash, tar, gzip, and md5sum.
 
 ## Setup
