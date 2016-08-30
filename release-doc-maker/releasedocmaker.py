@@ -544,7 +544,7 @@ def parse_args():
         usage=usage,
         epilog=
         "Markdown-formatted CHANGES and RELEASENOTES files will be stored"
-        "in a directory named after the highest version provided.")
+        " in a directory named after the highest version provided.")
     parser.add_option("-i",
                       "--index",
                       dest="index",
@@ -635,6 +635,10 @@ def parse_args():
                       help="Specify the label to indicate backward incompatibility.")
 
     Linter.add_parser_options(parser)
+
+    if len(sys.argv) <= 1:
+        parser.print_help()
+        sys.exit(1)
 
     (options, _) = parser.parse_args()
 
