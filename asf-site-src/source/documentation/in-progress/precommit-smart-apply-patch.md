@@ -24,7 +24,7 @@ smart-apply-patch
 
 # Usage
 
-Its simpliest form is used when a patch is stored in a local file:
+Its simplest form is used when a patch is stored in a local file:
 
 ```bash
 $ smart-apply-patch patch

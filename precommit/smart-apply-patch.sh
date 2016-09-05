@@ -82,7 +82,7 @@ function setup_defaults
 ## @replaceable  no
 function yetus_usage
 {
-  echo "test-patch.sh [OPTIONS] patch"
+  echo "smart-apply-patch.sh [OPTIONS] patch"
   echo ""
   echo "Where:"
   echo "  patch is a file, URL, or bugsystem-compatible location of the patch file"

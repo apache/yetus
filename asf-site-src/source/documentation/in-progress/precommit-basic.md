@@ -256,7 +256,7 @@ $ test-patch.sh https://github.com/apache/pig/pulls/99.patch
 
 ## Generic URLs
 
-Luckily, test-patch supports  provide ways to provide unified diffs via URLs.
+Luckily, test-patch supports ways to provide unified diffs via URLs.
 
 For example:
 

@@ -49,7 +49,7 @@ Dockerfile images will be named with a test-patch prefix and suffix with either 
 
 # Plug-ins
 
-test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d off of the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
+test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
 
 ## Common Plug-in Functions
 
@@ -121,7 +121,7 @@ add_test_type <pluginname>
 ```
 
 + pluginname\_filefilter
-    - executed while determine which files trigger which tests.  This function should use `add_test pluginname` to add the plug-in to the test list.
+    - executed while determining which files trigger which tests.  This function should use `add_test pluginname` to add the plug-in to the test list.
 
 * pluginname\_compile
     - executed immediately after the actual compilation. This step is intended to be used to verify the results and add extra checking of the compile phase and it's stdout/stderr.
@@ -156,7 +156,7 @@ There can be only **one** of each personality function defined.
 Globals for personalities should be defined in the `personality_globals` function.  This function is called *after* the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:
 
 ```bash
-funciton personality_globals
+function personality_globals
 {
   PATCH_BRANCH_DEFAULT=master
   GITHUB_REPO="apache/yetus"
