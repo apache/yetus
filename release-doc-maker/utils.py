@@ -23,7 +23,7 @@ BASE_URL = "https://issues.apache.org/jira"
 
 
 def clean(input_string):
-    return markdown_sanitize(re.sub(NAME_PATTERN, "", input_string))
+    return sanitize_markdown(re.sub(NAME_PATTERN, "", input_string))
 
 
 def format_components(input_string):
@@ -36,28 +36,54 @@ def format_components(input_string):
     return clean(ret)
 
 
-# convert to utf-8
-def markdown_sanitize(input_string):
-    input_string = input_string.encode('utf-8')
+# Return the string encoded as UTF-8.
+#
+# This is necessary for handling markdown in Python.
+def encode_utf8(input_string):
+    return input_string.encode('utf-8')
+
+
+# Sanitize Markdown input so it can be handled by Python.
+#
+# The expectation is that the input is already valid Markdown,
+# so no additional escaping is required.
+def sanitize_markdown(input_string):
+    input_string = encode_utf8(input_string)
     input_string = input_string.replace("\r", "")
     input_string = input_string.rstrip()
     return input_string
 
 
-# same thing as markdownsanitize,
-# except markdown metachars are also
-# escaped as well as more
-# things we don't want doxia, etc, to
-# screw up
-def text_sanitize(input_string):
-    input_string = markdown_sanitize(input_string)
-    input_string = input_string.replace("_", r"\_")
-    input_string = input_string.replace("|", r"\|")
-    input_string = input_string.replace("<", r"\<")
-    input_string = input_string.replace(">", r"\>")
-    input_string = input_string.replace("*", r"\*")
-    input_string = input_string.rstrip()
-    return input_string
+# Sanitize arbitrary text so it can be embedded in MultiMarkdown output.
+#
+# Note that MultiMarkdown is not Markdown, and cannot be parsed as such.
+# For instance, when using pandoc, invoke it as `pandoc -f markdown_mmd`.
+#
+# Calls sanitize_markdown at the end as a final pass.
+def sanitize_text(input_string):
+    escapes = dict()
+    # See: https://daringfireball.net/projects/markdown/syntax#backslash
+    # We only escape a subset of special characters. We ignore characters
+    # that only have significance at the start of a line.
+    slash_escapes = "_<>*|"
+    slash_escapes += "'"
+    slash_escapes += "\\"
+    all_chars = set()
+    # Construct a set of escapes
+    for c in slash_escapes:
+        all_chars.add(c)
+    for c in all_chars:
+        escapes[c] = "\\" + c
+
+    # Build the output string character by character to prevent double escaping
+    output_string = ""
+    for c in input_string:
+        o = c
+        if c in escapes:
+            o = escapes[c]
+        output_string += o
+
+    return sanitize_markdown(output_string.rstrip())
 
 
 # if release notes have a special marker,
@@ -66,12 +92,12 @@ def processrelnote(input_string):
     relnote_pattern = re.compile('^\<\!\-\- ([a-z]+) \-\-\>')
     fmt = relnote_pattern.match(input_string)
     if fmt is None:
-        return text_sanitize(input_string)
+        return sanitize_text(input_string)
     else:
         return {
-            'markdown': markdown_sanitize(input_string),
+            'markdown': sanitize_markdown(input_string),
         }.get(
-            fmt.group(1), text_sanitize(input_string))
+            fmt.group(1), sanitize_text(input_string))
 
 
 def to_unicode(obj):
@@ -117,11 +143,11 @@ class Outputs(object):
         for jira in sorted(mylist):
             line = '| [%s](' + BASE_URL + '/browse/%s) ' +\
                    '| %s |  %s | %s | %s | %s |\n'
-            line = line % (text_sanitize(jira.get_id()),
-                           text_sanitize(jira.get_id()),
-                           text_sanitize(jira.get_summary()),
-                           text_sanitize(jira.get_priority()),
+            line = line % (encode_utf8(jira.get_id()),
+                           encode_utf8(jira.get_id()),
+                           sanitize_text(jira.get_summary()),
+                           sanitize_text(jira.get_priority()),
                            format_components(jira.get_components()),
-                           text_sanitize(jira.get_reporter()),
-                           text_sanitize(jira.get_assignee()))
+                           sanitize_text(jira.get_reporter()),
+                           sanitize_text(jira.get_assignee()))
             self.write_key_raw(jira.get_project(), line)

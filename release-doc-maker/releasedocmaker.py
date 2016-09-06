@@ -29,7 +29,7 @@ import urllib
 import urllib2
 import httplib
 import json
-from utils import to_unicode, text_sanitize, processrelnote, Outputs
+from utils import to_unicode, sanitize_text, processrelnote, Outputs
 
 
 try:
@@ -531,11 +531,11 @@ class Linter(object):
             if self._filters["incompatible"] and jira.get_incompatible_change():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
-                                (text_sanitize(jira.get_id()))
+                                (sanitize_text(jira.get_id()))
             if self._filters["important"] and jira.get_important():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: important issue %s lacks release notes." % \
-                                (text_sanitize(jira.get_id()))
+                                (sanitize_text(jira.get_id()))
 
         if self._check_version_string(jira):
             self._warning_count += 1
@@ -815,10 +815,10 @@ def main():
             else:
                 otherlist.append(jira)
 
-            line = '* [%s](' % (text_sanitize(jira.get_id())) + JIRA_BASE_URL + \
+            line = '* [%s](' % (sanitize_text(jira.get_id())) + JIRA_BASE_URL + \
                    '/browse/%s) | *%s* | **%s**\n' \
-                   % (text_sanitize(jira.get_id()),
-                      text_sanitize(jira.get_priority()), text_sanitize(jira.get_summary()))
+                   % (sanitize_text(jira.get_id()),
+                      sanitize_text(jira.get_priority()), sanitize_text(jira.get_summary()))
 
             if len(jira.get_release_note()) > 0 or \
                jira.get_incompatible_change() or jira.get_important():
