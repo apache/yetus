@@ -116,17 +116,30 @@ class GetVersions(object):
         for project in projects:
             url = JIRA_BASE_URL + \
               "/rest/api/2/project/%s/versions" % project.upper()
-            resp = urllib2.urlopen(url)
+            try:
+                resp = urllib2.urlopen(url)
+            except urllib2.HTTPError as err:
+                code = err.code
+                print "JIRA returns HTTP error %d: %s. Aborting." % (code, err.msg)
+                error_response = err.read()
+                try:
+                    error_response = json.loads(error_response)
+                    print "- Please ensure that specified projects are correct."
+                    for message in error_response['errorMessages']:
+                        print "-", message
+                except Exception:
+                    print "Couldn't parse server response."
+                sys.exit(1)
             datum = json.loads(resp.read())
             for data in datum:
                 newversions.add(data['name'])
-        newversions.add(versions[0])
-        newversions.add(versions[-1])
-        newlist = newversions.copy()
-        newlist = list(newlist)
+        newlist = list(newversions.copy())
+        newlist.append(versions[0])
+        newlist.append(versions[-1])
         newlist.sort(key=LooseVersion)
-        for newversion in newlist[newlist.index(versions[0]):newlist.index(
-                versions[-1]) + 1]:
+        start_index = newlist.index(versions[0])
+        end_index = len(newlist) - 1 - newlist[::-1].index(versions[-1])
+        for newversion in newlist[start_index + 1:end_index]:
             if newversion in newversions:
                 print "Adding %s to the list" % newversion
                 self.newversions.append(newversion)
@@ -325,8 +338,14 @@ class JiraIter(object):
         except urllib2.HTTPError, err:
             code = err.code
             print "JIRA returns HTTP error %d: %s. Aborting." % (code, err.msg)
-            if code == 400:
-                print "Please make sure the specified projects are correct."
+            error_response = err.read()
+            try:
+                error_response = json.loads(error_response)
+                print "- Please ensure that specified projects, fixVersions etc. are correct."
+                for message in error_response['errorMessages']:
+                    print "-", message
+            except Exception:
+                print "Couldn't parse server response."
             sys.exit(1)
         except httplib.BadStatusLine as err:
             return JiraIter.retry_load(err, params, fail_count)
