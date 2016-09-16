@@ -66,7 +66,7 @@ def sanitize_text(input_string):
     # We only escape a subset of special characters. We ignore characters
     # that only have significance at the start of a line.
     slash_escapes = "_<>*|"
-    slash_escapes += "'"
+    slash_escapes += "`"
     slash_escapes += "\\"
     all_chars = set()
     # Construct a set of escapes
