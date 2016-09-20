@@ -91,7 +91,7 @@ function github_jira_bridge
 
   urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch[ &\\\"]\"){url=substr(\$0,RSTART,RLENGTH-1)}
                         END{if (url) print url}" "${PATCH_DIR}/jira" )
-  if [[ -n $urlfromjira ]]; then
+  if [[ -z $urlfromjira ]]; then
     # This is currently the expected path, as github pull requests are not common
     return 1
   fi
