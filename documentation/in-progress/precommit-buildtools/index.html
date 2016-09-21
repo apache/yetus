@@ -182,12 +182,12 @@
 <li><p>pluginname_builtin_personality_modules</p>
 
 <ul>
-<li>Default method to determine how to enqueue modules for processing.  Note that personalities may override this function.</li>
+<li>Default method to determine how to enqueue modules for processing.  Note that personalities may override this function. Requires two arguments: repo status and test desired. For example, in a maven build, values may be &#39;branch&rsquo; and &#39;mvninstall&rsquo;.</li>
 </ul></li>
 <li><p>pluginname_builtin_personality_file_tests</p>
 
 <ul>
-<li>Default method to determine which tests to trigger.  Note that personalities may override this function.</li>
+<li>Default method to determine which tests to trigger.  Note that personalities may override this function. Requires a single argument: the file in which the tests exist.</li>
 </ul></li>
 </ul>
 
@@ -288,7 +288,7 @@
 
 <p>Maven will test eclipse and site if maven is being used as the build tool and appropriate files trigger them.</p>
 
-<p>Maven will trigger add a maven install test when the <code>maven_add_install</code> function has been used and the related tests are requierd. Plug-ins that need to run maven before MUST call it as part of their respective initialize functions, otherwise maven may fail unexpectedly.  All Yetus provided plug-ins that require maven will trigger the maven install functionality.</p>
+<p>Maven will trigger add a maven install test when the <code>maven_add_install</code> function has been used and the related tests are requierd. Plug-ins that need to run maven before MUST call it as part of their respective initialize functions, otherwise maven may fail unexpectedly.  All Apache Yetus provided plug-ins that require maven will trigger the maven install functionality.</p>
 
     </div>
       <div class="container">

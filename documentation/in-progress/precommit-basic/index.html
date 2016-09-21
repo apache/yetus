@@ -304,6 +304,9 @@ have a location to look at the output artifacts:</p>
 
 <p>It is a fairly common practice within the Apache community to use Apache&rsquo;s JIRA instance to store potential patches.  As a result, test-patch supports providing just a JIRA issue number.  test-patch will find the <em>last</em> attachment, download it, then process it.</p>
 
+<p><strong>NOTE: test-patch expects the patch files to follow a particular naming convention. For complete details
+ on the naming convention please refer to <a href="./precommit-patchnames/">patch-naming-conventions</a></strong></p>
+
 <p>For example:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> HADOOP-9905
 </code></pre>
@@ -334,7 +337,7 @@ have a location to look at the output artifacts:</p>
 
 <h2 id="generic-urls">Generic URLs</h2>
 
-<p>Luckily, test-patch supports  provide ways to provide unified diffs via URLs.</p>
+<p>Luckily, test-patch supports ways to provide unified diffs via URLs.</p>
 
 <p>For example:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> https://example.com/webserver/file.patch

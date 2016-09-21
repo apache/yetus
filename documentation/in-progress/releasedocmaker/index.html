@@ -276,7 +276,8 @@ default value for this label by using &ndash;incompatiblelabel option e.g.</p>
 
 <h1 id="index-mode">Index Mode</h1>
 
-<p>There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor.micro-style version numbering system, where all fields are numeric.</p>
+<p>There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor*-style version numbering system.
+For example directories with names like 0.6, 1.2.2, 1.2alpha etc. will all be linked.</p>
 
 <ul>
 <li>index.md: a file suitable for conversion to HTML via mvn site</li>
