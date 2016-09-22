@@ -14,7 +14,40 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+WHITESPACE_EOL_IGNORE_LIST=
+WHITESPACE_TABS_IGNORE_LIST=Makefile
+
 add_test_type whitespace
+
+## @description  whitespace usage hook
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function whitespace_usage
+{
+  yetus_add_option "--whitespace-eol-ignore-list=<list>" "comma-separated regex list of filenames to ignore on checking whitespaces at EOL (default '${WHITESPACE_EOL_IGNORE_LIST}')"
+  yetus_add_option "--whitespace-tabs-ignore-list=<list>" "comma-separated regex list of filenames to ignore on checking tabs in a file (default '${WHITESPACE_TABS_IGNORE_LIST}')"
+}
+
+## @description  whitespace parse args hook
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function whitespace_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --whitespace-eol-ignore-list=*)
+        yetus_comma_to_array WHITESPACE_EOL_IGNORE_LIST "${i#*=}"
+      ;;
+      --whitespace-tabs-ignore-list=*)
+        yetus_comma_to_array WHITESPACE_TABS_IGNORE_LIST "${i#*=}"
+      ;;
+    esac
+  done
+}
 
 function whitespace_linecomment_reporter
 {
@@ -40,6 +73,8 @@ function whitespace_postcompile
   declare repostatus=$1
   declare count
   declare result=0
+  declare eolignore
+  declare tabsignore
 
   if [[ "${repostatus}" = branch ]]; then
     return 0
@@ -50,22 +85,29 @@ function whitespace_postcompile
 
   pushd "${BASEDIR}" >/dev/null
 
+  eolignore=$(printf -- "-e ^%s: " "${WHITESPACE_EOL_IGNORE_LIST[@]}")
+  tabsignore=$(printf -- "-e ^%s: " "${WHITESPACE_TABS_IGNORE_LIST[@]}")
+
   case "${BUILDMODE}" in
     patch)
-      # shellcheck disable=SC2016
+      # shellcheck disable=SC2016,SC2086
       ${AWK} '/\t/ {print $0}' \
           "${GITDIFFCONTENT}" \
-        | ${GREP} -v Makefile: >> "${PATCH_DIR}/whitespace-tabs.txt"
+        | ${GREP} -v ${tabsignore} >> "${PATCH_DIR}/whitespace-tabs.txt"
 
+      # shellcheck disable=SC2086
        ${GREP} -E '[[:blank:]]$' \
          "${GITDIFFCONTENT}" \
-          >> "${PATCH_DIR}/whitespace-eol.txt"
+        | ${GREP} -v ${eolignore} >> "${PATCH_DIR}/whitespace-eol.txt"
     ;;
     full)
+      # shellcheck disable=SC2086
       ${GIT} grep -n -I --extended-regexp '[[:blank:]]$' \
+        | "${GREP}" -v ${eolignore} \
          >> "${PATCH_DIR}/whitespace-eol.txt"
+      # shellcheck disable=SC2086
       ${GIT} grep -n -I $'\t' \
-        | "${GREP}" -v Makefile \
+        | "${GREP}" -v ${tabsignore} \
         >> "${PATCH_DIR}/whitespace-tabs.txt"
     ;;
   esac
