@@ -101,13 +101,40 @@ function hadoop_unittest_prereqs
     echo "unit test pre-reqs:"
     module="hadoop-common-project/hadoop-common"
     fn=$(module_file_fragment "${module}")
-    flags=$(hadoop_native_flags)
+    flags="$(hadoop_native_flags) $(yarn_ui2_flag)"
     pushd "${BASEDIR}/${module}" >/dev/null
     # shellcheck disable=SC2086
     echo_and_redirect "${PATCH_DIR}/maven-unit-prereq-${fn}-install.txt" \
       "${MAVEN}" "${MAVEN_ARGS[@]}" install -DskipTests ${flags}
     popd >/dev/null
   fi
+}
+
+## @description  Calculate the flags/settings for yarn-ui v2 build
+## @description  based upon the OS
+## @audience     private
+## @stability    evolving
+function yarn_ui2_flag
+{
+
+  if [[ ${BUILD_NATIVE} != true ]]; then
+    return
+  fi
+
+  # Now it only tested on Linux/OSX, don't enable the profile on
+  # windows until it get verified
+  case ${OSTYPE} in
+    Linux)
+      # shellcheck disable=SC2086
+      echo -Pyarn-ui
+    ;;
+    Darwin)
+      echo -Pyarn-ui
+    ;;
+    *)
+      # Do nothing
+    ;;
+  esac
 }
 
 ## @description  Calculate the flags/settings for native code
@@ -290,7 +317,7 @@ function personality_modules
   esac
 
   if [[ ${needflags} = true ]]; then
-    flags=$(hadoop_native_flags)
+    flags="$(hadoop_native_flags) $(yarn_ui2_flag)"
     extra="${extra} ${flags}"
   fi
 
