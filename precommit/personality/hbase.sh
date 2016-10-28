@@ -197,8 +197,7 @@ function hbaseprotoc_rebuild
     return 0
   fi
 
-  verify_needed_test hbaseprotoc
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test hbaseprotoc; then
     return 0
   fi
 
@@ -268,8 +267,7 @@ function hbaseanti_patchfile
     return 0
   fi
 
-  verify_needed_test hbaseanti
-  if [[ $? == 0 ]]; then
+  if ! verify_needed_test hbaseanti; then
     return 0
   fi
 
