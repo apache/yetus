@@ -552,9 +552,9 @@ FROM ${baseimagename}
 LABEL org.apache.yetus=""
 LABEL org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}"
 LABEL org.apache.yetus.testpatch.project=${PROJECT_NAME}
-RUN groupadd --non-unique -g ${GROUP_ID} ${USER_NAME}
-RUN useradd -g ${GROUP_ID} -u ${USER_ID} -m ${USER_NAME}
-RUN chown -R ${USER_NAME} /home/${USER_NAME}
+RUN groupadd --non-unique -g ${GROUP_ID} ${USER_NAME} || true
+RUN useradd -g ${GROUP_ID} -u ${USER_ID} -m ${USER_NAME} || true
+RUN chown -R ${USER_NAME} /home/${USER_NAME} || true
 ENV HOME /home/${USER_NAME}
 USER ${USER_NAME}
 PatchSpecificDocker
