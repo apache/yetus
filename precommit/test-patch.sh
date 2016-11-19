@@ -1533,7 +1533,7 @@ function copytpbits
   if [[ -n "${USER_PLUGIN_DIR}"
     && -d "${USER_PLUGIN_DIR}"  ]]; then
     yetus_debug "copying '${USER_PLUGIN_DIR}' over to ${PATCH_DIR}/precommit/user-plugins"
-    cp -pr "${USER_PLUGIN_DIR}/*" \
+    cp -pr "${USER_PLUGIN_DIR}"/. \
       "${PATCH_DIR}/precommit/user-plugins"
   fi
   # Set to be relative to ${PATCH_DIR}/precommit
