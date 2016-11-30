@@ -17,6 +17,7 @@
 
 FINDBUGS_HOME=${FINDBUGS_HOME:-}
 FINDBUGS_WARNINGS_FAIL_PRECHECK=false
+FINDBUGS_SKIP_MAVEN_SOURCE_CHECK=false
 
 add_test_type findbugs
 
@@ -24,6 +25,7 @@ function findbugs_usage
 {
   yetus_add_option "--findbugs-home=<path>" "Findbugs home directory (default \${FINDBUGS_HOME})"
   yetus_add_option "--findbugs-strict-precheck" "If there are Findbugs warnings during precheck, fail"
+  yetus_add_option "--findbugs-skip-maven-source-check" "If the buildtool is maven, then skip the source check and run Findbugs for every module"
 }
 
 function findbugs_parse_args
@@ -37,6 +39,9 @@ function findbugs_parse_args
     ;;
     --findbugs-strict-precheck)
       FINDBUGS_WARNINGS_FAIL_PRECHECK=true
+    ;;
+    --findbugs-skip-maven-source-check)
+      FINDBUGS_SKIP_MAVEN_SOURCE_CHECK=true
     ;;
     esac
   done
@@ -148,7 +153,7 @@ function findbugs_runner
 
   # strip out any modules that aren't actually java modules
   # this can save a lot of time during testing
-  if [[ "${BUILDTOOL}" = maven ]]; then
+  if [[ "${BUILDTOOL}" = maven && ${FINDBUGS_SKIP_MAVEN_SOURCE_CHECK} == false ]]; then
     findbugs_maven_skipper
   fi
 
