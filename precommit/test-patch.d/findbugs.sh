@@ -106,8 +106,7 @@ function findbugs_maven_skipper
   until [[ ${i} -eq ${#MODULE[@]} ]]; do
     # If there are no java source code in the module,
     # skip parsing output xml file.
-    if [[ ! -d "${MODULE[${i}]}/src/main/java"
-       && ! -d "${MODULE[${i}]}/src/test/java" ]]; then
+    if [[ ! -d "${MODULE[${i}]}/src/main/java" ]]; then
        skiplist=("${skiplist[@]}" "${MODULE[$i]}")
     fi
     ((i=i+1))
