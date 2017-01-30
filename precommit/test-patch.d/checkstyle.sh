@@ -161,7 +161,7 @@ function checkstyle_runner
     output="${PATCH_DIR}/${repostatus}-checkstyle-${fn}.txt"
     logfile="${PATCH_DIR}/maven-${repostatus}-checkstyle-${fn}.txt"
 
-    buildtool_cwd
+    buildtool_cwd "${i}"
 
     case ${BUILDTOOL} in
       ant)
