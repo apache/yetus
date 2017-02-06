@@ -303,7 +303,7 @@ function docker_container_maintenance
     tmptime=$(echo "${line}" | cut -f5 -d, | cut -f1 -d. )
     stoptime=$(dockerdate_to_ctime "${tmptime}")
     name=$(echo "${line}" | cut -f6 -d, )
-    curtime=$(TZ=UTC date "+%s")
+    curtime=$("${AWK}" 'BEGIN {srand(); print srand()}')
     remove=false
 
     case ${status} in

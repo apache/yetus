@@ -29,7 +29,6 @@ BINNAME=${this##*/}
 BINNAME=${BINNAME%.sh}
 STARTINGDIR=$(pwd)
 USER_PARAMS=("$@")
-GLOBALTIMER=$(date +"%s")
 #shellcheck disable=SC2034
 QATESTMODE=false
 
@@ -67,6 +66,7 @@ function setup_defaults
   declare version="in-progress"
 
   common_defaults
+  GLOBALTIMER=$("${AWK}" 'BEGIN {srand(); print srand()}')
 
   if [[ -f "${BINDIR}/../VERSION" ]]; then
     version=$(cat "${BINDIR}/../VERSION")
@@ -97,7 +97,7 @@ function setup_defaults
   # shellcheck disable=SC2034
   BUILDMODEMSG="The patch"
   ISSUE=""
-  TIMER=$(date +"%s")
+  TIMER=$("${AWK}" 'BEGIN {srand(); print srand()}')
   JVM_REQUIRED=true
   yetus_add_entry JDK_TEST_LIST compile
   yetus_add_entry JDK_TEST_LIST unit
