@@ -139,15 +139,21 @@ class Outputs(object):
         for value in self.others.values():
             value.close()
 
-    def write_list(self, mylist):
+    def write_list(self, mylist, skip_credits):
         for jira in sorted(mylist):
-            line = '| [%s](' + BASE_URL + '/browse/%s) ' +\
-                   '| %s |  %s | %s | %s | %s |\n'
-            line = line % (encode_utf8(jira.get_id()),
-                           encode_utf8(jira.get_id()),
-                           sanitize_text(jira.get_summary()),
-                           sanitize_text(jira.get_priority()),
-                           format_components(jira.get_components()),
-                           sanitize_text(jira.get_reporter()),
-                           sanitize_text(jira.get_assignee()))
+            if skip_credits:
+                line = '| [{id}]({base_url}/browse/{id}) | {summary} |  ' \
+                       '{priority} | {component} |\n'
+            else:
+                line = '| [{id}]({base_url}/browse/{id}) | {summary} |  ' \
+                       '{priority} | {component} | {reporter} | {assignee} |\n'
+            args = {'id': encode_utf8(jira.get_id()),
+                    'base_url': BASE_URL,
+                    'summary': sanitize_text(jira.get_summary()),
+                    'priority': sanitize_text(jira.get_priority()),
+                    'component': format_components(jira.get_components()),
+                    'reporter': sanitize_text(jira.get_reporter()),
+                    'assignee': sanitize_text(jira.get_assignee())
+                    }
+            line = line.format(**args)
             self.write_key_raw(jira.get_project(), line)

@@ -48,9 +48,6 @@ NUM_RETRIES = 5
 
 # label to be used to mark an issue as Incompatible change.
 BACKWARD_INCOMPATIBLE_LABEL = 'backward-incompatible'
-CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
-             "Component | Reporter | Contributor |\n"
-CHANGEHDR2 = "|:---- |:---- | :--- |:---- |:---- |:---- |\n"
 
 ASF_LICENSE = '''
 <!---
@@ -646,6 +643,12 @@ def parse_args():
         action="append",
         type="int",
         help="Specify how many times to retry connection for each URL.")
+    parser.add_option(
+        "--skip-credits",
+        dest="skip_credits",
+        action="store_true",
+        default=False,
+        help="While creating release notes skip the 'reporter' and 'contributor' columns")
     parser.add_option("-X",
                       "--incompatiblelabel",
                       dest="incompatible_label",
@@ -843,54 +846,63 @@ def main():
         reloutputs.write_all("\n\n")
         reloutputs.close()
 
+        if options.skip_credits:
+            CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
+                     "Component |\n"
+            CHANGEHDR2 = "|:---- |:---- | :--- |:---- |\n"
+        else:
+            CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
+                         "Component | Reporter | Contributor |\n"
+            CHANGEHDR2 = "|:---- |:---- | :--- |:---- |:---- |:---- |\n"
+
         if incompatlist:
             choutputs.write_all("### INCOMPATIBLE CHANGES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(incompatlist)
+            choutputs.write_list(incompatlist, options.skip_credits)
 
         if importantlist:
             choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(importantlist)
+            choutputs.write_list(importantlist, options.skip_credits)
 
         if newfeaturelist:
             choutputs.write_all("\n\n### NEW FEATURES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(newfeaturelist)
+            choutputs.write_list(newfeaturelist, options.skip_credits)
 
         if improvementlist:
             choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(improvementlist)
+            choutputs.write_list(improvementlist, options.skip_credits)
 
         if buglist:
             choutputs.write_all("\n\n### BUG FIXES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(buglist)
+            choutputs.write_list(buglist, options.skip_credits)
 
         if testlist:
             choutputs.write_all("\n\n### TESTS:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(testlist)
+            choutputs.write_list(testlist, options.skip_credits)
 
         if subtasklist:
             choutputs.write_all("\n\n### SUB-TASKS:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(subtasklist)
+            choutputs.write_list(subtasklist, options.skip_credits)
 
         if tasklist or otherlist:
             choutputs.write_all("\n\n### OTHER:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(otherlist)
-            choutputs.write_list(tasklist)
+            choutputs.write_list(otherlist, options.skip_credits)
+            choutputs.write_list(tasklist, options.skip_credits)
 
         choutputs.write_all("\n\n")
         choutputs.close()
