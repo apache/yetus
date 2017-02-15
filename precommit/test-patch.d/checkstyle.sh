@@ -102,10 +102,13 @@ function checkstyle_calcdiffs
   # accuracy in case of multiple, repeated errors
   # since the column number shouldn't change
   # if the line of code hasn't been touched
+  # remove the numbers from the error message for comparing
+  # so if only the error message numbers change
+  # we do not report new error
   # shellcheck disable=SC2016
-  cut -f3- -d: "${orig}" > "${tmp}.branch"
+  cut -f3- -d: "${orig}" | awk -F'\1' '{ gsub("[0-9,]+", "", $2) ;print $1":"$2}' > "${tmp}.branch"
   # shellcheck disable=SC2016
-  cut -f3- -d: "${new}" > "${tmp}.patch"
+  cut -f3- -d: "${new}" | awk -F'\1' '{ gsub("[0-9,]+", "", $2) ;print $1":"$2}' > "${tmp}.patch"
 
   # compare the errors, generating a string of line
   # numbers. Sorry portability: GNU diff makes this too easy
@@ -116,10 +119,12 @@ function checkstyle_calcdiffs
      "${tmp}.patch" > "${tmp}.lined"
 
   # now, pull out those lines of the raw output
+  # removing extra marker before the chekstyle error
+  # message which was needed for calculations
   # shellcheck disable=SC2013
   for j in $(cat "${tmp}.lined"); do
     # shellcheck disable=SC2086
-    head -${j} "${new}" | tail -1
+    head -${j} "${new}" | tail -1 | tr -d $'\x01'
   done
 
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
@@ -232,14 +237,20 @@ function checkstyle_runner
       # report the correct line
 
       # file:linenum:(column:)error    ====>
-      # file:linenum:code(:column):error
+      # file:linenum:code(:column)\x01:error
+      # \x01 will later used to identify the begining
+      # of the checkstyle error message
       pushd "${BASEDIR}" >/dev/null
       while read -r logline; do
         file=$(echo "${logline}" | cut -f1 -d:)
         linenum=$(echo "${logline}" | cut -f2 -d:)
         text=$(echo "${logline}" | cut -f3- -d:)
         codeline=$(head -n "+${linenum}" "${file}" | tail -1 )
-        echo "${file}:${linenum}:${codeline}:${text}" >> "${output}"
+        {
+          echo -n "${file}:${linenum}:${codeline}"
+          echo -ne "\x01"
+          echo ":${text}"
+        } >> "${output}"
       done < <(cat "${tmp}.1")
 
       popd >/dev/null
