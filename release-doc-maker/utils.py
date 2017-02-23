@@ -17,6 +17,10 @@
 # limitations under the License.
 
 import re
+import urllib2
+import sys
+import json
+import httplib
 
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
 BASE_URL = "https://issues.apache.org/jira"
@@ -24,6 +28,35 @@ BASE_URL = "https://issues.apache.org/jira"
 
 def clean(input_string):
     return sanitize_markdown(re.sub(NAME_PATTERN, "", input_string))
+
+
+def get_jira(jira_url):
+    """ Provide standard method for fetching content from apache jira and
+        handling of potential errors. Returns urllib2 response or
+        raises one of several exceptions."""
+    try:
+        response = urllib2.urlopen(jira_url)
+    except urllib2.HTTPError as http_err:
+        code = http_err.code
+        print "JIRA returns HTTP error %d: %s. Aborting." % \
+              (code, http_err.msg)
+        error_response = http_err.read()
+        try:
+            error_response = json.loads(error_response)
+            print "- Please ensure that specified projects, fixVersions etc."\
+                  " are correct."
+            for message in error_response['errorMessages']:
+                print "-", message
+        except ValueError:
+            print "FATAL: Could not parse json response from server."
+        sys.exit(1)
+    except urllib2.URLError as url_err:
+        print "Error contacting JIRA: %s\n" % jira_url
+        print "Reason: %s" % url_err.reason
+        raise url_err
+    except httplib.BadStatusLine as err:
+        raise err
+    return response
 
 
 def format_components(input_string):

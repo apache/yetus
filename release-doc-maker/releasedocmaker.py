@@ -29,8 +29,7 @@ import urllib
 import urllib2
 import httplib
 import json
-from utils import to_unicode, sanitize_text, processrelnote, Outputs
-
+from utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
 
 try:
     import dateutil.parser
@@ -68,7 +67,6 @@ ASF_LICENSE = '''
 # limitations under the License.
 -->
 '''
-
 
 def buildindex(title, asf_license):
     """Write an index file for later conversion using mvn site"""
@@ -114,19 +112,10 @@ class GetVersions(object):
             url = JIRA_BASE_URL + \
               "/rest/api/2/project/%s/versions" % project.upper()
             try:
-                resp = urllib2.urlopen(url)
-            except urllib2.HTTPError as err:
-                code = err.code
-                print "JIRA returns HTTP error %d: %s. Aborting." % (code, err.msg)
-                error_response = err.read()
-                try:
-                    error_response = json.loads(error_response)
-                    print "- Please ensure that specified projects are correct."
-                    for message in error_response['errorMessages']:
-                        print "-", message
-                except Exception:
-                    print "Couldn't parse server response."
+                resp = get_jira(url)
+            except (urllib2.HTTPError, urllib2.URLError, httplib.BadStatusLine):
                 sys.exit(1)
+
             datum = json.loads(resp.read())
             for data in datum:
                 newversions.add(data['name'])
@@ -156,7 +145,7 @@ class Version(object):
             self.parts = [int(p) for p in found.group(1).split('.')]
         else:
             self.parts = []
-        # backfill version with zeroes if missing parts
+        # backfill version with zeros if missing parts
         self.parts.extend((0,) * (3 - len(self.parts)))
 
     def __str__(self):
@@ -305,8 +294,11 @@ class JiraIter(object):
     @staticmethod
     def collect_fields():
         """send a query to JIRA and collect field-id map"""
-        resp = urllib2.urlopen(JIRA_BASE_URL + "/rest/api/2/field")
-        data = json.loads(resp.read())
+        try:
+            resp = get_jira(JIRA_BASE_URL + "/rest/api/2/field")
+            data = json.loads(resp.read())
+        except (urllib2.HTTPError, urllib2.URLError, httplib.BadStatusLine, ValueError):
+            sys.exit(1)
         field_id_map = {}
         for part in data:
             field_id_map[part['name']] = part['id']
@@ -330,22 +322,10 @@ class JiraIter(object):
     def load_jira(params, fail_count):
         """send query to JIRA and collect with retries"""
         try:
-            resp = urllib2.urlopen(JIRA_BASE_URL + "/rest/api/2/search?%s" %
-                                   params)
-        except urllib2.HTTPError, err:
-            code = err.code
-            print "JIRA returns HTTP error %d: %s. Aborting." % (code, err.msg)
-            error_response = err.read()
-            try:
-                error_response = json.loads(error_response)
-                print "- Please ensure that specified projects, fixVersions etc. are correct."
-                for message in error_response['errorMessages']:
-                    print "-", message
-            except Exception:
-                print "Couldn't parse server response."
-            sys.exit(1)
-        except httplib.BadStatusLine as err:
-            return JiraIter.retry_load(err, params, fail_count)
+            resp = get_jira(JIRA_BASE_URL + "/rest/api/2/search?%s" % params)
+        except (urllib2.HTTPError, urllib2.URLError, httplib.BadStatusLine):
+            JiraIter.retry_load(resp, params, fail_count)
+
         try:
             data = json.loads(resp.read())
         except httplib.IncompleteRead as err:
@@ -716,9 +696,6 @@ def main():
         global BACKWARD_INCOMPATIBLE_LABEL
         BACKWARD_INCOMPATIBLE_LABEL = options.incompatible_label
 
-    proxy = urllib2.ProxyHandler()
-    opener = urllib2.build_opener(proxy)
-    urllib2.install_opener(opener)
 
     projects = options.projects
 
