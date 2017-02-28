@@ -184,11 +184,14 @@ function checkstyle_runner
 
     # we're going to execute it and pull out
     # anything that beings with a /.  that's
-    # almost certainly checkstyle output
+    # almost certainly checkstyle output.
+    # checkstyle 6.14 or upper adds severity
+    # to the beginning of line, so removing it
 
     #shellcheck disable=SC2086
     echo_and_redirect "${logfile}" ${cmd}
-    ${GREP} ^/ "${logfile}" \
+    ${SED} -e "s,^\[ERROR\] ,,g" -e "s,^\[WARN\] ,,g" "${logfile}" \
+      | ${GREP} ^/ \
       | ${SED} -e "s,${BASEDIR},.,g" \
       > "${tmp}"
 
