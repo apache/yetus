@@ -323,8 +323,8 @@ class JiraIter(object):
         """send query to JIRA and collect with retries"""
         try:
             resp = get_jira(JIRA_BASE_URL + "/rest/api/2/search?%s" % params)
-        except (urllib2.HTTPError, urllib2.URLError, httplib.BadStatusLine):
-            JiraIter.retry_load(resp, params, fail_count)
+        except (urllib2.URLError, httplib.BadStatusLine) as err:
+            return JiraIter.retry_load(err, params, fail_count)
 
         try:
             data = json.loads(resp.read())
