@@ -17,6 +17,7 @@
 add_test_type shellcheck
 
 SHELLCHECK_TIMER=0
+SHELLCHECK_X=true
 
 SHELLCHECK=${SHELLCHECK:-$(which shellcheck 2>/dev/null)}
 
@@ -45,6 +46,14 @@ function shellcheck_precheck
   if ! verify_command "shellcheck" "${SHELLCHECK}"; then
     add_vote_table 0 shellcheck "Shellcheck was not available."
     delete_test shellcheck
+  else
+    # shellcheck disable=SC2016
+    SHELLCHECK_VERSION=$("${SHELLCHECK}" --version | "${GREP}" version: | "${AWK}" '{print $NF}')
+
+    # versions less than 0.4.1 do not support -x
+    if [[ ${SHELLCHECK_VERSION} =~ 0.[0-3].[0-9] || ${SHELLCHECK_VERSION} = 0.4.0 ]]; then
+      SHELLCHECK_X=false
+    fi
   fi
 
   if [[ -z "${LANG}" ]]; then
@@ -114,13 +123,15 @@ function shellcheck_preapply
   pushd "${BASEDIR}" >/dev/null
   for i in $(shellcheck_private_findbash); do
     if [[ -f ${i} ]]; then
-      ${SHELLCHECK} -f gcc "${i}" >> "${PATCH_DIR}/branch-shellcheck-result.txt"
+      if [[ "${SHELLCHECK_X}" = true ]]; then
+        "${SHELLCHECK}" -x -f gcc "${i}" >> "${PATCH_DIR}/branch-shellcheck-result.txt"
+      else
+        "${SHELLCHECK}" -f gcc "${i}" >> "${PATCH_DIR}/branch-shellcheck-result.txt"
+      fi
     fi
   done
   popd > /dev/null
 
-  # shellcheck disable=SC2016
-  SHELLCHECK_VERSION=$(${SHELLCHECK} --version | ${GREP} version: | ${AWK} '{print $NF}')
   msg="v${SHELLCHECK_VERSION}"
   if [[ ${SHELLCHECK_VERSION} =~ 0.[0-3].[0-5] ]]; then
     msg="${msg} (This is an old version that has serious bugs. Consider upgrading.)"
@@ -169,7 +180,11 @@ function shellcheck_postapply
   # we re-check this in case one has been added
   for i in $(shellcheck_private_findbash); do
     if [[ -f ${i} ]]; then
-      ${SHELLCHECK} -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
+      if [[ "${SHELLCHECK_X}" = true ]]; then
+        "${SHELLCHECK}" -x -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
+      else
+        "${SHELLCHECK}" -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
+      fi
     fi
   done
 
