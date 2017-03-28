@@ -85,6 +85,7 @@ function github_jira_bridge
 {
   declare fileloc=$1
   declare urlfromjira
+  declare urlfrompr
 
   # the JIRA issue has already been downloaded. So let's find the URL.
   # shellcheck disable=SC2016
@@ -92,8 +93,14 @@ function github_jira_bridge
   urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch[ &\\\"]\"){url=substr(\$0,RSTART,RLENGTH-1)}
                         END{if (url) print url}" "${PATCH_DIR}/jira" )
   if [[ -z $urlfromjira ]]; then
-    # This is currently the expected path, as github pull requests are not common
-    return 1
+    # Fallback. Find the URL of the pull request.
+    urlfrompr=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*/pull/[0-9]+[ &\\\"]\"){pr=substr(\$0,RSTART,RLENGTH-1)}
+                        END{if (pr) print pr}" "${PATCH_DIR}/jira" )
+    if [[ -z $urlfrompr ]]; then
+      # This is currently the expected path, as github pull requests are not common
+      return 1
+    fi
+    urlfromjira="${urlfrompr}.patch"
   fi
 
   # we use this to prevent loops later on
