@@ -320,11 +320,7 @@ function docker_container_maintenance
         fi
       ;;
       exited)
-        ((difftime = curtime - stoptime))
-        if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[2]} ]]; then
-          remove=true
-        fi
-      ;;
+      ;&
       dead)
         ((difftime = curtime - stoptime))
         if [[ ${difftime} -gt ${DOCKER_CONTAINER_PURGE[2]} ]]; then
