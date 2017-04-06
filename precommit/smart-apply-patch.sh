@@ -102,6 +102,7 @@ function yetus_usage
   yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
   yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
+  yetus_add_option "--gpg-sign" "GPG sign the commit using gpg keys"
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
@@ -153,6 +154,9 @@ function parse_args
       --committer)
         COMMITMODE=true
       ;;
+      --gpg-sign)
+        set GPGSIGN
+      ;;
       --dry-run)
         PATCH_DRYRUNMODE=true
       ;;
@@ -200,9 +204,13 @@ function gitam_apply
 {
   declare patchfile=$1
 
+  if [ -z $GPGSIGN ]; then
+    EXTRA_ARGS="-S"
+  fi
+
   echo "Applying the patch:"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am.log" \
-    "${GIT}" am --signoff --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
+    "${GIT}" am --signoff ${EXTRA_ARGS} --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
   ${GREP} -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
 }
 
