@@ -155,7 +155,7 @@ function parse_args
         COMMITMODE=true
       ;;
       --gpg-sign)
-        set GPGSIGN
+        GPGSIGN=true
       ;;
       --dry-run)
         PATCH_DRYRUNMODE=true
@@ -203,8 +203,9 @@ function gitam_dryrun
 function gitam_apply
 {
   declare patchfile=$1
+  declare gpg=$2
 
-  if [ -z $GPGSIGN ]; then
+  if [[ ${gpg} = true ]]; then
     EXTRA_ARGS="-S"
   fi
 
@@ -261,7 +262,7 @@ if [[ ${RESULT} -gt 0 ]]; then
 fi
 
 if [[ ${PATCH_DRYRUNMODE} == false ]]; then
-  patchfile_apply_driver "${PATCH_DIR}/patch"
+  patchfile_apply_driver "${PATCH_DIR}/patch" "${GPGSIGN}"
   RESULT=$?
 fi
 
