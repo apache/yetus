@@ -1299,9 +1299,11 @@ function git_checkout
     fi
 
     # if we've selected a feature branch that has new changes
-    # since our last build, we'll need to rebase to see those changes.
+    # since our last build, we'll need to reset to the latest FETCH_HEAD.
     if [[ ${OFFLINE} == false ]]; then
-      ${GIT} pull --rebase
+      ${GIT} fetch
+      ${GIT} reset --hard FETCH_HEAD
+      ${GIT} clean -df
       if [[ $? != 0 ]]; then
         yetus_error "ERROR: git pull is failing"
         cleanup_and_exit 1
