@@ -688,6 +688,7 @@ function yetus_usage
   yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
   # shellcheck disable=SC2153
   yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (one of ${BUILDTOOLS})"
+  yetus_add_option "--bugsystems=<bugsys>" "Pick which bug system to focus around (default: ${bugsys})"
   yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: ${bugsys})"
   yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
@@ -788,6 +789,9 @@ function parse_args
       --bugcomments=*)
         BUGCOMMENTS=${i#*=}
         BUGCOMMENTS=${BUGCOMMENTS//,/ }
+      ;;
+      --bugsystems=*)
+        BUGSYSTEMS=${i#*=}
       ;;
       --build-native=*)
         BUILD_NATIVE=${i#*=}
