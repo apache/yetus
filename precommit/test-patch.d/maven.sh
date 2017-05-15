@@ -581,7 +581,6 @@ function maven_reorder_module_process
   declare indexn
   declare -a newlist
   declare fn
-  declare basemod
   declare needroot=false
   declare found
 
@@ -594,33 +593,20 @@ function maven_reorder_module_process
   fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
   pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null
 
-  # get the output of validate
-  # this *should* be pretty darn close to the correct order
+  # get the module directory list in the correct order based on maven dependencies
   # shellcheck disable=SC2046
-  echo_and_redirect "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt" \
-    $("${BUILDTOOL}_executor") validate
+  echo_and_redirect "${PATCH_DIR}/maven-${repostatus}-dirlist-${fn}.txt" \
+    $("${BUILDTOOL}_executor") "-q" "exec:exec" "-Dexec.executable=pwd" "-Dexec.args=''"
 
   while read -r line; do
-    if [[ ${line} =~ ^module: ]]; then
-      module=${line##module:}
-    else
-      continue
-    fi
     for indexm in "${CHANGED_MODULES[@]}"; do
-      # modules could be foo/bar, where bar is the artifactid
-      # so get the basename and compare that too
-      basemod="${indexm##*/}"
-      if [[ "${module}" = "${indexm}"
-         || "${module}" = "${basemod}" ]]; then
-         yetus_debug "mrm: placing ${indexm}"
+      if [[ ${line} == "${BASEDIR}/${indexm}" ]]; then
+        yetus_debug "mrm: placing ${indexm} from dir: ${line}"
         newlist=("${newlist[@]}" "${indexm}")
         break
       fi
     done
-  done < <(${GREP} '\[INFO\]' \
-      "${PATCH_DIR}/maven-${repostatus}-validate-${fn}.txt" |
-    ${SED} -e 's,^.* --- .* @ \(.*\) ---$,module:\1,g' -e '/^\[INFO\]/d' |
-    uniq )
+  done < "${PATCH_DIR}/maven-${repostatus}-dirlist-${fn}.txt"
   popd >/dev/null
 
   if [[ "${needroot}" = true ]]; then
@@ -672,7 +658,7 @@ function maven_reorder_modules
     return
   fi
 
-  big_console_header "Determining Maven Dependency Order"
+  big_console_header "Determining Maven Dependency Order (downloading dependencies in the process)"
 
   start_clock
 
@@ -696,4 +682,6 @@ function maven_reorder_modules
   else
     add_vote_table 0 mvndep "Maven dependency ordering"
   fi
+
+  echo "Elapsed: $(clock_display $(stop_clock))"
 }
