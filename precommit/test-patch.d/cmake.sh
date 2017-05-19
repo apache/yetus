@@ -64,8 +64,22 @@ function cmake_initialize
     yetus_error "ERROR: cmake requires make to be enabled."
     return 1
   fi
-
 }
+
+## @description  precheck cmake
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function cmake_precheck
+{
+  if ! verify_command cmake "${CMAKE}"; then
+    add_vote_table -1 cmake "cmake was not available."
+    return 1
+  fi
+
+  make_precheck
+}
+
 
 ## @description  cmake module manipulation
 ## @audience     private

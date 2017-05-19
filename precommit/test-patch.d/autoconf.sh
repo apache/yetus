@@ -54,6 +54,20 @@ function autoconf_initialize
   fi
 }
 
+## @description  precheck autoconf
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function autoconf_precheck
+{
+  if ! verify_command autoconf autoreconf; then
+    add_vote_table -1 autoconf "autoreconf was not available."
+    return 1
+  fi
+
+  make_precheck
+}
+
 ## @description  get the name of the autoconf build filename
 ## @audience     private
 ## @stability    evolving

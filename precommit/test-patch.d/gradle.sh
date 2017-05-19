@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# there's nothing in here public, so don't publish docs
+# SHELLDOC-IGNORE
+
 add_build_tool gradle
 
 declare -a GRADLE_ARGS=()
@@ -46,6 +49,15 @@ function gradle_parse_args
 
   GRADLE=${GRADLE:-gradle}
   GRADLEW=${GRADLEW:-"${BASEDIR}/gradlew"}
+}
+
+function gradle_precheck
+{
+  if ! verify_command gradle "${GRADLE}"; then
+    add_vote_table -1 gradle "ERROR: gradle is not available."
+    return 1
+  fi
+  return 0
 }
 
 function gradle_initialize

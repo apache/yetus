@@ -95,10 +95,6 @@ function maven_parse_args
 
 function maven_initialize
 {
-  if ! verify_command "maven" "${MAVEN}"; then
-    return 1
-  fi
-
   # we need to do this before docker does it as root
 
   maven_add_install mvneclipse
@@ -137,6 +133,11 @@ function maven_precheck
 {
   declare logfile="${PATCH_DIR}/mvnrepoclean.log"
   declare line
+
+  if ! verify_command maven "${MAVEN}"; then
+    add_vote_table -1 maven "ERROR: maven was not available."
+    return 1
+  fi
 
   if [[ ! ${MAVEN_CUSTOM_REPOS_DIR} =~ ^/ ]]; then
     yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."

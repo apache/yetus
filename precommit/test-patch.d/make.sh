@@ -29,6 +29,19 @@ function make_usage
   yetus_add_option "--make-file=<filename>" "The name of the file the make cmd should work on (default: '${MAKEFILE}')"
 }
 
+## @description  precheck make
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function cmake_precheck
+{
+  if ! verify_command make "${MAKE}"; then
+    add_vote_table -1 make "make was not available."
+    return 1
+  fi
+  return 0
+}
+
 ## @description  make argument parser
 ## @audience     private
 ## @stability    evolving

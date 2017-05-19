@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# there's nothing in here public, so don't publish docs
+# SHELLDOC-IGNORE
+
 if [[ -z "${ANT_HOME:-}" ]]; then
   ANT=ant
 else
@@ -58,6 +61,15 @@ function ant_initialize
     yetus_debug "Creating ${HOME}/.ivy2"
     mkdir -p "${HOME}/.ivy2"
   fi
+}
+
+function ant_precheck
+{
+  if ! verify_command ant "${ANT}"; then
+    add_vote_table -1 ant "ERROR: ant is not available."
+    return 1
+  fi
+  return 0
 }
 
 function ant_filefilter
