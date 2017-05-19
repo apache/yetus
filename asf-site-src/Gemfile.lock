@@ -60,7 +60,7 @@ GEM
     i18n (0.7.0)
     json (1.8.3)
     kramdown (1.8.0)
-    libv8 (3.16.14.13)
+    libv8 (3.16.14.19)
     listen (3.0.3)
       rb-fsevent (>= 0.9.3)
       rb-inotify (>= 0.9)
@@ -158,3 +158,6 @@ DEPENDENCIES
   therubyracer
   tzinfo-data
   wdm (~> 0.1.0)
+
+BUNDLED WITH
+   1.14.6
