@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# no public APIs here
+# SHELLDOC-IGNORE
+
 # this bug system handles JIRA.  Personalities
 # can override the following variables:
 
@@ -404,6 +407,12 @@ function jira_finalreport
     calctime=$(clock_display "${ela}")
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
 
+    if [[ "${vote}" = "H" ]]; then
+      echo "|| || || || {color:brown}${comment}{color} ||" >> "${commentfile}"
+      ((i=i+1))
+      continue
+    fi
+
     # summary line
     if [[ -z ${vote}
       && -n ${ela} ]]; then
@@ -425,6 +434,10 @@ function jira_finalreport
         ;;
         -0)
           color="orange"
+        ;;
+        H)
+          # this never gets called (see above) but this is here so others know the color is taken
+          color="brown"
         ;;
         *)
           color="black"

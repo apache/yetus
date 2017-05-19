@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# there are no public APIs here
+# SHELLDOC-IGNORE
+
 add_bugsystem brieftext
 
 BRIEFOUT_LONGRUNNING=3600
@@ -113,6 +116,11 @@ function brieftext_finalreport
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+
+    if [[ "${vote}" = "H" ]]; then
+       ((i=i+1))
+       continue
+     fi
 
     if [[ ${vote// } = -1 ]]; then
       failed=("${failed[@]}" "${subs}")

@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# no public APIs here
+# SHELLDOC-IGNORE
+
 add_bugsystem bugzilla
 
 # personalities can override the following settings:

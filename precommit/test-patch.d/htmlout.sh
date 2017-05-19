@@ -130,6 +130,19 @@ function htmlout_finalreport
     calctime=$(clock_display "${ela}")
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
 
+    if [[ "${vote}" = "H" ]]; then
+      {
+        echo "<tr>"
+        printf "\t\t<td></td>"
+        printf "<td></td>"
+        printf "<td></td>"
+        printf "<td><font color=\"%s\">%s</font></td>\n" "brown" "${comment}"
+        echo "</tr>"
+      } >> "${commentfile}"
+      ((i=i+1))
+      continue
+    fi
+
     # summary line
     if [[ -z ${vote}
       && -n ${ela} ]]; then
@@ -160,10 +173,10 @@ function htmlout_finalreport
 
     {
       echo "<tr>"
-      printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${vote}"
+      printf "\t\t<td><font color=\"%s\">%s</font></td>" "${color}" "${vote}"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${subs}"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${calctime}"
-      printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${comment}"
+      printf "<td><font color=\"%s\">%s</font></td>\n" "${color}" "${comment}"
       echo "</tr>"
     } >> "${commentfile}"
     ((i=i+1))

@@ -122,8 +122,12 @@ function console_finalreport
     normaltop=$(head -1 "${commentfile1}")
     ${SED} -e '1d' "${commentfile1}"  > "${commentfile2}"
 
-    printf "| %4s | %*s | %-10s |%-s\n" "${vote}" ${seccoladj} \
-      "${subs}" "${calctime}" "${normaltop}"
+    if [[ "${vote}" = "H" ]]; then
+      printf "|      | %*s |            |%-s\n" ${seccoladj} " " "${normaltop}"
+    else
+      printf "| %4s | %*s | %-10s |%-s\n" "${vote}" ${seccoladj} \
+        "${subs}" "${calctime}" "${normaltop}"
+    fi
     while read -r line; do
       printf "|      | %*s |            | %-s\n" ${seccoladj} " " "${line}"
     done < "${commentfile2}"

@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# no public APIs here
+# SHELLDOC-IGNORE
+
 # This bug system provides github integration
 
 add_bugsystem github
@@ -456,7 +459,15 @@ function github_finalreport
 
   i=0
   until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
-    echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
+    comment=$(echo "${ourstring}"  | cut -f5 -d\|)
+
+    if [[ "${vote}" = "H" ]]; then
+      echo "||| _${comment}_ |" >> "${commentfile}"
+    else
+      echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+    fi
     ((i=i+1))
   done
 

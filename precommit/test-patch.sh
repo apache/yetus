@@ -224,10 +224,13 @@ function add_header_line
 ## @description  subsystem (or test) that is providing the vote.  The second parameter
 ## @description  is always required.  The third parameter is any extra verbage that goes
 ## @description  with that subsystem.
+## @description  if the vote is H, then that designates that "subsystem" should be a
+## @description  header in the vote table comment output. The other parameters are
+## @description  ignored
 ## @audience     public
 ## @stability    stable
 ## @replaceable  no
-## @param        +1/0/-1
+## @param        +1/0/-1/H
 ## @param        subsystem
 ## @param        string
 function add_vote_table
@@ -242,6 +245,12 @@ function add_vote_table
   declare filt
 
   yetus_debug "add_vote_table ${value} ${subsystem} ${elapsed} ${*}"
+
+  if [[ "${value}" = H ]]; then
+    TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="|${value}| | | ${subsystem} |"
+    ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
+    return
+  fi
 
   if [[ ${value} == "1" ]]; then
     value="+1"
@@ -3109,10 +3118,15 @@ else
   initialize "$@"
 fi
 
+add_vote_table H "Prechecks"
+
 prechecks
 
 if [[ "${BUILDMODE}" = patch ]]; then
+
   patchfiletests
+
+  add_vote_table H "${PATCH_BRANCH} Compile Tests"
 
   compile_cycle branch
 
@@ -3121,9 +3135,19 @@ if [[ "${BUILDMODE}" = patch ]]; then
   apply_patch_file
 
   compute_gitdiff
+
+  add_vote_table H "Patch Compile Tests"
+
+else
+
+  add_vote_table H "Compile Tests"
+
 fi
 
+
 compile_cycle patch
+
+add_vote_table H "Other Tests"
 
 runtests
 
@@ -3133,3 +3157,4 @@ finish_footer_table
 
 bugsystem_finalreport ${RESULT}
 cleanup_and_exit ${RESULT}
+
