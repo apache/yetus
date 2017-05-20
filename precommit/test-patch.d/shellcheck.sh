@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# no public APIs here
+# SHELLDOC-IGNORE
+
 add_test_type shellcheck
 
 SHELLCHECK_TIMER=0
@@ -21,21 +24,28 @@ SHELLCHECK_X=true
 
 SHELLCHECK=${SHELLCHECK:-$(which shellcheck 2>/dev/null)}
 
-SHELLCHECK_SPECIFICFILES=""
+# files that are going to get shellcheck'd
+SHELLCHECK_CHECKFILES=()
+
+# files that are going to get shellcheck'd
+SHELLCHECK_FILTERFILES=()
+
 
 # if it ends in an explicit .sh, then this is shell code.
-# if it doesn't have an extension, we assume it is shell code too
+# if it doesn't have an extension, then assume it is and
+# we'll deal with it later
 function shellcheck_filefilter
 {
-  local filename=$1
+  declare filename=$1
 
   if [[ ${filename} =~ \.sh$ ]]; then
     add_test shellcheck
-    SHELLCHECK_SPECIFICFILES="${SHELLCHECK_SPECIFICFILES} ./${filename}"
+    yetus_add_array_element SHELLCHECK_FILTERFILES "${filename}"
   fi
 
   if [[ ! ${filename} =~ \. ]]; then
     add_test shellcheck
+    yetus_add_array_element SHELLCHECK_FILTERFILES "${filename}"
   fi
 }
 
@@ -83,32 +93,70 @@ function shellcheck_precheck
   fi
 }
 
-function shellcheck_private_findbash
+function shellcheck_criteria
 {
-  local i
-  local value
-  local list
+  declare fn=$1
+  declare text
 
-  while read -r line; do
-    value=$(find "${line}" ! -name '*.cmd' -type f \
-      | ${GREP} -E -v '(.orig$|.rej$)')
+  if [[ ! -f "${fn}" ]]; then
+    yetus_debug "Shellcheck rejected (not exist): ${fn}"
+    return
+  fi
 
-    for i in ${value}; do
-      if [[ ! ${i} =~ \.sh(\.|$)
-          && ! $(head -n 1 "${i}") =~ ^#! ]]; then
-        yetus_debug "Shellcheck skipped: ${i}"
-        continue
-      fi
-      list="${list} ${i}"
-    done
-  done < <(find . -type d -name bin -o -type d -name sbin -o -type d -name scripts -o -type d -name libexec -o -type d -name shellprofile.d)
-  # shellcheck disable=SC2086
-  echo ${list} ${SHELLCHECK_SPECIFICFILES} | tr ' ' '\n' | sort -u
+  text=$(head -n 1 "${fn}")
+
+  # shell check requires either a bangpath or a shell check directive
+  # on the first line.  so check for a leading comment char
+  # and some sort of reference to 'sh'
+  if echo "${text}" | "${GREP}" -E -q "^#"; then
+    if echo "${text}" | "${GREP}" -q sh; then
+      yetus_add_array_element SHELLCHECK_CHECKFILES "${fn}"
+      yetus_debug "Shellcheck added: ${fn}"
+    fi
+  fi
+}
+
+function shellcheck_findscripts
+{
+  declare fn
+
+  # reset
+  SHELLCHECK_CHECKFILES=()
+
+  # run through the files our filter caught
+  # this will set SHELLCHECK_CHECKFILES elements
+  for fn in "${SHELLCHECK_FILTERFILES[@]}"; do
+    shellcheck_criteria "${fn}"
+  done
+
+  # finally, sort the array
+  yetus_sort_array SHELLCHECK_CHECKFILES
+}
+
+function shellcheck_logic
+{
+  declare repostatus=$1
+  declare i
+
+  echo "Running shellcheck against all suspected shell scripts"
+  pushd "${BASEDIR}" >/dev/null
+
+  # need to run this every time in case patch
+  # add/removed files
+  shellcheck_findscripts
+
+  for i in "${SHELLCHECK_CHECKFILES[@]}"; do
+    if [[ "${SHELLCHECK_X}" = true ]]; then
+      "${SHELLCHECK}" -x -f gcc "${i}" >> "${PATCH_DIR}/${repostatus}-shellcheck-result.txt"
+    else
+      "${SHELLCHECK}" -f gcc "${i}" >> "${PATCH_DIR}/${repostatus}-shellcheck-result.txt"
+    fi
+  done
+  popd > /dev/null
 }
 
 function shellcheck_preapply
 {
-  declare i
   declare msg
 
   if ! verify_needed_test shellcheck; then
@@ -119,18 +167,7 @@ function shellcheck_preapply
 
   start_clock
 
-  echo "Running shellcheck against all identifiable shell scripts"
-  pushd "${BASEDIR}" >/dev/null
-  for i in $(shellcheck_private_findbash); do
-    if [[ -f ${i} ]]; then
-      if [[ "${SHELLCHECK_X}" = true ]]; then
-        "${SHELLCHECK}" -x -f gcc "${i}" >> "${PATCH_DIR}/branch-shellcheck-result.txt"
-      else
-        "${SHELLCHECK}" -f gcc "${i}" >> "${PATCH_DIR}/branch-shellcheck-result.txt"
-      fi
-    fi
-  done
-  popd > /dev/null
+  shellcheck_logic branch
 
   msg="v${SHELLCHECK_VERSION}"
   if [[ ${SHELLCHECK_VERSION} =~ 0.[0-3].[0-5] ]]; then
@@ -176,17 +213,7 @@ function shellcheck_postapply
   # by setting the clock back
   offset_clock "${SHELLCHECK_TIMER}"
 
-  echo "Running shellcheck against all identifiable shell scripts"
-  # we re-check this in case one has been added
-  for i in $(shellcheck_private_findbash); do
-    if [[ -f ${i} ]]; then
-      if [[ "${SHELLCHECK_X}" = true ]]; then
-        "${SHELLCHECK}" -x -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
-      else
-        "${SHELLCHECK}" -f gcc "${i}" >> "${PATCH_DIR}/patch-shellcheck-result.txt"
-      fi
-    fi
-  done
+  shellcheck_logic patch
 
   calcdiffs \
     "${PATCH_DIR}/branch-shellcheck-result.txt" \

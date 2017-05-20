@@ -242,3 +242,90 @@ function yetus_comma_to_array
   IFS=',' read -r -a "${var}" <<< "${string}"
   IFS="${oldifs}"
 }
+
+## @description  Check if an array has a given value
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        element
+## @param        array
+## @returns      0 = yes
+## @returns      1 = no
+function yetus_array_contains
+{
+  declare element=$1
+  shift
+  declare val
+
+  if [[ "$#" -eq 0 ]]; then
+    return 1
+  fi
+
+  for val in "${@}"; do
+    if [[ "${val}" == "${element}" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
+## @description  Add the element if it is not
+## @description  present in the given array
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        arrayname
+## @param        element
+function yetus_add_array_element
+{
+  declare arrname=$1
+  declare add=$2
+
+  declare arrref="${arrname}[@]"
+  declare array=("${!arrref}")
+
+  if ! yetus_array_contains "${add}" "${array[@]}"; then
+    # shellcheck disable=SC1083,SC2086
+    eval "${arrname}"=\(\"\${array[@]}\" \"${add}\" \)
+    yetus_debug "$1 accepted $2"
+  else
+    yetus_debug "$1 declined $2"
+  fi
+}
+
+## @description  Sort an array by its elements
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        arrayvar
+function yetus_sort_array
+{
+  declare arrname=$1
+  declare arrref="${arrname}[@]"
+  declare array=("${!arrref}")
+
+  declare globstatus
+  declare oifs
+  declare -a sa
+
+  globstatus=$(set -o | grep noglob | awk '{print $NF}')
+
+  if [[ -n ${IFS} ]]; then
+    oifs=${IFS}
+  fi
+  set -f
+  # shellcheck disable=SC2034
+  IFS=$'\n' sa=($(sort <<<"${array[*]}"))
+  # shellcheck disable=SC1083
+  eval "${arrname}"=\(\"\${sa[@]}\"\)
+
+  if [[ -n "${oifs}" ]]; then
+    IFS=${oifs}
+  else
+    unset IFS
+  fi
+
+  if [[ "${globstatus}" = off ]]; then
+    set +f
+  fi
+}
