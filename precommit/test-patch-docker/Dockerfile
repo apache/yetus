@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 WORKDIR /root
 
@@ -41,41 +41,35 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     maven \
     libperl-critic-perl \
     libtool \
-    openjdk-7-jdk \
+    locales \
+    openjdk-8-jdk-headless \
     pinentry-curses \
     pkg-config \
     python \
     python2.7 \
     python-pip \
-    rsync
+    python-pkg-resources \
+    python-setuptools \
+    python-wheel \
+    rsync \
+    ruby \
+    ruby-dev \
+    software-properties-common
 
-# Fixing the Apache commons / Maven dependency problem under Ubuntu:
-# See http://wiki.apache.org/commons/VfsProblems
-RUN cd /usr/share/maven/lib && ln -s ../../java/commons-lang.jar .
+###
+# Set the locale
+###
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 ####
-# Pylint
+# Install bats
 ####
-RUN pip install pylint
-
-#######
-# Oracle Java
-#######
-
-RUN echo "dot_style = mega" > "/root/.wgetrc"
-RUN echo "quiet = on" >> "/root/.wgetrc"
-
-RUN apt-get -q install -y software-properties-common
-RUN add-apt-repository -y ppa:webupd8team/java
+RUN add-apt-repository -y ppa:duggan/bats
 RUN apt-get -q update
-
-# Auto-accept the Oracle JDK license
-RUN echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-RUN apt-get -q install -y oracle-java7-installer
-
-# Auto-accept the Oracle JDK license
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-RUN apt-get -q install -y oracle-java8-installer
+RUN apt-get -q install -y bats
 
 ######
 # Install findbugs
@@ -88,6 +82,28 @@ RUN mkdir -p /opt/findbugs && \
 ENV FINDBUGS_HOME /opt/findbugs
 
 ####
+# Pylint
+####
+RUN pip2 install pylint
+
+####
+# Disable misc ruby bits
+###
+RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc
+
+####
+# Install rubocop
+###
+RUN gem install rake
+RUN gem install rubocop
+
+####
+# Install ruby-lint
+###
+RUN gem install ruby-lint
+
+
+####
 # Install shellcheck
 ####
 RUN apt-get -q install -y cabal-install
@@ -97,45 +113,3 @@ RUN echo "remote-repo: hackage.fpcomplete.com:http://hackage.fpcomplete.com/" >>
 RUN echo "remote-repo-cache: /root/.cabal/packages" >> /root/.cabal/config
 RUN cabal update
 RUN cabal install shellcheck --global
-
-####
-# Install ruby
-###
-RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc
-RUN apt-get -q install -y ruby2.0
-#
-# on trusty, the above installs ruby2.0 and ruby (1.9.3) exes
-# but update-alternatives is broken, so we need to do some work
-# to make 2.0 actually the default without the system flipping out
-#
-# See https://bugs.launchpad.net/ubuntu/+source/ruby2.0/+bug/1310292
-#
-RUN dpkg-divert --add --rename --divert /usr/bin/ruby.divert /usr/bin/ruby
-RUN dpkg-divert --add --rename --divert /usr/bin/gem.divert /usr/bin/gemrc
-RUN update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby2.0 1
-RUN update-alternatives --install /usr/bin/gem gem /usr/bin/gem2.0 1
-
-####
-# Install rubocop
-###
-RUN gem install rubocop
-
-####
-# Install ruby-lint
-###
-RUN gem install ruby-lint
-
-####
-# Install bats
-####
-RUN add-apt-repository -y ppa:duggan/bats
-RUN apt-get -q update
-RUN apt-get -q install -y bats
-
-###
-# Set the locale
-###
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
