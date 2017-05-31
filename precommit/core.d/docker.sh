@@ -258,8 +258,10 @@ function dockerdate_to_ctime
     date -d "${mytime}" "+%s"
   else
 
-    # BSD date
-    date -j -f "%FT%T%z" "${mytime}" "+%s"
+    # BSD date; docker gives us two different format because fun
+    if ! date -j -f "%FT%T%z" "${mytime}" "+%s" 2>/dev/null; then
+      date -j -f "%FT%T" "${mytime}" "+%s"
+    fi
   fi
 }
 
@@ -385,6 +387,22 @@ function docker_image_maintenance_helper
   done
 }
 
+
+## @description  get sentinel-level docker images
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        args
+function docker_get_sentinel_images
+{
+  #shellcheck disable=SC2016
+  dockercmd images \
+    | tail -n +2 \
+    | "${GREP}" -v hours \
+    | "${AWK}" '{print $1":"$2}' \
+    | "${GREP}" -v "<none>:<none>"
+}
+
 ## @description  Remove untagged/unused images
 ## @audience     private
 ## @stability    evolving
@@ -426,8 +444,8 @@ function docker_image_maintenance
   fi
 
   echo "Other images:"
-  #shellcheck disable=SC2046,SC2016
-  docker_image_maintenance_helper $(dockercmd images | tail -n +2 | ${GREP} -v hours  | ${AWK} '{print $1":"$2}')
+  #shellcheck disable=SC2046
+  docker_image_maintenance_helper $(docker_get_sentinel_images)
 }
 
 
