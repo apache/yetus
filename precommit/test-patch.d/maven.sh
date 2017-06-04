@@ -27,7 +27,6 @@ MAVEN_CUSTOM_REPOS_DIR="${HOME}/yetus-m2"
 MAVEN_DEPENDENCY_ORDER=true
 
 add_test_type mvnsite
-add_test_type mvneclipse
 add_build_tool maven
 
 ## @description  Add the given test type as requiring a mvn install during the branch phase
@@ -97,7 +96,6 @@ function maven_initialize
 {
   # we need to do this before docker does it as root
 
-  maven_add_install mvneclipse
   maven_add_install mvnsite
   maven_add_install unit
 
@@ -466,41 +464,6 @@ function mvnsite_postcompile
   modules_workers "${repostatus}" mvnsite clean site site:stage
   result=$?
   modules_messages "${repostatus}" mvnsite true
-  if [[ ${result} != 0 ]]; then
-    return 1
-  fi
-  return 0
-}
-
-## @description  Make sure Maven's eclipse generation works.
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @return       0 on success
-## @return       1 on failure
-function mvneclipse_postcompile
-{
-  declare repostatus=$1
-  declare result=0
-
-  if [[ ${BUILDTOOL} != maven ]]; then
-    return 0
-  fi
-
-  if ! verify_needed_test javac; then
-    return 0
-  fi
-
-  if [[ "${repostatus}" = branch ]]; then
-    big_console_header "maven eclipse verification: ${PATCH_BRANCH}"
-  else
-    big_console_header "maven eclipse verification: ${BUILDMODE}"
-  fi
-
-  personality_modules "${repostatus}" mvneclipse
-  modules_workers "${repostatus}" mvneclipse eclipse:clean eclipse:eclipse
-  result=$?
-  modules_messages "${repostatus}" mvneclipse true
   if [[ ${result} != 0 ]]; then
     return 1
   fi
