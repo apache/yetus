@@ -138,6 +138,9 @@
 <li><a href="#personality_plugins">personality_plugins</a></li>
 <li><a href="#verify_needed_test">verify_needed_test</a></li>
 <li><a href="#verify_plugin_enabled">verify_plugin_enabled</a></li>
+<li><a href="#yetus_add_array_element">yetus_add_array_element</a></li>
+<li><a href="#yetus_array_contains">yetus_array_contains</a></li>
+<li><a href="#yetus_sort_array">yetus_sort_array</a></li>
 </ul></li>
 <li>Public/Stable/Not Replaceable
 
@@ -620,6 +623,116 @@
 </ul>
 
 <p>Determine if a plugin was enabled by the user ENABLED_PLUGINS must be defined</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
+<h3 id="yetus_add_array_element"><code>yetus_add_array_element</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_add_array_element arrayname element
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Add the element if it is not present in the given array</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
+<h3 id="yetus_array_contains"><code>yetus_array_contains</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_array_contains element array
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Check if an array has a given value</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<h2 id="returns-0-yes">@returns      0 = yes</h2>
+
+<h2 id="returns-1-no">@returns      1 = no</h2>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
+<h3 id="yetus_sort_array"><code>yetus_sort_array</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<pre class="highlight plaintext"><code>yetus_sort_array arrayvar
+</code></pre>
+
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Sort an array by its elements</p>
 
 <ul>
 <li>Returns</li>
@@ -1236,7 +1349,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2016 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2017 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

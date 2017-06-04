@@ -232,6 +232,13 @@ THE SOFTWARE.
 
 ----
 
+This project incorporates NORMALIZE.css as bundled with the Twitter Bootstrap
+project which is released under the same license as Bootstrap.
+
+Copyright © Nicolas Gallagher and Jonathan Neal
+
+----
+
 This project incorporates GLYPHICONS FREE as bundled with the Twitter Bootstrap
 project which are released under the same license as Bootstrap.
 
