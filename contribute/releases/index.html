@@ -177,7 +177,6 @@ $ (gpg --list-sigs &lt;your key name&gt; &amp;&amp; gpg --armor --export &lt;you
 $ svn diff
 $ svn commit -m "Added myself to KEYS."
 </code></pre>
-
 <h3 id="work-in-jira">Work in JIRA</h3>
 
 <p>Like the rest of our project activity, we&rsquo;ll use an issue in JIRA to track managing the release. You should create this issue and assign it to yourself. As you make your way through the process of creating and running votes on release candidates, this issue will give you a centralized place to collect pointers to your work.</p>
@@ -207,7 +206,7 @@ $ svn commit -m "Added myself to KEYS."
 <li>Set the optional key field to &lsquo;yetus-<em>version</em>-jira&rsquo;</li>
 </ol>
 
-<p>For example, on the 0.2.0 release you would use &rsquo;<a href="https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12318920&amp;version=12334330">https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12318920&amp;version=12334330</a>&rsquo; for the URI field and &#39;yetus-0.2.0-jira&rsquo; for the key.</p>
+<p>For example, on the 0.2.0 release you would use &lsquo;<a href="https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12318920&version=12334330">https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12318920&amp;version=12334330</a>&rsquo; for the URI field and &lsquo;yetus-0.2.0-jira&rsquo; for the key.</p>
 
 <p>Finally, you should create a JIRA version to correspond to the release <em>following</em> the one you are managing. This is so that folks can continue to work on things that won&rsquo;t make it into the in-progress release while we evaluate candidates.</p>
 
@@ -248,7 +247,6 @@ audience-annotations-component/audience-annotations-jdiff/pom.xml
 audience-annotations-component/pom.xml
 yetus-project/pom.xml
 </code></pre>
-
 <p>At this point you should edit the aforementioned files so they have the version we expect upon a successful release. Search for instances of <em>VERSION-SNAPSHOT</em> and replace with <em>VERSION</em>; e.g. <em>0.2.0-SNAPSHOT</em> should become <em>0.2.0</em>. After you are done, create a branch-specific patch and then prepare to update the master branch.</p>
 <pre class="highlight plaintext"><code>$ git add -p
 $ git commit -m "YETUS-XXX. Stage version 0.2.0."
@@ -261,13 +259,11 @@ audience-annotations-component/audience-annotations-jdiff/pom.xml
 audience-annotations-component/pom.xml
 yetus-project/pom.xml
 </code></pre>
-
 <p>Now update these files, but this time you should update them for the next minor version&rsquo;s SNAPSHOT. e.g. <em>0.2.0-SNAPSHOT</em> should become <em>0.3.0-SNAPSHOT</em>. After you are done, create a patch.</p>
 <pre class="highlight plaintext"><code>$ git add -p
 $ git commit -m "YETUS-XXX. bump master version to 0.3.0-SNAPSHOT"
 $ git format-patch --stdout origin/master &gt; path/to/patches/YETUS-XXX.1.patch
 </code></pre>
-
 <p>Both of these patch files should be uploaded to your release issue for review. Once the patches get approval push them to the repository.</p>
 
 <h2 id="release-candidate-s">Release Candidate(s)</h2>
@@ -300,7 +296,6 @@ $ cp path/to/yetus/target/RELEASENOTES.md path/to/yetus/target/CHANGES.md path/t
 $ svn add 0.2.0-RC1
 $ svn commit -m "stage Apache Yetus 0.2.0-RC1"
 </code></pre>
-
 <p>Afterwards, the artifacts should be visible via the web under the same URL used when checking out. In the case of 0.2.0-RC1: <a href="https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/">https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/</a></p></li>
 <li><p>Call a vote on the release candidate. At this point you have everything you need to call a vote. Your vote thread must contain <q>[VOTE]</q> in the subject line, a link to the candidate staging area you created, a source repository commit hash, and voting rules. It should also contain hashes for the artifacts. Here is an example draft for 0.2.0-RC1, update it as appropriate for your release:</p>
 <pre class="highlight plaintext"><code>Subject: [VOTE] Apache Yetus 0.2.0-RC1
@@ -336,7 +331,6 @@ UTC on Monday, Xxx XXth, 2016[3].
 [3]: to find this in your local timezone see:
 http://s.apache.org/yetus-0.2.0-rc1-close
 </code></pre>
-
 <p>That final short link should point to some online timezone conversion utility. ASF votes often use timeanddate.com&rsquo;s Event Time Announcer: <a href="http://www.timeanddate.com/worldclock/fixedform.html">http://www.timeanddate.com/worldclock/fixedform.html</a>.</p></li>
 <li><p>Close the vote after the deadline. Once the deadline in the vote thread passes, tally the vote and post a suitable response that changes the subject line to start with <q>[RESULT]</q>. If the vote failed, ensure there are issues in JIRA for any problems brought up. When they are closed, repeat the steps for creating a release candidate. If the vote passed, proceed to the <a href="#cleanup">Cleanup section</a></p></li>
 </ol>
@@ -371,7 +365,6 @@ dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.md5
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.mds
 dist.apache.org//robots.txt
 </code></pre>
-
 <p>Lastly, if you haven&rsquo;t verified a release before you&rsquo;ll need to download and import the public keys for the project&rsquo;s release managers. This is the KEYS file that should have been mentioned in the [VOTE] thread. The specific output of the follow commands will vary depending on how many release mangers there have been and which keys, if any, you have previously imported.</p>
 <pre class="highlight plaintext"><code>$ curl --output KEYS.yetus --silent 'https://www.apache.org/dist/yetus/KEYS'
 $ gpg --import KEYS.yetus
@@ -379,7 +372,6 @@ gpg: key 0D80DB7C: "Sean Busbey (CODE SIGNING KEY) &lt;busbey@apache.org&gt;" no
 gpg: Total number processed: 1
 gpg:              unchanged: 1
 </code></pre>
-
 <h3 id="asf-required-checks">ASF required checks</h3>
 
 <p>ASF policies require that binding votes on releases be cast only after verifying proper licensing and provenance. For specific details, you should read the <a href="http://www.apache.org/dev/release.html#what-must-every-release-contain">ASF Release Policy&rsquo;s section entitled What Must Every ASF Release Contain?</a> as well as the informational page <a href="http://www.apache.org/info/verification.html">What We Sign</a>. The following is a non-normative set of guidelines.</p>
@@ -391,7 +383,6 @@ $ gpg --verify yetus-0.2.0-src.tar.gz.asc yetus-0.2.0-src.tar.gz
 gpg: Signature made Fri Dec 11 11:50:56 2015 CST using RSA key ID 0D80DB7C
 gpg: Good signature from "Sean Busbey (CODE SIGNING KEY) &lt;busbey@apache.org&gt;"
 </code></pre>
-
 <p>As noted in the informational page <a href="http://www.apache.org/info/verification.html">What We Sign</a>, if you don&rsquo;t have the signer&rsquo;s key in your web of trust the output of the verify command will point this out. You should refer to it for guidance.</p></li>
 <li><p>You MUST make sure the provided hashes match the provided artifact.</p>
 <pre class="highlight plaintext"><code>$ gpg --print-mds yetus-0.2.0-src.tar.gz &gt;yetus-0.2.0-src.tar.gz.my_mds
@@ -422,7 +413,6 @@ $ tar -C yetus-0.2.0-src_unpack -xzf yetus-0.2.0-src.tar.gz
 $ cd yetus-0.2.0-src_unpack/yetus-0.2.0
 $ ./build.sh
 </code></pre>
-
 <p>This will create a target/ directory that contains the tarball binary distribution. That tarball will also include e.g. the java jars we&rsquo;ll push to maven for our Audience Annotations project.</p></li>
 </ol>
 
@@ -560,11 +550,10 @@ $ mvn verify
 
 <ol>
 <li><p>Create short cut links to the vote thread (e.g., <a href="http://s.apache.org/yetus-0.2.0-rc1-vote">http://s.apache.org/yetus-0.2.0-rc1-vote</a>) and the result (e.g., <a href="http://s.apache.org/yetus-0.2.0-vote-passes">http://s.apache.org/yetus-0.2.0-vote-passes</a>) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.</p></li>
-<li><p>Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag&rsquo;s message should include an asf-shortened links to the vote and results. It should be named &#39;rel/<em>version</em>&rsquo; so that it will be immutable due to ASF infra&rsquo;s git configuration. Presuming we&rsquo;re working on the 0.2.0 release and the RC1 example above has passed:</p>
+<li><p>Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag&rsquo;s message should include an asf-shortened links to the vote and results. It should be named &lsquo;rel/<em>version</em>&rsquo; so that it will be immutable due to ASF infra&rsquo;s git configuration. Presuming we&rsquo;re working on the 0.2.0 release and the RC1 example above has passed:</p>
 <pre class="highlight plaintext"><code>$ git config --global user.signingkey &lt;your-key-id&gt; # if you've never configured
 $ git tag --sign rel/0.2.0 1e8f4588906a51317207092bd97b35687f2e3fa3
 </code></pre>
-
 <p>Example commit message:</p>
 <pre class="highlight plaintext"><code>YETUS-XXX. tag Apache Yetus 0.2.0 release.
 
@@ -572,7 +561,6 @@ vote thread: http://s.apache.org/yetus-0.2.0-rc1-vote
 
 results: http://s.apache.org/yetus-0.2.0-vote-passes
 </code></pre>
-
 <p>Then push:</p>
 <pre class="highlight plaintext"><code>$ git push origin rel/0.2.0
 </code></pre></li>
@@ -584,7 +572,6 @@ $ cp path/to/yetus-dist-dev/0.2.0-RC1/* 0.2.0
 $ svn add 0.2.0
 $ svn commit -m "Publish Apache Yetus 0.2.0"
 </code></pre>
-
 <p>It may take up to 24 hours for the artifacts to make their way to the various mirrors. You should not announce the release until after this period.</p></li>
 <li><p>Add the release to the ASF reporter tool. To make our project reports for the ASF Board easier, you should include the release in the <a href="https://reporter.apache.org/addrelease.html?yetus">Apache Committee Report Helper website</a>. Be sure to use the date release artifacts first were pushed to the distribution area, which should be the  same release date as in JIRA. Note that this website is only available to PMC members. If you are not yet in the PMC, please ask them to add the release information.</p></li>
 <li><p>Remove candidates from the staging area. Once you have moved the artifacts into the distribution area, they no longer need to be in the staging area and should be cleaned up as a courtesy to future release managers.</p>
@@ -634,14 +621,12 @@ $ git add -p
 $ git add asf-site-src/source/documentation/0.2.0*
 $ git commit
 </code></pre>
-
 <p>Example commit message:</p>
 <pre class="highlight plaintext"><code>YETUS-XXX. add release 0.2.0.
 
     - list in releases
     - add symlinks for markdown 3 workaround of per-version generated docs
 </code></pre>
-
 <p>This should result in a fairly small diff</p>
 <pre class="highlight plaintext"><code>$ git diff HEAD^
 diff --git a/.rat-excludes b/.rat-excludes
@@ -680,7 +665,6 @@ index 0000000..c14ca73
 +../../../target/0.2.0.html.md
 \ No newline at end of file
 </code></pre>
-
 <p>You should then post this patch for review. Once you&rsquo;ve gotten feedback, it&rsquo;s fine to push the patch to the ASF git repo immediately so long as the updated website is not published.</p></li>
 <li><p>Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in <a href="../website">Maintaining the Yetus Website</a>.</p></li>
 <li><p>Remove old releases from distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintanence for an earlier minor or major release line, you should delete those versions from the distribution area.</p></li>
@@ -741,7 +725,6 @@ Questions, comments, and bug reports are always welcome on
 Meg Smith
 Apache Yetus PMC
 </code></pre>
-
 <p>If you&rsquo;d like feedback on the draft, feel free to post it for review on your release issue.</p></li>
 <li><p>Send announcement emails. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should send the announcement email. The email should come from your apache.org email address and at a minimum should go to the <a href="mailto:dev@yetus.apache.org">dev@yetus.apache.org</a> and <a href="mailto:announce@apache.org">announce@apache.org</a> lists. For details see <a href="http://www.apache.org/dev/release.html#release-announcements">the ASF Release Policy section How Should Releases Be Announced?</a>. Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.</p></li>
 <li><p>Send tweet. Once the message to the ASF-wide announce list has made it to the public archive, you should draft a tweet with a link to the announcement. You should use the ASF link shortener and a descriptive name. For example, the 0.2.0 release could use</p>
@@ -749,7 +732,6 @@ Apache Yetus PMC
 
 http://s.apache.org/yetus-0.2.0-announce
 </code></pre>
-
 <p>This tweet should come from the offical <a href="https://twitter.com/ApacheYetus/">@ApacheYetus</a> account. Currently only PMC members have access to it. If you are not yet on the PMC, please ask for the PMC to post the tweet once your email is available in the archives.</p></li>
 </ol>
 

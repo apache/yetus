@@ -131,17 +131,14 @@
 <p>Its simplest form is used when a patch is stored in a local file:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch patch
 </code></pre>
-
 <p>This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.</p>
 
 <p>Perhaps you just want to see if the patch even applies without changing your local repo.  The <code>--dry-run</code> option will just test for applicability:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --dry-run patch
 </code></pre>
-
 <p>For committers of projects, there is a special mode:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --committer patch
 </code></pre>
-
 <p>that in addition to applying the patch will also attempt to:</p>
 
 <ul>

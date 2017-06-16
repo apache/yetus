@@ -127,7 +127,6 @@
 <p>test-patch has the ability to support multiple bug systems.  Bug tools have some extra hooks to fetch patches, line-level reporting, and posting a final report. Every bug system plug-in must have one line in order to be recognized:</p>
 <pre class="highlight shell"><code>add_bugsystem &lt;pluginname&gt;
 </code></pre>
-
 <ul>
 <li><p>pluginname_locate_patch</p>
 
@@ -166,7 +165,6 @@
 <p>Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with &lsquo;BZ:&rsquo;.  For example:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> BZ:4
 </code></pre>
-
 <p>&hellip; will pull down Bugzilla ID #4.</p>
 
 <p>Using the <code>--bugzilla-base-url</code> on the command line or BUGZILLA_BASE_URL in a project&rsquo;s personality will define the location of the Bugzilla instance.  By default, it is <a href="https://bz.apache.org/bugzilla">https://bz.apache.org/bugzilla</a> .</p>

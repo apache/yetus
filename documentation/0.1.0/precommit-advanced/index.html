@@ -147,7 +147,7 @@
 
 <p>The &lsquo;fail&rsquo; setting is always the last option that test-patch will use and may be omitted unless it is the only option.</p>
 
-<p>For example, <code>--dockeronfail=continue</code> means if the Dockerfile can&rsquo;t be found, just turn off Docker support and continue running.  <code>--dockeronfail=fallback</code> will switch to the bundled Dockerfile and then fail the build if docker fails to work. <code>--dockeronfail=fail</code> means to just fail the build and do not try any other mechanisms of recovery. The default is &#39;fallback,continue,fail&rsquo; which will allow test-patch to try to continue executing as much as it possibily can.</p>
+<p>For example, <code>--dockeronfail=continue</code> means if the Dockerfile can&rsquo;t be found, just turn off Docker support and continue running.  <code>--dockeronfail=fallback</code> will switch to the bundled Dockerfile and then fail the build if docker fails to work. <code>--dockeronfail=fail</code> means to just fail the build and do not try any other mechanisms of recovery. The default is &lsquo;fallback,continue,fail&rsquo; which will allow test-patch to try to continue executing as much as it possibily can.</p>
 
 <p>Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.</p>
 
@@ -161,20 +161,17 @@
 
 <h2 id="common-plug-in-functions">Common Plug-in Functions</h2>
 
-<p>Every plug-in must have one line in order to be recognized, usually an &#39;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
+<p>Every plug-in must have one line in order to be recognized, usually an &lsquo;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
 <pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
-
-<p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the &#39;all&rsquo; plug-in is reserved.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
+<p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the &lsquo;all&rsquo; plug-in is reserved.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
 <pre class="highlight shell"><code><span class="k">function </span>pluginname_filefilter
 </code></pre>
-
 <p>defines the filefilter for the <code>pluginname</code> plug-in.</p>
 
 <p>Similarly, there are other functions that may be defined during the test-patch run:</p>
 <pre class="highlight plaintext"><code>HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.
 </code></pre>
-
 <ul>
 <li><p>pluginname_initialize</p>
 
@@ -235,7 +232,6 @@
 <p>Plug-ins geared towards independent tests are registed via:</p>
 <pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
 </code></pre>
-
 <ul>
 <li><p>pluginname_filefilter</p>
 
@@ -268,7 +264,6 @@
   <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
 <span class="o">}</span>
 </code></pre>
-
 <h2 id="test-determination">Test Determination</h2>
 
 <p>The <code>personality_file_tests</code> function determines which tests to turn on based upon the file name.  It is relatively simple.  For example, to turn on a full suite of tests for Java files:</p>
@@ -286,10 +281,9 @@
 
 <span class="o">}</span>
 </code></pre>
-
 <p>The <code>add_test</code> function is used to activate the standard tests.  Additional plug-ins (such as checkstyle), will get queried on their own.</p>
 
-<h2 id="module-amp-profile-determination">Module &amp; Profile Determination</h2>
+<h2 id="module-profile-determination">Module &amp; Profile Determination</h2>
 
 <p>Once the tests are determined, it is now time to pick which <a href="precommit-glossary.md#genericoutside-definitions">modules</a> should get used.  That&rsquo;s the job of the <code>personality_modules</code> function.</p>
 <pre class="highlight shell"><code><span class="k">function </span>personality_modules
@@ -303,7 +297,6 @@
 
 <span class="o">}</span>
 </code></pre>
-
 <p>It takes exactly two parameters <code>repostatus</code> and <code>testtype</code>.</p>
 
 <p>The <code>repostatus</code> parameter tells the <code>personality</code> function exactly what state the source repository is in.  It can only be in one of two states:  <code>branch</code> or <code>patch</code>.  <code>branch</code> means the patch has not been applied.  The <code>patch</code> state is after the patch has been applied.</p>
@@ -317,7 +310,6 @@
 <p>The second is <code>personality_enqueue_module</code>.  This function takes two parameters.  The first parameter is the name of the module to add to this test&rsquo;s queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. <code>personality_enqueue_module</code> may be called as many times as necessary for your project.</p>
 <pre class="highlight plaintext"><code>NOTE: A module name of . signifies the root of the repository.
 </code></pre>
-
 <p>For example, let&rsquo;s say your project uses a special configuration to skip unit tests (-DskipTests).  Running unit tests during a javadoc build isn&rsquo;t very useful and wastes a lot of time. We can write a simple personality check to disable the unit tests:</p>
 <pre class="highlight shell"><code><span class="k">function </span>personality_modules
 <span class="o">{</span>
@@ -331,7 +323,6 @@
     ...
 
 </code></pre>
-
 <p>This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.</p>
 
 <h2 id="enabling-plug-ins">Enabling Plug-ins</h2>
@@ -339,7 +330,6 @@
 <p>Personalities can set the base list of plug-ins to enable and disable for their project via the <code>personality_plugins</code> function. Just call it with the same pattern as the <code>--plugins</code> command line option:</p>
 <pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-findbugs,-asflicense"</span>
 </code></pre>
-
 <p>This list is used if the user does not provide a list of plug-ins.</p>
 
 <h1 id="important-variables">Important Variables</h1>
@@ -350,7 +340,7 @@
 <li><p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). Under Jenkins, this is always true.</p></li>
 <li><p>BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz_ARGS to pass on to the build tool command line. (e.g., MAVEN_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.</p></li>
 <li><p>CHANGED_FILES is a list of all files that appear to be added, deleted, or modified in the patch.</p></li>
-<li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &rsquo;.&rsquo;.</p></li>
+<li><p>CHANGED_MODULES is a list of all modules that house all of the CHANGED_FILES.  Be aware that the root of the source tree is reported as &lsquo;.&rsquo;.</p></li>
 <li><p>GITHUB_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.</p></li>
 <li><p>JIRA_ISSUE_RE is to help test-patch when talking to JIRA.  It helps determine if the given project is appropriate for the given JIRA issue.</p></li>
 <li><p>MODULE and other MODULE_* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.</p></li>

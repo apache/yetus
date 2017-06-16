@@ -127,7 +127,6 @@
 <p>test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:</p>
 <pre class="highlight shell"><code>add_build_tool &lt;pluginname&gt;
 </code></pre>
-
 <h1 id="global-variables">Global Variables</h1>
 
 <ul>
@@ -151,7 +150,6 @@
 <p>This allows for custom directories to be created and used as necessary.</p>
 <pre class="highlight plaintext"><code>The default is module.
 </code></pre>
-
 <ul>
 <li><p>UNSUPPORTED_TEST</p>
 
@@ -178,7 +176,7 @@
 <li><p>pluginname_modules_worker</p>
 
 <ul>
-<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &#39;unit&rsquo; tests, then <code>module_workers</code> should be called with &#39;test&rsquo; appended onto its normal parameters.</li>
+<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &lsquo;unit&rsquo; tests, then <code>module_workers</code> should be called with &lsquo;test&rsquo; appended onto its normal parameters.</li>
 </ul></li>
 <li><p>pluginname_builtin_personality_modules</p>
 
@@ -254,7 +252,7 @@
 
 <h1 id="cmake-specific">CMAKE Specific</h1>
 
-<p>By default, cmake will create a &#39;build&rsquo; directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.</p>
+<p>By default, cmake will create a &lsquo;build&rsquo; directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.</p>
 
 <h1 id="gradle-specific">Gradle Specific</h1>
 

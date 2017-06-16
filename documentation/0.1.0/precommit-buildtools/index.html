@@ -127,7 +127,6 @@
 <p>test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:</p>
 <pre class="highlight shell"><code>add_build_tool &lt;pluginname&gt;
 </code></pre>
-
 <h1 id="global-variables">Global Variables</h1>
 
 <ul>
@@ -161,7 +160,7 @@
 <li><p>pluginname_modules_worker</p>
 
 <ul>
-<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &#39;unit&rsquo; tests, then <code>module_workers</code> should be called with &#39;test&rsquo; appended onto its normal parameters.</li>
+<li>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &lsquo;unit&rsquo; tests, then <code>module_workers</code> should be called with &lsquo;test&rsquo; appended onto its normal parameters.</li>
 </ul></li>
 <li><p>pluginname_builtin_personality_modules</p>
 

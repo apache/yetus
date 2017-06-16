@@ -130,7 +130,6 @@ ruby 2.x environment setup:</p>
 <pre class="highlight shell"><code>gem install bundler
 bundle install
 </code></pre>
-
 <p>If you&rsquo;re interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
 by reading <a href="https://middlemanapp.com/basics/install/">Middleman&rsquo;s excellent documentation</a>.</p>
 
@@ -140,7 +139,6 @@ by reading <a href="https://middlemanapp.com/basics/install/">Middleman&rsquo;s 
 <pre class="highlight shell"><code><span class="nb">cd </span>asf-site-src/source
 vi contribute.html.md
 </code></pre>
-
 <h2 id="make-changes-to-api-docs">Make changes to API Docs</h2>
 
 <p>Optionally, you can update the generated API docs from other parts of the project. If they have been updated then the middleman build will pick up the changes.</p>
@@ -149,23 +147,19 @@ vi contribute.html.md
 <pre class="highlight shell"><code><span class="nb">cd</span> ../precommit/core.d
 vi 01-common.sh
 </code></pre>
-
 <p>e.g. Audience Annotations requires running Maven.</p>
 <pre class="highlight shell"><code><span class="nb">cd</span> ../audience-annotations-component
 mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate
 <span class="nb">cd</span> -
 </code></pre>
-
 <h2 id="generating-the-website">Generating the website</h2>
 
 <p>To generate the static website for Apache Yetus run the following commands at the root asf-site-src directory:</p>
 <pre class="highlight shell"><code>bundle <span class="nb">exec </span>middleman build
 </code></pre>
-
 <p>This command will create a static website in the <code>publish</code> sub directory. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:</p>
 <pre class="highlight shell"><code>open publish/index.html
 </code></pre>
-
 <h2 id="live-development">Live Development</h2>
 
 <p>Live development of the site enables automatic reload when changes are saved.
@@ -173,7 +167,6 @@ To enable run the following command and then open a browser and navigate to
 <a href="http://localhost:4567/">http://localhost:4567</a></p>
 <pre class="highlight shell"><code>bundle <span class="nb">exec </span>middleman
 </code></pre>
-
 <h2 id="publishing-the-site">Publishing the Site</h2>
 
 <p>Commit the publish directory to the asf-site branch. Presuming we start in a directory that holds your normal Yetus check out:</p>
@@ -197,7 +190,6 @@ To enable run the following command and then open a browser and navigate to
 <span class="gp">$ </span><span class="c"># Finally publish</span>
 <span class="gp">$ </span>git push origin asf-site
 </code></pre>
-
 <p>Publishing the website should be possible from the HEAD of the master branch under most circumstances. (See the <a href="releases">Guide for Release Managing</a> for a notable time period where this won&rsquo;t be true.)
 Documentation changes will be reviewed as they make their way into the master branch; updates to the <code>asf-site</code> branch are handled without further review.</p>
 
