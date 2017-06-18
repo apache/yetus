@@ -327,9 +327,10 @@ function patchcmd_apply
 function patchfile_apply_driver
 {
   declare patchfile=$1
+  declare gpg=$2
 
   if declare -f ${PATCH_METHOD}_apply >/dev/null; then
-    "${PATCH_METHOD}_apply" "${patchfile}"
+    "${PATCH_METHOD}_apply" "${patchfile}" "${gpg}"
     if [[ $? -gt 0 ]]; then
      return 1
     fi
