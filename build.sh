@@ -214,8 +214,11 @@ exec "\$(dirname -- "\${BASH_SOURCE-0}")/../lib/release-doc-maker/releasedocmake
 EOF
 chmod +x "${bin_tarball}/bin/releasedocmaker"
 
-for utility in shelldocs/shelldocs.py precommit/qbt.sh \
-               precommit/smart-apply-patch.sh precommit/test-patch.sh
+for utility in shelldocs/shelldocs.py \
+               precommit/docker-cleanup.sh \
+               precommit/qbt.sh \
+               precommit/smart-apply-patch.sh \
+               precommit/test-patch.sh
 do
   wrapper=${utility##*/}
   wrapper=${wrapper%.*}

@@ -22,6 +22,7 @@ DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
 DOCKERFAIL="fallback,continue,fail"
 DOCKERSUPPORT=false
 DOCKER_ENABLE_PRIVILEGED=true
+DOCKER_CLEANUP_CMD=false
 
 declare -a DOCKER_EXTRAARGS
 
@@ -43,11 +44,15 @@ DOCKER_IMAGE_PURGE=604800
 ## @replaceable  no
 function docker_usage
 {
-  yetus_add_option "--docker" "Spawn a docker container"
+  if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
+    yetus_add_option "--docker" "Spawn a docker container"
+  fi
   yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: '${DOCKERCMD}')"
-  yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
-  yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
-  yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
+  if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
+    yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
+    yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
+    yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
+  fi
   yetus_add_option "--dockerdelrep" "In Docker mode, only report image/container deletions, not act on them"
 }
 
@@ -129,8 +134,7 @@ function docker_initialize
   DOCKERFAIL=${DOCKERFAIL//fail/3}
   DOCKERFAIL=${DOCKERFAIL//[[:blank:]]/}
 
-  docker_exeverify
-  if [[ $? != 0 ]]; then
+  if ! docker_exeverify; then
     if [[ "${DOCKERFAIL}" =~ ^12
        || "${DOCKERFAIL}" =~ ^2 ]]; then
       add_vote_table 0 docker "Docker command '${DOCKERCMD}' not found/broken. Disabling docker."
@@ -205,9 +209,7 @@ function docker_exeverify
     return 1
   fi
 
-  ${DOCKERCMD} info >/dev/null 2>&1
-
-  if [[ $? != 0 ]]; then
+  if ! ${DOCKERCMD} info >/dev/null 2>&1; then
     yetus_error "Docker is not functioning properly. Daemon down/unreachable?"
     return 1
   fi
@@ -487,12 +489,13 @@ function docker_version
 {
   declare vertype=$1
   declare val
-
+  declare ret
 
   # new version command
   val=$(dockercmd version --format "{{.${vertype}.Version}}" 2>/dev/null)
+  ret=$?
 
-  if [[ $? != 0 ]];then
+  if [[ ${ret} != 0 ]];then
     # old version command
     val=$(dockercmd version | ${GREP} "${vertype} version" | cut -f2 -d: | tr -d ' ')
   fi

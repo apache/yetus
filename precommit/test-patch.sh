@@ -2994,7 +2994,7 @@ function initialize
 
   BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
 
-  # we need to do this BEFORE plugins initalize
+  # we need to do this BEFORE plugins initialize
   # because they may change what they do based upon
   # docker support
   # note that docker support still isn't guaranteed
