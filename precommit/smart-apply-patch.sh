@@ -212,7 +212,58 @@ function gitam_apply
   echo "Applying the patch:"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am.log" \
     "${GIT}" am --signoff ${EXTRA_ARGS} --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
+  RESULT=$?
   ${GREP} -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
+
+  # fallback
+  if [[ ${RESULT} -gt 0 && ${PATCH_SYSTEM} == 'jira' ]]; then
+    echo "Use git apply and commit with the information from jira."
+    gitapply_and_commit "${patchfile}"
+  fi
+}
+
+## @description  get author and summary from jira and commit it.
+##               if the author and the summary contains " or *,
+##               the function does not work correctly because
+##               the characters are used for delimiters.
+## @replaceable  no
+## @audience     private
+## @stability    evolving
+function gitapply_and_commit
+{
+  declare patchfile=$1
+  declare jsontmpfile
+  declare assigneeline
+  declare assigneefile
+  declare name
+  declare email
+  declare author
+  declare summary
+
+  yetus_debug "gitapply_and_commit: fetching ${JIRA_URL}/rest/api/2/issue/${PATCH_OR_ISSUE}"
+  if ! jira_http_fetch "rest/api/2/issue/${PATCH_OR_ISSUE}" "${PATCH_DIR}/issue"; then
+    yetus_debug "gitapply_and_commit: not a JIRA."
+    return 1
+  fi
+
+  jsontmpfile="${PATCH_DIR}/jsontmpfile"
+  # cannot set " as delimiter for cut command in script, so replace " with *
+  tr ',' '\n' < "${PATCH_DIR}/issue" | ${SED} 's/\"/*/g' > "${jsontmpfile}"
+
+  assigneeline=$(${GREP} -n -E "^\*assignee\*:" "${jsontmpfile}" | cut -f1 -d":")
+  assigneefile="${PATCH_DIR}/assigneefile"
+  tail -n +"${assigneeline}" "${jsontmpfile}" | head -n 20 > "${assigneefile}"
+
+  name=$(${GREP} "displayName" "${assigneefile}" | cut -f4 -d"*")
+  email=$(${GREP} "emailAddress" "${assigneefile}" | cut -f4 -d"*" \
+    | ${SED} 's/ at /@/g' | ${SED} 's/ dot /./g')
+  author="${name} <${email}>"
+  summary=$(${GREP} -E "^\*summary\*:" "${jsontmpfile}" | cut -f4 -d"*")
+  gitapply_apply "${patchfile}"
+  echo "Committing with author: ${author}, summary: ${summary}"
+  yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am-fallback.log" \
+    "${GIT}" commit ${EXTRA_ARGS} --signoff -a -m "${PATCH_OR_ISSUE}. ${summary}" \
+    --author="${author}"
 }
 
 ## @description import core library routines
