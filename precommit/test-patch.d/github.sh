@@ -103,7 +103,7 @@ function github_jira_bridge
   GITHUB_BRIDGED=true
   yetus_debug "github_jira_bridge: Checking url ${urlfromjira}"
   github_breakup_url "${urlfromjira}"
-  github_locate_patch "${GITHUB_ISSUE}" "${fileloc}"
+  github_locate_patch GH:"${GITHUB_ISSUE}" "${fileloc}"
 }
 
 ## @description given a URL, break it up into github plugin globals
@@ -222,6 +222,15 @@ function github_determine_branch
   verify_valid_branch "${PATCH_BRANCH}"
 }
 
+## @description  Given input = GH:##, download a patch to output.
+## @description  Also sets GITHUB_ISSUE to the raw number.
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        input
+## @param        output
+## @return       0 on success
+## @return       1 on failure
 function github_locate_patch
 {
   declare input=$1
@@ -233,6 +242,11 @@ function github_locate_patch
     return 1
   fi
 
+  if [[ ! "${input}" =~ ^GH: ]]; then
+    return 1
+  fi
+
+  input=${input#GH:}
 
   # https://github.com/your/repo/pull/##
   if [[ ${input} =~ ^${GITHUB_BASE_URL}.*/pull/[0-9]+$ ]]; then

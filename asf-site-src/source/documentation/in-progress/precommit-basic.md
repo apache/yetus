@@ -241,7 +241,7 @@ $ test-patch.sh --jira-issue-re='^PROJECT-[0-9]+$' --jira-base-url='https://exam
 test-patch has some basic support for Github.  test-patch supports many forms of providing pull requests to work on:
 
 ```bash
-$ test-patch.sh --github-repo=apache/pig 99
+$ test-patch.sh --github-repo=apache/pig GH:99
 ```
 
 or
