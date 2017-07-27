@@ -2996,6 +2996,10 @@ function initialize
 
   parse_args_plugins "$@"
 
+  if declare -f personality_parse_args >/dev/null; then
+    personality_parse_args "$@"
+  fi
+
   BUGCOMMENTS=${BUGCOMMENTS:-${BUGSYSTEMS}}
   if [[ ! ${BUGCOMMENTS} =~ console ]]; then
     BUGCOMMENTS="${BUGCOMMENTS} console"

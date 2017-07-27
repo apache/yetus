@@ -163,6 +163,18 @@ function personality_globals
 }
 ```
 
+Additionally, a personality may require some outside help from the user.  The `personality_parse_args`
+function is called almost immediately after the personality is loaded and plug-ins parse arguments.
+
+```bash
+function personality_parse_args
+{
+  echo "$*"
+}
+```
+
+It is important to note that this function is called AFTER personality_globals.
+
 ## Test Determination
 
 The `personality_file_tests` function determines which tests to turn on based upon the file name.  It is relatively simple.  For example, to turn on a full suite of tests for Java files:

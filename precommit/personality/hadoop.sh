@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#
+# SHELLDOC-IGNORE
+#
 # Override these to match Apache Hadoop's requirements
 
 personality_plugins "all,-ant,-gradle,-scalac,-scaladoc"
@@ -40,6 +43,25 @@ function personality_globals
   if [[ -z "${HADOOP_HOMEBREW_DIR}" ]]; then
     HADOOP_HOMEBREW_DIR=/usr/local
   fi
+}
+
+function personality_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --hadoop-isal-prefix=*)
+        ISAL_HOME=${i#*=}
+      ;;
+      --hadoop-openssl-prefix=*)
+        OPENSSL_HOME=${i#*=}
+      ;;
+      --hadoop-snappy-prefix=*)
+        SNAPPY_HOME=${i#*=}
+      ;;
+    esac
+  done
 }
 
 ## @description  Calculate the actual module ordering
@@ -143,10 +165,12 @@ function yarn_ui2_flag
 ## @stability    evolving
 function hadoop_native_flags
 {
-
   if [[ ${BUILD_NATIVE} != true ]]; then
     return
   fi
+
+  declare -a args
+  declare windows=false
 
   # Based upon HADOOP-11937
   #
@@ -160,34 +184,60 @@ function hadoop_native_flags
   #   e.g, HADOOP-12027 for OS X. so no -Drequire.bzip2
   #
 
+  args=("-Drequire.test.libhadoop")
+
+  if [[ -d "${ISAL_HOME}/include" ]]; then
+    args=("${args[@]}" "-Disal.prefix=${ISAL_HOME}")
+  fi
+
+  if [[ -d "${OPENSSL_HOME}/include" ]]; then
+    args=("${args[@]}" "-Dopenssl.prefix=${OPENSSL_HOME}")
+  fi
+
+  if [[ -d "${SNAPPY_HOME}/include" ]]; then
+    args=("${args[@]}" "-Dsnappy.prefix=${SNAPPY_HOME}")
+  fi
+
   case ${OSTYPE} in
     Linux)
       # shellcheck disable=SC2086
-      echo -Pnative -Drequire.libwebhdfs \
-        -Drequire.snappy -Drequire.openssl -Drequire.fuse \
-        -Drequire.test.libhadoop
+      echo \
+        -Pnative -Drequire.snappy -Drequire.openssl -Drequire.fuse \
+        "${args[@]}"
     ;;
     Darwin)
-      JANSSON_INCLUDE_DIR="${HADOOP_HOMEBREW_DIR}/opt/jansson/include"
-      JANSSON_LIBRARY="${HADOOP_HOMEBREW_DIR}/opt/jansson/lib"
-      export JANSSON_LIBRARY JANSSON_INCLUDE_DIR
-      # shellcheck disable=SC2086
       echo \
-      -Pnative -Drequire.snappy  \
-      -Drequire.openssl \
-        -Dopenssl.prefix=${HADOOP_HOMEBREW_DIR}/opt/openssl/ \
-        -Dopenssl.include=${HADOOP_HOMEBREW_DIR}/opt/openssl/include \
-        -Dopenssl.lib=${HADOOP_HOMEBREW_DIR}/opt/openssl/lib \
-      -Drequire.libwebhdfs -Drequire.test.libhadoop
+        "${args[@]}" \
+        -Pnative \
+        -Drequire.snappy  \
+        -Drequire.openssl \
+        -Dopenssl.prefix="${HADOOP_HOMEBREW_DIR}/opt/openssl/" \
+        -Dopenssl.include="${HADOOP_HOMEBREW_DIR}/opt/openssl/include" \
+        -Dopenssl.lib="${HADOOP_HOMEBREW_DIR}/opt/openssl/lib"
+    ;;
+    Windows_NT)
+      windows=true
+    ;;
+    CYGWIN*)
+      windows=true
+    ;;
+    MINGW32*)
+      windows=true
+    ;;
+    MSYS*)
+      windows=true
     ;;
     *)
-      # shellcheck disable=SC2086
       echo \
-        -Pnative \
-        -Drequire.snappy -Drequire.openssl \
-        -Drequire.test.libhadoop
+        "${args[@]}"
     ;;
   esac
+
+  if [[ ${windows} = true ]]; then
+    echo \
+        "${args[@]}" \
+        -Drequire.snappy -Drequire.openssl -Pnative-win
+  fi
 }
 
 ## @description  Queue up modules for this personality
