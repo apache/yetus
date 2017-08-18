@@ -97,6 +97,7 @@ function jira_http_fetch
 {
   declare input=$1
   declare output=$2
+  declare ec
 
   yetus_debug "jira_http_fetch: ${JIRA_URL}/${input}"
   if [[ -n "${JIRA_USER}"
@@ -112,6 +113,27 @@ function jira_http_fetch
             --location \
            "${JIRA_URL}/${input}"
   fi
+  ec=$?
+  case "${ec}" in
+  "0")
+    ;;
+  "1")
+    yetus_debug "jira_http_fetch: Unsupported protocol. Maybe misspelled jira's url?"
+    ;;
+  "3")
+    yetus_debug "jira_http_fetch: ${JIRA_URL}/${input} url is malformed."
+    ;;
+  "6")
+    yetus_debug "jira_http_fetch: Could not resolve host in URL ${JIRA_URL}."
+    ;;
+  "22")
+    yetus_debug "jira_http_fetch: ${JIRA_URL}/${input} returned 4xx status code. Maybe incorrect username/password?"
+    ;;
+  *)
+    yetus_debug "jira_http_fetch: ${JIRA_URL}/${input} returned $ec error code. See https://ec.haxx.se/usingcurl-returns.html for details."
+    ;;
+  esac
+  return ${ec}
 }
 
 function jira_locate_patch
