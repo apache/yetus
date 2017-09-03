@@ -1,4 +1,4 @@
-#!/usr/bin/env python -B
+#!/usr/bin/env python
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -15,10 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# Do this immediately to prevent compiled forms
+import sys
 import os
 import re
-import sys
 from optparse import OptionParser
+
+sys.dont_write_bytecode = True
 
 ASFLICENSE = '''
 <!---

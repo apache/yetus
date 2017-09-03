@@ -21,6 +21,7 @@ import urllib2
 import sys
 import json
 import httplib
+sys.dont_write_bytecode = True
 
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
 BASE_URL = "https://issues.apache.org/jira"

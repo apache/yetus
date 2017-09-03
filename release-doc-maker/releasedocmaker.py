@@ -1,4 +1,4 @@
-#!/usr/bin/env python -B
+#!/usr/bin/env python
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -16,6 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
 from glob import glob
 from optparse import OptionParser
 from time import gmtime, strftime, sleep
@@ -24,12 +25,14 @@ import errno
 import os
 import re
 import shutil
-import sys
 import urllib
 import urllib2
 import httplib
 import json
+sys.dont_write_bytecode = True
+# pylint: disable=wrong-import-position
 from utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
+# pylint: enable=wrong-import-position
 
 try:
     import dateutil.parser
