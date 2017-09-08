@@ -28,13 +28,14 @@ import org.apache.yetus.audience.InterfaceAudience.Public;
 /**
  * Annotation to inform users of how much to rely on a particular package,
  * class or method not changing over time. Currently the stability can be
- * {@link Stable}, {@link Evolving} or {@link Unstable}. <br>
+ * {@link Stable}, {@link Evolving} or {@link Unstable}.
  *
- * <ul><li>All classes that are annotated with {@link Public} or
- * {@link LimitedPrivate} must have InterfaceStability annotation. </li>
- * <li>Classes that are {@link Private} are to be considered unstable unless
- * a different InterfaceStability annotation states otherwise.</li>
- * <li>Incompatible changes must not be made to classes marked as stable.</li>
+ * <ul>
+ *   <li>All classes that are annotated with {@link Public} or
+ *    {@link LimitedPrivate} must have InterfaceStability annotation. </li>
+ *   <li>Classes that are {@link Private} are to be considered unstable unless
+ *    a different InterfaceStability annotation states otherwise.</li>
+ *   <li>Incompatible changes must not be made to classes marked as stable.</li>
  * </ul>
  */
 @InterfaceAudience.Public
@@ -62,4 +63,6 @@ public class InterfaceStability {
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
   public @interface Unstable {};
+
+  private InterfaceStability() {} // Stability can't exist on its own
 }
