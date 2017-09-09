@@ -38,6 +38,7 @@ function personality_globals
   GITHUB_REPO="apache/hadoop"
   #shellcheck disable=SC2034
   PYLINT_OPTIONS="--indent-string='  '"
+  CLIENT_TESTS=()
 
   HADOOP_HOMEBREW_DIR=${HADOOP_HOMEBREW_DIR:-$(brew --prefix 2>/dev/null)}
   if [[ -z "${HADOOP_HOMEBREW_DIR}" ]]; then
@@ -457,4 +458,75 @@ function hadoop_console_success
   printf "XC8gCiAgICAgICAgfCAgfCB8ICB8ICAKICAgICAgICB8ICB8IHwgIHwgIAog";
   printf "ICAgICAgIHwgICBvICAgfCAgCiAgICAgICAgfCB8ICAgfCB8ICAKICAgICAg";
   printf "ICB8bXwgICB8bXwgIAo"
+}
+
+###################################################
+# Hadoop project specific check of IT for shaded artifacts
+
+add_test_type shadedclient
+
+## @description check for test modules and add test/plugins as needed
+## @audience private
+## @stability evolving
+function shadedclient_initialize
+{
+  declare -a modules=()
+  declare module
+
+  yetus_debug "hadoop personality: initializing client artifacts checks."
+  for module in hadoop-client-modules/hadoop-client-check-invariants \
+                hadoop-client-modules/hadoop-client-check-test-invariants \
+                hadoop-client-modules/hadoop-client-integration-tests; do
+    if [ -d "${module}" ]; then
+      yetus_debug "hadoop personality: test module '${module}' is present."
+      modules=( ${modules[@]} -pl ${module} )
+    fi
+  done
+  if [ ${#modules[@]} -gt 0 ]; then
+    CLIENT_TESTS=( "${modules[@]}" )
+    maven_add_install shadedclient
+    add_test shadedclient
+  fi
+}
+
+## @description remove files created by the rebuild function
+## @audience private
+## @stability evolving
+function shadedclient_clean
+{
+  if [ ${#CLIENT_TESTS[@]} -gt 0 ]; then
+    yetus_debug "hadoop personality: cleaning up test modules."
+    "${MAVEN}" "${MAVEN_ARGS[@]}" clean -fae -am "${CLIENT_TESTS[@]}"
+  fi
+}
+
+## @description build client facing shaded artifacts and test them
+## @audience private
+## @stability evolving
+## @param repostatus
+function shadedclient_rebuild
+{
+  local repostatus=$1
+  local logfile="${PATCH_DIR}/${repostatus}-shadedclient.txt"
+
+  if [ ${#CLIENT_TESTS[@]} -eq 0 ]; then
+    yetus_debug "hadoop personality: no test modules present, skipping."
+    return 0
+  fi
+
+  big_console_header "Checking client artifacts on ${repostatus}"
+
+  echo_and_redirect "${logfile}" \
+    "${MAVEN}" "${MAVEN_ARGS[@]}" clean verify -fae --batch-mode -am \
+      "${CLIENT_TESTS[@]}" \
+      -Dtest=NoUnitTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dfindbugs.skip=true
+
+  count=$(${GREP} -c '\[ERROR\]' "${logfile}")
+  if [[ ${count} -gt 0 ]]; then
+    add_vote_table -1 shadedclient "${repostatus} has errors when building and testing our client artifacts."
+    return 1
+  fi
+
+  add_vote_table +1 shadedclient "${repostatus} has no errors when building and testing our client artifacts."
+  return 0
 }
