@@ -15,6 +15,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+###############
+#
+# Example Apache Yetus Dockerfile that includes all functionality supported
+# as well as enough bits to build and release Apache Yetus itself.
+#
+###############
+
 FROM ubuntu:xenial
 
 WORKDIR /root
@@ -23,37 +31,16 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_TERSE true
 
 ######
-# Install common dependencies from packages
+# Install some basic Apache Yetus requirements
 ######
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
-    ant \
-    autoconf \
-    automake \
-    build-essential \
-    bzip2 \
-    cmake \
     curl \
-    g++ \
-    gcc \
     git \
     gnupg-agent \
-    make \
-    maven \
-    libperl-critic-perl \
-    libtool \
     locales \
-    openjdk-8-jdk-headless \
     pinentry-curses \
     pkg-config \
-    python \
-    python2.7 \
-    python-pip \
-    python-pkg-resources \
-    python-setuptools \
-    python-wheel \
     rsync \
-    ruby \
-    ruby-dev \
     software-properties-common
 
 ###
@@ -65,51 +52,112 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 ####
-# Install bats
+# Install java (first, since we want to dicate what form of Java)
 ####
-RUN add-apt-repository -y ppa:duggan/bats
-RUN apt-get -q update
-RUN apt-get -q install -y bats
+
+####
+# OpenJDK 8
+####
+RUN apt-get -q install --no-install-recommends -y openjdk-8-jdk-headless
+
+#######
+# OpenJDK 9
+# w/workaround for
+# https://bugs.launchpad.net/ubuntu/+source/openjdk-9/+bug/1593191
+#######
+RUN apt-get -o Dpkg::Options::="--force-overwrite" \
+    -q install --no-install-recommends -y \
+    openjdk-9-jdk-headless
+
+#######
+# Set default Java
+#######
+#
+# By default, OpenJDK sets the default Java to the highest version.
+# We want the opposite, soooooo....
+#
+RUN update-java-alternatives --set java-1.8.0-openjdk-amd64
+RUN update-alternatives --get-selections | grep -i jdk | \
+    while read line; do \
+      alternative=$(echo $line | awk '{print $1}'); \
+      path=$(echo $line | awk '{print $3}'); \
+      newpath=$(echo $path | sed -e 's/java-9/java-8/'); \
+      update-alternatives --set $alternative $newpath; \
+    done
+
+
+####
+# Install ant
+####
+RUN apt-get -q install --no-install-recommends -y ant
+
+####
+# Install GNU automake, GNU make, and related
+####
+RUN apt-get -q install --no-install-recommends -y autoconf automake libtool make
+
+####
+# Install bats (TAP-capable unit testing for shell scripts)
+####
+RUN apt-get -q install --no-install-recommends -y bats
+
+####
+# Install cmake
+####
+RUN apt-get -q install --no-install-recommends -y cmake
 
 ######
 # Install findbugs
 ######
-RUN mkdir -p /opt/findbugs && \
-    curl -L -s -S \
-         https://sourceforge.net/projects/findbugs/files/findbugs/3.0.1/findbugs-noUpdateChecks-3.0.1.tar.gz/download \
-         -o /opt/findbugs.tar.gz && \
-    tar xzf /opt/findbugs.tar.gz --strip-components 1 -C /opt/findbugs
-ENV FINDBUGS_HOME /opt/findbugs
+RUN apt-get -q install --no-install-recommends -y findbugs
+ENV FINDBUGS_HOME /usr
 
 ####
-# Pylint
+# Install GNU C/C++
 ####
+RUN apt-get -q install --no-install-recommends -y g++ gcc libc-dev
+
+######
+# Install maven
+######
+RUN apt-get -q install --no-install-recommends -y maven
+
+######
+# Install perl
+######
+RUN apt-get -q install --no-install-recommends -y perl libperl-critic-perl
+
+######
+# Install python and pylint
+######
+RUN apt-get -q install --no-install-recommends -y python \
+    python2.7 \
+    python-pip \
+    python-pkg-resources \
+    python-setuptools \
+    python-wheel
 RUN pip2 install pylint
 
 ####
-# Disable misc ruby bits
+# Install ruby, rubocop, and ruby-lint
 ###
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc
-
-####
-# Install rubocop
-###
+RUN apt-get -q install --no-install-recommends -y ruby ruby-dev
 RUN gem install rake
 RUN gem install rubocop
-
-####
-# Install ruby-lint
-###
 RUN gem install ruby-lint
 
+####
+# Install shellcheck (shell script lint)
+####
+RUN add-apt-repository -y ppa:jonathonf/ghc-8.0.2
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y shellcheck
+
 
 ####
-# Install shellcheck
-####
-RUN apt-get -q install -y cabal-install
-RUN mkdir /root/.cabal
-RUN echo "remote-repo: hackage.fpcomplete.com:http://hackage.fpcomplete.com/" >> /root/.cabal/config
-#RUN echo "remote-repo: hackage.haskell.org:http://hackage.haskell.org/" > /root/.cabal/config
-RUN echo "remote-repo-cache: /root/.cabal/packages" >> /root/.cabal/config
-RUN cabal update
-RUN cabal install shellcheck --global
+# YETUS CUT HERE
+# Anthing after the above line is ignored by Yetus, so could
+# include other requirements not needed by your development
+# (but not build) environment
+###
+RUN apt-get -q install --no-install-recommends -y sudo vim
