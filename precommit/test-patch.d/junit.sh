@@ -19,6 +19,31 @@ add_test_format junit
 JUNIT_TEST_TIMEOUTS=""
 JUNIT_FAILED_TESTS=""
 
+JUNIT_TEST_OUTPUT_DIR="."
+JUNIT_TEST_PREFIX="org.apache."
+
+function junit_usage
+{
+  yetus_add_option "--junit-test-output=<path>" "Directory to search for the test output TEST-*.xml files, relative to the module directory (default:'${JUNIT_TEST_OUTPUT_DIR}')"
+  yetus_add_option "--junit-test-prefix=<prefix to trim>" "Prefix of test names to be be removed. Used to shorten test names by removing common package name. (default:'${JUNIT_TEST_PREFIX}')"
+}
+
+function junit_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --junit-test-output=*)
+        JUNIT_TEST_OUTPUT_DIR=${i#*=}
+      ;;
+      --junit-test-prefix=*)
+        JUNIT_TEST_PREFIX=${i#*=}
+      ;;
+    esac
+  done
+}
+
 function junit_process_tests
 {
   # shellcheck disable=SC2034
@@ -36,10 +61,9 @@ function junit_process_tests
   fi
 
   #shellcheck disable=SC2026,SC2038,SC2016
-  module_failed_tests=$(find . -name 'TEST*.xml'\
+  module_failed_tests=$(find "${JUNIT_TEST_OUTPUT_DIR}" -name 'TEST*.xml'\
     | xargs "${GREP}" -l -E "<failure|<error"\
-    | ${AWK} -F/ '{sub("TEST-org.apache.",""); sub(".xml",""); print $NF}')
-
+    | ${AWK} -F/ '{sub("'"TEST-${JUNIT_TEST_PREFIX}"'",""); sub(".xml",""); print $NF}')
   if [[ -n "${module_failed_tests}" ]] ; then
     JUNIT_FAILED_TESTS="${JUNIT_FAILED_TESTS} ${module_failed_tests}"
     ((result=result+1))
