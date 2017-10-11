@@ -251,6 +251,10 @@ function dockerdate_to_ctime
 {
   declare mytime=$1
 
+  if [[ "${mytime}" = "0001-01-01T00:00:00Z" ]]; then
+    mytime="1970-01-01T00:00:00"
+  fi
+
   # believe it or not, date is not even close to standardized...
   if [[ $(uname -s) == Linux ]]; then
 
