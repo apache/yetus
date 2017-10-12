@@ -33,11 +33,16 @@ function make_usage
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-function cmake_precheck
+function make_precheck
 {
+  declare make_version
   if ! verify_command make "${MAKE}"; then
     add_vote_table -1 make "make was not available."
     return 1
+  fi
+  # finally let folks know what version they'll be dealing with.
+  if make_version=$(set -o pipefail; ${MAKE} --version 2>/dev/null | head -n 1  2>/dev/null) && [ -n "${make_version}" ]; then
+    add_footer_table make "version: ${make_version}"
   fi
   return 0
 }

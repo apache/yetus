@@ -72,10 +72,14 @@ function cmake_initialize
 ## @replaceable  no
 function cmake_precheck
 {
+  declare cmake_version
   if ! verify_command cmake "${CMAKE}"; then
     add_vote_table -1 cmake "cmake was not available."
     return 1
   fi
+  # finally let folks know what version they'll be dealing with.
+  cmake_version=$(${CMAKE} --version 2>/dev/null | head -n 1 2>/dev/null)
+  add_footer_table cmake "version: ${cmake_version}"
 
   make_precheck
 }

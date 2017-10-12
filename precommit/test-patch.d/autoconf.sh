@@ -60,10 +60,15 @@ function autoconf_initialize
 ## @replaceable  no
 function autoconf_precheck
 {
+  declare autoconf_version
   if ! verify_command autoconf autoreconf; then
     add_vote_table -1 autoconf "autoreconf was not available."
     return 1
   fi
+
+  # finally let folks know what version they'll be dealing with.
+  autoconf_version=$(autoconf --version 2>/dev/null | head -n 1 2>/dev/null)
+  add_footer_table autoconf "version: ${autoconf_version}"
 
   make_precheck
 }

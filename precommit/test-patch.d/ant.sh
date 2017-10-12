@@ -65,10 +65,15 @@ function ant_initialize
 
 function ant_precheck
 {
+  declare ant_version
+
   if ! verify_command ant "${ANT}"; then
     add_vote_table -1 ant "ERROR: ant is not available."
     return 1
   fi
+  # finally let folks know what version they'll be dealing with.
+  ant_version=$(${ANT} -version 2>/dev/null)
+  add_footer_table ant "version: ${ant_version}"
   return 0
 }
 

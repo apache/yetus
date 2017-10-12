@@ -131,6 +131,7 @@ function maven_precheck
 {
   declare logfile="${PATCH_DIR}/mvnrepoclean.log"
   declare line
+  declare maven_version
 
   if ! verify_command maven "${MAVEN}"; then
     add_vote_table -1 maven "ERROR: maven was not available."
@@ -181,6 +182,10 @@ function maven_precheck
       rm -rf "${line}"
     done < "${logfile}"
   fi
+
+  # finally let folks know what version they'll be dealing with.
+  maven_version=$(${MAVEN} --offline --version 2>/dev/null | head -n 1 2>/dev/null)
+  add_footer_table maven "version: ${maven_version}"
 }
 
 function maven_filefilter

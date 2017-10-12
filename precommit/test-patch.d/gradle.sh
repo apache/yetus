@@ -53,10 +53,14 @@ function gradle_parse_args
 
 function gradle_precheck
 {
+  declare gradle_version
   if ! verify_command gradle "${GRADLE}"; then
     add_vote_table -1 gradle "ERROR: gradle is not available."
     return 1
   fi
+  # finally let folks know what version they'll be dealing with.
+  gradle_version=$(${GRADLE} --version 2>/dev/null | grep Gradle 2>/dev/null)
+  add_footer_table gradle "version: ${gradle_version}"
   return 0
 }
 
