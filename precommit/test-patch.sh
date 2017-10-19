@@ -745,7 +745,7 @@ function yetus_usage
   echo "Automation options:"
   yetus_add_option "--build-url=<url>" "Set the build location web page (Default: '${BUILD_URL}')"
   yetus_add_option "--build-url-console=<location>" "Location relative to --build-url of the console (Default: '${BUILD_URL_CONSOLE}')"
-  yetus_add_option "--build-url-patchdir=<location>" "Location relative to --build-url of the --patch-dir (Default: '${BUILD_URL_ARTIFACTS}')"
+  yetus_add_option "--build-url-artifacts=<location>" "Location relative to --build-url of the --patch-dir (Default: '${BUILD_URL_ARTIFACTS}')"
   yetus_add_option "--console-report-file=<file>" "Save the final console-based report to a file in addition to the screen"
   yetus_add_option "--console-urls" "Use the build URL instead of path on the console report"
   yetus_add_option "--instance=<string>" "Parallel execution identifier string"
