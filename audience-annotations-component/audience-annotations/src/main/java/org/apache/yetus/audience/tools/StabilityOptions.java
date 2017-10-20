@@ -30,9 +30,9 @@ class StabilityOptions {
 
   public static Integer optionLength(String option) {
     String opt = option.toLowerCase(Locale.ENGLISH);
-    if (opt.equals(UNSTABLE_OPTION)) return 1;
-    if (opt.equals(EVOLVING_OPTION)) return 1;
-    if (opt.equals(STABLE_OPTION)) return 1;
+    if (opt.equals(UNSTABLE_OPTION)) { return 1;}
+    if (opt.equals(EVOLVING_OPTION)) { return 1; }
+    if (opt.equals(STABLE_OPTION))   { return 1; }
     return null;
   }
 

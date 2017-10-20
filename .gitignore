@@ -14,7 +14,9 @@
 .project
 .settings
 target
-build
 publish
 *.swp
 *.pyc
+asf-site-src/source/documentation/0*
+asf-site-src/source/documentation/in-progress/CHANGELOG.md
+asf-site-src/source/documentation/in-progress/RELEASENOTES.md
