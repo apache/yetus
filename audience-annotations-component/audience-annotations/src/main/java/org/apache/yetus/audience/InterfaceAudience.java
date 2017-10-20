@@ -43,6 +43,7 @@ import java.lang.annotation.RetentionPolicy;
  * might be {@link Public}, but a method may be {@link LimitedPrivate}
  * </li></ul>
  */
+
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class InterfaceAudience {
@@ -51,7 +52,7 @@ public class InterfaceAudience {
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
-  public @interface Public {}
+  public @interface Public { }
 
   /**
    * Intended only for the project(s) specified in the annotation.
@@ -68,7 +69,7 @@ public class InterfaceAudience {
    */
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
-  public @interface Private {}
+  public @interface Private { }
 
-  private InterfaceAudience() {} // Audience can't exist on its own
+  private InterfaceAudience() { } // Audience can't exist on its own
 }

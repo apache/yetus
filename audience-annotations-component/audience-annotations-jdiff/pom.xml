@@ -26,7 +26,7 @@
     <groupId>org.apache.yetus</groupId>
     <artifactId>yetus-project</artifactId>
     <version>0.9.0-SNAPSHOT</version>
-    <relativePath>../../yetus-project</relativePath>
+    <relativePath>../..</relativePath>
   </parent>
   <artifactId>audience-annotations-jdiff</artifactId>
   <description>Tools for managing JDiff generated javadocs</description>
@@ -42,11 +42,12 @@
     <dependency>
       <groupId>jdiff</groupId>
       <artifactId>jdiff</artifactId>
-      <version>1.0.9</version>
+      <version>${jdiff.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
   </dependencies>
+
   <profiles>
     <profile>
       <id>jdk1.8</id>
@@ -65,5 +66,33 @@
       </dependencies>
     </profile>
   </profiles>
+
+  <build>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>dist</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>apache-yetus-${project.version}</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <attach>false</attach>
+              <descriptors>
+                <descriptor>src/main/assemblies/${project.artifactId}.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
 
 </project>

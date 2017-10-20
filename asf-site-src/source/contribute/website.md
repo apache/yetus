@@ -20,17 +20,21 @@
 # Maintaining the Yetus Website
 
 We use [Middleman](https://middlemanapp.com/) to generate the website content from markdown and other
-dynamic templates. The following steps assume you have a working
-ruby 2.x environment setup:
+dynamic templates.If you're interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
+by reading [Middleman's excellent documentation](https://middlemanapp.com/basics/install/).
+
+    NOTE: The Docker container launched by `./start-build-env.sh` should have everything you need to maintain the website.
+
+    NOTE: You MUST have run `mvn install` at least once prior to running `mvn site`.
+
+The following steps assume you have a working ruby 2.x environment setup:
 
 ```bash
-gem install bundler
-bundle install
+$ sudo gem install bundler
+$ cd asf-site-src
+$ bundle install
 ```
 and a working python 2.x environment for [releasedocmaker](../in-progress/releasedocmaker/).
-
-If you're interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
-by reading [Middleman's excellent documentation](https://middlemanapp.com/basics/install/).
 
 ## Make changes in asf-site-src/source
 Make any changes in the source directory:
@@ -50,34 +54,27 @@ cd ../precommit/core.d
 vi 01-common.sh
 ```
 
-
-e.g. Audience Annotations requires running Maven.
-
-```bash
-cd ../audience-annotations-component
-mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate
-cd -
-```
-
 ## Generating the website
-To generate the static website for Apache Yetus run the following commands at the root asf-site-src directory:
+To generate the static website for Apache Yetus run the following command at the root directory:
 
 ```bash
-bundle exec middleman build
+mvn --batch-mode install
+mvn --batch-mode site
 ```
 
-This command will create a static website in the `publish` sub directory. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:
+Apache Yetus uses itself to build parts of its website. ('Flying our own airplanes')  This command will first generate a full build of Apache Yetus and create a static website in the `asf-site-src/target/site` sub directory and a tarball of the site in yetus-dist/target/. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:
 
 ```bash
-open publish/index.html
+open asf-site-src/target/site/index.html
 ```
 
 ## Live Development
 Live development of the site enables automatic reload when changes are saved.
-To enable run the following command and then open a browser and navigate to
+To enable, run the following commands and then open a browser and navigate to
 [http://localhost:4567](http://localhost:4567/)
 
 ```bash
+cd asf-site-src
 bundle exec middleman
 ```
 
@@ -92,9 +89,9 @@ $ git fetch origin
 $ git checkout master
 $ git reset --hard origin/master
 $ git clean -xdf
-$ cd asf-site-src
-$ bundle exec middleman build
-$ rsync --quiet --checksum --inplace --recursive publish/ ../../yetus-site/
+$ mvn --batch-mode install
+$ mvn --batch-mode site
+$ rsync --quiet --checksum --inplace --recursive yetus-dist/target/apache-yetus-${project.version}-SNAPSHOT-site/ ../../yetus-site/
 $ cd ../../yetus-site
 $ # check the set of differences
 $ git add -p
