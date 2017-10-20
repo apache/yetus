@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.yetus</groupId>
+    <artifactId>yetus-project</artifactId>
+    <version>0.9.0-SNAPSHOT</version>
+    <relativePath>..</relativePath>
+  </parent>
+  <artifactId>asf-site</artifactId>
+  <description>Website and Documentation for Apache Yetus</description>
+  <name>Apache Yetus - Website/Documentation</name>
+  <packaging>pom</packaging>
+
+  <properties>
+    <rdm.bin>${basedir}/../releasedocmaker/src/main/python/releasedocmaker.py</rdm.bin>
+  </properties>
+
+  <build>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.yetus</groupId>
+        <artifactId>yetus-minimaven-plugin</artifactId>
+        <version>${project.version}</version>
+        <executions>
+          <execution>
+            <id>0.6.0</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.6.0</target>
+              <newLink>${basedir}/source/documentation/0.6.0</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.6.0.html.md</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.6.0.html.md</target>
+              <newLink>${basedir}/source/documentation/0.6.0.html.md</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.7.0</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.7.0</target>
+              <newLink>${basedir}/source/documentation/0.7.0</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.7.0.html.md</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.7.0.html.md</target>
+              <newLink>${basedir}/source/documentation/0.7.0.html.md</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.8.0</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.8.0</target>
+              <newLink>${basedir}/source/documentation/0.8.0</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.8.0.html.md</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.8.0.html.md</target>
+              <newLink>${basedir}/source/documentation/0.8.0.html.md</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>in-progress</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>in-progress</target>
+              <newLink>${basedir}/source/documentation/${project.version}</newLink>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>releasedocs</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${rdm.bin}</executable>
+              <requiresOnline>true</requiresOnline>
+              <arguments>
+                <argument>--lint=all</argument>
+                <argument>--license</argument>
+                <argument>--outputdir</argument>
+                <argument>source/documentation/in-progress</argument>
+                <argument>--project</argument>
+                <argument>YETUS</argument>
+                <argument>--projecttitle</argument>
+                <argument>Apache Yetus</argument>
+                <argument>--usetoday</argument>
+                <argument>--version</argument>
+                <argument>${project.version}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>middleman</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>bundle</executable>
+              <requiresOnline>false</requiresOnline>
+              <arguments>
+                <argument>exec</argument>
+                <argument>middleman</argument>
+                <argument>build</argument>
+              </arguments>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>website-docs</id>
+            <phase>site</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <finalName>apache-yetus-${project.version}-site</finalName>
+              <appendAssemblyId>false</appendAssemblyId>
+              <attach>false</attach>
+              <descriptors>
+                <descriptor>src/main/assemblies/${project.artifactId}.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>Gemfile.lock</exclude>
+            <exclude>source/assets/config.json</exclude>
+            <exclude>source/assets/css/bootstrap-theme.css</exclude>
+            <exclude>source/assets/css/bootstrap-theme.css.map</exclude>
+            <exclude>source/assets/css/bootstrap-theme.min.css</exclude>
+            <exclude>source/assets/css/bootstrap.css</exclude>
+            <exclude>source/assets/css/bootstrap.css.map</exclude>
+            <exclude>source/assets/css/bootstrap.min.css</exclude>
+            <exclude>source/assets/css/font-awesome.css</exclude>
+            <exclude>source/assets/css/font-awesome.min.css</exclude>
+            <exclude>source/assets/fonts/fontawesome-webfont.svg</exclude>
+            <exclude>source/assets/fonts/glyphicons-halflings-regular.svg</exclude>
+            <exclude>source/assets/js/bootstrap.js</exclude>
+            <exclude>source/assets/js/bootstrap.min.js</exclude>
+            <exclude>source/assets/js/jquery-2.1.4.min.js</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>source/documentation/</directory>
+                <includes>
+                  <include>0*</include>
+                </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+            <fileset>
+              <directory>source/documentation/in-progress</directory>
+                <includes>
+                  <include>CHANGELOG.md</include>
+                  <include>RELEASENOTES.md</include>
+                </includes>
+              <followSymlinks>false</followSymlinks>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+
+    </plugins>
+  </build>
+
+</project>
