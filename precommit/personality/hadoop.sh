@@ -495,7 +495,7 @@ function shadedclient_rebuild
         ${OSTYPE} =~ ^CYGWIN.* ||
         ${OSTYPE} =~ ^MINGW32.* ||
         ${OSTYPE} =~ ^MSYS.* ]]; then
-    yetus_info "hadoop personality: building on windows, skipping check of client artifacts."
+    echo "hadoop personality: building on windows, skipping check of client artifacts."
     return 0
   fi
 
@@ -509,7 +509,7 @@ function shadedclient_rebuild
     fi
   done
   if [ ${#modules[@]} -eq 0 ]; then
-    yetus_info "hadoop personality: no test modules present, skipping check of client artifacts."
+    echo "hadoop personality: no test modules present, skipping check of client artifacts."
     return 0
   fi
 
