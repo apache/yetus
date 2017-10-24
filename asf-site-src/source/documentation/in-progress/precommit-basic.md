@@ -162,6 +162,16 @@ $ test-patch.sh --basedir=<testrepo> --resetrepo /tmp/patchfile
 
 We used two new options here.  --basedir sets the location of the repository to use for testing.  --resetrepo tells test patch that it can go into **destructive** mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!
 
+# Fork Bomb Protection
+
+By default, test-patch.sh will set the user soft limit (ulimit -Su) to a relatively low 1,000 processes (and, on some operating systems, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low (e.g., highly threaded Java processes), it may be necessary to use the `--proclimit` option.  For example:
+
+```bash
+$ test-patch --proclimit=10000
+```
+
+... will set it to be 10,000 processes.
+
 # Automation
 
 After the tests have run, there is a directory that contains all of the test-patch related artifacts.  This is generally referred to as the patchprocess directory.  By default, test-patch tries to make something off of /tmp to contain this content.  Using the `--patch-dir` option, one can specify exactly which directory to use.  This is helpful for automated precommit testing so that Jenkins or other automated workflow system knows where to look to gather up the output.

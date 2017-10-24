@@ -91,6 +91,7 @@ function setup_defaults
 
   # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
+  PROC_LIMIT=1000
   REEXECED=false
   RESETREPO=false
   BUILDMODE=patch
@@ -711,6 +712,7 @@ function yetus_usage
   yetus_add_option "--offline" "Avoid connecting to the Internet"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
   yetus_add_option "--personality=<file>" "The personality file to load"
+  yetus_add_option "--proclimit=<num>" "Limit on the number of processes (default: ${PROC_LIMIT})"
   yetus_add_option "--project=<name>" "The short name for project currently using test-patch (default 'yetus')"
   yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found) e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
   yetus_add_option "--resetrepo" "Forcibly clean the repo"
@@ -866,6 +868,9 @@ function parse_args
       ;;
       --personality=*)
         PERSONALITY=${i#*=}
+      ;;
+      --proclimit=*)
+        PROC_LIMIT=${i#*=}
       ;;
       --reexec)
         REEXECED=true
@@ -3121,6 +3126,10 @@ if [[ "${BINNAME}" =~ qbt ]]; then
 else
   initialize "$@"
 fi
+
+ulimit -Su "${PROC_LIMIT}"
+
+yetus_debug "Changed process/Java native thread limit to ${PROC_LIMIT}"
 
 add_vote_table H "Prechecks"
 

@@ -23,6 +23,7 @@ DOCKERFAIL="fallback,continue,fail"
 DOCKERSUPPORT=false
 DOCKER_ENABLE_PRIVILEGED=true
 DOCKER_CLEANUP_CMD=false
+DOCKER_MEMORY="4g"
 
 declare -a DOCKER_EXTRAARGS
 
@@ -54,6 +55,8 @@ function docker_usage
     yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
   fi
   yetus_add_option "--dockerdelrep" "In Docker mode, only report image/container deletions, not act on them"
+  yetus_add_option "--dockermemlimit=<num>" "Limit a Docker container's memory usage (default: ${DOCKER_MEMORY})"
+
 }
 
 ## @description  Docker-specific argument parsing
@@ -79,6 +82,9 @@ function docker_parse_args
       ;;
       --dockerfile=*)
         DOCKERFILE=${i#*=}
+      ;;
+      --dockermemlimit=*)
+        DOCKER_MEMORY=${i#*=}
       ;;
       --dockermode)
         DOCKERMODE=true
@@ -601,13 +607,20 @@ PatchSpecificDocker
   fi
 
   if [[ "${DOCKER_ENABLE_PRIVILEGED}" = true ]]; then
-    DOCKER_EXTRAARGS=("--privileged" "${DOCKER_EXTRAARGS[@]}")
+    DOCKER_EXTRAARGS+=("--privileged")
   fi
 
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
     touch "${CONSOLE_REPORT_FILE}"
-    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${CONSOLE_REPORT_FILE}:/testptch/console.txt")
+    DOCKER_EXTRAARGS+=("-v" "${CONSOLE_REPORT_FILE}:/testptch/console.txt")
   fi
+
+  if [[ -n "${DOCKER_MEMORY}" ]]; then
+    DOCKER_EXTRAARGS+=("-m" "${DOCKER_MEMORY}")
+  fi
+
+  # make the kernel prefer to kill us if we run out of RAM
+  DOCKER_EXTRAARGS+=("--oom-score-adj" "500")
 
   client=$(docker_version Client)
   server=$(docker_version Server)

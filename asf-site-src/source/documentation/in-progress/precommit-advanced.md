@@ -47,6 +47,10 @@ NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) 
 
 Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in --robot mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a "safe" mode that prevents deletions via the `--dockerdelrep` option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.
 
+Docker's `--memory` flag is supported via the `--dockermemlimit` option.  This enables the container's memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See  [the Docker documentation](https://docs.docker.com/engine/admin/resource_constraints/) for more details.
+
+Additionally, Apache Yetus sets the --oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.
+
 # Plug-ins
 
 test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
