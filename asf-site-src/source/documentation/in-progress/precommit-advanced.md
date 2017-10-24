@@ -21,6 +21,7 @@ test-patch
 ==========
 
 * [Docker Support](#docker-support)
+* [Process Reaper](#test-reaper)
 * [Plug-ins](#plug-ins)
 * [Personalities](#personalities)
 * [Important Variables](#important-variables)
@@ -43,13 +44,21 @@ For example, `--dockeronfail=continue` means if the Dockerfile can't be found, j
 
 Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.
 
-NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the --basedir and --patch-dir options respectively), because automatically mountable directories are limited to them. See [the Docker documentation](https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume).
-
 Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in --robot mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a "safe" mode that prevents deletions via the `--dockerdelrep` option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.
 
-Docker's `--memory` flag is supported via the `--dockermemlimit` option.  This enables the container's memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See  [the Docker documentation](https://docs.docker.com/engine/admin/resource_constraints/) for more details.
+## Resource Controls
 
-Additionally, Apache Yetus sets the --oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.
+Docker's `--memory` flag is supported via the `--dockermemlimit` option.  This enables the container's memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See [the Docker documentation](https://docs.docker.com/engine/admin/resource_constraints/) for more details. Apache Yetus also sets the --oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.
+
+Additionally, if bash v4 and Linux is in use, a separate process is launched to keep a rolling count of the maximum number of threads (not processes!) in use at one time. This number will be reported at the end of the test-patch run.  Depending upon the build, languages, features enabled, etc, this number may be helpful in determining what the value of `--proclimit`
+
+# Process Reaper
+
+A common problem is the 'stuck' unit test. If bash v4.0 or higher is in use, Apache Yetus may be told to turn on the process reaper functionality.  Using the `--reapearmode` option, this feature may be configured to either report and even kill left over processes that match provided regular expressions.
+
+  WARNING: Using `--reapermode` outside of Docker will report or kill ALL matching processes on the system.  It is recommended to only use those options whilst in Docker mode.
+
+The reaper will run after every 'external' command that is printed on the console.  This includes almost all build tool commands and individual test commands.
 
 # Plug-ins
 

@@ -337,6 +337,13 @@ function prepopulate_footer
 ## @replaceable  no
 function finish_footer_table
 {
+  declare counter
+
+  if [[ -f "${PATCH_DIR}/threadcounter.txt" ]]; then
+    counter=$(cat "${PATCH_DIR}/threadcounter.txt")
+    add_footer_table "Max. process+thread count" "${counter} (vs. ulimit of ${PROC_LIMIT})"
+  fi
+
   add_footer_table "modules" "C: ${CHANGED_MODULES[*]} U: ${CHANGED_UNION_MODULES}"
 }
 
@@ -616,6 +623,23 @@ function compute_unidiff
   rm "${tmpfile}"
 }
 
+## @description helper function for echo_and_redirect
+## @audience private
+## @stability evolving
+## @replaceable no
+function e_a_r_helper
+{
+  declare logfile=$1
+  shift
+  declare params=("${@}")
+
+  # shellcheck disable=SC2034
+  coproc yrr_coproc {
+    ulimit -Su "${PROC_LIMIT}"
+    yetus_run_and_redirect "${logfile}" "${params[@]}"
+  }
+}
+
 ## @description  Print the command to be executing to the screen. Then
 ## @description  run the command, sending stdout and stderr to the given filename
 ## @description  This will also ensure that any directories in ${BASEDIR} have
@@ -629,7 +653,7 @@ function compute_unidiff
 ## @return       $?
 function echo_and_redirect
 {
-  local logfile=$1
+  declare logfile=$1
   shift
 
   verify_patchdir_still_exists
@@ -638,7 +662,32 @@ function echo_and_redirect
   # to the screen
   echo "cd $(pwd)"
   echo "${*} > ${logfile} 2>&1"
-  yetus_run_and_redirect "${logfile}" "${@}"
+
+  if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
+
+    # use a coprocessor with the
+    # lower proc limit so that yetus can
+    # do stuff unimpacted by it
+
+    e_a_r_helper "${logfile}" "${@}" >> "${COPROC_LOGFILE}" 2>&1
+
+    # now that it's off as a separate process, we need to wait
+    # for it to finish. wait will either return 0, exit code
+    # of the coproc, or 127. all of which is
+    # perfectly fine for us.
+
+
+    # shellcheck disable=SC2154,SC2086
+    wait ${yrr_coproc_PID}
+
+  else
+
+    # if bash < 4 (e.g., OS X), just run it
+    # the ulimit was set earlier
+
+    yetus_run_and_redirect "${logfile}" "${params[@]}"
+  fi
+
 }
 
 ## @description is a given directory relative to BASEDIR?
@@ -763,6 +812,12 @@ function yetus_usage
   echo ""
   echo "Docker options:"
   docker_usage
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
+  echo ""
+  echo "Reaper options:"
+  reaper_usage
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
@@ -934,6 +989,8 @@ function parse_args
 
   docker_parse_args "$@"
 
+  reaper_parse_args "$@"
+
   if [[ -z "${PATCH_OR_ISSUE}"
        && "${BUILDMODE}" = patch ]]; then
     yetus_usage
@@ -995,6 +1052,7 @@ function parse_args
     fi
   fi
   PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
+  COPROC_LOGFILE="${PATCH_DIR}/coprocessors.txt"
 
   # we need absolute dir for ${CONSOLE_REPORT_FILE}
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
@@ -1985,6 +2043,7 @@ function modules_workers
   declare statusjdk
   declare result=0
   declare argv
+  declare execvalue
 
   if [[ "${BUILDMODE}" = full ]]; then
     repo="the source"
@@ -2030,8 +2089,12 @@ function modules_workers
       $("${BUILDTOOL}_executor" "${testtype}") \
       ${MODULEEXTRAPARAM[${modindex}]//@@@MODULEFN@@@/${fn}} \
       "${argv[@]}"
+    execvalue=$?
 
-    if [[ $? == 0 ]] ; then
+    reaper_post_exec "${modulesuffix}" "${repostatus}-${testtype}-${fn}"
+    ((execvalue = execvalue + $? ))
+
+    if [[ ${execvalue} == 0 ]] ; then
       module_status \
         ${modindex} \
         +1 \
@@ -2984,6 +3047,77 @@ function distclean
   return 0
 }
 
+## @description  Start any coprocessors
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
+function start_coprocessors
+{
+  # Eventually, we might open this up for plugins
+  # and other operating environments
+  # but for now, this is private and only for us
+
+  if [[ "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+
+    determine_user
+
+    if [[ "${OSTYPE}" = Linux && "${DOCKERMODE}" = true ]]; then
+
+      # this is really only even remotely close to
+      # accurate under Docker, for the time being.
+
+      # shellcheck disable=SC2034
+      coproc process_counter_coproc {
+        declare threadcount
+        declare maxthreadcount
+        declare cmd
+
+        sleep 2
+        while true; do
+          threadcount=$(ps -L -u "${USER_ID}" -o lwp 2>/dev/null | wc -l)
+          if [[ ${threadcount} -gt ${maxthreadcount} ]]; then
+            maxthreadcount="${threadcount}"
+            echo "${maxthreadcount}" > "${PATCH_DIR}/threadcounter.txt"
+          fi
+          read -r -t 2 cmd
+          case "${cmd}" in
+            exit)
+              exit 0
+            ;;
+          esac
+        done
+      }
+    fi
+
+    if [[ "${REAPER_MODE}" != "off" ]]; then
+      # shellcheck disable=SC2034
+      coproc reaper_coproc {
+        reaper_coproc_func
+      }
+    fi
+
+  fi
+}
+
+## @description  Stop any coprocessors
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
+function stop_coprocessors
+{
+  # shellcheck disable=SC2154
+  if [[ -n "${process_counter_coproc_PID}" ]]; then
+    # shellcheck disable=SC2086
+    echo exit >&${process_counter_coproc[1]}
+  fi
+
+  #shellcheck disable=SC2154
+  if [[ -n "${reaper_coproc_PID}" ]]; then
+    # shellcheck disable=SC2086
+    echo exit >&${reaper_coproc[1]}
+  fi
+}
+
 ## @description  Setup to execute
 ## @audience     public
 ## @stability    evolving
@@ -3127,9 +3261,22 @@ else
   initialize "$@"
 fi
 
-ulimit -Su "${PROC_LIMIT}"
 
-yetus_debug "Changed process/Java native thread limit to ${PROC_LIMIT}"
+if [[ ${BASH_VERSINFO[0]} -gt 3 ]]; then
+  yetus_debug "Starting coprocessors"
+
+  # we need to catch out and err bz the coproc
+  # command is extremely noisy on both startup
+  # and shutdown
+  start_coprocessors >> "${COPROC_LOGFILE}" 2>&1
+else
+
+  # If we aren't using bash4 (e.g. OS X), then set the ulimit now.
+  # bash4 gets it set in an (on demand) coprocessor
+
+  ulimit -Su "${PROC_LIMIT}"
+  yetus_debug "Changed process/Java native thread limit to ${PROC_LIMIT}"
+fi
 
 add_vote_table H "Prechecks"
 
@@ -3157,12 +3304,13 @@ else
 
 fi
 
-
 compile_cycle patch
 
 add_vote_table H "Other Tests"
 
 runtests
+
+stop_coprocessors
 
 finish_vote_table
 

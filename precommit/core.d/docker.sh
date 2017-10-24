@@ -474,33 +474,6 @@ function docker_cleanup
   docker_container_maintenance
 }
 
-## @description  Deterine the user name and user id of the user
-## @description  that the docker container should use
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_determine_user
-{
-  # On the Apache Jenkins hosts, $USER is pretty much untrustable beacuse some
-  # ... person ... sets it to an account that doesn't actually exist.
-  # so instead, we need to try and override it with something that's
-  # probably close to reality.
-  if [[ ${TESTPATCHMODE} =~ jenkins ]]; then
-    USER=$(id | cut -f2 -d\( | cut -f1 -d\))
-  fi
-
-  if [[ "$(uname -s)" == "Linux" ]]; then
-    USER_NAME=${SUDO_USER:=$USER}
-    USER_ID=$(id -u "${USER_NAME}")
-    GROUP_ID=$(id -g "${USER_NAME}")
-  else # boot2docker uid and gid
-    USER_NAME=${USER}
-    USER_ID=1000
-    GROUP_ID=50
-  fi
-}
-
 ## @description  Determine the revision of a dockerfile
 ## @audience     private
 ## @stability    evolving
@@ -673,6 +646,6 @@ function docker_handler
   PATCH_DIR=$(relative_dir "${PATCH_DIR}")
 
   docker_cleanup
-  docker_determine_user
+  determine_user
   docker_run_image
 }

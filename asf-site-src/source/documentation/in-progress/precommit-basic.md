@@ -52,7 +52,7 @@ For Solaris and Solaris-like operating systems, the default location for the POS
 test-patch requires these installed components to execute:
 
 * git-based project (and git 1.7.3 or higher installed)
-* bash v3.2 or higher
+* bash v3.2 or higher (bash v4.0 or higher is recommended)
 * GNU diff
 * GNU patch
 * POSIX awk
@@ -164,13 +164,15 @@ We used two new options here.  --basedir sets the location of the repository to 
 
 # Fork Bomb Protection
 
-By default, test-patch.sh will set the user soft limit (ulimit -Su) to a relatively low 1,000 processes (and, on some operating systems, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low (e.g., highly threaded Java processes), it may be necessary to use the `--proclimit` option.  For example:
+By default, test-patch.sh will set the user soft limit (ulimit -Su) to a relatively low 1,000 processes (and, on some operating systems with some languages such as Java, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low, it may be necessary to use the `--proclimit` option.  For example:
 
 ```bash
 $ test-patch --proclimit=10000
 ```
 
 ... will set it to be 10,000 processes.
+
+  NOTE: The actual implementation of this feature is dependent upon the version of Bash.  For bash v4 and higher (most operating systems), the fork bomb protection is generally only used for the build and QA tools.  This means Apache Yetus should continue to function. For earlier versions of bash (e.g., OS X), the limit is applied to all of test-patch. If the limit is hit, Apache Yetus will itself likely crash.
 
 # Automation
 
@@ -320,8 +322,8 @@ test-patch also has a mode to utilize Docker:
 $ test-patch.sh (other options) --docker
 ```
 
-This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile, see the advanced guide.
+This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the advanced guide.
 
-## In Closing
+# In Closing
 
 test-patch has many other features and command line options for the basic user.  Many of these are self-explanatory.  To see the list of options, run test-patch.sh without any options or with --help.

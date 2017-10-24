@@ -99,6 +99,9 @@ function maven_initialize
   maven_add_install mvnsite
   maven_add_install unit
 
+  # Tell the reaper about the maven surefire plugin
+  reaper_add_name surefirebooter
+
   # we need to do this before docker does it as root
   if [[ ! ${MAVEN_CUSTOM_REPOS_DIR} =~ ^/ ]]; then
     yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."

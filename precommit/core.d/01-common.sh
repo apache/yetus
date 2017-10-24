@@ -569,3 +569,47 @@ function faster_dirname
     echo .
   fi
 }
+
+## @description  Set the USER_NAME, USER_ID, and GROUP_ID env vars
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function determine_user
+{
+  # On the Apache Jenkins hosts, $USER is pretty much untrustable because
+  # something sets it to an account that doesn't actually exist.
+  # Instead, we need to try and override it with something that's
+  # probably close to reality.
+  if [[ ${TESTPATCHMODE} =~ jenkins ]]; then
+    USER=$(id | cut -f2 -d\( | cut -f1 -d\))
+  fi
+
+  USER_NAME=${SUDO_USER:=$USER}
+  # shellcheck disable=SC2034
+  USER_ID=$(id -u "${USER_NAME}")
+  # shellcheck disable=SC2034
+  GROUP_ID=$(id -g "${USER_NAME}")
+}
+
+## @description  Kill a process id
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
+## @param        pid
+function pid_kill
+{
+  declare pid=$1
+  declare cmd
+  declare kill_timeout=3
+
+  kill "${pid}" >/dev/null 2>&1
+  sleep "${kill_timeout}"
+  if kill -0 "${pid}" > /dev/null 2>&1; then
+    yetus_error "WARNING: ${pid} did not stop gracefully after ${kill_timeout} second(s): Trying to kill with kill -9"
+    kill -9 "${pid}" >/dev/null 2>&1
+  fi
+  if ps -p "${pid}" > /dev/null 2>&1; then
+    cmd=$(ps -o args "${pid}")
+    yetus_error "ERROR: Unable to kill ${pid}: ${cmd}"
+  fi
+}
