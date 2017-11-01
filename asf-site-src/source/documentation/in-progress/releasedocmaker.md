@@ -37,7 +37,7 @@ releasedocmaker
 Building changelog information in a form that is human digestible but still containing as much useful information is difficult.  Many attempts over the years have resulted in a variety of methods that projects use to solve this problem:
 
 * JIRA-generated release notes from the "Release Notes" button
-* Manually modified CHANGES file
+* Manually modified CHANGELOG file
 * Processing git log information
 
 All of these methods have their pros and cons.  Some have issues with accuracy.  Some have issues with lack of details. None of these methods seem to cover all of the needs of many projects and are full of potential pitfalls.
@@ -55,27 +55,25 @@ dateutil may be installed via pip:  `pip install python-dateutil`
 Minimally, the name of the JIRA project and a version registered in JIRA must be provided:
 
 ```bash
-$ releasedocmaker.py --project (project) --version (version)
+$ releasedocmaker --project (project) --version (version)
 ```
 
 This will query Apache JIRA, generating two files in a directory named after the given version in an extended markdown format which can be processed by both mvn site and GitHub.
 
-* CHANGES.(version).md
+* CHANGELOG.md
 
 This is similar to the JIRA "Release Notes" button but is in tabular format and includes the priority, component, reporter, and contributor fields.  It also highlights Incompatible Changes so that readers know what to look out for when upgrading. The top of the file also includes the date that the version was marked as released in JIRA.
 
 
-* RELEASENOTES.(version).md
+* RELEASENOTES.md
 
-If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGES log that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.
+If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGELOG that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.
 
-For example, to build the release documentation for HBase v1.2.0...
+For example, to build the release documentation for HBase v1.2.0:
 
 ```bash
-$ releasedocmaker.py --project HBASE --version 1.2.0
+$ releasedocmaker --project HBASE --version 1.2.0
 ```
-
-... will create a 1.2.0 directory and inside that directory will be CHANGES.1.2.0.md and RELEASENOTES.1.2.0.md .
 
 By default, release notes are expected to be in plain text.  However, you can write them in markdown if you include a header at the top of your release note:
 
@@ -89,17 +87,44 @@ remaining text
 By default, it will use a header that matches the project name.  But that is kind of ugly and the case may be wrong.  Luckily, the title can be changed:
 
 ```bash
-$ releasedocmaker.py --project HBASE --version 1.2.0 --projecttitle "Apache HBase"
+$ releasedocmaker --project HBASE --version 1.2.0 --projecttitle "Apache HBase"
 ```
 
-Now instead of "HBASE", it will use "Apache HBASE" for some titles and headers.
+Now instead of "HBASE", it will use "Apache HBase" for some titles and headers.
+
+# Versioned Files and Directories
+
+It is sometimes useful to create the CHANGELOG and RELEASENOTES with versions attached.  `releasedocmaker` supports both independently.
+
+```bash
+$ releasedocmaker --project HBASE --version 1.2.0 --fileversions
+```
+
+This command line will now create CHANGELOG.1.2.0.md and RELEASENOTES.1.2.0.md files.
+
+
+```bash
+$ releasedocmaker --project HBASE --version 1.2.0 --dirversions
+```
+
+This command line will now create a directory called 1.2.0 and inside will be the CHANGELOG.md and RELEASENOTES.md files.
+
+
+Using both at the same time...
+
+```bash
+$ releasedocmaker --project HBASE --version 1.2.0 --fileversions --dirversions
+```
+
+... results in 1.2.0/CHANGELOG.1.2.0.md and 1.2.0/RELEASENOTES.1.2.0.md files.
+
 
 # Multiple Versions
 
-The script can also generate multiple versions at once, by
+Using either `--dirversions` or `--fileversions` or both simultaneously, `releasedocmaker` can also generate multiple versions at once
 
 ```bash
-$ releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0
+$ releasedocmaker --project HBASE --version 1.0.0 --version 1.2.0 --dirversions
 ```
 
 This will create the files for versions 1.0.0 and versions 1.2.0 in their own directories.
@@ -107,7 +132,7 @@ This will create the files for versions 1.0.0 and versions 1.2.0 in their own di
 But what if the version numbers are not known?  releasedocmaker can also generate version data based upon ranges:
 
 ```bash
-$ releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0 --range
+$ releasedocmaker --project HBASE --version 1.0.0 --version 1.2.0 --range --fileversions
 ```
 
 In this form, releasedocmaker will query JIRA, discover all versions that alphabetically appear to be between 1.0.0 and 1.2.0, inclusive, and generate all of the relative release documents.  This is especially useful when bootstrapping an existing project.
@@ -119,7 +144,7 @@ For released versions, releasedocmaker will pull the date of the release from JI
 The --usetoday option can be used to signify that instead of using Unreleased, releasedocmaker should use today's date.
 
 ```bash
-$ releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
+$ releasedocmaker --project HBASE --version 1.0.0 --usetoday
 ```
 
 After using this option and release, don't forget to change JIRA's release date to match!
@@ -133,13 +158,13 @@ Different projects may find one type of sort better than another, depending upon
 By default, releasedocmaker will sort the output based upon the resolution date of the issue starting with older resolutions.  This is the same as giving these options:
 
 ```bash
-$ releasedocmaker.py --project falcon --version 0.6 --sorttype resolutiondate --sortorder older
+$ releasedocmaker --project falcon --version 0.6 --sorttype resolutiondate --sortorder older
 ```
 
 The order can be reversed so that newer issues appear on top by providing the 'newer' flag:
 
 ```bash
-$ releasedocmaker.py --project falcon --version 0.6 --sorttype resolutiondate --sortorder newer
+$ releasedocmaker --project falcon --version 0.6 --sorttype resolutiondate --sortorder newer
 ```
 
 In the case of multiple projects given on the command line, the projects will be interspersed.
@@ -149,7 +174,7 @@ In the case of multiple projects given on the command line, the projects will be
 An alternative to the date-based sort is to sort based upon the issue id.  This may be accomplished via:
 
 ```bash
-$ releasedocmaker.py --project falcon --version 0.6 --sorttype issueid --sortorder asc
+$ releasedocmaker --project falcon --version 0.6 --sorttype issueid --sortorder asc
 ```
 
 This will now sort by the issue id, listing them in lowest to highest (or ascending) order.
@@ -157,7 +182,7 @@ This will now sort by the issue id, listing them in lowest to highest (or ascend
 The order may be reversed to list them in highest to lowest (or descending) order by providing the appropriate flag:
 
 ```bash
-$ releasedocmaker.py --project falcon --version 0.6 --sorttype issueid --sortorder desc
+$ releasedocmaker --project falcon --version 0.6 --sorttype issueid --sortorder desc
 ```
 
 In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.
@@ -169,13 +194,13 @@ issue. If this field is found to be blank then it searches for the 'backward-inc
 default value for this label by using --incompatiblelabel option e.g.
 
 ```bash
-$ releasedocmaker.py --project falcon --version 0.6 --incompatiblelabel not-compatible
+$ releasedocmaker --project falcon --version 0.6 --incompatiblelabel not-compatible
 ```
 
 or equivalently using the shorter -X option
 
 ```bash
-$ releasedocmaker.py --project falcon --version 0.6 -X not-compatible
+$ releasedocmaker --project falcon --version 0.6 -X not-compatible
 ```
 
 # Lint Mode
@@ -185,7 +210,7 @@ In order to ensure proper formatting while using mvn site, releasedocmaker puts 
 In order to help release managers from having to scan through potentially large documents, releasedocmaker features a lint mode, triggered via --lint:
 
 ```bash
-$ releasedocmaker.py --project HBASE --version 1.0.0 --lint
+$ releasedocmaker --project HBASE --version 1.0.0 --lint
 ```
 
 This will do the normal JIRA querying, looking for items it considers problematic.  It will print the information to the screen and then exit with either success or failure, depending upon if any issues were discovered.
@@ -203,5 +228,5 @@ For example directories with names like 0.6, 1.2.2, 1.2alpha etc. will all be li
 You can find the version of the releasedocmaker that you are using by giving the -V option. This may be helpful in finding documentation for the version you are using.
 
 ```bash
-$ releasedocmaker.py -V
+$ releasedocmaker -V
 ```

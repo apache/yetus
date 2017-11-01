@@ -38,7 +38,7 @@ third-party repositories (e.g. Maven Central).
 <%   data.versions.releases.reverse.each do | release | %>
   * <%= release %>
     * [Release Notes](/documentation/<%= release %>/RELEASENOTES)
-    * [CHANGES](/documentation/<%= release %>/CHANGES)
+    * [CHANGELOG](/documentation/<%= release %>/CHANGELOG)
     * Source : [yetus-<%= release %>-src.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.mds))
     * Binaries : [yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.mds))
 <%   end

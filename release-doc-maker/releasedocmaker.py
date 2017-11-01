@@ -542,8 +542,18 @@ def parse_args():
     parser = OptionParser(
         usage=usage,
         epilog=
-        "Markdown-formatted CHANGES and RELEASENOTES files will be stored"
+        "Markdown-formatted CHANGELOG and RELEASENOTES files will be stored"
         " in a directory named after the highest version provided.")
+    parser.add_option("--dirversions",
+                      dest="versiondirs",
+                      action="store_true",
+                      default=False,
+                      help="Put files in versioned directories")
+    parser.add_option("--fileversions",
+                      dest="versionfiles",
+                      action="store_true",
+                      default=False,
+                      help="Write files with embedded versions")
     parser.add_option("-i",
                       "--index",
                       dest="index",
@@ -647,6 +657,14 @@ def parse_args():
 
     (options, _) = parser.parse_args()
 
+    # Handle the version string right away and exit
+    if options.release_version:
+        with open(
+                os.path.join(
+                    os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+            print ver_file.read()
+        sys.exit(0)
+
     # Validate options
     if not options.release_version:
         if options.versions is None:
@@ -664,17 +682,15 @@ def parse_args():
             else:
                 options.output_directory = options.output_directory[0]
 
+    if options.range or len(options.versions) > 1:
+      if not options.versiondirs and not options.versionfiles:
+        parser.error("Multiple versions require either --fileversions or --dirversions")
+
     return options
 
 
 def main():
     options = parse_args()
-    if options.release_version:
-        with open(
-                os.path.join(
-                    os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
-            print ver_file.read()
-        sys.exit(0)
 
     if options.output_directory is not None:
         # Create the output directory if it does not exist.
@@ -743,16 +759,50 @@ def main():
         if not os.path.exists(vstr):
             os.mkdir(vstr)
 
-        reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s.md",
-                             "%(ver)s/RELEASENOTES.%(key)s.%(ver)s.md", [],
-                             {"ver": version,
-                              "date": reldate,
-                              "title": title})
-        choutputs = Outputs("%(ver)s/CHANGES.%(ver)s.md",
-                            "%(ver)s/CHANGES.%(key)s.%(ver)s.md", [],
-                            {"ver": version,
-                             "date": reldate,
-                             "title": title})
+        if options.versionfiles and options.versiondirs:
+          reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s.md",
+                               "%(ver)s/RELEASENOTES.%(key)s.%(ver)s.md", [],
+                               {"ver": version,
+                                "date": reldate,
+                                "title": title})
+          choutputs = Outputs("%(ver)s/CHANGELOG.%(ver)s.md",
+                              "%(ver)s/CHANGELOG.%(key)s.%(ver)s.md", [],
+                              {"ver": version,
+                               "date": reldate,
+                               "title": title})
+        elif options.versiondirs:
+          reloutputs = Outputs("%(ver)s/RELEASENOTES.md",
+                               "%(ver)s/RELEASENOTES.%(key)s.md", [],
+                               {"ver": version,
+                                "date": reldate,
+                                "title": title})
+          choutputs = Outputs("%(ver)s/CHANGELOG.md",
+                              "%(ver)s/CHANGELOG.%(key)s.md", [],
+                              {"ver": version,
+                               "date": reldate,
+                               "title": title})
+        elif options.versionfiles:
+          reloutputs = Outputs("RELEASENOTES.%(ver)s.md",
+                               "RELEASENOTES.%(key)s.%(ver)s.md", [],
+                               {"ver": version,
+                                "date": reldate,
+                                "title": title})
+          choutputs = Outputs("CHANGELOG.%(ver)s.md",
+                              "CHANGELOG.%(key)s.%(ver)s.md", [],
+                              {"ver": version,
+                               "date": reldate,
+                               "title": title})
+        else:
+          reloutputs = Outputs("RELEASENOTES.md",
+                               "RELEASENOTES.%(key)s.md", [],
+                               {"ver": version,
+                                "date": reldate,
+                                "title": title})
+          choutputs = Outputs("CHANGELOG.md",
+                              "CHANGELOG.%(key)s.md", [],
+                              {"ver": version,
+                               "date": reldate,
+                               "title": title})
 
         if options.license is True:
             reloutputs.write_all(ASF_LICENSE)

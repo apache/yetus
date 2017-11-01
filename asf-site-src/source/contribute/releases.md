@@ -160,14 +160,14 @@ Depending on how candidate evaluation goes, you may end up performing these step
 1. Build release artifacts. You should use our convenience script to create the tarballs and markdown documents for a release. Run the following from the release staging branch and inspect the results:
 
         $ ./build.sh --release
-        $ ls -lah target/RELEASENOTES.md target/CHANGES.md target/*.tar.gz
+        $ ls -lah target/RELEASENOTES.md target/CHANGELOG.md target/*.tar.gz
 1. Check out the staging area for release candidates and make a directory for this candidate, somewhere outside of the your working directory. Copy the artifacts from the previous step into place. For example, when working on RC1 for the 0.2.0 release
 
         $ svn co https://dist.apache.org/repos/dist/dev/yetus/ yetus-dist-dev
         $ cd yetus-dist-dev
         $ mkdir 0.2.0-RC1
         $ cd 0.2.0-RC1
-        $ cp path/to/yetus/target/RELEASENOTES.md path/to/yetus/target/CHANGES.md path/to/yetus/target/*.tar.gz .
+        $ cp path/to/yetus/target/RELEASENOTES.md path/to/yetus/target/CHANGELOG.md path/to/yetus/target/*.tar.gz .
 1. While still in the staging area, sign the artifacts and create the needed checksum files:
 
         $ for artifact in *; do
@@ -191,7 +191,7 @@ Afterwards, the artifacts should be visible via the web under the same URL used 
         https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/
 
         As of this vote the relevant md5 hashes are:
-        MD5 (CHANGES.md) = b7f7894d686a59aad1a4afe2ae8fbb94
+        MD5 (CHANGELOG.md) = b7f7894d686a59aad1a4afe2ae8fbb94
         MD5 (RELEASENOTES.md) = e321ef2909e3e51ce40bbf701159b01e
         MD5 (yetus-0.2.0-bin.tar.gz) = e23fe4d34611a4c027df3f515cb46d7e
         MD5 (yetus-0.2.0-src.tar.gz) = e57b96533092356f3d5b9b4f47654fe9
@@ -232,10 +232,10 @@ For example, if we use the url from our exemplar VOTE email, the process would l
 
     $ wget --recursive --no-parent --quiet 'https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/'
     $ find dist.apache.org/ -type f
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGES.md
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGES.md.asc
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGES.md.md5
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGES.md.mds
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.asc
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.md5
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.mds
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/index.html
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.asc
@@ -465,16 +465,16 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.md5
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.asc
         D         0.2.0-RC1/RELEASENOTES.md
-        D         0.2.0-RC1/CHANGES.md.mds
-        D         0.2.0-RC1/CHANGES.md.md5
+        D         0.2.0-RC1/CHANGELOG.md.mds
+        D         0.2.0-RC1/CHANGELOG.md.md5
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz
         D         0.2.0-RC1/RELEASENOTES.md.asc
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.mds
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.md5
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.asc
-        D         0.2.0-RC1/CHANGES.md
+        D         0.2.0-RC1/CHANGELOG.md
         D         0.2.0-RC1/RELEASENOTES.md.mds
-        D         0.2.0-RC1/CHANGES.md.asc
+        D         0.2.0-RC1/CHANGELOG.md.asc
         D         0.2.0-RC1/RELEASENOTES.md.md5
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.mds
@@ -593,7 +593,7 @@ You should then post this patch for review. Once you've gotten feedback, it's fi
 
         The list of changes included in this release and release notes can be browsed at:
 
-            https://yetus.apache.org/documentation/0.2.0/CHANGES/
+            https://yetus.apache.org/documentation/0.2.0/CHANGELOG/
             https://yetus.apache.org/documentation/0.2.0/RELEASENOTES/
 
         Documentation for this release is at:

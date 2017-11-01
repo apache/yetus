@@ -95,14 +95,12 @@ def releasenotes(output, version)
   #       file timestamp
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
+                                       --dirversions \
                                        --usetoday --license --lint=all)`
   unless $CHILD_STATUS.exitstatus == 0
     abort("releasedocmaker failed to generate release notes for #{version}.")
   end
-  FileUtils.mv("#{output}/#{version}/RELEASENOTES.#{version}.md",
-               "#{output}/#{version}/RELEASENOTES.md")
-  FileUtils.mv("#{output}/#{version}/CHANGES.#{version}.md",
-               "#{output}/#{version}/CHANGES.md")
+
 end
 
 GITREPO = 'https://git-wip-us.apache.org/repos/asf/yetus.git'.freeze

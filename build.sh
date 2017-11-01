@@ -101,8 +101,6 @@ if [ "${offline}" != "true" ]; then
   release-doc-maker/releasedocmaker.py --lint=all --license --outputdir target \
                                                    --project YETUS "--version=${JIRA_VERSION}" \
                                                    --projecttitle="Apache Yetus" --usetoday
-  mv "target/${JIRA_VERSION}/RELEASENOTES.${JIRA_VERSION}.md" target/RELEASENOTES.md
-  mv "target/${JIRA_VERSION}/CHANGES.${JIRA_VERSION}.md" target/CHANGES.md
 else
   echo "in offline mode, skipping release notes."
 fi
@@ -127,7 +125,7 @@ if [ "${release}" = "true" ]; then
   fi
   echo "creating source tarball at '$(pwd)/target/'"
   rm "target/yetus-${YETUS_VERSION}-src".tar* 2>/dev/null || true
-  pax -w -f "target/yetus-${YETUS_VERSION}-src.tar" -s "/target/yetus-${YETUS_VERSION}/" target/RELEASENOTES.md target/CHANGES.md
+  pax -w -f "target/yetus-${YETUS_VERSION}-src.tar" -s "/target/yetus-${YETUS_VERSION}/" target/RELEASENOTES.md target/CHANGELOG.md
   current=$(basename "$(pwd)")
   #shellcheck disable=SC2038
   (cd ..; find "${current}" \( -name target -o -name publish -o -name .git \) -prune -o ! -type d -print | xargs pax -w -a -f "${current}/target/yetus-${YETUS_VERSION}-src.tar" -s "/${current}/yetus-${YETUS_VERSION}/")
@@ -159,7 +157,7 @@ for i in LICENSE NOTICE; do
   fi
 done
 
-cp target/RELEASENOTES.md target/CHANGES.md "${bin_tarball}"
+cp target/RELEASENOTES.md target/CHANGELOG.md "${bin_tarball}"
 cp -r asf-site-src/publish/documentation/in-progress "${bin_tarball}/docs"
 
 mkdir -p "${bin_tarball}/lib"
