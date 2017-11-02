@@ -55,6 +55,7 @@
                     <ul class="dropdown-menu" role="menu">
                       <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
                       <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
+                      <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -151,6 +152,10 @@
 <p>NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the &ndash;basedir and &ndash;patch-dir options respectively), because automatically mountable directories are limited to them. See <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume">the Docker documentation</a>.</p>
 
 <p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in &ndash;robot mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a <q>safe</q> mode that prevents deletions via the <code>--dockerdelrep</code> option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.</p>
+
+<p>Docker&rsquo;s <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container&rsquo;s memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See  <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details.</p>
+
+<p>Additionally, Apache Yetus sets the &ndash;oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
 
 <h1 id="plug-ins">Plug-ins</h1>
 
@@ -288,6 +293,15 @@
   <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
 <span class="o">}</span>
 </code></pre>
+<p>Additionally, a personality may require some outside help from the user.  The <code>personality_parse_args</code>
+function is called almost immediately after the personality is loaded and plug-ins parse arguments.</p>
+<pre class="highlight shell"><code><span class="k">function </span>personality_parse_args
+<span class="o">{</span>
+  <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span>
+<span class="o">}</span>
+</code></pre>
+<p>It is important to note that this function is called AFTER personality_globals.</p>
+
 <h2 id="test-determination">Test Determination</h2>
 
 <p>The <code>personality_file_tests</code> function determines which tests to turn on based upon the file name.  It is relatively simple.  For example, to turn on a full suite of tests for Java files:</p>
