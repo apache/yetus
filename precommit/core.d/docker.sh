@@ -592,48 +592,62 @@ PatchSpecificDocker
     DOCKER_EXTRAARGS+=("-m" "${DOCKER_MEMORY}")
   fi
 
-  # make the kernel prefer to kill us if we run out of RAM
-  DOCKER_EXTRAARGS+=("--oom-score-adj" "500")
-
   client=$(docker_version Client)
   server=$(docker_version Server)
 
   dockerversion="Client=${client} Server=${server}"
+
+
+  # make the kernel prefer to kill us if we run out of RAM
+  DOCKER_EXTRAARGS+=("--oom-score-adj" "500")
+
+  DOCKER_EXTRAARGS+=("--cidfile=${PATCH_DIR}/cidfile")
+  DOCKER_EXTRAARGS+=(-v "${PWD}:/testptch/${PROJECT_NAME}")
+  DOCKER_EXTRAARGS+=(-u "${USER_NAME}")
+  DOCKER_EXTRAARGS+=(-w "/testptch/${PROJECT_NAME}")
+  DOCKER_EXTRAARGS+=("--env=BASEDIR=/testptch/${PROJECT_NAME}")
+  DOCKER_EXTRAARGS+=("--env=DOCKER_VERSION=${dockerversion} Image:${baseimagename}")
+  DOCKER_EXTRAARGS+=("--env=JAVA_HOME=${JAVA_HOME}")
+  DOCKER_EXTRAARGS+=("--env=PATCH_SYSTEM=${PATCH_SYSTEM}")
+  DOCKER_EXTRAARGS+=("--env=PROJECT_NAME=${PROJECT_NAME}")
+  DOCKER_EXTRAARGS+=("--env=TESTPATCHMODE=${TESTPATCHMODE}")
+  DOCKER_EXTRAARGS+=(--name "${containername}")
+
+
+  trap 'docker_signal_handler' SIGTERM
+  trap 'docker_signal_handler' SIGINT
+
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
-    exec "${DOCKERCMD}" run --rm=true -i \
+    dockercmd run --rm=true -i \
       "${DOCKER_EXTRAARGS[@]}" \
-      -v "${PWD}:/testptch/${PROJECT_NAME}" \
       -v "${PATCH_DIR}:/testptch/patchprocess" \
-      -u "${USER_NAME}" \
-      -w "/testptch/${PROJECT_NAME}" \
-      --env=BASEDIR="/testptch/${PROJECT_NAME}" \
-      --env=DOCKER_VERSION="${dockerversion} Image:${baseimagename}" \
-      --env=JAVA_HOME="${JAVA_HOME}" \
       --env=PATCH_DIR=/testptch/patchprocess \
-      --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
-      --env=PROJECT_NAME="${PROJECT_NAME}" \
-      --env=TESTPATCHMODE="${TESTPATCHMODE}" \
-      --name "${containername}" \
-      "${patchimagename}"
+      "${patchimagename}" &
   else
-    exec "${DOCKERCMD}" run --rm=true -i \
+    dockercmd run --rm=true -i \
       "${DOCKER_EXTRAARGS[@]}" \
-      -v "${PWD}:/testptch/${PROJECT_NAME}" \
-      -u "${USER_NAME}" \
-      -w "/testptch/${PROJECT_NAME}" \
-      --env=BASEDIR="/testptch/${PROJECT_NAME}" \
-      --env=DOCKER_VERSION="${DOCKER_VERSION} Image:${baseimagename}" \
-      --env=JAVA_HOME="${JAVA_HOME}" \
       --env=PATCH_DIR="${PATCH_DIR}" \
-      --env=PATCH_SYSTEM="${PATCH_SYSTEM}" \
-      --env=PROJECT_NAME="${PROJECT_NAME}" \
-      --env=TESTPATCHMODE="${TESTPATCHMODE}" \
-      --name "${containername}" \
-      "${patchimagename}"
+      "${patchimagename}" &
   fi
 
-  # this should never get reached, but we put it here just in case
-  cleanup_and_exit 1
+  wait ${!}
+  cleanup_and_exit $?
+}
+
+## @description  docker kill the container on SIGTERM
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function docker_signal_handler
+{
+  declare cid
+
+  cid=$(cat "${PATCH_DIR}/cidfile")
+
+  yetus_error "ERROR: Caught signal. Killing docker container:"
+  dockercmd kill "${cid}"
+  yetus_error "ERROR: Exiting."
+  cleanup_and_exit 143 # 128 + 15 -- SIGTERM
 }
 
 ## @description  Switch over to a Docker container
