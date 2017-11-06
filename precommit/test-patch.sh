@@ -623,22 +623,6 @@ function compute_unidiff
   rm "${tmpfile}"
 }
 
-## @description helper function for echo_and_redirect
-## @audience private
-## @stability evolving
-## @replaceable no
-function e_a_r_helper
-{
-  declare logfile=$1
-  shift
-  declare params=("${@}")
-
-  # shellcheck disable=SC2034
-  coproc yrr_coproc {
-    ulimit -Su "${PROC_LIMIT}"
-    yetus_run_and_redirect "${logfile}" "${params[@]}"
-  }
-}
 
 ## @description  Print the command to be executing to the screen. Then
 ## @description  run the command, sending stdout and stderr to the given filename
@@ -685,7 +669,7 @@ function echo_and_redirect
     # if bash < 4 (e.g., OS X), just run it
     # the ulimit was set earlier
 
-    yetus_run_and_redirect "${logfile}" "${params[@]}"
+    yetus_run_and_redirect "${logfile}" "${@}"
   fi
 
 }
@@ -3053,48 +3037,26 @@ function distclean
 ## @replaceable  yes
 function start_coprocessors
 {
+
+  declare filename
+
   # Eventually, we might open this up for plugins
   # and other operating environments
   # but for now, this is private and only for us
 
   if [[ "${BASH_VERSINFO[0]}" -gt 3 ]]; then
 
+    for filename in "${BINDIR}/coprocs.d"/*; do
+      # shellcheck disable=SC1091
+      # shellcheck source=coprocs.d/process_counter.sh
+      . "${filename}"
+    done
+
     determine_user
 
-    if [[ "${OSTYPE}" = Linux && "${DOCKERMODE}" = true ]]; then
+    process_counter_coproc_start
 
-      # this is really only even remotely close to
-      # accurate under Docker, for the time being.
-
-      # shellcheck disable=SC2034
-      coproc process_counter_coproc {
-        declare threadcount
-        declare maxthreadcount
-        declare cmd
-
-        sleep 2
-        while true; do
-          threadcount=$(ps -L -u "${USER_ID}" -o lwp 2>/dev/null | wc -l)
-          if [[ ${threadcount} -gt ${maxthreadcount} ]]; then
-            maxthreadcount="${threadcount}"
-            echo "${maxthreadcount}" > "${PATCH_DIR}/threadcounter.txt"
-          fi
-          read -r -t 2 cmd
-          case "${cmd}" in
-            exit)
-              exit 0
-            ;;
-          esac
-        done
-      }
-    fi
-
-    if [[ "${REAPER_MODE}" != "off" ]]; then
-      # shellcheck disable=SC2034
-      coproc reaper_coproc {
-        reaper_coproc_func
-      }
-    fi
+    repear_coproc_start
 
   fi
 }
@@ -3105,16 +3067,18 @@ function start_coprocessors
 ## @replaceable  yes
 function stop_coprocessors
 {
-  # shellcheck disable=SC2154
-  if [[ -n "${process_counter_coproc_PID}" ]]; then
-    # shellcheck disable=SC2086
-    echo exit >&${process_counter_coproc[1]}
-  fi
+  if [[ "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+    # shellcheck disable=SC2154
+    if [[ -n "${process_counter_coproc_PID}" ]]; then
+      # shellcheck disable=SC2086
+      echo exit >&${process_counter_coproc[1]}
+    fi
 
-  #shellcheck disable=SC2154
-  if [[ -n "${reaper_coproc_PID}" ]]; then
-    # shellcheck disable=SC2086
-    echo exit >&${reaper_coproc[1]}
+    #shellcheck disable=SC2154
+    if [[ -n "${reaper_coproc_PID}" ]]; then
+      # shellcheck disable=SC2086
+      echo exit >&${reaper_coproc[1]}
+    fi
   fi
 }
 
