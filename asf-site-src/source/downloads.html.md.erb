@@ -43,3 +43,11 @@ third-party repositories (e.g. Maven Central).
     * Binaries : [yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.mds))
 <%   end
    end %>
+
+The latest version of Apache Yetus is also available via Homebrew on Mac OS X:
+```shell
+brew tap apache/yetus https://github.com/apache/yetus
+brew install yetus
+```
+
+This will install many of the dependencies needed for the precommit functionality as well.

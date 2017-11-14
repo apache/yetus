@@ -488,7 +488,12 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
 1. Delete staging branch. Now that there is an immutable tag for the release, all commits leading up to that release will be maintained by git. Should we need a future maintenance release after this version, we can reestablish the branch based off of the release tag.
 
         $ git push origin :YETUS-XXX
-1. You should update the documentation in the git master branch for the new release. Due to some limitations in our website rendering library, this currently involves some extra symlinks (see YETUS-192).
+1. Update the Mac OS X Homebrew Formula:
+
+        $ vim Formula/yetus.rb
+        $ # change URL point to new version
+        $ # update the sha256. e.g., shasum -s 256 bin.gz
+1. Update the documentation in the git master branch for the new release. Due to some limitations in our website rendering library, this currently involves some extra symlinks (see YETUS-192).
 
         $ cd asf-site-src
         $ # Add the release to the releases data file
