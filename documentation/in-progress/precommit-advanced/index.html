@@ -124,6 +124,7 @@
 
 <ul>
 <li><a href="#docker-support">Docker Support</a></li>
+<li><a href="#test-reaper">Process Reaper</a></li>
 <li><a href="#plug-ins">Plug-ins</a></li>
 <li><a href="#personalities">Personalities</a></li>
 <li><a href="#important-variables">Important Variables</a></li>
@@ -149,13 +150,21 @@
 
 <p>Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.</p>
 
-<p>NOTE: If you are using Boot2Docker, you must use directories under /Users (OSX) or C:\Users (Windows) as the base and patchprocess directories (specified by the &ndash;basedir and &ndash;patch-dir options respectively), because automatically mountable directories are limited to them. See <a href="https://docs.docker.com/userguide/dockervolumes/#mount-a-host-directory-as-a-data-volume">the Docker documentation</a>.</p>
-
 <p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in &ndash;robot mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a <q>safe</q> mode that prevents deletions via the <code>--dockerdelrep</code> option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.</p>
 
-<p>Docker&rsquo;s <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container&rsquo;s memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See  <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details.</p>
+<h2 id="resource-controls">Resource Controls</h2>
 
-<p>Additionally, Apache Yetus sets the &ndash;oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
+<p>Docker&rsquo;s <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container&rsquo;s memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details. Apache Yetus also sets the &ndash;oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
+
+<p>Additionally, if bash v4 and Linux is in use, a separate process is launched to keep a rolling count of the maximum number of threads (not processes!) in use at one time. This number will be reported at the end of the test-patch run.  Depending upon the build, languages, features enabled, etc, this number may be helpful in determining what the value of <code>--proclimit</code></p>
+
+<h1 id="process-reaper">Process Reaper</h1>
+
+<p>A common problem is the &lsquo;stuck&rsquo; unit test. If bash v4.0 or higher is in use, Apache Yetus may be told to turn on the process reaper functionality.  Using the <code>--reapearmode</code> option, this feature may be configured to either report and even kill left over processes that match provided regular expressions.</p>
+
+<p>WARNING: Using <code>--reapermode</code> outside of Docker will report or kill ALL matching processes on the system.  It is recommended to only use those options whilst in Docker mode.</p>
+
+<p>The reaper will run after every &lsquo;external&rsquo; command that is printed on the console.  This includes almost all build tool commands and individual test commands.</p>
 
 <h1 id="plug-ins">Plug-ins</h1>
 

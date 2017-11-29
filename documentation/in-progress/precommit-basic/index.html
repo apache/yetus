@@ -156,7 +156,7 @@ as a whole.</p>
 
 <ul>
 <li>git-based project (and git 1.7.3 or higher installed)</li>
-<li>bash v3.2 or higher</li>
+<li>bash v3.2 or higher (bash v4.0 or higher is recommended)</li>
 <li>GNU diff</li>
 <li>GNU patch</li>
 <li>POSIX awk</li>
@@ -257,10 +257,12 @@ as a whole.</p>
 
 <h1 id="fork-bomb-protection">Fork Bomb Protection</h1>
 
-<p>By default, test-patch.sh will set the user soft limit (ulimit -Su) to a relatively low 1,000 processes (and, on some operating systems, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low (e.g., highly threaded Java processes), it may be necessary to use the <code>--proclimit</code> option.  For example:</p>
+<p>By default, test-patch.sh will set the user soft limit (ulimit -Su) to a relatively low 1,000 processes (and, on some operating systems with some languages such as Java, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low, it may be necessary to use the <code>--proclimit</code> option.  For example:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch --proclimit<span class="o">=</span>10000
 </code></pre>
 <p>&hellip; will set it to be 10,000 processes.</p>
+
+<p>NOTE: The actual implementation of this feature is dependent upon the version of Bash.  For bash v4 and higher (most operating systems), the fork bomb protection is generally only used for the build and QA tools.  This means Apache Yetus should continue to function. For earlier versions of bash (e.g., OS X), the limit is applied to all of test-patch. If the limit is hit, Apache Yetus will itself likely crash.</p>
 
 <h1 id="automation">Automation</h1>
 
@@ -303,7 +305,7 @@ have a location to look at the output artifacts:</p>
 <p>It is a fairly common practice within the Apache community to use Apache&rsquo;s JIRA instance to store potential patches.  As a result, test-patch supports providing just a JIRA issue number.  test-patch will find the <em>last</em> attachment, download it, then process it.</p>
 
 <p><strong>NOTE: test-patch expects the patch files to follow a particular naming convention. For complete details
- on the naming convention please refer to <a href="./precommit-patchnames/">patch-naming-conventions</a></strong></p>
+ on the naming convention please refer to <a href="../precommit-patchnames/">patch-naming-conventions</a></strong></p>
 
 <p>For example:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> HADOOP-9905
@@ -365,9 +367,9 @@ have a location to look at the output artifacts:</p>
 <p>test-patch also has a mode to utilize Docker:</p>
 <pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> --docker
 </code></pre>
-<p>This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile, see the advanced guide.</p>
+<p>This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the advanced guide.</p>
 
-<h2 id="in-closing">In Closing</h2>
+<h1 id="in-closing">In Closing</h1>
 
 <p>test-patch has many other features and command line options for the basic user.  Many of these are self-explanatory.  To see the list of options, run test-patch.sh without any options or with &ndash;help.</p>
 
