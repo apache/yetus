@@ -42,19 +42,31 @@ GITHUB_ISSUE=""
 GITHUB_BRIDGED=false
 GITHUB_COMMITSHA=""
 
+# Simple function to set a default GitHub user after PROJECT_NAME has been set
+function github_set_github_user
+{
+  if [[ -n "${PROJECT_NAME}" && ! "${PROJECT_NAME}" = unknown ]]; then
+    GITHUB_USER=${GITHUB_USER:-"${PROJECT_NAME}qa"}
+  fi
+}
+
 function github_usage
 {
+  github_set_github_user
+
   yetus_add_option "--github-api-url=<url>" "The URL of the API for github (default: '${GITHUB_API_URL}')"
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
   yetus_add_option "--github-password=<pw>" "Github password"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-token=<token>" "The token to use to write to github"
-  yetus_add_option "--github-user=<user>" "Github user"
+  yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
 }
 
 function github_parse_args
 {
   declare i
+
+  github_set_github_user
 
   for i in "$@"; do
     case ${i} in

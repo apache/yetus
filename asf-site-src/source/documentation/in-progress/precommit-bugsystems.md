@@ -76,6 +76,9 @@ In order to comment on issues or, depending upon the security setup of the repo,
 
   * Username/password: `--github-user`/ GITHUB\_USER , `--github-password` / GITHUB\_PASSWD
 
+The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
+`--project=yetus` will set `GITHUB_USER=yetusqa`.
+
 Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.
 
 # JIRA Specific
@@ -85,3 +88,6 @@ JIRA support allows both patch downloads and summary writes.  It also supports b
 JIRA issues are invoked by matching the command line option to a specific regular expression as given by the `--jira-issue-re` option or via the JIRA\_ISSUE\_RE personality variable.  By default, the plug-in uses https://issues.apache.org/jira as the JIRA instance to use.  However that may be overwritten via the `--jira-base-url` option or personalities may define via JIRA\_URL.
 
 In order to write information on the issue, JIRA requires username and password authentication using the `--jira-user`/`--jira-password` options or the JIRA\_USER and JIRA\_PASSWORD variables in a personality.
+
+The default value for JIRA\_USER is the value of `--project` suffixed with QA.  For example,
+`--project=yetus` will set `JIRA_USER=yetusqa`.

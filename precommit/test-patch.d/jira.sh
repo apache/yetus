@@ -31,18 +31,31 @@ JIRA_STATUS_RE='Patch Available'
 
 add_bugsystem jira
 
+# Simple function to set a default JIRA user after PROJECT_NAME has been set
+function jira_set_jira_user
+{
+  if [[ -n "${PROJECT_NAME}" && ! "${PROJECT_NAME}" = unknown ]]; then
+    JIRA_USER=${JIRA_USER:-"${PROJECT_NAME}qa"}
+  fi
+}
+
 function jira_usage
 {
+
+  jira_set_jira_user
+
   yetus_add_option "--jira-base-url=<url>" "The URL of the JIRA server (default:'${JIRA_URL}')"
   yetus_add_option "--jira-issue-re=<expr>" "Bash regular expression to use when trying to find a jira ref in the patch name (default: '${JIRA_ISSUE_RE}')"
-  yetus_add_option "--jira-password=<pw>" "The password for the 'jira' command"
+  yetus_add_option "--jira-password=<pw>" "The password for accessing JIRA"
   yetus_add_option "--jira-status-re=<expr>" "Grep regular expression representing the issue status whose patch is applicable to the codebase (default: '${JIRA_STATUS_RE}')"
-  yetus_add_option "--jira-user=<user>" "The user for the 'jira' command"
+  yetus_add_option "--jira-user=<user>" "The user to access JIRA command (default: ${JIRA_USER})"
 }
 
 function jira_parse_args
 {
   declare i
+
+  jira_set_jira_user
 
   for i in "$@"; do
     case ${i} in
