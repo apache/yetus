@@ -216,7 +216,8 @@ for utility in shelldocs/shelldocs.py \
                precommit/docker-cleanup.sh \
                precommit/qbt.sh \
                precommit/smart-apply-patch.sh \
-               precommit/test-patch.sh
+               precommit/test-patch.sh \
+               precommit/jenkins/jenkins-admin.py
 do
   wrapper=${utility##*/}
   wrapper=${wrapper%.*}
