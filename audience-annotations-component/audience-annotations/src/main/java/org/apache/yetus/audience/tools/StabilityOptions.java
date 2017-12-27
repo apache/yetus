@@ -38,25 +38,29 @@ class StabilityOptions {
 
   public static void validOptions(String[][] options,
       DocErrorReporter reporter) {
-    for (int i = 0; i < options.length; i++) {
-      String opt = options[i][0].toLowerCase(Locale.ENGLISH);
-      if (opt.equals(UNSTABLE_OPTION)) {
-        RootDocProcessor.stability = UNSTABLE_OPTION;
-      } else if (opt.equals(EVOLVING_OPTION)) {
-        RootDocProcessor.stability = EVOLVING_OPTION;
-      } else if (opt.equals(STABLE_OPTION)) {
-        RootDocProcessor.stability = STABLE_OPTION;
+    for (String[] option : options) {
+      String opt = option[0].toLowerCase(Locale.ENGLISH);
+      switch (opt) {
+        case UNSTABLE_OPTION:
+          RootDocProcessor.stability = UNSTABLE_OPTION;
+          break;
+        case EVOLVING_OPTION:
+          RootDocProcessor.stability = EVOLVING_OPTION;
+          break;
+        case STABLE_OPTION:
+          RootDocProcessor.stability = STABLE_OPTION;
+          break;
       }
     }
   }
 
   public static String[][] filterOptions(String[][] options) {
     List<String[]> optionsList = new ArrayList<String[]>(options.length);
-    for (int i = 0; i < options.length; i++) {
-      if (!options[i][0].equalsIgnoreCase(UNSTABLE_OPTION)
-          && !options[i][0].equalsIgnoreCase(EVOLVING_OPTION)
-          && !options[i][0].equalsIgnoreCase(STABLE_OPTION)) {
-        optionsList.add(options[i]);
+    for (String[] option1 : options) {
+      if (!option1[0].equalsIgnoreCase(UNSTABLE_OPTION)
+              && !option1[0].equalsIgnoreCase(EVOLVING_OPTION)
+              && !option1[0].equalsIgnoreCase(STABLE_OPTION)) {
+        optionsList.add(option1);
       }
     }
     String[][] filteredOptions = new String[optionsList.size()][];
