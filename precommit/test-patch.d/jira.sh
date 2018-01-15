@@ -184,7 +184,8 @@ function jira_locate_patch
   # the assumption here is that attachment id's are given in an
   # ascending order. so bigger # == newer file
   #shellcheck disable=SC2016
-  ${AWK} 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' "${PATCH_DIR}/jira" \
+  tr '>' '\n' < "${PATCH_DIR}/jira" \
+    | ${AWK} 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' \
     | ${GREP} -v -e 'htm[l]*$' \
     | ${SED} -e 's,[ ]*$,,g' \
     | sort -n -r -k4 -t/ \
