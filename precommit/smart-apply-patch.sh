@@ -260,9 +260,10 @@ function gitapply_and_commit
   author="${name} <${email}>"
   summary=$(${GREP} -E "^\*summary\*:" "${jsontmpfile}" | cut -f4 -d"*")
   gitapply_apply "${patchfile}"
+  ${GIT} add --all
   echo "Committing with author: ${author}, summary: ${summary}"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am-fallback.log" \
-    "${GIT}" commit ${EXTRA_ARGS} --signoff -a -m "${PATCH_OR_ISSUE}. ${summary}" \
+    "${GIT}" commit ${EXTRA_ARGS} --signoff -m "${PATCH_OR_ISSUE}. ${summary}" \
     --author="${author}"
 }
 
@@ -301,6 +302,12 @@ plugins_initialize
 locate_patch
 
 if [[ ${COMMITMODE} = true ]]; then
+  status=$(${GIT} status --porcelain)
+  if [[ "$status" != "" ]] ; then
+    yetus_error "ERROR: Can't use --committer option in a workspace that contains the following modifications:"
+    yetus_error "${status}"
+    cleanup_and_exit 1
+  fi
   PATCH_METHODS=("gitam" "${PATCH_METHODS[@]}")
 fi
 
