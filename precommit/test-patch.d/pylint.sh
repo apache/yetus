@@ -85,7 +85,7 @@ function pylint_preapply
     fi
   done
   if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
-    count=$(${GREP} -vc "^No config file found" "${PATCH_DIR}/${pylintStderr}")
+    count=$(${GREP}  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
       add_footer_table pylint "${PATCH_BRANCH} stderr: @@BASE@@/${pylintStderr}"
       return 1
@@ -132,7 +132,7 @@ function pylint_postapply
     fi
   done
   if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
-    count=$(${GREP} -vc "^No config file found" "${PATCH_DIR}/${pylintStderr}")
+    count=$(${GREP}  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
       add_vote_table -1 pylint "Something bad seems to have happened in running pylint. Please check pylint stderr files."
       add_footer_table pylint "${BUILDMODEMSG} stderr: @@BASE@@/${pylintStderr}"
