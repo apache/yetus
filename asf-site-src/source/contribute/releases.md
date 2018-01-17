@@ -157,9 +157,10 @@ Both of these patch files should be uploaded to your release issue for review. O
 Depending on how candidate evaluation goes, you may end up performing these steps multiple times. Before you start, you'll need to decide when you want each candidate's vote thread to end. ASF policy requires a minimum voting period of 72 hours (ref [ASF Voting Policy](https://www.apache.org/foundation/voting.html)), so you should ensure enough padding to complete the candidate generation process in time. Ideally, you would plan to post the vote thread on a Friday morning (US time) with a closing date on Monday morning (US time).
 
 1. Update JIRA version release date. Browse to the JIRA project version management page (https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions) and set the release date to when you expect your next vote thread to close. This date will be used by our generated release notes.
+1. Update your `${HOME}/.m2/settings.xml` file to include the Maven snapshot information as indicated on http://www.apache.org/dev/publishing-maven-artifacts.html
 1. Build release artifacts. You should use our convenience script to create the tarballs and markdown documents for a release. Run the following from the release staging branch and inspect the results:
 
-        $ ./build.sh --release
+        $ ./build.sh --release --deploy
         $ ls -lah target/RELEASENOTES.md target/CHANGELOG.md target/*.tar.gz
 1. Check out the staging area for release candidates and make a directory for this candidate, somewhere outside of the your working directory. Copy the artifacts from the previous step into place. For example, when working on RC1 for the 0.2.0 release
 
@@ -182,6 +183,7 @@ Depending on how candidate evaluation goes, you may end up performing these step
         $ svn add 0.2.0-RC1
         $ svn commit -m "stage Apache Yetus 0.2.0-RC1"
 Afterwards, the artifacts should be visible via the web under the same URL used when checking out. In the case of 0.2.0-RC1: https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/
+1. Examine staged maven build. Go to the [ASF repository](http://repository.apache.org/) and log in with your asf LDAP credentials. Look for the staging repository with a name that includes "yetus". Clicking on it will give you a link to an "Open" repository. You can examine the structure in the Nexus API while you're logged in. If it looks essentially correct, "Close" the repository. Refreshing and clicking on the repository will give you a link in the Summary tab that other folks can use to interact with the repository.
 1. Call a vote on the release candidate. At this point you have everything you need to call a vote. Your vote thread must contain "[VOTE]" in the subject line, a link to the candidate staging area you created, a source repository commit hash, and voting rules. It should also contain hashes for the artifacts. Here is an example draft for 0.2.0-RC1, update it as appropriate for your release:
 
         Subject: [VOTE] Apache Yetus 0.2.0-RC1
@@ -197,6 +199,7 @@ Afterwards, the artifacts should be visible via the web under the same URL used 
         SHA512 (yetus-0.2.0-src.tar.gz) = e57b96533092356f3d5b9b4f47654fe9
 
         Source repository commit: 1e8f4588906a51317207092bd97b35687f2e3fa3
+        Maven staging repository: https://repository.apache.org/content/repositories/orgapacheyetus-1011
 
         Our KEYS file is at: https://dist.apache.org/repos/dist/release/yetus/KEYS
         All artifacts are signed with my key (DEADBEEF)
@@ -484,6 +487,7 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
 
         Committed revision 1772.
 1. Resolve release issue; it should be marked as "fixed."
+1. Go to the [ASF repository](http://repository.apache.org/) and click 'Release' to put the RC Maven artifacts into the release repository.
 1. Mark JIRA version as released. Browse to the [project version management page for the YETUS JIRA tracker](https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions). Mouse over the version you are managing, click on the gear in the far right, and select Release.
 1. Delete staging branch. Now that there is an immutable tag for the release, all commits leading up to that release will be maintained by git. Should we need a future maintenance release after this version, we can reestablish the branch based off of the release tag.
 

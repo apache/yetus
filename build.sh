@@ -19,6 +19,7 @@
 # create a more sustainable build system.
 #
 # Pass --release to get release checks
+# Pass --deploy to deploy maven snapshot artifacts
 #
 # Presumes you have
 #   * maven 3.2.0+
@@ -81,11 +82,17 @@ RAT_DOWNLOAD_URL=https://repo1.maven.org/maven2/org/apache/rat/apache-rat/0.11/a
 release=false
 offline=false
 for arg in "$@"; do
-  if [ "--release" = "${arg}" ]; then
-    release=true
-  elif [ "--offline" = "${arg}" ]; then
-    offline=true
-  fi
+  case ${arg} in
+    --release)
+      release=true
+      ;;
+    --offline)
+      offline=true
+      ;;
+    --deploy)
+      deploy=true
+      ;;
+  esac
 done
 
 echo "working on version '${YETUS_VERSION}'"
@@ -134,8 +141,13 @@ fi
 
 echo "running maven builds for java components"
 # build java components
-mvn "${MAVEN_ARGS[@]}" install --file yetus-project/pom.xml
-mvn "${MAVEN_ARGS[@]}" -Pinclude-jdiff-module install javadoc:aggregate --file audience-annotations-component/pom.xml
+if [[ "${deploy}" = true ]]; then
+  mvncmd=deploy
+else
+  mvncmd=install
+fi
+mvn "${MAVEN_ARGS[@]}" "${mvncmd}" --file yetus-project/pom.xml
+mvn "${MAVEN_ARGS[@]}" -Pinclude-jdiff-module "${mvncmd}" javadoc:aggregate --file audience-annotations-component/pom.xml
 
 echo "building documentation"
 # build docs after javadocs
