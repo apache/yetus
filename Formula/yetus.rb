@@ -18,8 +18,8 @@
 class Yetus < Formula
   desc 'Enable contribution and release processes for software projects'
   homepage 'https://yetus.apache.org/'
-  url 'https://www.apache.org/dyn/closer.lua?path=/yetus/0.6.0/yetus-0.6.0-bin.tar.gz'
-  sha256 '3864b6f9bb8230e0b0dec4fa760b0e5492c431f22d042285444f3407d4e29792'
+  url 'https://www.apache.org/dyn/closer.lua?path=/yetus/0.7.0/yetus-0.7.0-bin.tar.gz'
+  sha256 '619655979b9c05c0f739d43dbf7bcf657d90239a6577e1b167aceb6596bb506d'
 
   option 'with-all', 'Build with all dependencies. Note that some dependencies such as '\
     'Perl::Critic, Pylint, RuboCop and ruby-lint still need to be installed manually.'
