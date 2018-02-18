@@ -153,6 +153,7 @@ function jira_locate_patch
 {
   declare input=$1
   declare fileloc=$2
+  declare jsonloc
   declare relativeurl
   declare retval
   declare found=false
@@ -174,7 +175,12 @@ function jira_locate_patch
   # that is a github patch file or pull request
   if [[ -n "${GITHUB_BASE_URL}" ]]; then
     jira_determine_issue "${input}"
-    github_jira_bridge "${fileloc}"
+    # Download information via REST API
+    jsonloc="${PATCH_DIR}/jira-json"
+    jira_http_fetch "rest/api/2/issue/${input}" "${jsonloc}"
+    # Parse the downloaded information to check if the issue is
+    # just a pointer to GitHub.
+    github_jira_bridge "${fileloc}" "${jsonloc}"
     if [[ $? -eq 0 ]]; then
       echo "${input} appears to be a Github PR. Switching Modes."
       return 0
