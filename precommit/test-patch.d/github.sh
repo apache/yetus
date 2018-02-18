@@ -99,13 +99,12 @@ function github_parse_args
 function github_jira_bridge
 {
   declare fileloc=$1
+  declare jsonloc=$2
   declare urlfromjira
 
-  # the JIRA issue has already been downloaded. So let's find the URL.
   # shellcheck disable=SC2016
-
   urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch[ &\\\"]\"){url=substr(\$0,RSTART,RLENGTH-1)}
-                        END{if (url) print url}" "${PATCH_DIR}/jira" )
+                        END{if (url) print url}" "${jsonloc}" )
   if [[ -z $urlfromjira ]]; then
     # This is currently the expected path, as github pull requests are not common
     return 1
