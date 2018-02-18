@@ -130,7 +130,24 @@ if __name__ == '__main__':
                       help='Submit Job to jenkins')
     parser.add_option('--max-history', dest='history', type='int',
                       help='Maximum history to store', default=5000)
+    parser.add_option(
+        '-V',
+        '--version',
+        dest='release_version',
+        action='store_true',
+        default=False,
+        help="display version information for jenkins-admin and exit.")
+
     (options, args) = parser.parse_args()
+
+    # Handle the version string right away and exit
+    if options.release_version:
+        with open(
+                os.path.join(
+                    os.path.dirname(__file__), "../../VERSION"), 'r') as ver_file:
+            print ver_file.read()
+        sys.exit(0)
+
     tokenFrag = ''
     if options.jenkinsToken:
         tokenFrag = 'token=%s' % options.jenkinsToken
