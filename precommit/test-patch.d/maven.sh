@@ -539,11 +539,13 @@ function maven_docker_support
   fi
 }
 
-## @description  worker for maven reordering
+## @description  worker for maven reordering. MAVEN_DEP_LOG is set to the log file name
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @param        repostatus
+## @return       0 = success
+## @return       1 = failure
 function maven_reorder_module_process
 {
   declare repostatus=$1
@@ -555,6 +557,7 @@ function maven_reorder_module_process
   declare fn
   declare needroot=false
   declare found
+  declare ret
 
   for module in "${CHANGED_MODULES[@]}"; do
     if [[ "${module}" = \. ]]; then
@@ -568,7 +571,9 @@ function maven_reorder_module_process
   # get the module directory list in the correct order based on maven dependencies
   # shellcheck disable=SC2046
   echo_and_redirect "${PATCH_DIR}/maven-${repostatus}-dirlist-${fn}.txt" \
-    $("${BUILDTOOL}_executor") "-q" "exec:exec" "-Dexec.executable=pwd" "-Dexec.args=''"
+    $("${BUILDTOOL}_executor") "-fae" "-q" "exec:exec" "-Dexec.executable=pwd" "-Dexec.args=''"
+  MAVEN_DEP_LOG="maven-${repostatus}-dirlist-${fn}.txt"
+  ret=$?
 
   while read -r line; do
     for indexm in "${CHANGED_MODULES[@]}"; do
@@ -606,6 +611,7 @@ function maven_reorder_module_process
   fi
 
   CHANGED_MODULES=("${newlist[@]}")
+  return "${ret}"
 }
 
 ## @description  take a stab at reordering modules based upon
@@ -619,6 +625,7 @@ function maven_reorder_modules
 {
   declare repostatus=$1
   declare index
+  declare ret
 
   if [[ "${MAVEN_DEPENDENCY_ORDER}" != "true" ]]; then
     return
@@ -635,6 +642,7 @@ function maven_reorder_modules
   start_clock
 
   maven_reorder_module_process "${repostatus}"
+  ret=$?
 
   yetus_debug "Maven: finish re-ordering modules"
   yetus_debug "Finished list: ${CHANGED_MODULES[*]}"
@@ -650,9 +658,19 @@ function maven_reorder_modules
   done
 
   if [[ "${BUILDMODE}" = patch ]]; then
-    add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
+    if [[ ${ret} == 0 ]]; then
+      add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
+    else
+      add_vote_table -1 mvndep "Maven dependency ordering for ${repostatus}"
+      add_footer_table mvndep "${MAVEN_DEP_LOG}"
+    fi
   else
-    add_vote_table 0 mvndep "Maven dependency ordering"
+    if [[ ${ret} == 0 ]]; then
+      add_vote_table 0 mvndep "Maven dependency ordering"
+    else
+      add_vote_table -1 mvndep "Maven dependency ordering"
+      add_footer_table mvndep "${MAVEN_DEP_LOG}"
+    fi
   fi
 
   echo "Elapsed: $(clock_display $(stop_clock))"
