@@ -45,7 +45,7 @@ To create our convenience binary artifact, you'll need to build both our project
 - Yetus Precommit will require Python 2.6+ for generating documentation on its API via Yetus Shelldocs.
 - The project documentation will require Ruby 2.x+ for rendering.
 - We'll build release notes with Yetus Release Doc Maker, which will require Python 2.6+.
-- Assembling release artifacts will make use of bash, tar, gzip, and md5sum.
+- Assembling release artifacts will make use of bash, tar, gzip, and shasum.
 
 ## Setup
 
@@ -174,7 +174,7 @@ Depending on how candidate evaluation goes, you may end up performing these step
             echo ${artifact}
             gpg --use-agent --armor --output "${artifact}".asc --detach-sig "${artifact}"
             gpg --print-mds "${artifact}" >"${artifact}".mds
-            md5 "${artifact}" >"${artifact}".md5
+            shasum -a 512 "${artifact}" >"${artifact}".sha512
           done
 1. Push the release candidate to staging distribution. This will make the artifacts visible for the vote.
 
@@ -190,11 +190,11 @@ Afterwards, the artifacts should be visible via the web under the same URL used 
 
         https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/
 
-        As of this vote the relevant md5 hashes are:
-        MD5 (CHANGELOG.md) = b7f7894d686a59aad1a4afe2ae8fbb94
-        MD5 (RELEASENOTES.md) = e321ef2909e3e51ce40bbf701159b01e
-        MD5 (yetus-0.2.0-bin.tar.gz) = e23fe4d34611a4c027df3f515cb46d7e
-        MD5 (yetus-0.2.0-src.tar.gz) = e57b96533092356f3d5b9b4f47654fe9
+        As of this vote the relevant sha512 hashes are:
+        SHA512 (CHANGELOG.md) = b7f7894d686a59aad1a4afe2ae8fbb94
+        SHA512 (RELEASENOTES.md) = e321ef2909e3e51ce40bbf701159b01e
+        SHA512 (yetus-0.2.0-bin.tar.gz) = e23fe4d34611a4c027df3f515cb46d7e
+        SHA512 (yetus-0.2.0-src.tar.gz) = e57b96533092356f3d5b9b4f47654fe9
 
         Source repository commit: 1e8f4588906a51317207092bd97b35687f2e3fa3
 
@@ -234,20 +234,20 @@ For example, if we use the url from our exemplar VOTE email, the process would l
     $ find dist.apache.org/ -type f
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.asc
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.md5
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.sha512
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.mds
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/index.html
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.asc
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.md5
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.sha512
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.mds
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.asc
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.md5
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.sha512
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.mds
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.asc
-    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.md5
+    dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.sha512
     dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.mds
     dist.apache.org//robots.txt
 
@@ -275,8 +275,8 @@ As noted in the informational page [What We Sign](http://www.apache.org/info/ver
 
         $ gpg --print-mds yetus-0.2.0-src.tar.gz >yetus-0.2.0-src.tar.gz.my_mds
         $ diff yetus-0.2.0-src.tar.gz.mds yetus-0.2.0-src.tar.gz.my_mds
-        $ md5 yetus-0.2.0-src.tar.gz >yetus-0.2.0-src.tar.gz.my_md5
-        $ diff yetus-0.2.0-src.tar.gz.md5 yetus-0.2.0-src.tar.gz.my_md5
+        $ shasum -a 512 yetus-0.2.0-src.tar.gz >yetus-0.2.0-src.tar.gz.my_sha512
+        $ diff yetus-0.2.0-src.tar.gz.sha512 yetus-0.2.0-src.tar.gz.my_sha512
 1. You MUST make sure artifacts abide by the ASF Licensing Policy. You should read through [the ASF Licensing Policy](https://www.apache.org/legal/resolved), especially if your vote will be binding. As a quick guide:
     * our software must be under the Apache Software License version 2.0 and this must be noted with a proper LICENSE and NOTICE file in each artifact that can hold them.
     * our source code must meet the ASF policy on proper license notifications. Read the ASF Legal Committee's [Source Header Licensing Guide](http://apache.org/legal/src-headers.html)
@@ -462,20 +462,20 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
         $ svn co https://dist.apache.org/repos/dist/dev/yetus/ yetus-dist-dev
         $ cd yetus-dist-dev
         $ svn rm 0.2.0-RC*
-        D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.md5
+        D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.sha512
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.asc
         D         0.2.0-RC1/RELEASENOTES.md
         D         0.2.0-RC1/CHANGELOG.md.mds
-        D         0.2.0-RC1/CHANGELOG.md.md5
+        D         0.2.0-RC1/CHANGELOG.md.sha512
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz
         D         0.2.0-RC1/RELEASENOTES.md.asc
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.mds
-        D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.md5
+        D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.sha512
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.asc
         D         0.2.0-RC1/CHANGELOG.md
         D         0.2.0-RC1/RELEASENOTES.md.mds
         D         0.2.0-RC1/CHANGELOG.md.asc
-        D         0.2.0-RC1/RELEASENOTES.md.md5
+        D         0.2.0-RC1/RELEASENOTES.md.sha512
         D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz
         D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.mds
         D         0.2.0-RC1
