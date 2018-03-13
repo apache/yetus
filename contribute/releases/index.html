@@ -158,7 +158,7 @@
 <li>Yetus Precommit will require Python 2.6+ for generating documentation on its API via Yetus Shelldocs.</li>
 <li>The project documentation will require Ruby 2.x+ for rendering.</li>
 <li>We&rsquo;ll build release notes with Yetus Release Doc Maker, which will require Python 2.6+.</li>
-<li>Assembling release artifacts will make use of bash, tar, gzip, and md5sum.</li>
+<li>Assembling release artifacts will make use of bash, tar, gzip, and shasum.</li>
 </ul>
 
 <h2 id="setup">Setup</h2>
@@ -287,7 +287,7 @@ $ cp path/to/yetus/target/RELEASENOTES.md path/to/yetus/target/CHANGELOG.md path
     echo ${artifact}
     gpg --use-agent --armor --output "${artifact}".asc --detach-sig "${artifact}"
     gpg --print-mds "${artifact}" &gt;"${artifact}".mds
-    md5 "${artifact}" &gt;"${artifact}".md5
+    shasum -a 512 "${artifact}" &gt;"${artifact}".sha512
   done
 </code></pre></li>
 <li><p>Push the release candidate to staging distribution. This will make the artifacts visible for the vote.</p>
@@ -303,11 +303,11 @@ Artifacts are available:
 
 https://dist.apache.org/repos/dist/dev/yetus/0.2.0-RC1/
 
-As of this vote the relevant md5 hashes are:
-MD5 (CHANGELOG.md) = b7f7894d686a59aad1a4afe2ae8fbb94
-MD5 (RELEASENOTES.md) = e321ef2909e3e51ce40bbf701159b01e
-MD5 (yetus-0.2.0-bin.tar.gz) = e23fe4d34611a4c027df3f515cb46d7e
-MD5 (yetus-0.2.0-src.tar.gz) = e57b96533092356f3d5b9b4f47654fe9
+As of this vote the relevant sha512 hashes are:
+SHA512 (CHANGELOG.md) = b7f7894d686a59aad1a4afe2ae8fbb94
+SHA512 (RELEASENOTES.md) = e321ef2909e3e51ce40bbf701159b01e
+SHA512 (yetus-0.2.0-bin.tar.gz) = e23fe4d34611a4c027df3f515cb46d7e
+SHA512 (yetus-0.2.0-src.tar.gz) = e57b96533092356f3d5b9b4f47654fe9
 
 Source repository commit: 1e8f4588906a51317207092bd97b35687f2e3fa3
 
@@ -347,20 +347,20 @@ http://s.apache.org/yetus-0.2.0-rc1-close
 $ find dist.apache.org/ -type f
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.asc
-dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.md5
+dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.sha512
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/CHANGELOG.md.mds
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/index.html
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.asc
-dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.md5
+dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.sha512
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/RELEASENOTES.md.mds
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.asc
-dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.md5
+dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.sha512
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-bin.tar.gz.mds
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.asc
-dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.md5
+dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.sha512
 dist.apache.org//repos/dist/dev/yetus/0.2.0-RC1/yetus-0.2.0-src.tar.gz.mds
 dist.apache.org//robots.txt
 </code></pre>
@@ -386,8 +386,8 @@ gpg: Good signature from "Sean Busbey (CODE SIGNING KEY) &lt;busbey@apache.org&g
 <li><p>You MUST make sure the provided hashes match the provided artifact.</p>
 <pre class="highlight plaintext"><code>$ gpg --print-mds yetus-0.2.0-src.tar.gz &gt;yetus-0.2.0-src.tar.gz.my_mds
 $ diff yetus-0.2.0-src.tar.gz.mds yetus-0.2.0-src.tar.gz.my_mds
-$ md5 yetus-0.2.0-src.tar.gz &gt;yetus-0.2.0-src.tar.gz.my_md5
-$ diff yetus-0.2.0-src.tar.gz.md5 yetus-0.2.0-src.tar.gz.my_md5
+$ shasum -a 512 yetus-0.2.0-src.tar.gz &gt;yetus-0.2.0-src.tar.gz.my_sha512
+$ diff yetus-0.2.0-src.tar.gz.sha512 yetus-0.2.0-src.tar.gz.my_sha512
 </code></pre></li>
 <li><p>You MUST make sure artifacts abide by the ASF Licensing Policy. You should read through <a href="https://www.apache.org/legal/resolved">the ASF Licensing Policy</a>, especially if your vote will be binding. As a quick guide:</p>
 
@@ -577,20 +577,20 @@ $ svn commit -m "Publish Apache Yetus 0.2.0"
 <pre class="highlight plaintext"><code>$ svn co https://dist.apache.org/repos/dist/dev/yetus/ yetus-dist-dev
 $ cd yetus-dist-dev
 $ svn rm 0.2.0-RC*
-D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.md5
+D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.sha512
 D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.asc
 D         0.2.0-RC1/RELEASENOTES.md
 D         0.2.0-RC1/CHANGELOG.md.mds
-D         0.2.0-RC1/CHANGELOG.md.md5
+D         0.2.0-RC1/CHANGELOG.md.sha512
 D         0.2.0-RC1/yetus-0.2.0-src.tar.gz
 D         0.2.0-RC1/RELEASENOTES.md.asc
 D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.mds
-D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.md5
+D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz.sha512
 D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.asc
 D         0.2.0-RC1/CHANGELOG.md
 D         0.2.0-RC1/RELEASENOTES.md.mds
 D         0.2.0-RC1/CHANGELOG.md.asc
-D         0.2.0-RC1/RELEASENOTES.md.md5
+D         0.2.0-RC1/RELEASENOTES.md.sha512
 D         0.2.0-RC1/yetus-0.2.0-bin.tar.gz
 D         0.2.0-RC1/yetus-0.2.0-src.tar.gz.mds
 D         0.2.0-RC1
@@ -746,7 +746,7 @@ http://s.apache.org/yetus-0.2.0-announce
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2017 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2018 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 
