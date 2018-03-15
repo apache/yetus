@@ -124,7 +124,25 @@ function setup_defaults
 ## @return       May exit on failure
 function parse_args
 {
+  declare i
+
   common_args "$@"
+
+  for i in "$@"; do
+    case ${i} in
+      --robot)
+        # shellcheck disable=SC2034
+        ROBOT=true
+      ;;
+      --sentinel)
+        # shellcheck disable=SC2034
+        ROBOT=true
+        # shellcheck disable=SC2034
+        SENTINEL=true
+        yetus_add_entry EXEC_MODES Sentinel
+      ;;
+    esac
+  done
 }
 
 ## @description  Print the usage information
@@ -138,6 +156,7 @@ function yetus_usage
   echo "${BINNAME} [OPTIONS]"
 
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
+  yetus_add_option "--robot" "Assume this is an automated run"
   yetus_add_option "--sentinel" "A very aggressive robot (auto: --robot)"
   docker_usage
 
