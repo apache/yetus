@@ -449,7 +449,7 @@ function docker_image_maintenance
   #shellcheck disable=SC2046,SC2016
   docker_image_maintenance_helper $(dockercmd images | ${GREP} -e ^yetus | ${GREP} -v hours | ${AWK} '{print $1":"$2}')
 
-  if [[ "${SENTINTAL}" = false ]]; then
+  if [[ "${SENTINEL}" = false ]]; then
     return
   fi
 
