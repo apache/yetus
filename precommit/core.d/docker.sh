@@ -55,8 +55,9 @@ function docker_usage
     yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
   fi
   yetus_add_option "--dockerdelrep" "In Docker mode, only report image/container deletions, not act on them"
-  yetus_add_option "--dockermemlimit=<num>" "Limit a Docker container's memory usage (default: ${DOCKER_MEMORY})"
-
+  if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
+    yetus_add_option "--dockermemlimit=<num>" "Limit a Docker container's memory usage (default: ${DOCKER_MEMORY})"
+  fi
 }
 
 ## @description  Docker-specific argument parsing

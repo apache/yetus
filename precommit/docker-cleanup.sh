@@ -143,6 +143,8 @@ function parse_args
       ;;
     esac
   done
+
+  docker_parse_args "$@"
 }
 
 ## @description  Print the usage information
