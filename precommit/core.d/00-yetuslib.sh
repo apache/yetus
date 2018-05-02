@@ -293,6 +293,34 @@ function yetus_add_array_element
   fi
 }
 
+## @description return the array index of given element
+## @audience    public
+## @stability   stable
+## @replaceable yes
+## @param       arrayname
+## @param       element
+## @returns     0 found
+## @returns     1 not found
+## @returns     stdout array index
+function yetus_array_index_of
+{
+  local arr_name=$1
+  local needle=$2
+  # shellcheck disable=SC2016
+  local -a 'arr_keys=("${!'"$1"'[@]}")'
+  local entry
+
+  # shellcheck disable=SC2154
+  for entry in "${arr_keys[@]}"; do
+    local valueref="${arr_name}[${entry}]"
+    if [[ "${!valueref}" = "${needle}" ]]; then
+      echo "${entry}"
+      return 0
+    fi
+  done
+  return 1
+}
+
 ## @description  Sort an array by its elements
 ## @audience     public
 ## @stability    stable
