@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-declare -a MAVEN_ARGS=("--batch-mode")
+declare -a MAVEN_ARGS
 
 if [[ -z "${MAVEN_HOME:-}" ]]; then
   MAVEN=mvn
@@ -145,6 +145,8 @@ function maven_precheck
     yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."
     return 1
   fi
+
+  MAVEN_ARGS=("${MAVEN_ARGS[@]}" "--batch-mode")
 
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
     MAVEN_LOCAL_REPO="${MAVEN_CUSTOM_REPOS_DIR}/${PROJECT_NAME}-${PATCH_BRANCH}-${BUILDMODE}-${INSTANCE}"
