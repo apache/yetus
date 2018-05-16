@@ -130,11 +130,28 @@ function maven_initialize
   fi
 }
 
+## @audience     private
+## @stability    stable
+function mvnsite_precheck
+{
+  if ! verify_plugin_enabled 'maven'; then
+    yetus_error "ERROR: to run the mvnsite test you must ensure the 'maven' plugin is enabled."
+    return 1
+  fi
+}
+
+## @audience     private
+## @stability    stable
 function maven_precheck
 {
   declare logfile="${PATCH_DIR}/mvnrepoclean.log"
   declare line
   declare maven_version
+
+  if ! verify_plugin_enabled 'maven'; then
+    yetus_error "ERROR: you can't specify maven as the buildtool if you don't enable the plugin."
+    return 1
+  fi
 
   if ! verify_command maven "${MAVEN}"; then
     add_vote_table -1 maven "ERROR: maven was not available."
