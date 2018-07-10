@@ -87,6 +87,37 @@ function hadoop_order
   echo "${hadoopm}"
 }
 
+## @description  Determine if it is safe to run parallel tests
+## @audience     private
+## @stability    evolving
+## @param        ordering
+function hadoop_test_parallel
+{
+  if [[ -f "${BASEDIR}/pom.xml" ]]; then
+    HADOOP_VERSION=$(grep '<version>' "${BASEDIR}/pom.xml" \
+        | head -1 \
+        | "${SED}"  -e 's|^ *<version>||' -e 's|</version>.*$||' \
+        | cut -f1 -d- )
+    export HADOOP_VERSION
+  else
+    return 1
+  fi
+
+  hmajor=${HADOOP_VERSION%%\.*}
+  hmajorminor=${HADOOP_VERSION%\.*}
+  hminor=${hmajorminor##*\.}
+  # ... and just for reference
+  #hmicro=${HADOOP_VERSION##*\.}
+
+  # Apache Hadoop v2.8.0 was the first one to really
+  # get working parallel unit tests
+  if [[ ${hmajor} -lt 3 && ${hminor} -lt 8 ]]; then
+    return 1
+  fi
+
+  return 0
+}
+
 ## @description  Install extra modules for unit tests
 ## @audience     private
 ## @stability    evolving
@@ -326,9 +357,11 @@ function personality_modules
       fi
 
       if [[ ${TEST_PARALLEL} = "true" ]] ; then
-        extra="-Pparallel-tests"
-        if [[ -n ${TEST_THREADS:-} ]]; then
-          extra="${extra} -DtestsThreadCount=${TEST_THREADS}"
+        if hadoop_test_parallel; then
+          extra="-Pparallel-tests"
+          if [[ -n ${TEST_THREADS:-} ]]; then
+            extra="${extra} -DtestsThreadCount=${TEST_THREADS}"
+          fi
         fi
       fi
       needflags=true
