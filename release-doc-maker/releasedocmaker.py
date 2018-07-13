@@ -80,7 +80,7 @@ def buildindex(title, asf_license):
             indexfile.write(ASF_LICENSE)
         for version in versions:
             indexfile.write("* %s v%s\n" % (title, version))
-            for k in ("Changes", "Release Notes"):
+            for k in ("Changelog", "Release Notes"):
                 indexfile.write("    * [%s](%s/%s.%s.html)\n" %
                                 (k, version, k.upper().replace(" ", ""),
                                  version))
@@ -95,7 +95,7 @@ def buildreadme(title, asf_license):
             indexfile.write(ASF_LICENSE)
         for version in versions:
             indexfile.write("* %s v%s\n" % (title, version))
-            for k in ("Changes", "Release Notes"):
+            for k in ("Changelog", "Release Notes"):
                 indexfile.write("    * [%s](%s/%s.%s.md)\n" %
                                 (k, version, k.upper().replace(" ", ""),
                                  version))
