@@ -694,7 +694,6 @@ def main():
 
     if options.output_directory is not None:
         # Create the output directory if it does not exist.
-        # Equivalent to `mkdir -p`.
         try:
             os.makedirs(options.output_directory)
         except OSError as exc:
@@ -756,7 +755,7 @@ def main():
         else:
             reldate = "Unreleased (as of %s)" % strftime("%Y-%m-%d", gmtime())
 
-        if not os.path.exists(vstr):
+        if not os.path.exists(vstr) and options.versiondirs:
             os.mkdir(vstr)
 
         if options.versionfiles and options.versiondirs:
