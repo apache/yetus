@@ -136,7 +136,8 @@ RUN apt-get -q install --no-install-recommends -y python \
     python-pkg-resources \
     python-setuptools \
     python-wheel
-RUN pip2 install pylint
+RUN pip2 install --upgrade pip==9.0.3
+RUN pip install -v pylint==1.9.2
 
 ####
 # Install ruby, rubocop, and ruby-lint
