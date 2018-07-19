@@ -97,7 +97,9 @@ def releasenotes(output, version)
                                        --projecttitle="Apache Yetus" \
                                        --dirversions \
                                        --usetoday --license --lint=all)`
+  errmsg = $stderr
   unless $CHILD_STATUS.exitstatus == 0
+    puts(errmsg)
     abort("releasedocmaker failed to generate release notes for #{version}.")
   end
 

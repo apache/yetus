@@ -17,7 +17,7 @@
   under the License.
 -->
 
-# Maintaing the Yetus Website
+# Maintaining the Yetus Website
 
 We use [Middleman](https://middlemanapp.com/) to generate the website content from markdown and other
 dynamic templates. The following steps assume you have a working
@@ -27,6 +27,7 @@ ruby 2.x environment setup:
 gem install bundler
 bundle install
 ```
+and a working python 2.x environment for [releasedocmaker](../in-progress/releasedocmaker/).
 
 If you're interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
 by reading [Middleman's excellent documentation](https://middlemanapp.com/basics/install/).
