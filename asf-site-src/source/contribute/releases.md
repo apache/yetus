@@ -496,7 +496,7 @@ It may take up to 24 hours for the artifacts to make their way to the various mi
 
         $ vim Formula/yetus.rb
         $ # change URL point to new version
-        $ # update the sha256. e.g., shasum -s 256 bin.gz
+        $ # update the sha256. e.g., shasum -a 256 bin.gz
 1. Update the documentation in the git master branch for the new release. Due to some limitations in our website rendering library, this currently involves some extra symlinks (see YETUS-192).
 
         $ cd asf-site-src
