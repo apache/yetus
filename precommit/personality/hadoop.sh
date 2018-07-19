@@ -244,7 +244,11 @@ function hadoop_native_flags
     Linux)
       # shellcheck disable=SC2086
       echo \
-        -Pnative -Drequire.snappy -Drequire.openssl -Drequire.fuse \
+        -Pnative \
+        -Drequire.fuse \
+        -Drequire.openssl \
+        -Drequire.snappy \
+        -Drequire.valgrind \
         "${args[@]}"
     ;;
     Darwin)
