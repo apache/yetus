@@ -88,7 +88,7 @@ def parseJiraData(fileName):
 
 
 if __name__ == '__main__':
-    parser = OptionParser()
+    parser = OptionParser(prog = 'jenkins-admin')
     if os.getenv('JENKINS_URL'):
         parser.set_defaults(jenkinsUrl=os.getenv('JENKINS_URL'))
     if os.getenv('JOB_NAME'):
