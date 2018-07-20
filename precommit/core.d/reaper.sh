@@ -48,7 +48,7 @@ function reaper_usage
 ## @stability    stable
 ## @audience     private
 ## @replaceable  no
-## @params       arguments
+## @param        arguments
 function reaper_parse_args
 {
   declare i
@@ -89,7 +89,7 @@ function reaper_parse_args
 ## @stability    stable
 ## @audience     private
 ## @replaceable  yes
-## @params       arguments
+## @param        arguments
 function reaper_initialize
 {
   determine_user
@@ -168,9 +168,9 @@ function reaper_coproc_func
 ## @stability    evolving
 ## @audience     private
 ## @replaceable  yes
-## @params       module
-## @params       testlog
-## @params       testfrag
+## @param        module
+## @param        testlog
+## @param        testfrag
 function reaper_post_exec
 {
   declare module=$1
@@ -214,7 +214,7 @@ function reaper_post_exec
 ## @stability    evolving
 ## @audience     private
 ## @replaceable  yes
-## @params       jdkname
+## @param       jdkname
 function reaper_finalize_results
 {
   declare jdk=$1
@@ -238,7 +238,7 @@ function reaper_finalize_results
 ## @stability    evolving
 ## @audience     private
 ## @replaceable  yes
-## @params       jdkname
+## @param        jdkname
 function reaper_total_count
 {
 
