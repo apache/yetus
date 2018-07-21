@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
+import os
 import re
 import urllib2
 import sys
@@ -26,7 +28,6 @@ sys.dont_write_bytecode = True
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
 BASE_URL = "https://issues.apache.org/jira"
 
-
 def clean(input_string):
     return sanitize_markdown(re.sub(NAME_PATTERN, "", input_string))
 
@@ -35,8 +36,17 @@ def get_jira(jira_url):
     """ Provide standard method for fetching content from apache jira and
         handling of potential errors. Returns urllib2 response or
         raises one of several exceptions."""
+
+    username = os.environ.get('RDM_JIRA_USERNAME')
+    password = os.environ.get('RDM_JIRA_PASSWORD')
+
+    req = urllib2.Request(jira_url)
+    if username and password:
+        basicauth = base64.encodestring("%s:%s" % (username, password)).replace('\n', '')
+        req.add_header('Authorization', 'Basic %s' % basicauth)
+
     try:
-        response = urllib2.urlopen(jira_url)
+        response = urllib2.urlopen(req)
     except urllib2.HTTPError as http_err:
         code = http_err.code
         print "JIRA returns HTTP error %d: %s. Aborting." % \
@@ -44,8 +54,8 @@ def get_jira(jira_url):
         error_response = http_err.read()
         try:
             error_response = json.loads(error_response)
-            print "- Please ensure that specified projects, fixVersions etc."\
-                  " are correct."
+            print "- Please ensure that specified authentication, projects,"\
+                  " fixVersions etc. are correct."
             for message in error_response['errorMessages']:
                 print "-", message
         except ValueError:

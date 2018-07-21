@@ -64,7 +64,6 @@ This will query Apache JIRA, generating two files in a directory named after the
 
 This is similar to the JIRA "Release Notes" button but is in tabular format and includes the priority, component, reporter, and contributor fields.  It also highlights Incompatible Changes so that readers know what to look out for when upgrading. The top of the file also includes the date that the version was marked as released in JIRA.
 
-
 * RELEASENOTES.md
 
 If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGELOG that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.
@@ -81,6 +80,17 @@ By default, release notes are expected to be in plain text.  However, you can wr
 <!-- markdown -->
 remaining text
 ```
+
+# Authentication
+
+releasedocmaker supports very simple Basic authentication.  This is accomplished by adding two environment variables to your shell environment:
+
+```bash
+RDM_JIRA_USERNAME='jirausername'
+RDM_JIRA_PASSWORD='jirapassword'
+```
+
+These values will be added to all requests destined for the JIRA server.
 
 # Changing the Header
 
