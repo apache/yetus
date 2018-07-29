@@ -1,0 +1,6 @@
+branches:
+  only:
+  - travis
+
+script:
+- ./getinfo.sh
