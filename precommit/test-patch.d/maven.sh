@@ -23,7 +23,7 @@ else
 fi
 
 MAVEN_CUSTOM_REPOS=false
-MAVEN_CUSTOM_REPOS_DIR="${HOME}/yetus-m2"
+MAVEN_CUSTOM_REPOS_DIR="@@@WORKSPACE@@@/yetus-m2"
 MAVEN_DEPENDENCY_ORDER=true
 
 add_test_type mvnsite
@@ -49,8 +49,29 @@ function maven_delete_install
   yetus_delete_entry MAVEN_NEED_INSTALL "${1}"
 }
 
+## @description  replace the custom repo with either home or workspace if jenkins.
+## @description  is configured. this gets called in a few places since different
+## @description  circumstances dictate a few places where it may be needed.
+## @audience     private
+## @stability    evolving
+function maven_ws_replace
+{
+  declare previous=${MAVEN_CUSTOM_REPOS_DIR}
+
+  if [[ ${JENKINS} == true ]] && [[ -n "${WORKSPACE}" ]]; then
+    MAVEN_CUSTOM_REPOS_DIR=$(echo "${MAVEN_CUSTOM_REPOS_DIR}" | "${SED}" -e "s,@@@WORKSPACE@@@,${WORKSPACE},g" )
+  else
+    MAVEN_CUSTOM_REPOS_DIR=$(echo "${MAVEN_CUSTOM_REPOS_DIR}" | "${SED}" -e "s,@@@WORKSPACE@@@,${HOME},g" )
+  fi
+  if [[ "${previous}" != "${MAVEN_CUSTOM_REPOS_DIR}" ]]; then
+    # put this in the array so that if docker is run, this is already resolved
+    USER_PARAMS=("${USER_PARAMS[@]}" "--mvn-custom-repos-dir=${MAVEN_CUSTOM_REPOS_DIR}")
+  fi
+}
+
 function maven_usage
 {
+  maven_ws_replace
   yetus_add_option "--mvn-cmd=<cmd>" "The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
   yetus_add_option "--mvn-custom-repos" "Use per-project maven repos"
   yetus_add_option "--mvn-custom-repos-dir=dir" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
@@ -58,6 +79,10 @@ function maven_usage
   yetus_add_option "--mvn-settings=file" "File to use for settings.xml"
 }
 
+## @description  parse maven build tool args
+## @replaceable  yes
+## @audience     public
+## @stability    stable
 function maven_parse_args
 {
   local i
@@ -90,8 +115,14 @@ function maven_parse_args
   if [[ ${OFFLINE} == "true" ]]; then
     MAVEN_ARGS=("${MAVEN_ARGS[@]}" --offline)
   fi
+
+  maven_ws_replace
 }
 
+## @description  initialize the maven build tool
+## @replaceable  yes
+## @audience     public
+## @stability    stable
 function maven_initialize
 {
   # we need to do this before docker does it as root
@@ -103,6 +134,8 @@ function maven_initialize
   reaper_add_name surefirebooter
 
   # we need to do this before docker does it as root
+  maven_ws_replace
+
   if [[ ! ${MAVEN_CUSTOM_REPOS_DIR} =~ ^/ ]]; then
     yetus_error "ERROR: --mvn-custom-repos-dir must be an absolute path."
     return 1
@@ -242,6 +275,9 @@ function mvnsite_filefilter
   fi
 }
 
+## @description  maven version of the modules_worker routine
+## @audience     public
+## @stability    stable
 function maven_modules_worker
 {
   declare repostatus=$1
