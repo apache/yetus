@@ -91,6 +91,8 @@ function setup_defaults
 
   # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
+
+  GIT_OFFLINE=false
   PROC_LIMIT=1000
   REEXECED=false
   RESETREPO=false
@@ -1277,6 +1279,28 @@ function find_changed_modules
   fi
 }
 
+## @description  check if repo requires ssh creds to pull
+## @audience     private
+## @stability    stable
+## @replaceable  no
+## @return       0 = no
+## @return       1 = yes
+function git_requires_creds
+{
+  declare status
+  declare -a remotes
+
+  # shellcheck disable=SC2207
+  remotes=( $("${GIT}" remote -v show -n) )
+
+  for r in "${remotes[@]}"; do
+    if [[ ${r} =~ /@/ ]] || [[ ${r} =~ git:// ]]; then
+      return 1
+    fi
+  done
+  return 0
+}
+
 ## @description  git checkout the appropriate branch to test.  Additionally, this calls
 ## @description  'determine_branch' based upon the context provided
 ## @description  in ${PATCH_DIR} and in git after checkout.
@@ -1286,9 +1310,10 @@ function find_changed_modules
 ## @return       0 on success.  May exit on failure.
 function git_checkout
 {
-  local currentbranch
-  local exemptdir
-  local status
+  declare currentbranch
+  declare exemptdir
+  declare status
+  declare pullmayfail=false
 
   big_console_header "Confirming git environment"
 
@@ -1298,6 +1323,10 @@ function git_checkout
     cleanup_and_exit 1
   fi
 
+  if git_requires_creds; then
+    pullmayfail=true
+  fi
+
   if [[ ${RESETREPO} == "true" ]] ; then
 
     if [[ -d .git/rebase-apply ]]; then
@@ -1305,8 +1334,7 @@ function git_checkout
       ${GIT} rebase --abort
     fi
 
-    ${GIT} reset --hard
-    if [[ $? != 0 ]]; then
+    if ! ${GIT} reset --hard; then
       yetus_error "ERROR: git reset is failing"
       cleanup_and_exit 1
     fi
@@ -1316,6 +1344,8 @@ function git_checkout
     exemptdir=$(relative_dir "${PATCH_DIR}")
     if [[ $? == 1 ]]; then
       ${GIT} clean -xdf
+      status=$?
+
     else
       # we do, however, want it emptied of all _files_.
       # we need to leave _directories_ in case we are in
@@ -1323,14 +1353,15 @@ function git_checkout
       yetus_debug "Exempting ${exemptdir} from clean"
       rm "${PATCH_DIR}/*" 2>/dev/null
       ${GIT} clean -xdf -e "${exemptdir}"
+      status=$?
     fi
-    if [[ $? != 0 ]]; then
+
+    if [[ ${status} != 0 ]]; then
       yetus_error "ERROR: git clean is failing"
       cleanup_and_exit 1
     fi
 
-    ${GIT} checkout --force "${PATCH_BRANCH_DEFAULT}"
-    if [[ $? != 0 ]]; then
+    if ! ${GIT} checkout --force "${PATCH_BRANCH_DEFAULT}"; then
       yetus_error "ERROR: git checkout --force ${PATCH_BRANCH_DEFAULT} is failing"
       cleanup_and_exit 1
     fi
@@ -1339,17 +1370,22 @@ function git_checkout
 
     # we need to explicitly fetch in case the
     # git ref hasn't been brought in tree yet
-    if [[ ${OFFLINE} == false ]]; then
+    if [[ ${OFFLINE} == false ]] && [[ ${GIT_OFFLINE} == false ]]; then
 
-      ${GIT} pull --rebase
-      if [[ $? != 0 ]]; then
-        yetus_error "ERROR: git pull is failing"
-        cleanup_and_exit 1
+      if ! ${GIT} pull --rebase; then
+        if [[ ${pullmayfail} == true ]]; then
+          yetus_error "WARNING: Noted that pull failed, will treat git as offline from here on out"
+          GIT_OFFLINE=true
+        else
+          yetus_error "ERROR: git pull is failing"
+          cleanup_and_exit 1
+        fi
       fi
     fi
+
     # forcibly checkout this branch or git ref
-    ${GIT} checkout --force "${PATCH_BRANCH}"
-    if [[ $? != 0 ]]; then
+
+    if ! ${GIT} checkout --force "${PATCH_BRANCH}"; then
       yetus_error "ERROR: git checkout ${PATCH_BRANCH} is failing"
       cleanup_and_exit 1
     fi
@@ -1357,11 +1393,24 @@ function git_checkout
     # if we've selected a feature branch that has new changes
     # since our last build, we'll need to reset to the latest FETCH_HEAD.
     if [[ ${OFFLINE} == false ]]; then
-      ${GIT} fetch
-      ${GIT} reset --hard FETCH_HEAD
-      ${GIT} clean -df
-      if [[ $? != 0 ]]; then
-        yetus_error "ERROR: git pull is failing"
+
+      # previous clause where GIT_OFFLINE would get set is also
+      # protected by OFFLINE == false
+
+      if [[ "${GIT_OFFLINE}" == false ]]; then
+        if ! ${GIT} fetch; then
+          yetus_error "ERROR: git fetch is failing"
+          cleanup_and_exit 1
+        fi
+
+        if ! ${GIT} reset --hard FETCH_HEAD; then
+          yetus_error "ERROR: git reset is failing"
+          cleanup_and_exit 1
+        fi
+      fi
+
+      if ! ${GIT} clean -df; then
+        yetus_error "ERROR: git clean is failing"
         cleanup_and_exit 1
       fi
     fi
