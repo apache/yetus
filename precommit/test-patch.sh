@@ -757,6 +757,7 @@ function yetus_usage
   yetus_add_option "--summarize=<bool>" "Allow tests to summarize results"
   yetus_add_option "--test-parallel=<bool>" "Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   yetus_add_option "--test-threads=<int>" "Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
+  yetus_add_option "--unit-test-filter-file=<file>" "The unit test filter file to load"
   yetus_add_option "--tests-filter=<list>" "Lists of tests to turn failures into warnings"
   yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
@@ -946,6 +947,9 @@ function parse_args
         # shellcheck disable=SC2034
         TEST_THREADS=${i#*=}
       ;;
+      --unit-test-filter-file=*)
+        UNIT_TEST_FILTER_FILE=${i#*=}
+      ;;
       --tests-filter=*)
         yetus_comma_to_array VOTE_FILTER "${i#*=}"
       ;;
@@ -996,6 +1000,15 @@ function parse_args
     RUN_TESTS=true
     ISSUE=${PATCH_OR_ISSUE}
     yetus_add_entry EXEC_MODES Robot
+  fi
+
+  if [[ -n $UNIT_TEST_FILTER_FILE ]]; then
+    if [[ -f $UNIT_TEST_FILTER_FILE ]]; then
+      UNIT_TEST_FILTER_FILE=$(yetus_abs "${UNIT_TEST_FILTER_FILE}")
+    else
+      yetus_error "ERROR: Unit test filter file (${UNIT_TEST_FILTER_FILE}) does not exist!"
+      cleanup_and_exit 1
+    fi
   fi
 
   if [[ -n ${REEXECLAUNCHTIMER} ]]; then
@@ -1649,6 +1662,12 @@ function copytpbits
     && -f ${PERSONALITY} ]]; then
     yetus_debug "copying '${PERSONALITY}' over to '${PATCH_DIR}/precommit/personality/provided.sh'"
     cp -pr "${PERSONALITY}" "${PATCH_DIR}/precommit/personality/provided.sh"
+  fi
+
+  if [[ -n ${UNIT_TEST_FILTER_FILE}
+    && -f ${UNIT_TEST_FILTER_FILE} ]]; then
+    yetus_debug "copying '${UNIT_TEST_FILTER_FILE}' over to '${PATCH_DIR}/precommit/unit_test_filter_file.txt'"
+    cp -pr "${UNIT_TEST_FILTER_FILE}" "${PATCH_DIR}/precommit/unit_test_filter_file.txt"
   fi
 
   if [[ -n ${DOCKERFILE}

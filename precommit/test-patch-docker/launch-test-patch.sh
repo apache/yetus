@@ -48,6 +48,9 @@ TESTPATCHMODE=${TESTPATCHMODE%--docker}
 PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
 OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--patch-dir=${PATCH_DIR}")
 OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--user-plugins=${PATCH_DIR}/precommit/user-plugins")
+if [[ -f "${PATCH_DIR}/precommit/unit_test_filter_file.txt" ]]; then
+  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--unit-test-filter-file=${PATCH_DIR}/precommit/unit_test_filter_file.txt")
+fi
 
 # if patch system is generic, then it's either a local
 # patch file or was in some other way not pulled from a bug

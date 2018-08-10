@@ -282,7 +282,9 @@ function maven_modules_worker
 {
   declare repostatus=$1
   declare tst=$2
+  declare maven_unit_test_filter
 
+  maven_unit_test_filter="$(maven_unit_test_filter)"
   # shellcheck disable=SC2034
   UNSUPPORTED_TEST=false
 
@@ -303,7 +305,11 @@ function maven_modules_worker
       modules_workers "${repostatus}" scaladoc clean scala:doc -DskipTests=true
     ;;
     unit)
-      modules_workers "${repostatus}" unit clean test -fae
+      if [[ -n "${maven_unit_test_filter}" ]]; then
+        modules_workers "${repostatus}" unit clean test -fae "${maven_unit_test_filter}"
+      else
+        modules_workers "${repostatus}" unit clean test -fae
+      fi
     ;;
     *)
       # shellcheck disable=SC2034
@@ -495,6 +501,32 @@ function maven_builtin_personality_file_tests
 
   if [[ ${filename} =~ \.java$ ]]; then
     add_test findbugs
+  fi
+}
+
+## @description  Maven unit test filter file string
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       string
+function maven_unit_test_filter()
+{
+  declare filtered
+
+  if [[ ! -z "${UNIT_TEST_FILTER_FILE}" ]]; then
+    while read -r line || [[ -n "${line}" ]]; do
+      if [[ -z $line ]]; then
+        continue
+      fi
+
+      filtered="${filtered}${line},"
+    done < "${UNIT_TEST_FILTER_FILE}"
+  fi
+
+  if [[ -z "${filtered}" ]]; then
+    printf "%s" ""
+  else
+    printf "%s" "-Dtest=${filtered%,}"
   fi
 }
 
