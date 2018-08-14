@@ -62,6 +62,14 @@ if [[ -f /testptch/console.txt ]]; then
   OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--console-report-file=/testptch/console.txt")
 fi
 
+if [[ -f /testptch/brief.txt ]]; then
+  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--brief-report-file=/testptch/brief.txt")
+fi
+
+if [[ -f /testptch/report.htm ]]; then
+  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--html-report-file=/testptch/report.htm")
+fi
+
 cd "${PATCH_DIR}/precommit/" || exit 1
 #shellcheck disable=SC2086
 "${PATCH_DIR}/precommit/test-patch.sh" \

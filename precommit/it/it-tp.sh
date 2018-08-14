@@ -81,7 +81,7 @@ YETUS_ARGS+=("--java-home=/usr/lib/jvm/java-8-openjdk-amd64")
 YETUS_ARGS+=("--patch-dir=${PATCHDIR}")
 
 # plugins to enable. modify as necessary based upon what is being tested
-YETUS_ARGS+=("--plugins=jira,maven,brieftext,htmlout")
+YETUS_ARGS+=("--plugins=jira,maven,briefreport,htmlout")
 
 # Many projects need a high process limit
 YETUS_ARGS+=("--proclimit=5000")

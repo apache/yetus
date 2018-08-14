@@ -584,11 +584,6 @@ PatchSpecificDocker
     DOCKER_EXTRAARGS+=("--privileged")
   fi
 
-  if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
-    touch "${CONSOLE_REPORT_FILE}"
-    DOCKER_EXTRAARGS+=("-v" "${CONSOLE_REPORT_FILE}:/testptch/console.txt")
-  fi
-
   if [[ -n "${DOCKER_MEMORY}" ]]; then
     DOCKER_EXTRAARGS+=("-m" "${DOCKER_MEMORY}")
   fi

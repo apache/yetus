@@ -1042,13 +1042,12 @@ function parse_args
 
   # we need absolute dir for ${CONSOLE_REPORT_FILE}
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
-    touch "${CONSOLE_REPORT_FILE}"
-    if [[ $? != 0 ]]; then
+    if : > "${CONSOLE_REPORT_FILE}"; then
+      CONSOLE_REPORT_FILE_ORIG="${CONSOLE_REPORT_FILE}"
+      CONSOLE_REPORT_FILE=$(yetus_abs "${CONSOLE_REPORT_FILE_ORIG}")
+    else
       yetus_error "ERROR: cannot write to ${CONSOLE_REPORT_FILE}. Disabling console report file."
       unset CONSOLE_REPORT_FILE
-    else
-      j="${CONSOLE_REPORT_FILE}"
-      CONSOLE_REPORT_FILE=$(yetus_abs "${j}")
     fi
   fi
 
@@ -1796,8 +1795,11 @@ function check_reexec
 
     determine_user
 
+    # need to call this explicitly
+    console_docker_support
+
     for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${BUGSYSTEMS} ${TESTTYPES} ${TESTFORMATS}; do
-      if declare -f ${plugin}_docker_support >/dev/null; then
+      if declare -f "${plugin}_docker_support" >/dev/null; then
         "${plugin}_docker_support"
       fi
     done

@@ -17,26 +17,26 @@
 # there are no public APIs here
 # SHELLDOC-IGNORE
 
-add_bugsystem brieftext
+add_bugsystem briefreport
 
 BRIEFOUT_LONGRUNNING=3600
 
-## @description  Usage info for brieftext plugin
+## @description  Usage info for briefreport plugin
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-function brieftext_usage
+function briefreport_usage
 {
   yetus_add_option "--brief-report-file=<file>" "Save a very brief, plain text report to a file"
   yetus_add_option "--brief-report-long=<seconds>" "Time in seconds to use as long running subsystem threshold (Default: ${BRIEFOUT_LONGRUNNING})"
 
 }
 
-## @description  Option parsing for brieftext plugin
+## @description  Option parsing for briefreport plugin
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-function brieftext_parse_args
+function briefreport_parse_args
 {
   declare i
   declare fn
@@ -53,23 +53,23 @@ function brieftext_parse_args
   done
 
   if [[ -n "${fn}" ]]; then
-    touch "${fn}" 2>/dev/null
-    if [[ $? != 0 ]]; then
-      yetus_error "WARNING: cannot create ${fn}. Ignoring."
+    if : > "${fn}"; then
+      BRIEFOUT_REPORTFILE_ORIG="${fn}"
+      BRIEFOUT_REPORTFILE=$(yetus_abs "${BRIEFOUT_REPORTFILE_ORIG}")
     else
-      BRIEFOUT_REPORTFILE=$(yetus_abs "${fn}")
+      yetus_error "WARNING: cannot create brief text report file ${fn}. Ignoring."
     fi
   fi
 }
 
-## @description  Give access to the brief report file in docker mode
+## @description  Give access to the brief text report file in docker mode
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-function brieftext_docker_support
+function briefreport_docker_support
 {
   if [[ -n ${BRIEFOUT_REPORTFILE} ]]; then
-    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${BRIEFOUT_REPORTFILE}:${BRIEFOUT_REPORTFILE}")
+    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${BRIEFOUT_REPORTFILE}:/testptch/brief.txt")
   fi
 }
 
@@ -80,7 +80,7 @@ function brieftext_docker_support
 ## @param        runresult
 ## @return       0 on success
 ## @return       1 on failure
-function brieftext_finalreport
+function briefreport_finalreport
 {
   declare result=$1
   shift
@@ -101,7 +101,7 @@ function brieftext_finalreport
     return
   fi
 
-  big_console_header "Writing Brief Report to ${BRIEFOUT_REPORTFILE}"
+  big_console_header "Writing Brief Text Report to ${BRIEFOUT_REPORTFILE}"
 
 
   if [[ ${result} == 0 ]]; then

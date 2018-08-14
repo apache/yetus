@@ -171,3 +171,15 @@ function console_finalreport
     cat "${CONSOLE_REPORT_FILE}"
   fi
 }
+
+
+## @description  Give access to the brief report file in docker mode
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function console_docker_support
+{
+  if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
+    DOCKER_EXTRAARGS+=("-v" "${CONSOLE_REPORT_FILE}:/testptch/console.txt")
+  fi
+}

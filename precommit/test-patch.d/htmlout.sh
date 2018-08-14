@@ -43,11 +43,11 @@ function htmlout_parse_args
   done
 
   if [[ -n "${fn}" ]]; then
-    touch "${fn}" 2>/dev/null
-    if [[ $? != 0 ]]; then
-      yetus_error "WARNING: cannot create ${fn}. Ignoring."
+    if : > "${fn}"; then
+      HTMLOUT_REPORTFILE_ORIG="${fn}"
+      HTMLOUT_REPORTFILE=$(yetus_abs "${HTMLOUT_REPORTFILE_ORIG}")
     else
-      HTMLOUT_REPORTFILE=$(yetus_abs "${fn}")
+      yetus_error "WARNING: cannot create HTML report file ${fn}. Ignoring."
     fi
   fi
 }
@@ -59,7 +59,7 @@ function htmlout_parse_args
 function htmlout_docker_support
 {
   if [[ -n ${HTMLOUT_REPORTFILE} ]]; then
-    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HTMLOUT_REPORTFILE}:${HTMLOUT_REPORTFILE}")
+    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HTMLOUT_REPORTFILE}:/testptch/report.htm")
   fi
 }
 
