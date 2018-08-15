@@ -151,6 +151,7 @@ function checkstyle_runner
   declare text
   declare linenum
   declare codeline
+  declare cmdresult
 
   # first, let's clear out any previous run information
   modules_reset
@@ -195,15 +196,21 @@ function checkstyle_runner
 
     #shellcheck disable=SC2086
     echo_and_redirect "${logfile}" ${cmd}
-    ${SED} -e "s,^\[ERROR\] ,,g" -e "s,^\[WARN\] ,,g" "${logfile}" \
+    cmdresult=$?
+
+    ${SED} -e 's,^\[ERROR\] ,,g' -e 's,^\[WARN\] ,,g' "${logfile}" \
       | ${GREP} ^/ \
       | ${SED} -e "s,${BASEDIR},.,g" \
       > "${tmp}"
 
-    if [[ $? == 0 ]] ; then
-      module_status ${i} +1 "${logfile}" "${BUILDMODEMSG} ${modulesuffix} passed checkstyle"
+    if [[ "${modulesuffix}" == . ]]; then
+      modulesuffix=root
+    fi
+
+    if [[ ${cmdresult} == 0 ]]; then
+      module_status ${i} +1 "${logfile}" "${BUILDMODEMSG} passed checkstyle in ${modulesuffix}"
     else
-      module_status ${i} -1 "${logfile}" "${BUILDMODEMSG} ${modulesuffix} failed checkstyle"
+      module_status ${i} -1 "${logfile}" "${BUILDMODEMSG} fails to run checkstyle in ${modulesuffix}"
       ((result = result + 1))
     fi
 
@@ -219,7 +226,6 @@ function checkstyle_runner
       for j in "${CHANGED_FILES[@]}"; do
         ${GREP} "${j}" "${tmp}" >> "${tmp}.1"
       done
-
 
       # now that we have just the files we care about,
       # let's unscrew it. You see...

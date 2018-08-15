@@ -127,6 +127,7 @@ function maven_initialize
 {
   # we need to do this before docker does it as root
 
+  maven_add_install compile
   maven_add_install mvnsite
   maven_add_install unit
 
@@ -565,7 +566,7 @@ function mvnsite_postcompile
   return 0
 }
 
-## @description  Verify mvn install works
+## @description  maven precompile phase
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -581,24 +582,15 @@ function maven_precompile
     return 0
   fi
 
-  if verify_needed_test javac; then
+  # not everything needs a maven install
+  # but quite a few do ...
+  # shellcheck disable=SC2086
+  for index in ${MAVEN_NEED_INSTALL}; do
     need=true
-  else
-    # not everything needs a maven install
-    # but quite a few do ...
-    # shellcheck disable=SC2086
-    for index in ${MAVEN_NEED_INSTALL}; do
-      if verify_needed_test ${index}; then
-         need=branch
-      fi
-    done
-  fi
+  done
 
   if [[ "${need}" = false ]]; then
     return 0
-  elif [[ "${need}" = branch
-     && "${repostatus}" = patch ]]; then
-   return 0
   fi
 
   if [[ "${repostatus}" = branch ]]; then
@@ -608,7 +600,10 @@ function maven_precompile
   fi
 
   personality_modules "${repostatus}" mvninstall
-  modules_workers "${repostatus}" mvninstall -fae clean install -DskipTests=true -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dfindbugs.skip=true
+  modules_workers "${repostatus}" mvninstall -fae \
+    clean install \
+    -DskipTests=true -Dmaven.javadoc.skip=true \
+    -Dcheckstyle.skip=true -Dfindbugs.skip=true
   result=$?
   modules_messages "${repostatus}" mvninstall true
   if [[ ${result} != 0 ]]; then

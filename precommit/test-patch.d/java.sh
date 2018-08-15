@@ -40,6 +40,7 @@ function initialize_java
   fi
 
   if declare -f maven_add_install >/dev/null 2>&1; then
+    maven_add_install javac
     maven_add_install javadoc
   fi
 
