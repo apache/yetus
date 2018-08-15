@@ -217,5 +217,5 @@ function ant_builtin_personality_file_tests
 
 function ant_docker_support
 {
-  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS}" "-v" "${HOME}/.ivy2:${HOME}/.ivy2")
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS}" "-v" "${HOME}/.ivy2:/home/${USER_NAME}/.ivy2")
 }

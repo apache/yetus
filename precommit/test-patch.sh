@@ -1794,6 +1794,8 @@ function check_reexec
     # if we are doing docker, then we re-exec, but underneath the
     # container
 
+    determine_user
+
     for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${BUGSYSTEMS} ${TESTTYPES} ${TESTFORMATS}; do
       if declare -f ${plugin}_docker_support >/dev/null; then
         "${plugin}_docker_support"

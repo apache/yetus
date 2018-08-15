@@ -587,7 +587,7 @@ function maven_precompile
 
 function maven_docker_support
 {
-  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.m2:${HOME}/.m2")
+  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.m2:/home/${USER_NAME}/.m2")
 
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
     DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}")
