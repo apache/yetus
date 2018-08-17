@@ -224,8 +224,10 @@ function jira_locate_patch
       echo "Downloaded"
     elif [[ ${retval} == 22 ]]; then
       echo "404"
+      yetus_debug "Presuming the attachment was deleted, trying the next one (see YETUS-298)"
     else
       echo "Error (curl returned ${retval})"
+      break
     fi
   done < <(cat "${PATCH_DIR}/jira-attachments.txt")
 
