@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+declare -a XML_FILES
+
 add_test_type xml
 
 function xml_filefilter
@@ -57,21 +59,32 @@ function xml_postcompile
   pushd "${BASEDIR}" >/dev/null
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.xml$ && -f ${i} ]]; then
-      ${js} -e "XMLDocument(arguments[0])" "${i}" >> "${PATCH_DIR}/xml.txt" 2>&1
-      if [[ $? != 0 ]]; then
+      if ! "${js}" -e "XMLDocument(arguments[0])" "${i}" > "${PATCH_DIR}/xml.txt.tmp" 2>&1; then
+        {
+          echo ""
+          echo "${i}:"
+          echo ""
+          cat "${PATCH_DIR}/xml.txt.tmp"
+        } >> "${PATCH_DIR}/xml.txt"
         ((count=count+1))
+        XML_FILES+=("${i}")
       fi
     fi
   done
 
+  popd >/dev/null
+
+  if [[ -f "${PATCH_DIR}/xml.txt.tmp" ]]; then
+    rm "${PATCH_DIR}/xml.txt.tmp"
+  fi
+
   if [[ ${count} -gt 0 ]]; then
     add_vote_table -1 xml "${BUILDMODEMSG} has ${count} ill-formed XML file(s)."
     add_footer_table xml "@@BASE@@/xml.txt"
-    popd >/dev/null
+    populate_test_table "XML" "Parsing Error(s):" "${XML_FILES[@]}"
     return 1
   fi
 
-  popd >/dev/null
   add_vote_table +1 xml "${BUILDMODEMSG} has no ill-formed XML file."
   return 0
 }
