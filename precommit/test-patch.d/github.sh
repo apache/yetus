@@ -242,20 +242,11 @@ function github_determine_branch
 ## @param        output
 ## @return       0 on success
 ## @return       1 on failure
-function github_locate_patch
+function github_locate_pr_patch
 {
   declare input=$1
   declare output=$2
   declare githubauth
-
-  if [[ "${OFFLINE}" == true ]]; then
-    yetus_debug "github_locate_patch: offline, skipping"
-    return 1
-  fi
-
-  if [[ ! "${input}" =~ ^GH: ]]; then
-    return 1
-  fi
 
   input=${input#GH:}
 
@@ -313,13 +304,11 @@ function github_locate_patch
   echo "${PATCHURL}"
 
   # the actual patch file
-  ${CURL} --silent --fail \
+  if ! ${CURL} --silent --fail \
           --output "${output}" \
           --location \
           -H "${githubauth}" \
-         "${PATCHURL}"
-
-  if [[ $? != 0 ]]; then
+         "${PATCHURL}"; then
     yetus_debug "github_locate_patch: not a github pull request."
     return 1
   fi
@@ -330,6 +319,89 @@ function github_locate_patch
   add_footer_table "GITHUB PR" "${GITHUB_BASE_URL}/${GITHUB_REPO}/pull/${input}"
 
   return 0
+}
+
+
+## @description  a wrapper for github_locate_pr_patch that
+## @description  that takes a (likely checkout'ed) github commit
+## @description  sha and turns into the the github pr
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        input
+## @param        output
+## @return       0 on success
+## @return       1 on failure
+function github_locate_sha_patch
+{
+  declare input=$1
+  declare output=$2
+  declare gitsha
+  declare number
+  declare githubauth
+
+  gitsha=${input#GHSHA:}
+
+  # locate the PR number via GitHub API v3
+  #curl https://api.github.com/search/issues?q=sha:40a7af3377d8087779bf8ad66397947b7270737a\&type:pr\&repo:apache/yetus
+
+  if [[ -n "${GITHUB_USER}"
+     && -n "${GITHUB_PASSWD}" ]]; then
+    githubauth="${GITHUB_USER}:${GITHUB_PASSWD}"
+  elif [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth="Authorization: token ${GITHUB_TOKEN}"
+  else
+    githubauth="X-ignore-me: fake"
+  fi
+
+   # Let's pull the PR JSON for later use
+  if ! "${CURL}" --silent --fail \
+          -H "Accept: application/vnd.github.v3.full+json" \
+          -H "${githubauth}" \
+          --output "${PATCH_DIR}/github-search.json" \
+          --location \
+         "${GITHUB_API_URL}/search/issues?q=${gitsha}&type:pr&repo:${GITHUB_REPO}"; then
+    return 1
+  fi
+
+  # shellcheck disable=SC2016
+  number=$("${GREP}" number "${PATCH_DIR}/github-search.json" | \
+           head -1 | \
+           "${AWK}" '{print $NF}')
+  number=${number//\s/}
+  number=${number%,}
+
+  github_locate_pr_patch "GH:${number}" "${output}"
+
+}
+
+
+## @description  Handle the various ways to reference a github PR
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        input
+## @param        output
+## @return       0 on success
+## @return       1 on failure
+function github_locate_patch
+{
+  declare input=$1
+  declare output=$2
+
+  if [[ "${OFFLINE}" == true ]]; then
+    yetus_debug "github_locate_patch: offline, skipping"
+    return 1
+  fi
+
+  case "${input}" in
+      GH:*)
+        github_locate_pr_patch "${input}" "${output}"
+      ;;
+      GHSHA:*)
+        github_locate_sha_patch "${input}" "${output}"
+      ;;
+  esac
 }
 
 function github_linecomments

@@ -64,7 +64,7 @@ Using the `--bugzilla-base-url` on the command line or BUGZILLA\_BASE\_URL in a 
 
 # GitHub Specific
 
-GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that test-patch.sh will require that GitHub PRs be fully rebased (i.e., a single commit) in many circumstances.
+GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that test-patch.sh will (generally) require that GitHub PRs be fully rebased (i.e., a single commit) in many circumstances.
 
 By default, the GitHub plug-in assumes that https://github.com is the base URL for GitHub.  Enterprise users may override this with the `--github-base-url` for the normal web user interface and `--github-api-url` for the API URL.  Personalities may use GITHUB\_API\_URL and GITHUB\_BASE\_URL.
 
@@ -79,6 +79,12 @@ In order to comment on issues or, depending upon the security setup of the repo,
 The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
 `--project=yetus` will set `GITHUB_USER=yetusqa`.
 
+GitHub pull requests may be directly processed on the command line in two ways:
+
+  * GH:(PR number)
+  * GHSHA:(PR SHA1 number)
+
+The GitHub bugsystem plugin will attempt to download the unified diff that the pull request references.
 Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.
 
 # JIRA Specific
