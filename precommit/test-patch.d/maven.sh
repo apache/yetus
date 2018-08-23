@@ -586,7 +586,9 @@ function maven_precompile
   # but quite a few do ...
   # shellcheck disable=SC2086
   for index in ${MAVEN_NEED_INSTALL}; do
-    need=true
+    if verify_needed_test "${index}"; then
+      need=true
+    fi
   done
 
   if [[ "${need}" = false ]]; then
