@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -161,16 +160,16 @@
 <h2 id="common-plug-in-functions">Common Plug-in Functions</h2>
 
 <p>Every plug-in must have one line in order to be recognized, usually an &lsquo;add&rsquo; statement.  Test plug-ins, for example, have this statement:</p>
-<pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
+</code></pre></div>
 <p>This function call registers the <code>pluginname</code> so that test-patch knows that it exists.  Plug-in names must be unique across all the different plug-in types.  Additionally, the &lsquo;all&rsquo; plug-in is reserved.  The <code>pluginname</code> also acts as the key to the custom functions that you can define. For example:</p>
-<pre class="highlight shell"><code><span class="k">function </span>pluginname_filefilter
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>pluginname_filefilter
+</code></pre></div>
 <p>defines the filefilter for the <code>pluginname</code> plug-in.</p>
 
 <p>Similarly, there are other functions that may be defined during the test-patch run:</p>
-<pre class="highlight plaintext"><code>HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.
-</code></pre>
+<div class="highlight"><pre class="highlight plaintext"><code>HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.
+</code></pre></div>
 <ul>
 <li><p>pluginname_usage</p>
 
@@ -234,8 +233,8 @@
 <h2 id="test-plug-ins">Test Plug-ins</h2>
 
 <p>Plug-ins geared towards independent tests are registered via:</p>
-<pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code>add_test_type &lt;pluginname&gt;
+</code></pre></div>
 <ul>
 <li><p>pluginname_filefilter</p>
 
@@ -284,29 +283,29 @@
 <h2 id="global-definitions">Global Definitions</h2>
 
 <p>Globals for personalities should be defined in the <code>personality_globals</code> function.  This function is called <em>after</em> the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:</p>
-<pre class="highlight shell"><code><span class="k">function </span>personality_globals
+<div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_globals
 <span class="o">{</span>
   <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>master
   <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
 <span class="o">}</span>
-</code></pre>
+</code></pre></div>
 <p>Additionally, a personality may require some outside help from the user.  The <code>personality_parse_args</code>
 function is called almost immediately after the personality is loaded and plug-ins parse arguments.</p>
-<pre class="highlight shell"><code><span class="k">function </span>personality_parse_args
+<div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_parse_args
 <span class="o">{</span>
   <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span>
 <span class="o">}</span>
-</code></pre>
+</code></pre></div>
 <p>It is important to note that this function is called AFTER personality_globals.</p>
 
 <h2 id="test-determination">Test Determination</h2>
 
 <p>The <code>personality_file_tests</code> function determines which tests to turn on based upon the file name.  It is relatively simple.  For example, to turn on a full suite of tests for Java files:</p>
-<pre class="highlight shell"><code><span class="k">function </span>personality_file_tests
+<div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_file_tests
 <span class="o">{</span>
   <span class="nb">local </span><span class="nv">filename</span><span class="o">=</span><span class="nv">$1</span>
 
-  <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">=</span>~ <span class="se">\.</span>java<span class="nv">$ </span><span class="o">]]</span>; <span class="k">then
+  <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">=</span>~ <span class="se">\.</span>java<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
     </span>add_test findbugs
     add_test javac
     add_test javadoc
@@ -315,13 +314,13 @@ function is called almost immediately after the personality is loaded and plug-i
   <span class="k">fi</span>
 
 <span class="o">}</span>
-</code></pre>
+</code></pre></div>
 <p>The <code>add_test</code> function is used to activate the standard tests.  Additional plug-ins (such as checkstyle), will get queried on their own.</p>
 
 <h2 id="module-profile-determination">Module &amp; Profile Determination</h2>
 
 <p>Once the tests are determined, it is now time to pick which <a href="precommit-glossary.md#genericoutside-definitions">modules</a> should get used.  That&rsquo;s the job of the <code>personality_modules</code> function.</p>
-<pre class="highlight shell"><code><span class="k">function </span>personality_modules
+<div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_modules
 <span class="o">{</span>
 
     clear_personality_queue
@@ -331,7 +330,7 @@ function is called almost immediately after the personality is loaded and plug-i
     personality_enqueue_module &lt;module&gt; &lt;flags&gt;
 
 <span class="o">}</span>
-</code></pre>
+</code></pre></div>
 <p>It takes exactly two parameters <code>repostatus</code> and <code>testtype</code>.</p>
 
 <p>The <code>repostatus</code> parameter tells the <code>personality</code> function exactly what state the source repository is in.  It can only be in one of two states:  <code>branch</code> or <code>patch</code>.  <code>branch</code> means the patch has not been applied.  The <code>patch</code> state is after the patch has been applied.</p>
@@ -343,28 +342,28 @@ function is called almost immediately after the personality is loaded and plug-i
 <p>The first is <code>clear_personality_queue</code>. This removes the previous test&rsquo;s configuration so that a new module queue may be built. Custom <code>personality_modules</code> will almost always want to do this as the first action.</p>
 
 <p>The second is <code>personality_enqueue_module</code>.  This function takes two parameters.  The first parameter is the name of the module to add to this test&rsquo;s queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. <code>personality_enqueue_module</code> may be called as many times as necessary for your project.</p>
-<pre class="highlight plaintext"><code>NOTE: A module name of . signifies the root of the repository.
-</code></pre>
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: A module name of . signifies the root of the repository.
+</code></pre></div>
 <p>For example, let&rsquo;s say your project uses a special configuration to skip unit tests (-DskipTests).  Running unit tests during a javadoc build isn&rsquo;t very useful and wastes a lot of time. We can write a simple personality check to disable the unit tests:</p>
-<pre class="highlight shell"><code><span class="k">function </span>personality_modules
+<div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_modules
 <span class="o">{</span>
     <span class="nb">local </span><span class="nv">repostatus</span><span class="o">=</span><span class="nv">$1</span>
     <span class="nb">local </span><span class="nv">testtype</span><span class="o">=</span><span class="nv">$2</span>
 
-    <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">testtype</span><span class="k">}</span> <span class="o">==</span> <span class="s1">'javadoc'</span> <span class="o">]]</span>; <span class="k">then
-        </span>personality_enqueue_module . -DskipTests
+    <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">testtype</span><span class="k">}</span> <span class="o">==</span> <span class="s1">'javadoc'</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+        </span>personality_enqueue_module <span class="nb">.</span> <span class="nt">-DskipTests</span>
         <span class="k">return
     fi</span>
     ...
 
-</code></pre>
+</code></pre></div>
 <p>This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.</p>
 
 <h2 id="enabling-plug-ins">Enabling Plug-ins</h2>
 
 <p>Personalities can set the base list of plug-ins to enable and disable for their project via the <code>personality_plugins</code> function. Just call it with the same pattern as the <code>--plugins</code> command line option:</p>
-<pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-findbugs,-asflicense"</span>
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-findbugs,-asflicense"</span>
+</code></pre></div>
 <p>This list is used if the user does not provide a list of plug-ins.</p>
 
 <h1 id="important-variables">Important Variables</h1>

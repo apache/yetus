@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -145,17 +144,17 @@ documenation <a href="releasedocmaker">here</a>.</p>
 <p>Shelldocs provides generation of html formatted api documentation based on comments on Bash functions. Currently supports documenting API status (public / private) as well as parameters and return values.</p>
 
 <p>See the shelldocs cli help for more information on usage.</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>./shelldocs/shelldocs.py --help
-Usage: shelldocs.py --skipprnorep --output OUTFILE --input INFILE <span class="o">[</span>--input INFILE ...]
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>./shelldocs/shelldocs.py <span class="nt">--help</span>
+Usage: shelldocs.py <span class="nt">--skipprnorep</span> <span class="nt">--output</span> OUTFILE <span class="nt">--input</span> INFILE <span class="o">[</span><span class="nt">--input</span> INFILE ...]
 
 Options:
-  -h, --help            show this <span class="nb">help </span>message and <span class="nb">exit</span>
-  -o OUTFILE, --output<span class="o">=</span>OUTFILE
+  <span class="nt">-h</span>, <span class="nt">--help</span>            show this <span class="nb">help </span>message and <span class="nb">exit</span>
+  <span class="nt">-o</span> OUTFILE, <span class="nt">--output</span><span class="o">=</span>OUTFILE
                         file to create
-  -i INFILE, --input<span class="o">=</span>INFILE
+  <span class="nt">-i</span> INFILE, <span class="nt">--input</span><span class="o">=</span>INFILE
                         file to <span class="nb">read</span>
-  --skipprnorep         Skip Private &amp; Not Replaceable
-</code></pre>
+  <span class="nt">--skipprnorep</span>         Skip Private &amp; Not Replaceable
+</code></pre></div>
 <p>You can mark a file to be ignored by shelldocs by adding <q>SHELLDOC-IGNORE</q> as a comment in its own line.</p>
 
 <h1 id="yetus-audience-annotations">Yetus Audience Annotations</h1>

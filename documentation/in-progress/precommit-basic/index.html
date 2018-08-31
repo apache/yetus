@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -221,46 +220,46 @@ as a whole.</p>
 <h1 id="basic-usage">Basic Usage</h1>
 
 <p>The first step for a successful deployment is determining which features/plug-ins to enable:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --list-plugins
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--list-plugins</span>
+</code></pre></div>
 <p>This option will list all of the available plug-ins that are installed in the default location.  From this list, the specific plug-ins can be enabled:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --plugins<span class="o">=</span><span class="s2">"ant,maven,shellcheck,xml"</span> &lt;other options&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--plugins</span><span class="o">=</span><span class="s2">"ant,maven,shellcheck,xml"</span> &lt;other options&gt;
+</code></pre></div>
 <p>As a short-cut, every plug-in may be enabled via the special &lsquo;all&rsquo; type:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --plugins<span class="o">=</span><span class="s2">"all"</span> &lt;other options&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--plugins</span><span class="o">=</span><span class="s2">"all"</span> &lt;other options&gt;
+</code></pre></div>
 <p><code>--plugins</code> also allows some basic <q>arithmetic</q>:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --plugins<span class="o">=</span><span class="s2">"all,-checkstyle,-findbugs"</span> &lt;other options&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--plugins</span><span class="o">=</span><span class="s2">"all,-checkstyle,-findbugs"</span> &lt;other options&gt;
+</code></pre></div>
 <p>This will enable all plug-ins for potential usage, except for checkstyle and findbugs.</p>
 
 <p><strong>NOTE: The examples in this section will assume that the necessary <code>--plugins</code> option has been set on the command line as appropriate for your particular installation.</strong></p>
 
 <p>This command will execute basic patch testing against a patch file stored in <q>filename</q>:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">cd</span> &lt;your repo&gt;
-<span class="gp">$ </span><span class="nb">test</span>-patch.sh --dirty-workspace --project<span class="o">=</span>projectname &lt;filename&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd</span> &lt;your repo&gt;
+<span class="nv">$ </span>test-patch.sh <span class="nt">--dirty-workspace</span> <span class="nt">--project</span><span class="o">=</span>projectname &lt;filename&gt;
+</code></pre></div>
 <p>The <code>--dirty-workspace</code> flag tells test-patch that the repository is not clean and it is ok to continue.  By default, unit tests are not run since they may take a significant amount of time.</p>
 
 <p>To do turn them on, we need to provide the &ndash;run-tests option:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">cd</span> &lt;your repo&gt;
-<span class="gp">$ </span><span class="nb">test</span>-patch.sh --dirty-workspace --run-tests &lt;filename&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd</span> &lt;your repo&gt;
+<span class="nv">$ </span>test-patch.sh <span class="nt">--dirty-workspace</span> <span class="nt">--run-tests</span> &lt;filename&gt;
+</code></pre></div>
 <p>This is the same command, but now runs the unit tests.</p>
 
 <p>A typical configuration is to have two repositories.  One with the code you are working on and another, clean repository.  This means you can:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">cd</span> &lt;workrepo&gt;
-<span class="gp">$ </span>git diff master &gt; /tmp/patchfile
-<span class="gp">$ </span><span class="nb">cd</span> ../&lt;testrepo&gt;
-<span class="gp">$ </span><span class="nb">test</span>-patch.sh --basedir<span class="o">=</span>&lt;testrepo&gt; --resetrepo /tmp/patchfile
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd</span> &lt;workrepo&gt;
+<span class="nv">$ </span>git diff master <span class="o">&gt;</span> /tmp/patchfile
+<span class="nv">$ </span><span class="nb">cd</span> ../&lt;testrepo&gt;
+<span class="nv">$ </span>test-patch.sh <span class="nt">--basedir</span><span class="o">=</span>&lt;testrepo&gt; <span class="nt">--resetrepo</span> /tmp/patchfile
+</code></pre></div>
 <p>We used two new options here.  &ndash;basedir sets the location of the repository to use for testing.  &ndash;resetrepo tells test patch that it can go into <strong>destructive</strong> mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!</p>
 
 <h1 id="fork-bomb-protection">Fork Bomb Protection</h1>
 
 <p>By default, test-patch.sh will set the user soft limit (ulimit -Su) to a relatively low 1,000 processes (and, on some operating systems with some languages such as Java, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low, it may be necessary to use the <code>--proclimit</code> option.  For example:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch --proclimit<span class="o">=</span>10000
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--proclimit</span><span class="o">=</span>10000
+</code></pre></div>
 <p>&hellip; will set it to be 10,000 processes.</p>
 
 <p>NOTE: The actual implementation of this feature is dependent upon the version of Bash.  For bash v4 and higher (most operating systems), the fork bomb protection is generally only used for the build and QA tools.  This means Apache Yetus should continue to function. For earlier versions of bash (e.g., OS X), the limit is applied to all of test-patch. If the limit is hit, Apache Yetus will itself likely crash.</p>
@@ -270,24 +269,24 @@ as a whole.</p>
 <p>After the tests have run, there is a directory that contains all of the test-patch related artifacts.  This is generally referred to as the patchprocess directory.  By default, test-patch tries to make something off of /tmp to contain this content.  Using the <code>--patch-dir</code> option, one can specify exactly which directory to use.  This is helpful for automated precommit testing so that Jenkins or other automated workflow system knows where to look to gather up the output.</p>
 
 <p>For example:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --robot --patch-dir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchprocess --basedir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/source <span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchfile
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--robot</span> <span class="nt">--patch-dir</span><span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchprocess <span class="nt">--basedir</span><span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/source <span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchfile
+</code></pre></div>
 <p>&hellip; will trigger test-patch to run in fully automated mode, using ${WORKSPACE}/patchprocess as its scratch space, ${WORKSPACE}/source as the source repository, and ${WORKSPACE}/patchfile as the name of the patch to test against.  This will always run the unit tests, write answers back to bug systems, remove old, stopped/exited Docker containers after 24 hours and images after 1 week, forcibly use &ndash;resetrepo, and more.</p>
 
 <p><strong>NOTE: Make sure to add the patch directory to <code>.gitignore</code> if the directory is inside the source tree to avoid deleting it, as <code>test-patch</code> does a <code>git clean</code> to remove untracked files from previous runs.</strong></p>
 
 <p>The &ndash;build-url option is also useful when running in &ndash;robot mode so that emails and such
 have a location to look at the output artifacts:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --robot --build-url<span class="o">=</span>http://server.example.name:80/<span class="k">${</span><span class="nv">buildnumber</span><span class="k">}</span>/
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--robot</span> <span class="nt">--build-url</span><span class="o">=</span>http://server.example.name:80/<span class="k">${</span><span class="nv">buildnumber</span><span class="k">}</span>/
+</code></pre></div>
 <p>Some plug-ins such as Maven have special handling if there are multiple executions of test-patch happening at once.  It is very common when using automation systems to have multiple runs on the same host. In order to assist these plug-ins, an instance identifier may be provided:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --robot --instance<span class="o">=</span>1
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--robot</span> <span class="nt">--instance</span><span class="o">=</span>1
+</code></pre></div>
 <p>If &ndash;robot is specified without an instance, a random number is generated and used.</p>
 
 <p>There is some special handling if Jenkins is actually your automation tool.  Instead of using &ndash;robot, use &ndash;jenkins:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --jenkins --patch-dir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchprocess --basedir<span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/source <span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchfile
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--jenkins</span> <span class="nt">--patch-dir</span><span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchprocess <span class="nt">--basedir</span><span class="o">=</span><span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/source <span class="k">${</span><span class="nv">WORKSPACE</span><span class="k">}</span>/patchfile
+</code></pre></div>
 <p>This will enable &ndash;robot, set the &ndash;build-url option from the ${BUILD_URL} environment variable, and the instance identifier is set to the ${EXECUTOR_NUMBER}.</p>
 
 <p>If stuck containers are a problem, a more aggressive robot may be enabled with the &ndash;sentinel option.  This option enables killing containers that have been running for over 24 hours as well.</p>
@@ -295,8 +294,8 @@ have a location to look at the output artifacts:</p>
 <h1 id="build-tool">Build Tool</h1>
 
 <p>Out of the box, test-patch is built to use maven.  But what if the project is built using something else, such as ant?</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> --build-tool<span class="o">=</span>ant
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> <span class="nt">--build-tool</span><span class="o">=</span>ant
+</code></pre></div>
 <p>will tell test-patch to use ant instead of maven to drive the project.</p>
 
 <h1 id="providing-patch-files">Providing Patch Files</h1>
@@ -309,26 +308,26 @@ have a location to look at the output artifacts:</p>
  on the naming convention please refer to <a href="../precommit-patchnames/">patch-naming-conventions</a></strong></p>
 
 <p>For example:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> HADOOP-9905
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> HADOOP-9905
+</code></pre></div>
 <p>&hellip; will process the patch file associated with this JIRA issue.</p>
 
 <p>If the Apache JIRA system is not in use, then override options may be provided on the command line to point to a different JIRA instance.</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --jira-issue-re<span class="o">=</span><span class="s1">'^PROJECT-[0-9]+$'</span> --jira-base-url<span class="o">=</span><span class="s1">'https://example.com/jira'</span> PROJECT-90
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--jira-issue-re</span><span class="o">=</span><span class="s1">'^PROJECT-[0-9]+$'</span> <span class="nt">--jira-base-url</span><span class="o">=</span><span class="s1">'https://example.com/jira'</span> PROJECT-90
+</code></pre></div>
 <p>&hellip; will process the patch file attached to PROJECT-90 on the JIRA instance located on the example.com server.</p>
 
 <h2 id="github">GITHUB</h2>
 
 <p>test-patch has some basic support for Github.  test-patch supports many forms of providing pull requests to work on:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh --github-repo<span class="o">=</span>apache/pig GH:99
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="nt">--github-repo</span><span class="o">=</span>apache/pig GH:99
+</code></pre></div>
 <p>or</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh https://github.com/apache/pig/pulls/99
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh https://github.com/apache/pig/pulls/99
+</code></pre></div>
 <p>or</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh https://github.com/apache/pig/pulls/99.patch
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh https://github.com/apache/pig/pulls/99.patch
+</code></pre></div>
 <p>&hellip; will process PR #99 on the apache/pig repo.</p>
 
 <h2 id="generic-urls">Generic URLs</h2>
@@ -336,8 +335,8 @@ have a location to look at the output artifacts:</p>
 <p>Luckily, test-patch supports ways to provide unified diffs via URLs.</p>
 
 <p>For example:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> https://example.com/webserver/file.patch
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> https://example.com/webserver/file.patch
+</code></pre></div>
 <p>&hellip; will download and process the file.patch from the example.com webserver.</p>
 
 <h1 id="project-specific-capabilities">Project-specific Capabilities</h1>
@@ -345,20 +344,20 @@ have a location to look at the output artifacts:</p>
 <p>Due to the extensible nature of the system, test-patch allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.) There are two ways to specify which personality to use:</p>
 
 <h2 id="direct-method">Direct Method</h2>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> --personality<span class="o">=(</span>filename<span class="o">)</span>
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> <span class="nt">--personality</span><span class="o">=(</span>filename<span class="o">)</span>
+</code></pre></div>
 <p>This tells test-patch to use the personality in the given file.</p>
 
 <h2 id="project-method">Project Method</h2>
 
 <p>However, test-patch can detect if it is a personality that is in its <q>personality</q> directory based upon the project name:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> --project<span class="o">=(</span>project<span class="o">)</span>
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> <span class="nt">--project</span><span class="o">=(</span>project<span class="o">)</span>
+</code></pre></div>
 <h1 id="multijdk">MultiJDK</h1>
 
 <p>For many projects, it is useful to test Java code against multiple versions of JDKs at the same time.  test-patch can do this with the &ndash;multijdkdirs option:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> --multijdkdirs<span class="o">=</span><span class="s2">"/j/d/k/1,/j/d/k/2"</span>
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> <span class="nt">--multijdkdirs</span><span class="o">=</span><span class="s2">"/j/d/k/1,/j/d/k/2"</span>
+</code></pre></div>
 <p>Not all Java tests support this mode, but those that do will now run their tests with all of the given versions of Java consecutively (e.g., javac&ndash;the Java compliation test).  Tests that do not support MultiJDK mode (e.g., checkstyle, mvn install) will use JAVA_HOME.</p>
 
 <p>NOTE: JAVA_HOME is always appended to the list of JDKs in MultiJDK mode.  If JAVA_HOME is in the list, it will be moved to the end.</p>
@@ -366,8 +365,8 @@ have a location to look at the output artifacts:</p>
 <h1 id="docker">Docker</h1>
 
 <p>test-patch also has a mode to utilize Docker:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> --docker
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> <span class="nt">--docker</span>
+</code></pre></div>
 <p>This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the advanced guide.</p>
 
 <h1 id="in-closing">In Closing</h1>

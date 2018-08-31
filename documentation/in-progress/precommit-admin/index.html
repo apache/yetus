@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -148,10 +147,10 @@
 <h1 id="project-specifc-builds">Project-Specifc Builds</h1>
 
 <p>New builds are started via buildWithParameters call. Three parameters are added to the URL:</p>
-<pre class="highlight plaintext"><code>* token = Jenkins security token (see below)
+<div class="highlight"><pre class="highlight plaintext"><code>* token = Jenkins security token (see below)
 * ISSUE\_NUM = JIRA issue number
 * ATTACHMENT\_ID = JIRA attachment id
-</code></pre>
+</code></pre></div>
 <p>By default, the Jenkins job name is expected to be <code>PreCommit-{project}</code>, where the project name matches the JIRA project name. Using the JIRA issue YETUS-1 with an attachment number of 2345 would result in the following URL:</p>
 
 <p>{JENKINS_URL}/job/PreCommit-YETUS/buildWithParameters?token=YETUS-token&amp;ISSUE_NUM=1&amp;ATTACHMENT_ID=2345</p>

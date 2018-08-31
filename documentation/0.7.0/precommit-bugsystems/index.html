@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -124,8 +123,8 @@
 <h1 id="bug-system-support">Bug System Support</h1>
 
 <p>test-patch has the ability to support multiple bug systems.  Bug tools have some extra hooks to fetch patches, line-level reporting, and posting a final report. Every bug system plug-in must have one line in order to be recognized:</p>
-<pre class="highlight shell"><code>add_bugsystem &lt;pluginname&gt;
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code>add_bugsystem &lt;pluginname&gt;
+</code></pre></div>
 <ul>
 <li><p>pluginname_locate_patch</p>
 
@@ -162,8 +161,8 @@
 <h1 id="bugzilla-specific">Bugzilla Specific</h1>
 
 <p>Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with &lsquo;BZ:&rsquo;.  For example:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nb">test</span>-patch.sh <span class="o">(</span>other options<span class="o">)</span> BZ:4
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> BZ:4
+</code></pre></div>
 <p>&hellip; will pull down Bugzilla ID #4.</p>
 
 <p>Using the <code>--bugzilla-base-url</code> on the command line or BUGZILLA_BASE_URL in a project&rsquo;s personality will define the location of the Bugzilla instance.  By default, it is <a href="https://bz.apache.org/bugzilla">https://bz.apache.org/bugzilla</a> .</p>

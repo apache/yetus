@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -162,8 +161,8 @@
 <h1 id="basic-usage">Basic Usage</h1>
 
 <p>Minimally, the name of the JIRA project and a version registered in JIRA must be provided:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project <span class="o">(</span>project<span class="o">)</span> --version <span class="o">(</span>version<span class="o">)</span>
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> <span class="o">(</span>project<span class="o">)</span> <span class="nt">--version</span> <span class="o">(</span>version<span class="o">)</span>
+</code></pre></div>
 <p>This will query Apache JIRA, generating two files in a directory named after the given version in an extended markdown format which can be processed by both mvn site and GitHub.</p>
 
 <ul>
@@ -179,31 +178,31 @@
 <p>If your JIRA project supports the release note field, this will contain any JIRA mentioned in the CHANGES log that is either an incompatible change or has a release note associated with it.  If your JIRA project does not support the release notes field, this will be the description field.</p>
 
 <p>For example, to build the release documentation for HBase v1.2.0&hellip;</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> HBASE <span class="nt">--version</span> 1.2.0
+</code></pre></div>
 <p>&hellip; will create a 1.2.0 directory and inside that directory will be CHANGES.1.2.0.md and RELEASENOTES.1.2.0.md .</p>
 
 <p>By default, release notes are expected to be in plain text.  However, you can write them in markdown if you include a header at the top of your release note:</p>
-<pre class="highlight xml"><code><span class="c">&lt;!-- markdown --&gt;</span>
+<div class="highlight"><pre class="highlight xml"><code><span class="c">&lt;!-- markdown --&gt;</span>
 remaining text
-</code></pre>
+</code></pre></div>
 <h1 id="changing-the-header">Changing the Header</h1>
 
 <p>By default, it will use a header that matches the project name.  But that is kind of ugly and the case may be wrong.  Luckily, the title can be changed:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.2.0 --projecttitle <span class="s2">"Apache HBase"</span>
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> HBASE <span class="nt">--version</span> 1.2.0 <span class="nt">--projecttitle</span> <span class="s2">"Apache HBase"</span>
+</code></pre></div>
 <p>Now instead of <q>HBASE</q>, it will use <q>Apache HBASE</q> for some titles and headers.</p>
 
 <h1 id="multiple-versions">Multiple Versions</h1>
 
 <p>The script can also generate multiple versions at once, by</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> HBASE <span class="nt">--version</span> 1.0.0 <span class="nt">--version</span> 1.2.0
+</code></pre></div>
 <p>This will create the files for versions 1.0.0 and versions 1.2.0 in their own directories.</p>
 
 <p>But what if the version numbers are not known?  releasedocmaker can also generate version data based upon ranges:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --version 1.2.0 --range
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> HBASE <span class="nt">--version</span> 1.0.0 <span class="nt">--version</span> 1.2.0 <span class="nt">--range</span>
+</code></pre></div>
 <p>In this form, releasedocmaker will query JIRA, discover all versions that alphabetically appear to be between 1.0.0 and 1.2.0, inclusive, and generate all of the relative release documents.  This is especially useful when bootstrapping an existing project.</p>
 
 <h1 id="unreleased-dates">Unreleased Dates</h1>
@@ -211,8 +210,8 @@ remaining text
 <p>For released versions, releasedocmaker will pull the date of the release from JIRA.  However, for unreleased versions it marks the release as <q>Unreleased</q>. This can be inconvenient when actually building a release and wanting to include it inside the source package.</p>
 
 <p>The &ndash;usetoday option can be used to signify that instead of using Unreleased, releasedocmaker should use today&rsquo;s date.</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --usetoday
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> HBASE <span class="nt">--version</span> 1.0.0 <span class="nt">--usetoday</span>
+</code></pre></div>
 <p>After using this option and release, don&rsquo;t forget to change JIRA&rsquo;s release date to match!</p>
 
 <h1 id="sorted-output">Sorted Output</h1>
@@ -222,23 +221,23 @@ remaining text
 <h2 id="resolution-date-base-sort">Resolution Date-base Sort</h2>
 
 <p>By default, releasedocmaker will sort the output based upon the resolution date of the issue starting with older resolutions.  This is the same as giving these options:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project falcon --version 0.6 --sorttype resolutiondate --sortorder older
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> falcon <span class="nt">--version</span> 0.6 <span class="nt">--sorttype</span> resolutiondate <span class="nt">--sortorder</span> older
+</code></pre></div>
 <p>The order can be reversed so that newer issues appear on top by providing the &lsquo;newer&rsquo; flag:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project falcon --version 0.6 --sorttype resolutiondate --sortorder newer
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> falcon <span class="nt">--version</span> 0.6 <span class="nt">--sorttype</span> resolutiondate <span class="nt">--sortorder</span> newer
+</code></pre></div>
 <p>In the case of multiple projects given on the command line, the projects will be interspersed.</p>
 
 <h2 id="issue-number-based-sort">Issue Number-based Sort</h2>
 
 <p>An alternative to the date-based sort is to sort based upon the issue id.  This may be accomplished via:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project falcon --version 0.6 --sorttype issueid --sortorder asc
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> falcon <span class="nt">--version</span> 0.6 <span class="nt">--sorttype</span> issueid <span class="nt">--sortorder</span> asc
+</code></pre></div>
 <p>This will now sort by the issue id, listing them in lowest to highest (or ascending) order.</p>
 
 <p>The order may be reversed to list them in highest to lowest (or descending) order by providing the appropriate flag:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project falcon --version 0.6 --sorttype issueid --sortorder desc
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> falcon <span class="nt">--version</span> 0.6 <span class="nt">--sorttype</span> issueid <span class="nt">--sortorder</span> desc
+</code></pre></div>
 <p>In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.</p>
 
 <h1 id="backward-incompatible-changes">Backward Incompatible Changes</h1>
@@ -246,18 +245,18 @@ remaining text
 <p>To check if an issue is backward-incompatible the releasedocmaker script first checks the <q>Hadoop Flags</q> field in the
 issue. If this field is found to be blank then it searches for the &lsquo;backward-incompatible&rsquo; label. You can override the
 default value for this label by using &ndash;incompatiblelabel option e.g.</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project falcon --version 0.6 --incompatiblelabel not-compatible
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> falcon <span class="nt">--version</span> 0.6 <span class="nt">--incompatiblelabel</span> not-compatible
+</code></pre></div>
 <p>or equivalently using the shorter -X option</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project falcon --version 0.6 -X not-compatible
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> falcon <span class="nt">--version</span> 0.6 <span class="nt">-X</span> not-compatible
+</code></pre></div>
 <h1 id="lint-mode">Lint Mode</h1>
 
 <p>In order to ensure proper formatting while using mvn site, releasedocmaker puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.</p>
 
 <p>In order to help release managers from having to scan through potentially large documents, releasedocmaker features a lint mode, triggered via &ndash;lint:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py --project HBASE --version 1.0.0 --lint
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">--project</span> HBASE <span class="nt">--version</span> 1.0.0 <span class="nt">--lint</span>
+</code></pre></div>
 <p>This will do the normal JIRA querying, looking for items it considers problematic.  It will print the information to the screen and then exit with either success or failure, depending upon if any issues were discovered.</p>
 
 <h1 id="index-mode">Index Mode</h1>
@@ -273,8 +272,8 @@ For example directories with names like 0.6, 1.2.2, 1.2alpha etc. will all be li
 <h1 id="release-version">Release Version</h1>
 
 <p>You can find the version of the releasedocmaker that you are using by giving the -V option. This may be helpful in finding documentation for the version you are using.</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>releasedocmaker.py -V
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>releasedocmaker.py <span class="nt">-V</span>
+</code></pre></div>
     </div>
       <div class="container">
     <hr>

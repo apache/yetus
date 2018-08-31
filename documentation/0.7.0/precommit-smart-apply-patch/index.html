@@ -53,10 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.4.0/">Docs for v0.4.0</a></li>
-                      <li><a href="/documentation/0.5.0/">Docs for v0.5.0</a></li>
                       <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
+                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -128,16 +127,16 @@
 <h1 id="usage">Usage</h1>
 
 <p>Its simplest form is used when a patch is stored in a local file:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch patch
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch patch
+</code></pre></div>
 <p>This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.</p>
 
 <p>Perhaps you just want to see if the patch even applies without changing your local repo.  The <code>--dry-run</code> option will just test for applicability:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --dry-run patch
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--dry-run</span> patch
+</code></pre></div>
 <p>For committers of projects, there is a special mode:</p>
-<pre class="highlight shell"><code><span class="gp">$ </span>smart-apply-patch --committer patch
-</code></pre>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--committer</span> patch
+</code></pre></div>
 <p>that in addition to applying the patch will also attempt to:</p>
 
 <ul>
