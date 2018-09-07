@@ -888,50 +888,50 @@ def main():
             choutputs.write_all("### INCOMPATIBLE CHANGES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(incompatlist, options.skip_credits)
+            choutputs.write_list(incompatlist, options.skip_credits, JIRA_BASE_URL)
 
         if importantlist:
             choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(importantlist, options.skip_credits)
+            choutputs.write_list(importantlist, options.skip_credits, JIRA_BASE_URL)
 
         if newfeaturelist:
             choutputs.write_all("\n\n### NEW FEATURES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(newfeaturelist, options.skip_credits)
+            choutputs.write_list(newfeaturelist, options.skip_credits, JIRA_BASE_URL)
 
         if improvementlist:
             choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(improvementlist, options.skip_credits)
+            choutputs.write_list(improvementlist, options.skip_credits, JIRA_BASE_URL)
 
         if buglist:
             choutputs.write_all("\n\n### BUG FIXES:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(buglist, options.skip_credits)
+            choutputs.write_list(buglist, options.skip_credits, JIRA_BASE_URL)
 
         if testlist:
             choutputs.write_all("\n\n### TESTS:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(testlist, options.skip_credits)
+            choutputs.write_list(testlist, options.skip_credits, JIRA_BASE_URL)
 
         if subtasklist:
             choutputs.write_all("\n\n### SUB-TASKS:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(subtasklist, options.skip_credits)
+            choutputs.write_list(subtasklist, options.skip_credits, JIRA_BASE_URL)
 
         if tasklist or otherlist:
             choutputs.write_all("\n\n### OTHER:\n\n")
             choutputs.write_all(CHANGEHDR1)
             choutputs.write_all(CHANGEHDR2)
-            choutputs.write_list(otherlist, options.skip_credits)
-            choutputs.write_list(tasklist, options.skip_credits)
+            choutputs.write_list(otherlist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(tasklist, options.skip_credits, JIRA_BASE_URL)
 
         choutputs.write_all("\n\n")
         choutputs.close()

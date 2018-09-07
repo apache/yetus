@@ -26,7 +26,6 @@ import httplib
 sys.dont_write_bytecode = True
 
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
-BASE_URL = "https://issues.apache.org/jira"
 
 def clean(input_string):
     return sanitize_markdown(re.sub(NAME_PATTERN, "", input_string))
@@ -183,7 +182,8 @@ class Outputs(object):
         for value in self.others.values():
             value.close()
 
-    def write_list(self, mylist, skip_credits):
+    def write_list(self, mylist, skip_credits, base_url):
+        """ Take a Jira object and write out the relevants parts in a multimarkdown table line"""
         for jira in sorted(mylist):
             if skip_credits:
                 line = '| [{id}]({base_url}/browse/{id}) | {summary} |  ' \
@@ -192,12 +192,12 @@ class Outputs(object):
                 line = '| [{id}]({base_url}/browse/{id}) | {summary} |  ' \
                        '{priority} | {component} | {reporter} | {assignee} |\n'
             args = {'id': encode_utf8(jira.get_id()),
-                    'base_url': BASE_URL,
+                    'base_url': base_url,
                     'summary': sanitize_text(jira.get_summary()),
                     'priority': sanitize_text(jira.get_priority()),
                     'component': format_components(jira.get_components()),
                     'reporter': sanitize_text(jira.get_reporter()),
                     'assignee': sanitize_text(jira.get_assignee())
-                    }
+                   }
             line = line.format(**args)
             self.write_key_raw(jira.get_project(), line)
