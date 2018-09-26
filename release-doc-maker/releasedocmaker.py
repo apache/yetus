@@ -204,11 +204,10 @@ class Jira(object):
         return to_unicode(ret)
 
     def get_components(self):
-        if len(self.fields['components']) > 0:
+        if self.fields['components']:
             return ", ".join([comp['name'] for comp in self.fields['components']
                              ])
-        else:
-            return ""
+        return ""
 
     def get_summary(self):
         return self.fields['summary']
@@ -426,7 +425,7 @@ class Linter(object):
     def _parse_options(self, options):
         """Parse options from optparse."""
 
-        if options.lint is None or len(options.lint) == 0:
+        if options.lint is None or not options.lint:
             return
         self.enabled = True
 
@@ -467,7 +466,7 @@ class Linter(object):
     def message(self):
         """Return summary lint message suitable for printing to stdout."""
         if not self.enabled:
-            return
+            return None
         return self._lint_message + \
                "\n=======================================" + \
                "\n%s: Error:%d, Warning:%d \n" % \
@@ -478,7 +477,7 @@ class Linter(object):
         if not self._filters["component"]:
             return False
 
-        if len(jira.fields['components']) > 0:
+        if jira.fields['components']:
             return False
         return True
 
@@ -507,7 +506,7 @@ class Linter(object):
         """Run lint check on a JIRA."""
         if not self.enabled:
             return
-        if len(jira.get_release_note()) == 0:
+        if not jira.get_release_note():
             if self._filters["incompatible"] and jira.get_incompatible_change():
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
@@ -744,7 +743,7 @@ def main():
         vstr = str(version)
         linter = Linter(vstr, options)
         jlist = sorted(JiraIter(vstr, projects))
-        if len(jlist) == 0:
+        if not jlist:
             print "There is no issue which has the specified version: %s" % version
             continue
 
@@ -852,11 +851,11 @@ def main():
                    % (sanitize_text(jira.get_id()),
                       sanitize_text(jira.get_priority()), sanitize_text(jira.get_summary()))
 
-            if len(jira.get_release_note()) > 0 or \
+            if jira.get_release_note() or \
                jira.get_incompatible_change() or jira.get_important():
                 reloutputs.write_key_raw(jira.get_project(), "\n---\n\n")
                 reloutputs.write_key_raw(jira.get_project(), line)
-                if len(jira.get_release_note()) == 0:
+                if not jira.get_release_note():
                     line = '\n**WARNING: No release note provided for this change.**\n\n'
                 else:
                     line = '\n%s\n\n' % (

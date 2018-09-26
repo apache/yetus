@@ -115,8 +115,7 @@ class ShellFunction(object):
         '''get the name of the function'''
         if self.filename is None:
             return "undefined"
-        else:
-            return self.filename
+        return self.filename
 
     def setname(self, text):
         '''set the name of the function'''
@@ -127,8 +126,7 @@ class ShellFunction(object):
         '''get the name of the function'''
         if self.name is None:
             return "None"
-        else:
-            return self.name
+        return self.name
 
     def setlinenum(self, linenum):
         '''set the line number of the function'''
@@ -147,8 +145,7 @@ class ShellFunction(object):
         '''get the audience of the function'''
         if self.audience is None:
             return "None"
-        else:
-            return self.audience
+        return self.audience
 
     def setstability(self, text):
         '''set the stability of the function'''
@@ -159,8 +156,7 @@ class ShellFunction(object):
         '''get the stability of the function'''
         if self.stability is None:
             return "None"
-        else:
-            return self.stability
+        return self.stability
 
     def setreplace(self, text):
         '''set the replacement state'''
@@ -171,8 +167,7 @@ class ShellFunction(object):
         '''get the replacement state'''
         if self.replaceb == "Yes":
             return self.replaceb
-        else:
-            return "No"
+        return "No"
 
     def getinter(self):
         '''get the function state'''
@@ -188,8 +183,7 @@ class ShellFunction(object):
         '''get the complete return state'''
         if self.returnt is None:
             return "Nothing"
-        else:
-            return "\n\n".join(self.returnt)
+        return "\n\n".join(self.returnt)
 
     def adddesc(self, text):
         '''add to the description'''
@@ -201,8 +195,7 @@ class ShellFunction(object):
         '''get the description'''
         if self.desc is None:
             return "None"
-        else:
-            return " ".join(self.desc)
+        return " ".join(self.desc)
 
     def addparam(self, text):
         '''add a parameter'''
@@ -214,8 +207,7 @@ class ShellFunction(object):
         '''get all of the parameters'''
         if self.params is None:
             return ""
-        else:
-            return " ".join(self.params)
+        return " ".join(self.params)
 
     def getusage(self):
         '''get the usage string'''
@@ -411,7 +403,7 @@ def main():
     if options.lint:
         for funcs in allfuncs:
             message = funcs.lint()
-            if len(message) > 0:
+            if message:
                 print message
 
     if options.outfile is not None:

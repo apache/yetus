@@ -136,11 +136,9 @@ def processrelnote(input_string):
     fmt = relnote_pattern.match(input_string)
     if fmt is None:
         return sanitize_text(input_string)
-    else:
-        return {
-            'markdown': sanitize_markdown(input_string),
-        }.get(
-            fmt.group(1), sanitize_text(input_string))
+    return {
+        'markdown': sanitize_markdown(input_string),
+    }.get(fmt.group(1), sanitize_text(input_string))
 
 
 def to_unicode(obj):
