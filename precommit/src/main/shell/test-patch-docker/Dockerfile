@@ -65,34 +65,6 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y openjdk-8
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-#######
-# OpenJDK 9
-# w/workaround for
-# https://bugs.launchpad.net/ubuntu/+source/openjdk-9/+bug/1593191
-#######
-RUN apt-get -q update && apt-get -o Dpkg::Options::="--force-overwrite" \
-    -q install --no-install-recommends -y \
-    openjdk-9-jdk-headless \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-#######
-# Set default Java
-#######
-#
-# By default, OpenJDK sets the default Java to the highest version.
-# We want the opposite, soooooo....
-#
-RUN update-java-alternatives --set java-1.8.0-openjdk-amd64
-RUN update-alternatives --get-selections | grep -i jdk | \
-    while read -r line; do \
-      alternative=$(echo "$line" | awk '{print $1}'); \
-      path=$(echo "$line" | awk '{print $3}'); \
-      newpath=${path//java-9/java-8}; \
-      update-alternatives --set "$alternative" "$newpath"; \
-    done
-
-
 ####
 # Install ant
 ####
