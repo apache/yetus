@@ -105,6 +105,8 @@ function common_args
   declare showversion=false
   declare version
 
+  activate_robots
+
   for i in "$@"; do
     case ${i} in
       --awk-cmd=*)
@@ -639,5 +641,25 @@ function set_yetus_version
     VERSION=$(${GREP} "<version>" "${BINDIR}/../../../pom.xml" 2>/dev/null \
       | head -1 \
       | ${SED}  -e 's|^ *<version>||' -e 's|</version>.*$||' 2>/dev/null)
+  fi
+}
+
+## @description  import and set defaults based upon any auto-detected automation
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
+function activate_robots
+{
+  declare -a files
+  declare i
+
+  if [[ -d "${BINDIR}/robots.d" ]]; then
+    for i in "${BINDIR}"/robots.d/*.sh; do
+      if [[ -f ${i} ]]; then
+        yetus_debug "Importing ${i}"
+        #shellcheck disable=SC1090
+        . "${i}"
+      fi
+    done
   fi
 }

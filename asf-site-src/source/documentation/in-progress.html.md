@@ -29,6 +29,8 @@ The Yetus Precommit Patch Tester allows projects to codify their patch acceptanc
 
 For a complete guide to the Precommit API, see [the generated API documentation](precommit-apidocs/).
 
+For help with CI tools and automation, see our documentation about [robots](precommit-robots).
+
 # Yetus Release Doc Maker
 
 The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that

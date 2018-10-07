@@ -93,10 +93,10 @@ function setup_defaults
   PROC_LIMIT=1000
   REEXECED=false
   RESETREPO=false
-  BUILDMODE=patch
+  BUILDMODE=${BUILDMODE:-patch}
   # shellcheck disable=SC2034
-  BUILDMODEMSG="The patch"
-  ISSUE=""
+  BUILDMODEMSG=${BUILDMODEMSG:-"The patch"}
+  ISSUE=${ISSUE:-""}
   TIMER=$("${AWK}" 'BEGIN {srand(); print srand()}')
   JVM_REQUIRED=true
   yetus_add_entry JDK_TEST_LIST compile
@@ -473,7 +473,6 @@ function write_comment
 function verify_patchdir_still_exists
 {
   local -r commentfile=/tmp/testpatch.$$.${RANDOM}
-  local extra=""
 
   if [[ ! -d ${PATCH_DIR} ]]; then
     rm "${commentfile}" 2>/dev/null
@@ -483,11 +482,10 @@ function verify_patchdir_still_exists
     echo
     cat ${commentfile}
     echo
-    if [[ ${JENKINS} == true ]]; then
-      if [[ -n ${NODE_NAME} ]]; then
-        extra=" (Jenkins node ${NODE_NAME})"
+    if [[ ${ROBOT} == true ]]; then
+      if declare -f "${ROBOTTYPE}"_verify_patchdir >/dev/null; then
+        "${ROBOTTYPE}"_verify_patchdir "${commentfile}"
       fi
-      echo "Jenkins${extra} information at ${BUILD_URL}${BUILD_URL_CONSOLE} may provide some hints. " >> "${commentfile}"
 
       write_comment ${commentfile}
     fi
@@ -784,9 +782,8 @@ function yetus_usage
   yetus_add_option "--console-report-file=<file>" "Save the final console-based report to a file in addition to the screen"
   yetus_add_option "--console-urls" "Use the build URL instead of path on the console report"
   yetus_add_option "--instance=<string>" "Parallel execution identifier string"
-  yetus_add_option "--jenkins" "Enable Jenkins-specifc handling (auto: --robot)"
   yetus_add_option "--mv-patch-dir" "Move the patch-dir into the basedir during cleanup"
-  yetus_add_option "--robot" "Assume this is an automated run"
+  yetus_add_option "--robot" "Assume this is an automated run (default: auto-detect supported CI system)"
   yetus_add_option "--sentinel" "A very aggressive robot (auto: --robot)"
 
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
@@ -874,14 +871,9 @@ function parse_args
       ;;
       --empty-patch)
         BUILDMODE=full
-        # shellcheck disable=SC2034
-        BUILDMODEMSG="The source tree"
       ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
-      ;;
-      --jenkins)
-        JENKINS=true
       ;;
       --linecomments=*)
         BUGLINECOMMENTS=${i#*=}
@@ -984,10 +976,9 @@ function parse_args
     exit 1
   fi
 
-  if [[ ${JENKINS} = true ]]; then
-    ROBOT=true
-    INSTANCE=${EXECUTOR_NUMBER}
-    yetus_add_entry EXEC_MODES Jenkins
+  if [[ "${BUILDMODE}" == full ]]; then
+    # shellcheck disable=SC2034
+    BUILDMODEMSG="The source tree"
   fi
 
   if [[ ${ROBOT} = true ]]; then
@@ -2350,8 +2341,10 @@ function check_unittests
 
   modules_messages patch unit false
 
-  if [[ ${JENKINS} == true ]]; then
-    add_footer_table "${statusjdk} Test Results" "${BUILD_URL}testReport/"
+  if [[ "${ROBOT}" == true ]]; then
+    if declare -f "${ROBOTTYPE}"_unittest_footer >/dev/null; then
+      "${ROBOTTYPE}"_unittest_footer "${statusjdk}"
+    fi
   fi
 
   if [[ ${result} -gt 0 ]]; then
@@ -2405,10 +2398,10 @@ function bugsystem_finalreport
   declare version
   declare bugs
 
-  if [[ "${ROBOT}" = true &&
-        -n "${BUILD_URL}" &&
-        -n "${BUILD_URL_CONSOLE}" ]]; then
-    add_footer_table "Console output" "${BUILD_URL}${BUILD_URL_CONSOLE}"
+  if [[ "${ROBOT}" = true ]]; then
+    if declare -f "${ROBOTTYPE}"_finalreport >/dev/null; then
+      "${ROBOTTYPE}"_finalreport
+    fi
   fi
   add_footer_table "Powered by" "Apache Yetus ${VERSION} http://yetus.apache.org"
 
@@ -2428,16 +2421,22 @@ function cleanup_and_exit
 {
   local result=$1
 
-  if [[ ${ROBOT} == "true" && ${RELOCATE_PATCH_DIR} == "true" && \
-      -e ${PATCH_DIR} && -d ${PATCH_DIR} ]] ; then
-    # if PATCH_DIR is already inside BASEDIR, then
-    # there is no need to move it since we assume that
-    # Jenkins or whatever already knows where it is at
-    # since it told us to put it there!
-    relative_dir "${PATCH_DIR}" >/dev/null
-    if [[ $? == 1 ]]; then
-      yetus_debug "mv ${PATCH_DIR} ${BASEDIR}"
-      mv "${PATCH_DIR}" "${BASEDIR}"
+  if [[ ${ROBOT} == "true" ]]; then
+    if declare -f "${ROBOTTYPE}"_cleanup_and_exit >/dev/null; then
+      "${ROBOTTYPE}"_cleanup_and_exit "${result}"
+    fi
+
+    if [[ ${RELOCATE_PATCH_DIR} == "true" && \
+        -e ${PATCH_DIR} && -d ${PATCH_DIR} ]] ; then
+      # if PATCH_DIR is already inside BASEDIR, then
+      # there is no need to move it since we assume that
+      # Jenkins or whatever already knows where it is at
+      # since it told us to put it there!
+      relative_dir "${PATCH_DIR}" >/dev/null
+      if [[ $? == 1 ]]; then
+        yetus_debug "mv ${PATCH_DIR} ${BASEDIR}"
+        mv "${PATCH_DIR}" "${BASEDIR}"
+      fi
     fi
   fi
   big_console_header "Finished build."
