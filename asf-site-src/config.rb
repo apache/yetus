@@ -29,7 +29,7 @@ set(
   lax_spacing:                  true
 )
 
-set :build_dir, 'publish'
+set :build_dir, 'target/site'
 
 set :css_dir, 'assets/css'
 set :js_dir, 'assets/js'
@@ -75,7 +75,7 @@ class ApiDocs
   end
 end
 
-SHELLDOCS = File.absolute_path('../shelldocs/shelldocs.py')
+SHELLDOCS = File.absolute_path('../shelldocs/src/main/python/shelldocs.py')
 
 def shelldocs(output, docs = [])
   unless FileUtils.uptodate?(output, docs) &&
@@ -88,7 +88,7 @@ def shelldocs(output, docs = [])
   end
 end
 
-RELEASEDOCMAKER = File.absolute_path('../release-doc-maker/releasedocmaker.py')
+RELEASEDOCMAKER = File.absolute_path('../releasedocmaker/src/main/python/releasedocmaker.py')
 
 def releasenotes(output, version)
   # TODO: check jira for last update to the version and compare to source
@@ -180,19 +180,19 @@ after_configuration do
   # has to be outside of hte asf-site-src directory.
   # TODO when we can, update to middleman 4 so we can use multiple source dirs
   # instead of symlinks
-  FileUtils.mkdir_p '../target/in-progress/precommit-apidocs'
-  precommit_shelldocs('../target/in-progress/precommit-apidocs', '../precommit')
+  FileUtils.mkdir_p 'target/site/documentation/in-progress/precommit-apidocs'
+  precommit_shelldocs('target/site/documentation/in-progress/precommit-apidocs', '../precommit/src/main/shell')
   unless data.versions.releases.nil?
     data.versions.releases.each do |release|
-      build_release_docs('../target', release)
-      releasenotes('../target', release)
+      build_release_docs('target', release)
+      releasenotes('target', release)
       # stitch the javadoc in place
       sitemap.register_resource_list_manipulator(
         "#{release}_javadocs".to_sym,
         ApiDocs.new(
           sitemap,
           "documentation/#{release}/audience-annotations-apidocs",
-          "../target/build-#{release}/audience-annotations-component/target/site/apidocs"
+          "target/build-#{release}/audience-annotations-component/target/site/apidocs"
         )
       )
     end

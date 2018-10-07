@@ -28,7 +28,7 @@ test-patch
 
 # Docker Support
 
-By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a container.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a Jenkins instance.
+By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a container.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a CI instance.
 
 The `--docker` parameter tells test-patch to run in Docker mode. The `--dockerfile` parameter allows one to provide a custom Dockerfile. The Dockerfile should contain all of the necessary binaries and tooling needed to run the test.  test-patch will copy this file up until the text "YETUS CUT HERE" to a different directory and then append its necessary hooks to re-launch itself prior to executing docker.
 
@@ -273,7 +273,7 @@ This list is used if the user does not provide a list of plug-ins.
 
 There are a handful of extremely important system variables that make life easier for personality and plug-in writers.  Other variables may be provided by individual plug-ins.  Check their development documentation for more information.
 
-* BUILD\_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). Under Jenkins, this is always true.
+* BUILD\_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For [robots](precommit-robots), this is always true.
 
 * BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz\_ARGS to pass on to the build tool command line. (e.g., MAVEN\_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.
 
@@ -295,4 +295,4 @@ There are a handful of extremely important system variables that make life easie
 
 * PATCH\_NAMING\_RULE should be a URL that points to a project's on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project's personality.
 
-* TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel.
+* TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel. For [robots](precommit-robots), this is always true.

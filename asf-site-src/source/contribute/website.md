@@ -63,13 +63,13 @@ cd -
 To generate the static website for Apache Yetus run the following commands at the root asf-site-src directory:
 
 ```bash
-bundle exec middleman build
+mvn site
 ```
 
-This command will create a static website in the `publish` sub directory. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:
+This command will create a static website in the `target/site` sub directory. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:
 
 ```bash
-open publish/index.html
+open target/site/index.html
 ```
 
 ## Live Development
@@ -92,9 +92,8 @@ $ git fetch origin
 $ git checkout master
 $ git reset --hard origin/master
 $ git clean -xdf
-$ cd asf-site-src
-$ bundle exec middleman build
-$ rsync --quiet --checksum --inplace --recursive publish/ ../../yetus-site/
+$ mvn site install
+$ rsync --quiet --checksum --inplace --recursive yetus-dist/target/apache-yetus-${project.version}-SNAPSHOT-site/ ../../yetus-site/
 $ cd ../../yetus-site
 $ # check the set of differences
 $ git add -p

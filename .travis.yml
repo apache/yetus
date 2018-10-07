@@ -1,0 +1,12 @@
+sudo: required
+
+services:
+  - docker
+
+addons:
+  artifacts: true
+    paths: /tmp/yetus-out
+    debug: true
+
+script:
+  - precommit/src/main/shell/test-patch.sh --docker --branch-default=test --patch-dir=/tmp/yetus-out --project=yetus --plugins=all --java-home=/usr/lib/jvm/java-8-openjdk-amd64
