@@ -192,6 +192,16 @@ RUN curl -L -s -S \
    shasum -a 512 /bin/hadolint | \
    awk '$1!="734e37c1f6619cbbd86b9b249e69c9af8ee1ea87a2b1ff71dccda412e9dac35e63425225a95d71572091a3f0a11e9a04c2fc25d9e91b840530c26af32b9891ca" {exit(1)}'
 
+###
+# Install npm and JSHint
+###
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y nodejs npm \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* && \
+    ln -s /usr/bin/nodejs /usr/bin/node && \
+    npm install -g npm@latest && \
+    npm install -g jshint
+
 ####
 # YETUS CUT HERE
 # Anthing after the above line is ignored by Yetus, so could
