@@ -64,7 +64,7 @@ For example, the gradle build tool does not have a standard way to execute check
 
 * pluginname\_modules\_worker
 
-    - Input is the branch and the test being run.  This should call `modules_workers` with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then `module_workers` should be called with 'test' appended onto its normal parameters.
+    - Input is the branch and the test being run.  This should call `modules_workers` with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then `modules_workers` should be called with 'test' appended onto its normal parameters.
 
 * pluginname\_builtin_personality\_modules
 
