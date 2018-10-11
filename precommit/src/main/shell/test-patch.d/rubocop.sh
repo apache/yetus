@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_type rubocop
 
 RUBOCOP_TIMER=0
 
-RUBOCOP=${RUBOCOP:-$(which rubocop 2>/dev/null)}
+RUBOCOP=${RUBOCOP:-$(command -v rubocop 2>/dev/null)}
 
 function rubocop_usage
 {
@@ -69,13 +71,13 @@ function rubocop_preapply
   start_clock
 
   echo "Running rubocop against identified ruby scripts."
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      ${RUBOCOP} -f e "${i}" | ${AWK} '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/branch-rubocop-result.txt"
+      "${RUBOCOP}" -f e "${i}" | "${AWK}" '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/branch-rubocop-result.txt"
     fi
   done
-  popd >/dev/null
+  popd >/dev/null || return 1
   # keep track of how much as elapsed for us already
   RUBOCOP_TIMER=$(stop_clock)
   return 0
@@ -116,16 +118,16 @@ function rubocop_postapply
 
   echo "Running rubocop against identified ruby scripts."
   # we re-check this in case one has been added
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      ${RUBOCOP} -f e "${i}" | ${AWK} '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/patch-rubocop-result.txt"
+      "${RUBOCOP}" -f e "${i}" | "${AWK}" '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/patch-rubocop-result.txt"
     fi
   done
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   # shellcheck disable=SC2016
-  RUBOCOP_VERSION=$(${RUBOCOP} -v | ${AWK} '{print $NF}')
+  RUBOCOP_VERSION=$("${RUBOCOP}" -v | "${AWK}" '{print $NF}')
   add_footer_table rubocop "v${RUBOCOP_VERSION}"
 
   calcdiffs \
@@ -133,13 +135,13 @@ function rubocop_postapply
     "${PATCH_DIR}/patch-rubocop-result.txt" \
     rubocop \
       > "${PATCH_DIR}/diff-patch-rubocop.txt"
-  diffPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-rubocop.txt")
+  diffPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-rubocop.txt")
 
   # shellcheck disable=SC2016
-  numPrepatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-rubocop-result.txt")
+  numPrepatch=$("${AWK}" -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-rubocop-result.txt")
 
   # shellcheck disable=SC2016
-  numPostpatch=$(${AWK} -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-rubocop-result.txt")
+  numPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-rubocop-result.txt")
 
   ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
 

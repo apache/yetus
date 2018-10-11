@@ -31,10 +31,9 @@ function generic_locate_patch
     return 1
   fi
 
-  ${CURL} --silent -L \
+  if ! ${CURL} --silent -L \
           --output "${output}" \
-         "${input}"
-  if [[ $? != 0 ]]; then
+         "${input}"; then
     yetus_debug "generic_locate_patch: failed to download the patch."
     return 1
   fi
@@ -65,6 +64,7 @@ function guess_patch_file
   fi
 
   fileOutput=$(head -n 1 "${patch}" | "${GREP}" -E "^(From [a-z0-9]* Mon Sep 17 00:00:00 2001)|(diff .*)|(Index: .*)$")
+  #shellcheck disable=SC2181
   if [[ $? == 0 ]]; then
     yetus_debug "first line looks like a patch file."
     return 0
@@ -107,9 +107,8 @@ function locate_patch
   else
     # run through the bug systems.  maybe they know?
     for bugsys in ${BUGSYSTEMS}; do
-      if declare -f ${bugsys}_locate_patch >/dev/null 2>&1; then
-        "${bugsys}_locate_patch" "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"
-        if [[ $? == 0 ]]; then
+      if declare -f "${bugsys}_locate_patch" >/dev/null 2>&1; then
+        if "${bugsys}_locate_patch" "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"; then
           gotit=true
           PATCH_SYSTEM=${bugsys}
         fi
@@ -122,8 +121,7 @@ function locate_patch
 
     # ok, none of the bug systems know. let's see how smart we are
     if [[ ${gotit} == false ]]; then
-      generic_locate_patch "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"
-      if [[ $? != 0 ]]; then
+      if ! generic_locate_patch "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"; then
         yetus_error "ERROR: Unsure how to process ${PATCH_OR_ISSUE}."
         cleanup_and_exit 1
       fi
@@ -135,8 +133,7 @@ function locate_patch
 
   if [[ ! -f "${PATCH_DIR}/patch"
       && -f "${patchfile}" ]]; then
-    cp "${patchfile}" "${PATCH_DIR}/patch"
-    if [[ $? == 0 ]] ; then
+    if cp "${patchfile}" "${PATCH_DIR}/patch"; then
       echo "Patch file ${patchfile} copied to ${PATCH_DIR}"
     else
       yetus_error "ERROR: Could not copy ${patchfile} to ${PATCH_DIR}"
@@ -163,15 +160,15 @@ function patchfile_verify_zero
 
   # don't return /dev/null
   # shellcheck disable=SC2016
-  changed_files1=$(${AWK} 'function p(s){if(s!~"^/dev/null"){print s}}
+  changed_files1=$("${AWK}" 'function p(s){if(s!~"^/dev/null"){print s}}
     /^diff --git /   { p($3); p($4) }
     /^(\+\+\+|---) / { p($2) }' "${PATCH_DIR}/patch" | sort -u)
 
   # maybe we interpreted the patch wrong? check the log file
   # shellcheck disable=SC2016
-  changed_files2=$(${GREP} -E '^[cC]heck' "${logfile}" \
-    | ${AWK} '{print $3}' \
-    | ${SED} -e 's,\.\.\.$,,g')
+  changed_files2=$("${GREP}" -E '^[cC]heck' "${logfile}" \
+    | "${AWK}" '{print $3}' \
+    | "${SED}" -e 's,\.\.\.$,,g')
 
   for filename in ${changed_files1} ${changed_files2}; do
 
@@ -209,9 +206,8 @@ function gitapply_dryrun
 
   while [[ ${prefixsize} -lt 4
     && -z ${PATCH_METHOD} ]]; do
-    yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
-       "${GIT}" apply --binary -v --check "-p${prefixsize}" "${patchfile}"
-    if [[ $? == 0 ]]; then
+    if yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
+       "${GIT}" apply --binary -v --check "-p${prefixsize}" "${patchfile}"; then
       PATCH_LEVEL=${prefixsize}
       PATCH_METHOD=gitapply
       break
@@ -220,8 +216,7 @@ function gitapply_dryrun
   done
 
   if [[ ${prefixsize} -eq 0 ]]; then
-    patchfile_verify_zero "${PATCH_DIR}/patch-dryrun.log"
-    if [[ $? != 0 ]]; then
+    if ! patchfile_verify_zero "${PATCH_DIR}/patch-dryrun.log"; then
       PATCH_METHOD=""
       PATCH_LEVEL=""
       gitapply_dryrun "${patchfile}" 1
@@ -242,9 +237,8 @@ function patchcmd_dryrun
   while [[ ${prefixsize} -lt 4
     && -z ${PATCH_METHOD} ]]; do
     # shellcheck disable=SC2153
-    yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
-      "${PATCH}" "-p${prefixsize}" -E --dry-run < "${patchfile}"
-    if [[ $? == 0 ]]; then
+    if yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
+      "${PATCH}" "-p${prefixsize}" -E --dry-run < "${patchfile}"; then
       PATCH_LEVEL=${prefixsize}
       PATCH_METHOD=patchcmd
       break
@@ -253,8 +247,7 @@ function patchcmd_dryrun
   done
 
   if [[ ${prefixsize} -eq 0 ]]; then
-    patchfile_verify_zero "${PATCH_DIR}/patch-dryrun.log"
-    if [[ $? != 0 ]]; then
+    if ! patchfile_verify_zero "${PATCH_DIR}/patch-dryrun.log"; then
       PATCH_METHOD=""
       PATCH_LEVEL=""
       patchcmd_dryrun "${patchfile}" 1
@@ -274,7 +267,7 @@ function patchfile_dryrun_driver
 
   #shellcheck disable=SC2153
   for method in "${PATCH_METHODS[@]}"; do
-    if declare -f ${method}_dryrun >/dev/null; then
+    if declare -f "${method}_dryrun" >/dev/null; then
       "${method}_dryrun" "${patchfile}"
     fi
     if [[ -n ${PATCH_METHOD} ]]; then
@@ -334,8 +327,7 @@ function patchfile_apply_driver
   declare gpg=$2
 
   if declare -f ${PATCH_METHOD}_apply >/dev/null; then
-    "${PATCH_METHOD}_apply" "${patchfile}" "${gpg}"
-    if [[ $? -gt 0 ]]; then
+    if ! "${PATCH_METHOD}_apply" "${patchfile}" "${gpg}"; then
      return 1
     fi
   else

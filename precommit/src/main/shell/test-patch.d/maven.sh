@@ -69,6 +69,9 @@ function maven_ws_replace
   fi
 }
 
+## @description  maven usage message
+## @audience     private
+## @stability    evolving
 function maven_usage
 {
   maven_ws_replace
@@ -216,8 +219,7 @@ function maven_precheck
 
     if [[ ! -d "${MAVEN_LOCAL_REPO}" ]]; then
       yetus_debug "Creating ${MAVEN_LOCAL_REPO}"
-      mkdir -p "${MAVEN_LOCAL_REPO}"
-      if [[ $? -ne 0 ]]; then
+      if ! mkdir -p "${MAVEN_LOCAL_REPO}"; then
         yetus_error "ERROR: Unable to create ${MAVEN_LOCAL_REPO}"
         return 1
       fi
@@ -251,6 +253,9 @@ function maven_precheck
   add_footer_table maven "version: ${maven_version}"
 }
 
+## @description  maven trigger
+## @audience     private
+## @stability    evolving
 function maven_filefilter
 {
   declare filename=$1
@@ -261,16 +266,25 @@ function maven_filefilter
   fi
 }
 
+## @description  maven build file
+## @audience     private
+## @stability    evolving
 function maven_buildfile
 {
   echo "pom.xml"
 }
 
+## @description  execute maven
+## @audience     private
+## @stability    evolving
 function maven_executor
 {
   echo "${MAVEN}" "${MAVEN_ARGS[@]}"
 }
 
+## @description  mvn site trigger
+## @audience     private
+## @stability    evolving
 function mvnsite_filefilter
 {
   local filename=$1
@@ -331,6 +345,9 @@ function maven_modules_worker
   esac
 }
 
+## @description  process javac output from maven
+## @audience     private
+## @stability    evolving
 function maven_javac_logfilter
 {
   declare input=$1
@@ -365,17 +382,14 @@ function maven_javac_calcdiffs
   declare orig=$1
   declare new=$2
   declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
-  declare j
 
   # first, strip :[line
   # this keeps file,column in an attempt to increase
   # accuracy in case of multiple, repeated errors
   # since the column number shouldn't change
   # if the line of code hasn't been touched
-  # shellcheck disable=SC2016
-  ${SED} -e 's#:\[[0-9]*,#:#' "${orig}" > "${tmp}.branch"
-  # shellcheck disable=SC2016
-  ${SED} -e 's#:\[[0-9]*,#:#' "${new}" > "${tmp}.patch"
+  "${SED}" -e 's#:\[[0-9]*,#:#' "${orig}" > "${tmp}.branch"
+  "${SED}" -e 's#:\[[0-9]*,#:#' "${new}" > "${tmp}.patch"
 
   # compare the errors, generating a string of line
   # numbers. Sorry portability: GNU diff makes this too easy
@@ -388,8 +402,7 @@ function maven_javac_calcdiffs
   # now, pull out those lines of the raw output
   # shellcheck disable=SC2013
   for j in $(cat "${tmp}.lined"); do
-    # shellcheck disable=SC2086
-    head -${j} "${new}" | tail -1
+    head -"${j}" "${new}" | tail -1
   done
 
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
@@ -407,15 +420,12 @@ function maven_javadoc_calcdiffs
   declare orig=$1
   declare new=$2
   declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
-  declare j
 
   # can't use the generic handler for this because of the
   # [WARNING], etc headers.
   # strip :linenum from the output, keeping the filename
-  # shellcheck disable=SC2016
-  ${SED} -e 's#:[0-9]*:#:#' "${orig}" > "${tmp}.branch"
-  # shellcheck disable=SC2016
-  ${SED} -e 's#:[0-9]*:#:#' "${new}" > "${tmp}.patch"
+  "${SED}" -e 's#:[0-9]*:#:#' "${orig}" > "${tmp}.branch"
+  "${SED}" -e 's#:[0-9]*:#:#' "${new}" > "${tmp}.patch"
 
   # compare the errors, generating a string of line
   # numbers. Sorry portability: GNU diff makes this too easy
@@ -428,18 +438,21 @@ function maven_javadoc_calcdiffs
   # now, pull out those lines of the raw output
   # shellcheck disable=SC2013
   for j in $(cat "${tmp}.lined"); do
-    # shellcheck disable=SC2086
-    head -${j} "${new}" | tail -1
+    head -"${j}" "${new}" | tail -1
   done
 
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
 
+
+## @description  maven personality handler
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
 function maven_builtin_personality_modules
 {
   declare repostatus=$1
   declare testtype=$2
-
   declare module
 
   yetus_debug "Using builtin personality_modules"
@@ -461,6 +474,10 @@ function maven_builtin_personality_modules
   done
 }
 
+## @description  maven default test triggers
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
 function maven_builtin_personality_file_tests
 {
   local filename=$1
@@ -621,6 +638,10 @@ function maven_precompile
   return 0
 }
 
+## @description  set volumes as appropriate for maven
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
 function maven_docker_support
 {
   DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.m2:/home/${USER_NAME}/.m2")
@@ -657,7 +678,7 @@ function maven_reorder_module_process
   done
 
   fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
-  pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null
+  pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null || return 1
 
   # get the module directory list in the correct order based on maven dependencies
   # shellcheck disable=SC2046
@@ -675,7 +696,7 @@ function maven_reorder_module_process
       fi
     done
   done < "${PATCH_DIR}/maven-${repostatus}-dirlist-${fn}.txt"
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   if [[ "${needroot}" = true ]]; then
     newlist=("${newlist[@]}" ".")
@@ -764,5 +785,6 @@ function maven_reorder_modules
     fi
   fi
 
+  # shellcheck disable=SC2046
   echo "Elapsed: $(clock_display $(stop_clock))"
 }

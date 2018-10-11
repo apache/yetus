@@ -123,6 +123,7 @@ function yetus_abs
   fi
 
   dir=$(cd -P -- "${dir}" >/dev/null 2>/dev/null && pwd -P)
+  #shellcheck disable=SC2181
   if [[ $? = 0 ]]; then
     echo "${dir}${fn}"
     return 0
@@ -220,7 +221,7 @@ function yetus_generic_columnprinter
     giventext=$(echo "${tmpa[$i]}" | cut -f2 -d'@')
 
     while read -r line; do
-      printf "%-${maxoptsize}s   %-s\n" "${option}" "${line}"
+      printf "%-${maxoptsize}s   %-s\\n" "${option}" "${line}"
       option=" "
     done < <(echo "${giventext}"| fold -s -w ${foldsize})
     ((i=i+1))
@@ -239,6 +240,7 @@ function yetus_comma_to_array
   declare string=$2
 
   oldifs="${IFS}"
+  #shellcheck disable=SC2229
   IFS=',' read -r -a "${var}" <<< "${string}"
   IFS="${oldifs}"
 }
@@ -314,8 +316,45 @@ function yetus_sort_array
     oifs=${IFS}
   fi
   set -f
-  # shellcheck disable=SC2034
+  # shellcheck disable=SC2034,SC2207
   IFS=$'\n' sa=($(sort <<<"${array[*]}"))
+  # shellcheck disable=SC1083
+  eval "${arrname}"=\(\"\${sa[@]}\"\)
+
+  if [[ -n "${oifs}" ]]; then
+    IFS=${oifs}
+  else
+    unset IFS
+  fi
+
+  if [[ "${globstatus}" = off ]]; then
+    set +f
+  fi
+}
+
+## @description  Sort and unique an array by its elements
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        arrayvar
+function yetus_sort_and_unique_array
+{
+  declare arrname=$1
+  declare arrref="${arrname}[@]"
+  declare array=("${!arrref}")
+
+  declare globstatus
+  declare oifs
+  declare -a sa
+
+  globstatus=$(set -o | grep noglob | awk '{print $NF}')
+
+  if [[ -n ${IFS} ]]; then
+    oifs=${IFS}
+  fi
+  set -f
+  # shellcheck disable=SC2034,SC2207
+  IFS=$'\n' sa=($(sort -u <<<"${array[*]}"))
   # shellcheck disable=SC1083
   eval "${arrname}"=\(\"\${sa[@]}\"\)
 

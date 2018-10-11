@@ -81,7 +81,7 @@ function bugzilla_http_fetch
     return 1
   fi
 
-  ${CURL} --silent --fail \
+  "${CURL}" --silent --fail \
           --output "${output}" \
           --location \
          "${BUGZILLA_BASE_URL}/${input}"
@@ -98,8 +98,7 @@ function bugzilla_locate_patch
     return 1
   fi
 
-  bugzilla_determine_issue "${input}"
-  if [[ $? != 0 || -z "${BUGZILLA_ISSUE}" ]]; then
+  if ! bugzilla_determine_issue "${input}" || [[ -z "${BUGZILLA_ISSUE}" ]]; then
     return 1
   fi
 
@@ -110,15 +109,13 @@ function bugzilla_locate_patch
     return 1
   fi
 
-  bugzilla_http_fetch "show_bug.cgi?id=${BUGZILLA_ISSUE}" "${PATCH_DIR}/bugzilla"
-
-  if [[ $? != 0 ]]; then
+  if ! bugzilla_http_fetch "show_bug.cgi?id=${BUGZILLA_ISSUE}" "${PATCH_DIR}/bugzilla"; then
     yetus_debug "bugzilla_locate_patch: not a Bugzilla."
     return 1
   fi
 
   #shellcheck disable=SC2016
-  relativeurl=$(${AWK} '/action=diff/ && match($0,"attachment\.cgi.id=[0-9]*"){print substr($0,RSTART,RLENGTH)}' \
+  relativeurl=$("${AWK}" '/action=diff/ && match($0,"attachment\.cgi.id=[0-9]*"){print substr($0,RSTART,RLENGTH)}' \
            "${PATCH_DIR}/bugzilla" | \
         tail -1)
   PATCHURL="${BUGZILLA_BASE_URL}${relativeurl}"
@@ -126,8 +123,7 @@ function bugzilla_locate_patch
   echo "${input} patch is being downloaded at $(date) from"
   echo "${PATCHURL}"
   add_footer_table "Bugzilla Patch URL" "${PATCHURL}"
-  bugzilla_http_fetch "${relativeurl}" "${fileloc}"
-  if [[ $? != 0 ]];then
+  if ! bugzilla_http_fetch "${relativeurl}" "${fileloc}"; then
     yetus_error "ERROR: ${input}/${PATCHURL} could not be downloaded."
     cleanup_and_exit 1
   fi

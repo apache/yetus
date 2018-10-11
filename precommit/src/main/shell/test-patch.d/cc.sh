@@ -18,6 +18,12 @@ add_test_type cc
 
 CC_EXT_RE='(c|cc|cpp|cxx|c\+\+|h|hh|hpp|hxx|h\+\+)'
 
+## @description  discover files to check
+## @audience     private
+## @stability    stable
+## @replaceable  no
+## @return       0 on success
+## @return       1 on failure
 function cc_filefilter
 {
   declare filename=$1
@@ -61,6 +67,6 @@ function cc_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} -i -E "^.*\.${CC_EXT_RE}\:[[:digit:]]*\:" "${input}" > "${output}"
+  #shellcheck disable=SC1117
+  "${GREP}" -i -E "^.*\.${CC_EXT_RE}\:[[:digit:]]*\:" "${input}" > "${output}"
 }

@@ -46,7 +46,7 @@ function ant_parse_args
 
   # if we requested offline, pass that to ant
   if [[ ${OFFLINE} == "true" ]]; then
-    ANT_ARGS=("${ANT_ARGS[@]}" -Doffline=)
+    ANT_ARGS=("${ANT_ARGS[@]}" '-Doffline=')
   fi
 }
 
@@ -144,8 +144,7 @@ function ant_javac_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016
-  ${GREP} "\[javac\] /" "${input}" > "${output}"
+  "${GREP}" '\[javac\] /' "${input}" > "${output}"
 }
 
 ## @description  Helper for generic_logfilter
@@ -157,8 +156,7 @@ function ant_javadoc_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016
-  ${GREP} "\[javadoc\] /" "${input}" > "${output}"
+  "${GREP}" '\[javadoc\] /' "${input}" > "${output}"
 }
 
 function ant_builtin_personality_modules

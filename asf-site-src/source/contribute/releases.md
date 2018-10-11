@@ -359,7 +359,7 @@ If you've gone through all of the ASF required checks, you'll already have made 
         ============================================================================
         |   0  |         reexec  |  0m 0s     | Docker mode activated.
         |  +1  |      hbaseanti  |  0m 0s     | Patch does not have any anti-patterns.
-        |  +1  |        @author  |  0m 0s     | The patch does not contain any @author
+        |  +1  |        @\author  |  0m 0s     | The patch does not contain any @\author
         |      |                 |            | tags.
         |  +1  |     test4tests  |  0m 0s     | The patch appears to include 2 new or
         |      |                 |            | modified test files.

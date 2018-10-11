@@ -194,14 +194,14 @@ function reaper_post_exec
   sleep 2
 
   #shellcheck disable=SC2154,SC2086
-  printf "reap\n%s\n%s\n" "${module}" "${myfile}" >&${reaper_coproc[1]}
+  printf 'reap\n%s\n%s\n' "${module}" "${myfile}" >&${reaper_coproc[1]}
 
   #shellcheck disable=SC2154,SC2086
   read -r count <&${reaper_coproc[0]}
 
   if [[ ${count} -gt 0 ]]; then
     ((REAPER_TOTAL_COUNT=REAPER_TOTAL_COUNT+count))
-    printf "\nFound%s %s left over processes\n\n" "${killmsg}" "${count}"
+    printf '\nFound%s %s left over processes\n\n' "${killmsg}" "${count}"
     REAPER_ZOMBIE_MODULES+=("${module}:${count}")
     REAPER_ZOMBIE_LOGS+=("@@BASE@@/${myfile}")
     return 1

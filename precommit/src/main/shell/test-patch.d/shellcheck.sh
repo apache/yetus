@@ -22,7 +22,7 @@ add_test_type shellcheck
 SHELLCHECK_TIMER=0
 SHELLCHECK_X=true
 
-SHELLCHECK=${SHELLCHECK:-$(which shellcheck 2>/dev/null)}
+SHELLCHECK=${SHELLCHECK:-$(command -v shellcheck 2>/dev/null)}
 
 # files that are going to get shellcheck'd
 SHELLCHECK_CHECKFILES=()
@@ -141,7 +141,7 @@ function shellcheck_logic
   declare i
 
   echo "Running shellcheck against all suspected shell scripts"
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
 
   # need to run this every time in case patch
   # add/removed files
@@ -154,7 +154,7 @@ function shellcheck_logic
       "${SHELLCHECK}" -f gcc "${i}" >> "${PATCH_DIR}/${repostatus}-shellcheck-result.txt"
     fi
   done
-  popd > /dev/null
+  popd > /dev/null || return 1
 }
 
 function shellcheck_preapply
@@ -224,13 +224,13 @@ function shellcheck_postapply
       > "${PATCH_DIR}/diff-patch-shellcheck.txt"
 
   # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shellcheck-result.txt" | ${AWK} '{print $1}')
+  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shellcheck-result.txt" | "${AWK}" '{print $1}')
 
   # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shellcheck-result.txt" | ${AWK} '{print $1}')
+  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shellcheck-result.txt" | "${AWK}" '{print $1}')
 
   # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shellcheck.txt" | ${AWK} '{print $1}')
+  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shellcheck.txt" | "${AWK}" '{print $1}')
 
 
   ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))

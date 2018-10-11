@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_type scalac
 add_test_type scaladoc
 
@@ -122,8 +124,7 @@ function scalac_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} "^/.*.scala:[0-9]*:" "${input}" > "${output}"
+  "${GREP}" "^/.*.scala:[0-9]*:" "${input}" > "${output}"
 }
 
 ## @description  Helper for generic_logfilter
@@ -135,6 +136,5 @@ function scaladoc_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} "^/.*.scala:[0-9]*:" "${input}" > "${output}"
+  "${GREP}" "^/.*.scala:[0-9]*:" "${input}" > "${output}"
 }

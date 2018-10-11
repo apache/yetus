@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_format tap
 
 TAP_FAILED_TESTS=""

@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
 
 FINDBUGS_HOME=${FINDBUGS_HOME:-}
 FINDBUGS_WARNINGS_FAIL_PRECHECK=false
@@ -30,7 +31,7 @@ function findbugs_usage
 
 function findbugs_parse_args
 {
-  local i
+  declare i
 
   for i in "$@"; do
     case ${i} in
@@ -60,7 +61,7 @@ function findbugs_initialize
 
 function findbugs_filefilter
 {
-  local filename=$1
+  declare filename=$1
 
   if [[ ${BUILDTOOL} == maven
     || ${BUILDTOOL} == ant ]]; then
@@ -141,13 +142,15 @@ function findbugs_maven_skipper
 ## @param        repostatus
 function findbugs_runner
 {
-  local name=$1
-  local module
-  local result=0
-  local fn
-  local warnings_file
-  local i=0
-  local savestop
+  declare name=$1
+  declare module
+  declare result=0
+  declare fn
+  declare warnings_file
+  declare i=0
+  declare savestop
+  declare retval
+
 
   personality_modules "${name}" findbugs
 
@@ -197,11 +200,14 @@ function findbugs_runner
     if [[ ${name} == branch ]]; then
       "${FINDBUGS_HOME}/bin/setBugDatabaseInfo" -name "${PATCH_BRANCH}" \
           "${warnings_file}.xml" "${warnings_file}.xml"
+      retval=$?
     else
       "${FINDBUGS_HOME}/bin/setBugDatabaseInfo" -name patch \
           "${warnings_file}.xml" "${warnings_file}.xml"
+      retval=$?
     fi
-    if [[ $? != 0 ]]; then
+
+    if [[ ${retval} != 0 ]]; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
       module_status ${i} -1 "" "${name}/${module} cannot run setBugDatabaseInfo from findbugs"
@@ -210,10 +216,9 @@ function findbugs_runner
       continue
     fi
 
-    "${FINDBUGS_HOME}/bin/convertXmlToText" -html \
+    if ! "${FINDBUGS_HOME}/bin/convertXmlToText" -html \
       "${warnings_file}.xml" \
-      "${warnings_file}.html"
-    if [[ $? != 0 ]]; then
+      "${warnings_file}.html"; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
       module_status ${i} -1 "" "${name}/${module} cannot run convertXmlToText from findbugs"
@@ -387,17 +392,16 @@ function findbugs_postinstall
     newbugsbase="${PATCH_DIR}/new-findbugs-${fn}"
     fixedbugsbase="${PATCH_DIR}/fixed-findbugs-${fn}"
 
-    "${FINDBUGS_HOME}/bin/computeBugHistory" -useAnalysisTimes -withMessages \
+    if ! "${FINDBUGS_HOME}/bin/computeBugHistory" -useAnalysisTimes -withMessages \
             -output "${combined_xml}" \
             "${branchxml}" \
-            "${patchxml}"
-    if [[ $? != 0 ]]; then
-      popd >/dev/null
+            "${patchxml}"; then
       module_status ${i} -1 "" "${module} cannot run computeBugHistory from findbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
       ((i=i+1))
+      popd >/dev/null || return 1
       continue
     fi
 
@@ -411,40 +415,41 @@ function findbugs_postinstall
     #shellcheck disable=SC2016
     add_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first patch \
         "${combined_xml}" "${newbugsbase}.xml" | ${AWK} '{print $1}')
-    if [[ $? != 0 ]]; then
-      popd >/dev/null
+    retval=$?
+    if [[ ${retval} != 0 ]]; then
       module_status ${i} -1 "" "${module} cannot run filterBugs (#1) from findbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
       ((i=i+1))
+      popd >/dev/null || return 1
       continue
     fi
 
     #shellcheck disable=SC2016
     fixed_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -fixed patch \
         "${combined_xml}" "${fixedbugsbase}.xml" | ${AWK} '{print $1}')
-    if [[ $? != 0 ]]; then
-      popd >/dev/null
+    retval=$?
+    if [[ ${retval} != 0 ]]; then
       module_status ${i} -1 "" "${module} cannot run filterBugs (#2) from findbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
       ((i=i+1))
+      popd >/dev/null || return 1
       continue
     fi
 
     statstring=$(generic_calcdiff_status "${branch_warnings}" "${patch_warnings}" "${add_warnings}")
 
-    "${FINDBUGS_HOME}/bin/convertXmlToText" -html "${newbugsbase}.xml" \
-        "${newbugsbase}.html"
-    if [[ $? != 0 ]]; then
-      popd >/dev/null
+    if ! "${FINDBUGS_HOME}/bin/convertXmlToText" -html "${newbugsbase}.xml" \
+        "${newbugsbase}.html"; then
       module_status ${i} -1 "" "${module} cannot run convertXmlToText from findbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
       ((i=i+1))
+      popd >/dev/null || return 1
       continue
     fi
 
@@ -465,7 +470,7 @@ function findbugs_postinstall
     fi
     savestop=$(stop_clock)
     MODULE_STATUS_TIMER[${i}]=${savestop}
-    popd >/dev/null
+    popd >/dev/null || return 1
     ((i=i+1))
   done
 

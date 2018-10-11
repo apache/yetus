@@ -14,11 +14,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_type perlcritic
 
 PERLCRITIC_TIMER=0
 
-PERLCRITIC=${PERLCRITIC:-$(which perlcritic 2>/dev/null)}
+PERLCRITIC=${PERLCRITIC:-$(command -v perlcritic 2>/dev/null)}
 
 function perlcritic_usage
 {
@@ -69,13 +71,13 @@ function perlcritic_preapply
   start_clock
 
   echo "Running perlcritic against identified perl scripts/modules."
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
       ${PERLCRITIC} -1 --verbose 1 "${i}" 2>/dev/null >> "${PATCH_DIR}/branch-perlcritic-result.txt"
     fi
   done
-  popd >/dev/null
+  popd >/dev/null || return 1
   # keep track of how much as elapsed for us already
   PERLCRITIC_TIMER=$(stop_clock)
   return 0
@@ -116,13 +118,13 @@ function perlcritic_postapply
 
   echo "Running perlcritic against identified perl scripts/modules."
   # we re-check this in case one has been added
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
       ${PERLCRITIC} -1 --verbose 1 "${i}" 2>/dev/null >> "${PATCH_DIR}/patch-perlcritic-result.txt"
     fi
   done
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   PERLCRITIC_VERSION=$(${PERLCRITIC} --version 2>/dev/null)
   add_footer_table perlcritic "v${PERLCRITIC_VERSION}"
@@ -134,13 +136,13 @@ function perlcritic_postapply
     > "${PATCH_DIR}/diff-patch-perlcritic.txt"
 
   # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-perlcritic-result.txt" | ${AWK} '{print $1}')
+  numPrepatch=$(wc -l "${PATCH_DIR}/branch-perlcritic-result.txt" | "${AWK}" '{print $1}')
 
   # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-perlcritic-result.txt" | ${AWK} '{print $1}')
+  numPostpatch=$(wc -l "${PATCH_DIR}/patch-perlcritic-result.txt" | "${AWK}" '{print $1}')
 
   # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-perlcritic.txt" | ${AWK} '{print $1}')
+  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-perlcritic.txt" | "${AWK}" '{print $1}')
 
   ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
 

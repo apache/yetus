@@ -59,7 +59,7 @@ function gradle_precheck
     return 1
   fi
   # finally let folks know what version they'll be dealing with.
-  gradle_version=$(${GRADLE} --version 2>/dev/null | grep Gradle 2>/dev/null)
+  gradle_version=$("${GRADLE}" --version 2>/dev/null | grep Gradle 2>/dev/null)
   add_footer_table gradle "version: ${gradle_version}"
   return 0
 }
@@ -129,9 +129,9 @@ function gradle_precompile
 
   personality_modules "${repostatus}" gradleboot
 
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   echo_and_redirect "${PATCH_DIR}/${repostatus}-gradle-bootstrap.txt" gradle -b bootstrap.gradle
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   modules_workers "${repostatus}" gradleboot
   result=$?
@@ -151,8 +151,7 @@ function gradle_javac_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} "\.java" "${input}" > "${output}"
+  "${GREP}" '\.java' "${input}" > "${output}"
 }
 
 ## @description  Helper for generic_logfilter
@@ -164,8 +163,7 @@ function gradle_javadoc_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} "javadoc.*\.java" "${input}" > "${output}"
+  "${GREP}" 'javadoc.*\.java' "${input}" > "${output}"
 }
 
 ## @description  Helper for generic_logfilter
@@ -177,8 +175,7 @@ function gradle_scaladoc_logfilter
   declare input=$1
   declare output=$2
 
-  #shellcheck disable=SC2016,SC2046
-  ${GREP} "^\[ant:scaladoc\] /.*\.scala" "${input}" > "${output}"
+  "${GREP}" '^\[ant:scaladoc\] /.*\.scala' "${input}" > "${output}"
 }
 
 function gradle_modules_worker

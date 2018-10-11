@@ -14,6 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
+
 WHITESPACE_EOL_IGNORE_LIST=
 WHITESPACE_TABS_IGNORE_LIST='.*Makefile.*'
 
@@ -83,7 +86,7 @@ function whitespace_postcompile
   big_console_header "Checking for whitespace issues."
   start_clock
 
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
 
   eolignore=$(printf -- "-e ^%s: " "${WHITESPACE_EOL_IGNORE_LIST[@]}")
   tabsignore=$(printf -- "-e ^%s: " "${WHITESPACE_TABS_IGNORE_LIST[@]}")
@@ -139,12 +142,12 @@ function whitespace_postcompile
     ((result=result+1))
   fi
 
+  popd >/dev/null || return 1
+
   if [[ ${result} -gt 0 ]]; then
-    popd >/dev/null
     return 1
   fi
 
-  popd >/dev/null
   add_vote_table +1 whitespace "${BUILDMODEMSG} has no whitespace issues."
   return 0
 }

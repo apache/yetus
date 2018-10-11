@@ -28,22 +28,37 @@ BINDIR=$(cd -P -- "$(dirname -- "${this}")" >/dev/null && pwd -P)
 #shellcheck disable=SC2034
 QATESTMODE=false
 
-# dummy functions
+## @description  disable function
+## @stability    stable
+## @audience     private
+## @replaceable  no
 function add_vote_table
 {
   true
 }
 
+## @description  disable function
+## @stability    stable
+## @audience     private
+## @replaceable  no
 function add_footer_table
 {
   true
 }
 
+## @description  disable function
+## @stability    stable
+## @audience     private
+## @replaceable  no
 function big_console_header
 {
   true
 }
 
+## @description  disable function
+## @stability    stable
+## @audience     private
+## @replaceable  no
 function add_test
 {
   true
@@ -127,7 +142,7 @@ function yetus_usage
   unset BUILDTOOLS
 
   for plugin in ${BUGSYSTEMS}; do
-    if declare -f ${plugin}_usage >/dev/null 2>&1; then
+    if declare -f "${plugin}_usage" >/dev/null 2>&1; then
       echo ""
       echo "${plugin} plugin usage options:"
       "${plugin}_usage"
@@ -172,8 +187,7 @@ function parse_args
   done
 
   if [[ ! -d ${PATCH_DIR} ]]; then
-    mkdir -p "${PATCH_DIR}"
-    if [[ $? != 0 ]] ; then
+   if ! mkdir -p "${PATCH_DIR}"; then
       yetus_error "ERROR: Unable to create ${PATCH_DIR}"
       cleanup_and_exit 1
     fi
@@ -213,7 +227,7 @@ function gitam_apply
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am.log" \
     "${GIT}" am --signoff ${EXTRA_ARGS} --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
   RESULT=$?
-  ${GREP} -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
+  "${GREP}" -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
 
   # fallback
   if [[ ${RESULT} -gt 0 && ${PATCH_SYSTEM} == 'jira' ]]; then
@@ -248,19 +262,19 @@ function gitapply_and_commit
 
   jsontmpfile="${PATCH_DIR}/jsontmpfile"
   # cannot set " as delimiter for cut command in script, so replace " with *
-  tr ',' '\n' < "${PATCH_DIR}/issue" | ${SED} 's/\"/*/g' > "${jsontmpfile}"
+  tr ',' '\n' < "${PATCH_DIR}/issue" | "${SED}" 's/\"/*/g' > "${jsontmpfile}"
 
-  assigneeline=$(${GREP} -n -E "^\*assignee\*:" "${jsontmpfile}" | cut -f1 -d":")
+  assigneeline=$("${GREP}" -n -E '^\*assignee\*:' "${jsontmpfile}" | cut -f1 -d":")
   assigneefile="${PATCH_DIR}/assigneefile"
   tail -n +"${assigneeline}" "${jsontmpfile}" | head -n 20 > "${assigneefile}"
 
-  name=$(${GREP} "displayName" "${assigneefile}" | cut -f4 -d"*")
-  email=$(${GREP} "emailAddress" "${assigneefile}" | cut -f4 -d"*" \
-    | ${SED} 's/ at /@/g' | ${SED} 's/ dot /./g')
+  name=$("${GREP}" "displayName" "${assigneefile}" | cut -f4 -d"*")
+  email=$("${GREP}" "emailAddress" "${assigneefile}" | cut -f4 -d"*" \
+    | "${SED}" 's/ at /@/g' | "${SED}" 's/ dot /./g')
   author="${name} <${email}>"
-  summary=$(${GREP} -E "^\*summary\*:" "${jsontmpfile}" | cut -f4 -d"*")
+  summary=$("${GREP}" -E '^\*summary\*:' "${jsontmpfile}" | cut -f4 -d"*")
   gitapply_apply "${patchfile}"
-  ${GIT} add --all
+  "${GIT}" add --all
   echo "Committing with author: ${author}, summary: ${summary}"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am-fallback.log" \
     "${GIT}" commit ${EXTRA_ARGS} --signoff -m "${PATCH_OR_ISSUE}. ${summary}" \
@@ -302,7 +316,7 @@ plugins_initialize
 locate_patch
 
 if [[ ${COMMITMODE} = true ]]; then
-  status=$(${GIT} status --porcelain)
+  status=$("${GIT}" status --porcelain)
   if [[ "$status" != "" ]] ; then
     yetus_error "ERROR: Can't use --committer option in a workspace that contains the following modifications:"
     yetus_error "${status}"

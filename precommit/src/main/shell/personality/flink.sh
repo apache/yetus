@@ -75,10 +75,9 @@ function flinklib_rebuild
     return 0
   fi
 
-  pushd "${BASEDIR}" >/dev/null
-  echo_and_redirect "${PATCH_DIR}/${repostatus}-flinklib-root.txt" \
-     "${MAVEN}" "${MAVEN_ARGS[@]}" package -DskipTests -Dmaven.javadoc.skip=true -Ptest-patch
-  if [[ $? != 0 ]]; then
+  pushd "${BASEDIR}" >/dev/null || return 1
+  if ! echo_and_redirect "${PATCH_DIR}/${repostatus}-flinklib-root.txt" \
+     "${MAVEN}" "${MAVEN_ARGS[@]}" package -DskipTests -Dmaven.javadoc.skip=true -Ptest-patch; then
      add_vote_table -1 flinklib "Unable to determine flink libs in ${PATCH_BRANCH}."
   fi
 
@@ -88,7 +87,7 @@ function flinklib_rebuild
   else
     FLINK_POST_LIB_FILES=$(flinklib_count)
   fi
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   if [[ "${BUILDMODE}" = full ]]; then
     if [[ ${FLINK_POST_LIB_FILES} -gt 0 ]]; then

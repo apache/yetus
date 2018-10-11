@@ -103,7 +103,7 @@ function github_jira_bridge
   declare urlfromjira
 
   # shellcheck disable=SC2016
-  urlfromjira=$(${AWK} "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch[ &\\\"]\"){url=substr(\$0,RSTART,RLENGTH-1)}
+  urlfromjira=$("${AWK}" "match(\$0,\"${GITHUB_BASE_URL}/[^ ]*patch[ &\\\"]\"){url=substr(\$0,RSTART,RLENGTH-1)}
                         END{if (url) print url}" "${jsonloc}" )
   if [[ -z $urlfromjira ]]; then
     # This is currently the expected path, as github pull requests are not common
@@ -204,8 +204,7 @@ function github_determine_issue
 
   # if JIRA didn't call us, should we call it?
   if [[ ${GITHUB_BRIDGED} == false ]]; then
-    github_find_jira_title
-    if [[ $? == 0 ]]; then
+    if github_find_jira_title; then
       return 0
     fi
   fi
@@ -230,7 +229,7 @@ function github_determine_branch
   fi
 
   # shellcheck disable=SC2016
-  PATCH_BRANCH=$(${AWK} 'match($0,"\"ref\": \""){print $2}' "${PATCH_DIR}/github-pull.json"\
+  PATCH_BRANCH=$("${AWK}" 'match($0,"\"ref\": \""){print $2}' "${PATCH_DIR}/github-pull.json"\
      | cut -f2 -d\"\
      | tail -1  )
 
@@ -436,7 +435,7 @@ function github_linecomments
   fi
 
   if [[ -z "${GITHUB_COMMITSHA}" ]]; then
-    GITHUB_COMMITSHA=$(${GREP} \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
+    GITHUB_COMMITSHA=$("${GREP}" \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
       | head -1 \
       | cut -f4 -d\")
   fi
@@ -449,7 +448,7 @@ function github_linecomments
   {
     printf "{\"body\":\""
     echo "${plugin}: ${text}" \
-      | ${SED} -e 's,\\,\\\\,g' \
+      | "${SED}" -e 's,\\,\\\\,g' \
         -e 's,\",\\\",g' \
         -e 's,$,\\r\\n,g' \
       | tr -d '\n'
@@ -498,7 +497,7 @@ function github_write_comment
 
   {
     printf "{\"body\":\""
-    ${SED} -e 's,\\,\\\\,g' \
+    "${SED}" -e 's,\\,\\\\,g' \
         -e 's,\",\\\",g' \
         -e 's,$,\\r\\n,g' "${commentfile}" \
     | tr -d '\n'
@@ -555,17 +554,16 @@ function github_finalreport
   else
     echo ":broken_heart: **-1 overall**" >> "${commentfile}"
   fi
-
-  printf "\n\n\n\n" >>  "${commentfile}"
+  printf '\n\n\n\n' >>  "${commentfile}"
 
   i=0
   until [[ ${i} -eq ${#TP_HEADER[@]} ]]; do
-    printf "%s\n\n" "${TP_HEADER[${i}]}" >> "${commentfile}"
+    printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
     ((i=i+1))
   done
 
   {
-    printf "\n\n"
+    printf '\n\n'
     echo "| Vote | Subsystem | Runtime | Comment |"
     echo "|:----:|----------:|--------:|:--------|"
   } >> "${commentfile}"
@@ -586,7 +584,7 @@ function github_finalreport
 
   if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
     {
-      printf "\n\n"
+      printf '\n\n'
       echo "| Reason | Tests |"
       echo "|-------:|:------|"
     } >> "${commentfile}"
@@ -598,7 +596,7 @@ function github_finalreport
   fi
 
   {
-    printf "\n\n"
+    printf '\n\n'
     echo "| Subsystem | Report/Notes |"
     echo "|----------:|:-------------|"
   } >> "${commentfile}"
@@ -607,11 +605,10 @@ function github_finalreport
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
     comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
               ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
-    printf "%s\n" "${comment}" >> "${commentfile}"
+    printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done
-
-  printf "\n\nThis message was automatically generated.\n\n" >> "${commentfile}"
+  printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
 
   github_write_comment "${commentfile}"
 }

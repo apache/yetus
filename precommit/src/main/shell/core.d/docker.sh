@@ -15,7 +15,7 @@
 # limitations under the License.
 
 DOCKERMODE=false
-DOCKERCMD=$(command -v docker)
+DOCKERCMD=$(command -v docker 2>/dev/null)
 DOCKER_ID=${RANDOM}
 DOCKER_DESTRUCTIVE=true
 DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
@@ -182,7 +182,7 @@ function docker_fileverify
   if [[ ${DOCKERMODE} = false &&
         ${DOCKERSUPPORT} = true ]]; then
     if [[ -n "${DOCKERFILE}" ]]; then
-      pushd "${STARTINGDIR}" >/dev/null
+      pushd "${STARTINGDIR}" >/dev/null || return 1
       if [[ -f ${DOCKERFILE} ]]; then
         DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
       else
@@ -201,7 +201,7 @@ function docker_fileverify
           cleanup_and_exit 1
         fi
       fi
-      popd >/dev/null
+      popd >/dev/null || return 1
     else
       DOCKERFILE=${DOCKERFILE_DEFAULT}
     fi
@@ -450,9 +450,9 @@ function docker_image_maintenance
   # repostory:tag and send that to get removed.
 
   #shellcheck disable=SC2046,SC2016
-  docker_image_maintenance_helper $(dockercmd images | ${GREP} -e ^yetus | grep tp- | ${AWK} '{print $1":"$2}')
+  docker_image_maintenance_helper $(dockercmd images | "${GREP}" -e ^yetus | "${GREP}" tp- | "${AWK}" '{print $1":"$2}')
   #shellcheck disable=SC2046,SC2016
-  docker_image_maintenance_helper $(dockercmd images | ${GREP} -e ^yetus | ${GREP} -v hours | ${AWK} '{print $1":"$2}')
+  docker_image_maintenance_helper $(dockercmd images | "${GREP}" -e ^yetus | "${GREP}" -v hours | "${AWK}" '{print $1":"$2}')
 
   if [[ "${SENTINEL}" = false ]]; then
     return
@@ -491,6 +491,10 @@ function docker_getfilerev
           | cut -f2 -d=
 }
 
+## @description  determine the docker version
+## @stability    stable
+## @audience     private
+## @replaceable  no
 function docker_version
 {
   declare vertype=$1

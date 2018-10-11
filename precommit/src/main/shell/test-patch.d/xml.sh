@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 declare -a XML_FILES
 
 add_test_type xml
@@ -56,7 +58,7 @@ function xml_postcompile
 
   start_clock
 
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.xml$ && -f ${i} ]]; then
       if ! "${js}" -e "XMLDocument(arguments[0])" "${i}" > "${PATCH_DIR}/xml.txt.tmp" 2>&1; then
@@ -72,7 +74,7 @@ function xml_postcompile
     fi
   done
 
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   if [[ -f "${PATCH_DIR}/xml.txt.tmp" ]]; then
     rm "${PATCH_DIR}/xml.txt.tmp"

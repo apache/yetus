@@ -78,7 +78,9 @@
             </goals>
             <configuration>
               <sources>
-                <source>../yetus-minimaven-plugin/src/main</source>
+                <source>../yetus-minimaven-plugin/src/main/resources</source>
+                <source>../yetus-minimaven-plugin/src/main/java/org/apache/yetus/maven/plugin/fileops/MakeBins4Libs.java</source>
+                <source>../yetus-minimaven-plugin/src/main/java/org/apache/yetus/maven/plugin/fileops/CreateSymLinkMojo.java</source>
               </sources>
             </configuration>
           </execution>

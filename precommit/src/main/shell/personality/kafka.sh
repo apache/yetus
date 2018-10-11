@@ -54,9 +54,9 @@ function personality_modules
     gradleboot)
       # kafka's bootstrap is broken
       if [[ ${testtype} == gradleboot ]]; then
-        pushd "${BASEDIR}" >/dev/null
+        pushd "${BASEDIR}" >/dev/null || return 1
         echo_and_redirect "${PATCH_DIR}/kafka-configure-gradle.txt" gradle
-        popd >/dev/null
+        popd >/dev/null || return 1
       fi
     ;;
     compile)

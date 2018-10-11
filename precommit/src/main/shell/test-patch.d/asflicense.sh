@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
 
 add_test_type asflicense
 
@@ -58,8 +59,9 @@ function asflicense_parse_args
 ## @return       1 on failure
 function asflicense_tests
 {
-  local numpatch
-  local btfails=true
+  declare numpatch
+  declare btfails=true
+  declare retval
 
   big_console_header "Determining number of ASF License errors"
 
@@ -69,13 +71,16 @@ function asflicense_tests
   case ${BUILDTOOL} in
     ant)
       modules_workers patch asflicense releaseaudit
+      retval=$?
     ;;
     gradle)
       btfails=false
       modules_workers patch asflicense rat
+      retval=$?
     ;;
     maven)
       modules_workers patch asflicense -fn apache-rat:check
+      retval=$?
       btfails=false
     ;;
     *)
@@ -92,19 +97,21 @@ function asflicense_tests
             -s "${PATCH_DIR}/asf.xsl" \
             -E "${ASFLICENSE_RAT_EXCLUDES}" \
             -d "${BASEDIR}"
+        retval=$?
       else
         echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
         "${JAVA_HOME}/bin/java" \
             -jar "${ASFLICENSE_RAT_JAR}" \
             -s "${PATCH_DIR}/asf.xsl" \
             "${BASEDIR}"
+        retval=$?
       fi
     ;;
   esac
 
   # RAT fails the build if there are license problems.
   # so let's take advantage of that a bit.
-  if [[ $? == 0 && ${btfails} = true ]]; then
+  if [[ ${retval} == 0 && ${btfails} = true ]]; then
     add_vote_table 1 asflicense "${BUILDMODEMSG} does not generate ASF License warnings."
     return 0
   fi
@@ -150,6 +157,12 @@ function asflicense_tests
   return 0
 }
 
+## @description  when using the jar version, need an xsl file for it to use
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       0 on success
+## @return       1 on failure
 function asflicense_writexsl
 {
 cat > "${1}" << EOF

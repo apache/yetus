@@ -16,12 +16,12 @@
 
 if [[ -n "${DOCKERFILE_PATH}" ]]; then
   docker build -t "${IMAGE_NAME}" \
-	--build-arg DOCKER_TAG="${DOCKER_TAG}" \
-	--build-arg DOCKER_REPO="${DOCKER_REPO}" \
-	-f "${DOCKERFILE_PATH}"
+    --build-arg DOCKER_TAG="${DOCKER_TAG}" \
+    --build-arg DOCKER_REPO="${DOCKER_REPO}" \
+    -f "${DOCKERFILE_PATH}"
 else
   docker build -t "${IMAGE_NAME}" \
-	--build-arg DOCKER_TAG="${DOCKER_TAG}" \
-	--build-arg DOCKER_REPO="${DOCKER_REPO}" \
-	 .
+    --build-arg DOCKER_TAG="${DOCKER_TAG}" \
+    --build-arg DOCKER_REPO="${DOCKER_REPO}" \
+    .
 fi

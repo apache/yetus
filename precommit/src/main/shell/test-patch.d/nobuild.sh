@@ -14,6 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
+# A simple build system that doesn't actually build anything
+
 add_build_tool nobuild
 
 function nobuild_buildfile

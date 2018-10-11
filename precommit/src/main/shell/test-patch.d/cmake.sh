@@ -78,7 +78,7 @@ function cmake_precheck
     return 1
   fi
   # finally let folks know what version they'll be dealing with.
-  cmake_version=$(${CMAKE} --version 2>/dev/null | head -n 1 2>/dev/null)
+  cmake_version=$("${CMAKE}" --version 2>/dev/null | head -n 1 2>/dev/null)
   add_footer_table cmake "version: ${cmake_version}"
 
   make_precheck

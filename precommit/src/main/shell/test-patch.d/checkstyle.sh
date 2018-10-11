@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_type checkstyle
 
 CHECKSTYLE_TIMER=0
@@ -106,13 +108,13 @@ function checkstyle_calcdiffs
   # so if only the error message numbers change
   # we do not report new error
   # shellcheck disable=SC2016
-  cut -f3- -d: "${orig}" | awk -F'\1' '{ gsub("[0-9,]+", "", $2) ;print $1":"$2}' > "${tmp}.branch"
+  cut -f3- -d: "${orig}" | "${AWK}" -F'\1' '{ gsub("[0-9,]+", "", $2) ;print $1":"$2}' > "${tmp}.branch"
   # shellcheck disable=SC2016
-  cut -f3- -d: "${new}" | awk -F'\1' '{ gsub("[0-9,]+", "", $2) ;print $1":"$2}' > "${tmp}.patch"
+  cut -f3- -d: "${new}" | "${AWK}" -F'\1' '{ gsub("[0-9,]+", "", $2) ;print $1":"$2}' > "${tmp}.patch"
 
   # compare the errors, generating a string of line
   # numbers. Sorry portability: GNU diff makes this too easy
-  ${DIFF} --unchanged-line-format="" \
+  "${DIFF}" --unchanged-line-format="" \
      --old-line-format="" \
      --new-line-format="%dn " \
      "${tmp}.branch" \
@@ -123,8 +125,7 @@ function checkstyle_calcdiffs
   # message which was needed for calculations
   # shellcheck disable=SC2013
   for j in $(cat "${tmp}.lined"); do
-    # shellcheck disable=SC2086
-    head -${j} "${new}" | tail -1 | tr -d $'\x01'
+    head -"${j}" "${new}" | tail -1 | tr -d $'\x01'
   done
 
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
@@ -169,6 +170,8 @@ function checkstyle_runner
 
     buildtool_cwd "${i}"
 
+    #BUG - fix this
+
     case ${BUILDTOOL} in
       ant)
         cmd="${ANT}  \
@@ -198,7 +201,7 @@ function checkstyle_runner
     echo_and_redirect "${logfile}" ${cmd}
     cmdresult=$?
 
-    ${SED} -e 's,^\[ERROR\] ,,g' -e 's,^\[WARN\] ,,g' "${logfile}" \
+    "${SED}" -e 's,^\[ERROR\] ,,g' -e 's,^\[WARN\] ,,g' "${logfile}" \
       | ${GREP} ^/ \
       | ${SED} -e "s,${BASEDIR},.,g" \
       > "${tmp}"
@@ -224,7 +227,7 @@ function checkstyle_runner
       # have to do later
 
       for j in "${CHANGED_FILES[@]}"; do
-        ${GREP} "${j}" "${tmp}" >> "${tmp}.1"
+        "${GREP}" "${j}" "${tmp}" >> "${tmp}.1"
       done
 
       # now that we have just the files we care about,
@@ -246,7 +249,7 @@ function checkstyle_runner
       # file:linenum:code(:column)\x01:error
       # \x01 will later used to identify the begining
       # of the checkstyle error message
-      pushd "${BASEDIR}" >/dev/null
+      pushd "${BASEDIR}" >/dev/null || return 1
       while read -r logline; do
         file=$(echo "${logline}" | cut -f1 -d:)
         linenum=$(echo "${logline}" | cut -f2 -d:)
@@ -254,12 +257,12 @@ function checkstyle_runner
         codeline=$(head -n "+${linenum}" "${file}" | tail -1 )
         {
           echo -n "${file}:${linenum}:${codeline}"
-          echo -ne "\x01"
+          echo -ne '\x01'
           echo ":${text}"
         } >> "${output}"
       done < <(cat "${tmp}.1")
 
-      popd >/dev/null
+      popd >/dev/null || return 1
       # later on, calcdiff will turn this into code(:column):error
       # compare, and then put the file:line back onto it.
     else
@@ -272,7 +275,7 @@ function checkstyle_runner
     #shellcheck disable=SC2034
     MODULE_STATUS_TIMER[${i}]=${savestop}
 
-    popd >/dev/null
+    popd >/dev/null || return 1
     ((i=i+1))
   done
 

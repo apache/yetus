@@ -117,10 +117,10 @@ function autoconf_precompile
 
   personality_modules "${repostatus}" autoreconf
 
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   echo_and_redirect "${PATCH_DIR}/${repostatus}-autoconf-autoreconf" autoreconf -fi
   result=$?
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   if [[ ${result} != 0 ]]; then
     if [[ "${repostatus}" = branch ]]; then
@@ -142,7 +142,7 @@ function autoconf_precompile
 
   personality_modules "${repostatus}" configure
 
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   #shellcheck disable=SC2086
   echo_and_redirect \
     "${PATCH_DIR}/${repostatus}-autoconf-configure" \
@@ -150,7 +150,7 @@ function autoconf_precompile
       --prefix="${PATCH_DIR}/${repostatus}-install-dir" \
       ${AUTOCONF_CONF_FLAGS}
   result=$?
-  popd >/dev/null
+  popd >/dev/null || return 1
 
   if [[ ${result} != 0 ]]; then
     if [[ "${repostatus}" = branch ]]; then

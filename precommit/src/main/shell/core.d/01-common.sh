@@ -219,14 +219,14 @@ function common_args
   # git apply or don't support all the
   # expected options
   version=$(${GIT} --version)
-
+  # shellcheck disable=SC2181
   if [[ $? != 0 ]]; then
     yetus_error "ERROR: ${GIT} failed during version detection."
     exit 1
   fi
 
   # shellcheck disable=SC2016
-  version=$(echo "${version}" | ${AWK} '{print $NF}')
+  version=$(echo "${version}" | "${AWK}" '{print $NF}')
   if [[ ${version} =~ ^0
      || ${version} =~ ^1.[0-6]
      || ${version} =~ ^1.7.[0-2]$
@@ -249,9 +249,9 @@ function list_plugins
   ENABLED_PLUGINS="all"
   importplugins
 
-  printf "Reminder: every plug-in may be enabled via 'all'.\n\n"
+  printf "Reminder: every plug-in may be enabled via 'all'.\\n\\n"
   for plugintype in BUILDTOOLS TESTTYPES BUGSYSTEMS TESTFORMATS; do
-    printf "%s:\n\t" ${plugintype}
+    printf '%s:\n\t' ${plugintype}
     for name in ${!plugintype}; do
       printf "%s " ${name}
     done
@@ -270,8 +270,7 @@ function parse_args_plugins
   for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
     if declare -f ${plugin}_parse_args >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_parse_args"
-      #shellcheck disable=SC2086
-      ${plugin}_parse_args "$@"
+      "${plugin}_parse_args" "$@"
       (( RESULT = RESULT + $? ))
     fi
   done
@@ -288,8 +287,7 @@ function plugins_initialize
   for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOL}; do
     if declare -f ${plugin}_initialize >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_initialize"
-      #shellcheck disable=SC2086
-      ${plugin}_initialize
+      "${plugin}_initialize"
       (( RESULT = RESULT + $? ))
     fi
   done
@@ -487,15 +485,19 @@ function importplugins
   local plugin
   local files=()
 
+  #BUG: this will break horribly if there are spaces in the paths. :(
+
   if [[ ${LOAD_SYSTEM_PLUGINS} == "true" ]]; then
     if [[ -d "${BINDIR}/test-patch.d" ]]; then
+      #shellcheck disable=SC2206
       files=(${BINDIR}/test-patch.d/*.sh)
     fi
   fi
 
   if [[ -n "${USER_PLUGIN_DIR}" && -d "${USER_PLUGIN_DIR}" ]]; then
     yetus_debug "Loading user provided plugins from ${USER_PLUGIN_DIR}"
-    files=("${files[@]}" ${USER_PLUGIN_DIR}/*.sh)
+    #shellcheck disable=SC2206
+    files+=(${USER_PLUGIN_DIR}/*.sh)
   fi
 
   if [[ -n ${PERSONALITY} && ! -f ${PERSONALITY} ]]; then

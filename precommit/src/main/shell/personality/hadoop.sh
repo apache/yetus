@@ -162,11 +162,11 @@ function hadoop_unittest_prereqs
     module="hadoop-common-project/hadoop-common"
     fn=$(module_file_fragment "${module}")
     flags="$(hadoop_native_flags) $(yarn_ui2_flag)"
-    pushd "${BASEDIR}/${module}" >/dev/null
+    pushd "${BASEDIR}/${module}" >/dev/null || return 1
     # shellcheck disable=SC2086
     echo_and_redirect "${PATCH_DIR}/maven-unit-prereq-${fn}-install.txt" \
       "${MAVEN}" "${MAVEN_ARGS[@]}" install -DskipTests ${flags}
-    popd >/dev/null
+    popd >/dev/null || return 1
   fi
 }
 
@@ -328,11 +328,11 @@ function personality_modules
         for i in hadoop-project \
           hadoop-common-project/hadoop-annotations; do
             fn=$(module_file_fragment "${i}")
-            pushd "${BASEDIR}/${i}" >/dev/null
+            pushd "${BASEDIR}/${i}" >/dev/null || return 1
             echo "cd ${i}"
             echo_and_redirect "${PATCH_DIR}/maven-${fn}-install.txt" \
               "${MAVEN}" "${MAVEN_ARGS[@]}" install
-            popd >/dev/null
+            popd >/dev/null || return 1
         done
       fi
       extra="-Pdocs -DskipTests"
@@ -537,7 +537,7 @@ function shadedclient_rebuild
                 hadoop-client-modules/hadoop-client-integration-tests; do
     if [ -d "${module}" ]; then
       yetus_debug "hadoop personality: test module '${module}' is present."
-      modules=( ${modules[@]} -pl ${module} )
+      modules+=(-pl "${module}")
     fi
   done
   if [ ${#modules[@]} -eq 0 ]; then
@@ -552,7 +552,7 @@ function shadedclient_rebuild
       "${modules[@]}" \
       -Dtest=NoUnitTests -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Dfindbugs.skip=true
 
-  count=$(${GREP} -c '\[ERROR\]' "${logfile}")
+  count=$("${GREP}" -c '\[ERROR\]' "${logfile}")
   if [[ ${count} -gt 0 ]]; then
     add_vote_table -1 shadedclient "${repostatus} has errors when building and testing our client artifacts."
     return 1

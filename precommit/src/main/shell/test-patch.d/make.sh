@@ -16,7 +16,7 @@
 
 add_build_tool make
 
-MAKE=make
+MAKE=$(command -v make 2>/dev/null)
 MAKEFILE=Makefile
 
 ## @description  make usage hook

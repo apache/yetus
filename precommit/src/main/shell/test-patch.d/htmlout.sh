@@ -107,7 +107,7 @@ function htmlout_finalreport
   until [[ $i -eq ${#TP_HEADER[@]} ]]; do
     ourstring=$(echo "${TP_HEADER[${i}]}" | tr -s ' ')
     comment=$(echo "${ourstring}"  | cut -f2 -d\|)
-    printf "<tr><td>%s</td></tr>\n" "${comment}"
+    printf '<tr><td>%s</td></tr>\n' "${comment}"
     ((i=i+1))
   done
 
@@ -133,10 +133,10 @@ function htmlout_finalreport
     if [[ "${vote}" = "H" ]]; then
       {
         echo "<tr>"
-        printf "\t\t<td></td>"
+        printf '\t\t<td></td>'
         printf "<td></td>"
         printf "<td></td>"
-        printf "<td><font color=\"%s\">%s</font></td>\n" "brown" "${comment}"
+        printf '<td><font color=\"%s\">%s</font></td>\n' "brown" "${comment}"
         echo "</tr>"
       } >> "${commentfile}"
       ((i=i+1))
@@ -173,10 +173,10 @@ function htmlout_finalreport
 
     {
       echo "<tr>"
-      printf "\t\t<td><font color=\"%s\">%s</font></td>" "${color}" "${vote}"
+      printf '\t\t<td><font color=\"%s\">%s</font></td>' "${color}" "${vote}"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${subs}"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${calctime}"
-      printf "<td><font color=\"%s\">%s</font></td>\n" "${color}" "${comment}"
+      printf '<td><font color=\"%s\">%s</font></td>\n' "${color}" "${comment}"
       echo "</tr>"
     } >> "${commentfile}"
     ((i=i+1))

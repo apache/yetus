@@ -40,7 +40,7 @@ function dupname_icase_sort_array
     oifs=${IFS}
   fi
   set -f
-  # shellcheck disable=SC2034
+  # shellcheck disable=SC2034,SC2207
   IFS=$'\n' sa=($(sort -f <<<"${array[*]}"))
   # shellcheck disable=SC1083
   eval "${arrname}"=\(\"\${sa[@]}\"\)

@@ -14,13 +14,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_type shelldocs
 
 SHELLDOCS_TIMER=0
 
-SHELLDOCS=${SHELLDOCS}
+SHELLDOCS=$(command -v shelldocs)
 if [[ -z ${SHELLDOCS} ]]; then
-  for shelldocsexec in "${BINDIR}/shelldocs" "${BINDIR}/../shelldocs/shelldocs.py"; do
+  for shelldocsexec in \
+    "${BINDIR}/shelldocs" \
+    "${BINDIR}/../shelldocs/shelldocs.py"\
+    "${BASEDIR}/shelldocs/src/main/python/shelldocs.py"; do
     if [[ -f ${shelldocsexec} && -x ${shelldocsexec} ]]; then
       SHELLDOCS=${shelldocsexec}
       break
@@ -108,13 +113,13 @@ function shelldocs_preapply
   start_clock
 
   echo "Running shelldocs against all identifiable shell scripts"
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in $(shelldocs_private_findbash); do
     if [[ -f ${i} ]]; then
-      ${SHELLDOCS} --input "${i}" --lint >> "${PATCH_DIR}/branch-shelldocs-result.txt"
+      "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/branch-shelldocs-result.txt"
     fi
   done
-  popd > /dev/null
+  popd > /dev/null || return 1
 
   # keep track of how much as elapsed for us already
   SHELLDOCS_TIMER=$(stop_clock)
@@ -146,7 +151,7 @@ function shelldocs_postapply
   # we re-check this in case one has been added
   for i in $(shelldocs_private_findbash); do
     if [[ -f ${i} ]]; then
-      ${SHELLDOCS} --input "${i}" --lint >> "${PATCH_DIR}/patch-shelldocs-result.txt"
+      "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/patch-shelldocs-result.txt"
     fi
   done
 
@@ -157,13 +162,13 @@ function shelldocs_postapply
       > "${PATCH_DIR}/diff-patch-shelldocs.txt"
 
   # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shelldocs-result.txt" | ${AWK} '{print $1}')
+  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shelldocs-result.txt" | "${AWK}" '{print $1}')
 
   # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shelldocs-result.txt" | ${AWK} '{print $1}')
+  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shelldocs-result.txt" | "${AWK}" '{print $1}')
 
   # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shelldocs.txt" | ${AWK} '{print $1}')
+  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shelldocs.txt" | "${AWK}" '{print $1}')
 
   ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
 

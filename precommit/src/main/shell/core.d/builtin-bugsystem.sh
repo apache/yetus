@@ -53,7 +53,7 @@ function console_finalreport
 
   if [[ ${result} == 0 ]]; then
     if [[ ${ROBOT} == false ]]; then
-      if declare -f ${PROJECT_NAME}_console_success >/dev/null; then
+      if declare -f "${PROJECT_NAME}_console_success" >/dev/null; then
         "${PROJECT_NAME}_console_success" > "${spcfx}"
       else
         {
@@ -66,10 +66,10 @@ function console_finalreport
         } > "${spcfx}"
       fi
     fi
-    printf "\n\n+1 overall\n\n"
+    printf '\n\n+1 overall\n\n'
   else
     if [[ ${ROBOT} == false ]]; then
-      if declare -f ${PROJECT_NAME}_console_failure >/dev/null; then
+      if declare -f "${PROJECT_NAME}_console_failure" >/dev/null; then
         "${PROJECT_NAME}_console_failure" > "${spcfx}"
       else
         {
@@ -81,13 +81,13 @@ function console_finalreport
         } > "${spcfx}"
       fi
     fi
-    printf "\n\n-1 overall\n\n"
+    printf '\n\n-1 overall\n\n'
   fi
 
   if [[ -f ${spcfx} ]]; then
-    if which base64 >/dev/null 2>&1; then
+    if command -v base64 >/dev/null 2>&1; then
       base64 --decode "${spcfx}" 2>/dev/null
-    elif which openssl >/dev/null 2>&1; then
+    elif command -v openssl >/dev/null 2>&1; then
       openssl enc -A -d -base64 -in "${spcfx}" 2>/dev/null
     fi
     echo
@@ -103,11 +103,11 @@ function console_finalreport
   seccoladj=$((seccoladj + 2 ))
   i=0
   until [[ $i -eq ${#TP_HEADER[@]} ]]; do
-    printf "%s\n" "${TP_HEADER[${i}]}"
+    printf '%s\n' "${TP_HEADER[${i}]}"
     ((i=i+1))
   done
 
-  printf "| %s | %*s |  %s   | %s\n" "Vote" ${seccoladj} Subsystem Runtime "Comment"
+  printf '| %s | %*s |  %s   | %s\n' "Vote" ${seccoladj} Subsystem Runtime "Comment"
   echo "============================================================================"
   i=0
   until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
@@ -123,13 +123,13 @@ function console_finalreport
     ${SED} -e '1d' "${commentfile1}"  > "${commentfile2}"
 
     if [[ "${vote}" = "H" ]]; then
-      printf "|      | %*s |            |%-s\n" ${seccoladj} " " "${normaltop}"
+      printf '|      | %*s |            |%-s\n' ${seccoladj} " " "${normaltop}"
     else
-      printf "| %4s | %*s | %-10s |%-s\n" "${vote}" ${seccoladj} \
+      printf '| %4s | %*s | %-10s |%-s\n' "${vote}" ${seccoladj} \
         "${subs}" "${calctime}" "${normaltop}"
     fi
     while read -r line; do
-      printf "|      | %*s |            | %-s\n" ${seccoladj} " " "${line}"
+      printf '|      | %*s |            | %-s\n' ${seccoladj} " " "${line}"
     done < "${commentfile2}"
 
     ((i=i+1))
@@ -138,18 +138,18 @@ function console_finalreport
 
   if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
     seccoladj=$(findlargest 1 "${TP_TEST_TABLE[@]}")
-    printf "\n\n%*s | Tests\n" "${seccoladj}" "Reason"
+    printf '\n\n%*s | Tests\n' "${seccoladj}" "Reason"
     i=0
     until [[ $i -eq ${#TP_TEST_TABLE[@]} ]]; do
       ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
       vote=$(echo "${ourstring}" | cut -f2 -d\|)
       subs=$(echo "${ourstring}"  | cut -f3 -d\|)
-      printf "%*s | %s\n" "${seccoladj}" "${vote}" "${subs}"
+      printf '%*s | %s\n' "${seccoladj}" "${vote}" "${subs}"
       ((i=i+1))
     done
   fi
 
-  printf "\n\n|| Subsystem || Report/Notes ||\n"
+  printf '\n\n|| Subsystem || Report/Notes ||\n'
   echo "============================================================================"
   i=0
 
@@ -162,7 +162,7 @@ function console_finalreport
       comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
                 ${SED} -e "s,@@BASE@@,${PATCH_DIR},g")
     fi
-    printf "%s\n" "${comment}"
+    printf '%s\n' "${comment}"
     ((i=i+1))
   done
 

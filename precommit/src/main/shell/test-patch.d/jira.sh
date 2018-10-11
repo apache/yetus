@@ -91,7 +91,7 @@ function jira_determine_issue
   fi
 
   # shellcheck disable=SC2016
-  patchnamechunk=$(echo "${input}" | ${AWK} -F/ '{print $NF}')
+  patchnamechunk=$(echo "${input}" | "${AWK}" -F/ '{print $NF}')
 
   maybeissue=$(echo "${patchnamechunk}" | cut -f1,2 -d-)
 
@@ -115,13 +115,13 @@ function jira_http_fetch
   yetus_debug "jira_http_fetch: ${JIRA_URL}/${input}"
   if [[ -n "${JIRA_USER}"
      && -n "${JIRA_PASSWD}" ]]; then
-    ${CURL} --silent --fail \
+    "${CURL}" --silent --fail \
             --user "${JIRA_USER}:${JIRA_PASSWD}" \
             --output "${output}" \
             --location \
            "${JIRA_URL}/${input}"
   else
-    ${CURL} --silent --fail \
+    "${CURL}" --silent --fail \
             --output "${output}" \
             --location \
            "${JIRA_URL}/${input}"
@@ -165,8 +165,7 @@ function jira_locate_patch
     return 1
   fi
 
-  jira_http_fetch "browse/${input}" "${PATCH_DIR}/jira"
-  if [[ $? != 0 ]]; then
+  if ! jira_http_fetch "browse/${input}" "${PATCH_DIR}/jira"; then
     yetus_debug "jira_locate_patch: not a JIRA."
     return 1
   fi
@@ -180,8 +179,7 @@ function jira_locate_patch
     jira_http_fetch "rest/api/2/issue/${input}" "${jsonloc}"
     # Parse the downloaded information to check if the issue is
     # just a pointer to GitHub.
-    github_jira_bridge "${fileloc}" "${jsonloc}"
-    if [[ $? -eq 0 ]]; then
+    if github_jira_bridge "${fileloc}" "${jsonloc}"; then
       echo "${input} appears to be a Github PR. Switching Modes."
       return 0
     fi
@@ -189,7 +187,7 @@ function jira_locate_patch
   fi
 
   # Not reached if there is a successful github plugin return
-  if [[ $(${GREP} -c "${JIRA_STATUS_RE}" "${PATCH_DIR}/jira") == 0 ]]; then
+  if [[ $("${GREP}" -c "${JIRA_STATUS_RE}" "${PATCH_DIR}/jira") == 0 ]]; then
     if [[ ${ROBOT} == true ]]; then
       yetus_error "ERROR: ${input} issue status is not matched with \"${JIRA_STATUS_RE}\"."
       cleanup_and_exit 1
@@ -204,9 +202,9 @@ function jira_locate_patch
   # ascending order. so bigger # == newer file
   #shellcheck disable=SC2016
   tr '>' '\n' < "${PATCH_DIR}/jira" \
-    | ${AWK} 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' \
-    | ${GREP} -v -e 'htm[l]*$' \
-    | ${SED} -e 's,[ ]*$,,g' \
+    | "${AWK}" 'match($0,"/secure/attachment/[0-9]*/[^\"]*"){print substr($0,RSTART,RLENGTH)}' \
+    | "${GREP}" -v -e 'htm[l]*$' \
+    | "${SED}" -e 's,[ ]*$,,g' \
     | sort -n -r -k4 -t/ \
     | uniq \
       > "${PATCH_DIR}/jira-attachments.txt"
@@ -237,8 +235,7 @@ function jira_locate_patch
   fi
 
   if [[ ! ${PATCHURL} =~ \.patch$ ]]; then
-    guess_patch_file "${fileloc}"
-    if [[ $? == 0 ]]; then
+    if guess_patch_file "${fileloc}"; then
       yetus_debug "The patch ${PATCHURL} was not named properly, but it looks like a patch file. Proceeding, but issue/branch matching might go awry."
       add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${PATCH_NAMING_RULE} for instructions."
     else
@@ -280,7 +277,7 @@ function jira_determine_branch
 
     yetus_debug "Determine branch: starting with ${hinttype}"
     patchnamechunk=$(echo "${hinttype}" \
-            | ${SED} -e 's,.*/\(.*\)$,\1,' \
+            | "${SED}" -e 's,.*/\(.*\)$,\1,' \
                      -e 's,\.txt,.,' \
                      -e 's,.patch,.,g' \
                      -e 's,.diff,.,g' \
@@ -369,14 +366,14 @@ function jira_write_comment
     # RESTify the comment
     {
       echo "{\"body\":\""
-      ${SED} -e 's,\\,\\\\,g' \
+      "${SED}" -e 's,\\,\\\\,g' \
           -e 's,\",\\\",g' \
           -e 's,$,\\r\\n,g' "${commentfile}" \
       | tr -d '\n'
       echo "\"}"
     } > "${PATCH_DIR}/jiracomment.$$"
 
-    ${CURL} -X POST \
+    "${CURL}" -X POST \
          -H "Accept: application/json" \
          -H "Content-Type: application/json" \
          -u "${JIRA_USER}:${JIRA_PASSWD}" \
@@ -434,7 +431,7 @@ function jira_finalreport
 
   i=0
   until [[ $i -eq ${#TP_HEADER[@]} ]]; do
-    printf "%s\n" "${TP_HEADER[${i}]}" >> "${commentfile}"
+    printf '%s\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
     ((i=i+1))
   done
 
@@ -488,8 +485,7 @@ function jira_finalreport
         ;;
       esac
     fi
-
-    printf "| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} |\n" \
+    printf '| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} |\n' \
       "${color}" "${vote}" \
       "${color}" "${subs}" \
       "${color}" "${calctime}" \
@@ -504,7 +500,7 @@ function jira_finalreport
     echo "|| Reason || Tests ||" >>  "${commentfile}"
     i=0
     until [[ $i -eq ${#TP_TEST_TABLE[@]} ]]; do
-      printf "%s\n" "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
+      printf '%s\n' "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
       ((i=i+1))
     done
   fi
@@ -515,12 +511,12 @@ function jira_finalreport
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
     comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
-    printf "%s\n" "${comment}" >> "${commentfile}"
+              "${SED}" -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+    printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done
 
-  printf "\n\nThis message was automatically generated.\n\n" >> "${commentfile}"
+  printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
 
   jira_write_comment "${commentfile}"
 }

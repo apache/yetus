@@ -64,8 +64,8 @@ function jmeter_parse_args
 function jmeter_precheck
 {
   if [[ ${JMETER_DOWNLOAD_JARS} = true ]]; then
-    pushd "${BASEDIR}" >/dev/null
+    pushd "${BASEDIR}" >/dev/null || return 1
     echo_and_redirect "${PATCH_DIR}/jmeter-branch-download-jars.txt" "${ANT}" download_jars
-    popd >/dev/null
+    popd >/dev/null || return 1
   fi
 }
