@@ -144,7 +144,7 @@ RUN pip3 install -v pylint==2.1.1
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint3
 
 ######
-# Install python2 and pylint2
+# Install python, pylint2, and yamllint
 ######
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y python \
     python2.7 \
@@ -155,7 +155,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y python \
     python-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN pip2 install -v pylint==1.9.2 python-dateutil==2.7.3
+RUN pip2 install -v pylint==1.9.2 python-dateutil==2.7.3 yamllint==1.12.1
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint2
 
 #####
