@@ -134,6 +134,7 @@ Compiler Support:
 
 Language Support, Licensing, and more:
 
+* [ansible-lint](plugins/ansiblelint)
 * [Apache Creadur Rat](plugins/asflicense)
 * [buf](plugins/buf)
 * [checkmake](plugins/checkmake)

@@ -311,6 +311,8 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # Install python3 and pylint3
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
+ARG PY3_ANSIBLE_VERSION=4.7.0
+ARG PY3_ANSIBLELINT_VERSION=5.2.1
 ARG PY3_ASTROID_VERSION=2.8.0
 ARG PY3_CODESPELL_VERSION=2.1.0
 ARG PY3_DOCKER_COMPOSE=1.29.2
@@ -324,12 +326,10 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3-cryptography \
         python3-dateutil \
         python3-dev \
-        python3-dev \
         python3-isort \
         python3-dockerpty \
         python3-nacl \
         python3-pyrsistent \
-        python3-setuptools \
         python3-setuptools \
         python3-singledispatch \
         python3-six \
@@ -342,11 +342,14 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && python3 /tmp/get-pip.py \
     && rm /usr/local/bin/pip /tmp/get-pip.py \
     && pip3 install --no-cache-dir -v \
+        ansible==$PY3_ANSIBLE_VERSION \
+        ansible-lint==$PY3_ANSIBLELINT_VERSION \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
         docker-compose==$PY3_DOCKER_COMPOSE \
         pylint==$PY3_PYLINT_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
+
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \
     && ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint \
