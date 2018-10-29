@@ -27,6 +27,10 @@ DOCKER_MEMORY="4g"
 
 declare -a DOCKER_EXTRAARGS
 
+DOCKER_EXTRAENVS+=("JAVA_HOME")
+DOCKER_EXTRAENVS+=("PATCH_SYSTEM")
+DOCKER_EXTRAENVS+=("PROJECT_NAME")
+
 ####
 #### IMPORTANT
 ####
@@ -505,6 +509,32 @@ function docker_version
   echo "${val}"
 }
 
+## @description  Queue env vars to add to the docker env
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        envname
+## @param        ...
+function add_docker_env
+{
+  for k in "$@"; do
+    DOCKER_EXTRAENVS+=("${k}")
+  done
+}
+
+## @description  Do the work to add the env vars onto the Docker cmd
+## @audience     private
+## @stability    stable
+## @replaceable  yes
+function docker_do_env_adds
+{
+  declare k
+
+  for k in "${DOCKER_EXTRAENVS[@]}"; do
+    DOCKER_EXTRAARGS+=("--env=${k}=${!k}")
+  done
+}
+
 ## @description  Start a test patch docker container
 ## @audience     private
 ## @stability    evolving
@@ -603,12 +633,11 @@ PatchSpecificDocker
   DOCKER_EXTRAARGS+=(-w "/testptch/${PROJECT_NAME}")
   DOCKER_EXTRAARGS+=("--env=BASEDIR=/testptch/${PROJECT_NAME}")
   DOCKER_EXTRAARGS+=("--env=DOCKER_VERSION=${dockerversion} Image:${baseimagename}")
-  DOCKER_EXTRAARGS+=("--env=JAVA_HOME=${JAVA_HOME}")
-  DOCKER_EXTRAARGS+=("--env=PATCH_SYSTEM=${PATCH_SYSTEM}")
-  DOCKER_EXTRAARGS+=("--env=PROJECT_NAME=${PROJECT_NAME}")
   DOCKER_EXTRAARGS+=("--env=TESTPATCHMODE=${TESTPATCHMODE}")
-  DOCKER_EXTRAARGS+=(--name "${containername}")
 
+  docker_do_env_adds
+
+  DOCKER_EXTRAARGS+=(--name "${containername}")
 
   trap 'docker_signal_handler' SIGTERM
   trap 'docker_signal_handler' SIGINT

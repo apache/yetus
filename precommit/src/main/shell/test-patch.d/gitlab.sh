@@ -28,8 +28,8 @@ GITLAB_BASE_URL="https://gitlab.com"
 # API interface URL.
 GITLAB_API_URL="https://gitlab.com/api/v4"
 
-# user/repo
-GITLAB_REPO=""
+# user/repo -- this might get set by robots
+GITLAB_REPO=${GITLAB_REPO:-""}
 GITLAB_REPO_ENC=""
 
 # user settings
@@ -78,6 +78,7 @@ function gitlab_initialize
 
 ## @description given a URL, break it up into gitlab plugin globals
 ## @description this will *override* any personality or yetus defaults
+## @description WARNING: Called from the Jenkins support system!
 ## @param url
 function gitlab_breakup_url
 {
@@ -88,20 +89,25 @@ function gitlab_breakup_url
 
   count=${url//[^\/]}
   count=${#count}
-  ((pos2=count-3))
-  ((pos1=pos2))
+  if [[ ${count} -gt 4 ]]; then
+    ((pos2=count-3))
+    ((pos1=pos2))
 
-  GITLAB_BASE_URL=$(echo "${url}" | cut -f1-${pos2} -d/)
+    GITLAB_BASE_URL=$(echo "${url}" | cut -f1-${pos2} -d/)
 
-  ((pos1=pos1+1))
-  ((pos2=pos1+1))
+    ((pos1=pos1+1))
+    ((pos2=pos1+1))
 
-  GITLAB_REPO=$(echo "${url}" | cut -f${pos1}-${pos2} -d/)
+    GITLAB_REPO=$(echo "${url}" | cut -f${pos1}-${pos2} -d/)
 
-  ((pos1=pos2+2))
-  unset pos2
+    ((pos1=pos2+2))
+    unset pos2
 
-  GITLAB_ISSUE=$(echo "${url}" | cut -f${pos1}-${pos2} -d/ | cut -f1 -d.)
+    GITLAB_ISSUE=$(echo "${url}" | cut -f${pos1}-${pos2} -d/ | cut -f1 -d.)
+  else
+    GITLAB_BASE_URL=$(echo "${url}" | cut -f1-3 -d/)
+    GITLAB_REPO=$(echo "${url}" | cut -f4- -d/)
+  fi
 }
 
 function gitlab_determine_issue
@@ -261,8 +267,8 @@ function gitlab_locate_sha_patch
           -H "${gitlabauth}" \
           --output "${PATCH_DIR}/gitlab-search.json" \
           --location \
+          --silent \
          "${GITLAB_API_URL}/projects/${GITLAB_REPO_ENC}/repository/commits/${GITLAB_COMMITSHA}/merge_requests"; then
-    cat "${PATCH_DIR}/gitlab-search.json"
     return 1
   fi
 
@@ -270,8 +276,22 @@ function gitlab_locate_sha_patch
   mrid=$(cut -f2 -d, "${PATCH_DIR}/gitlab-search.json")
   mrid=${mrid/\"iid\":}
 
-  gitlab_locate_mr_patch "GL:${mrid}" "${output}"
+  # this is a dumb hack to work around gitlab-org/gitlab-ce#15280
+  if [[ "${mrid}" = '[]' ]] && [[ "${GITLAB_CI}" = true ]]; then
 
+    echo "This appears to be a full build due to gitlab-org/gitlab-ce#15280. Switching modes."
+
+    PATCH_BRANCH=${CI_COMMIT_REF_NAME}
+
+    # shellcheck disable=SC2034
+    PATCH_OR_ISSUE=""
+    # shellcheck disable=SC2034
+    BUILDMODE=full
+    set_buildmode
+    return 0
+  fi
+
+  gitlab_locate_mr_patch "GL:${mrid}" "${output}"
 }
 
 ## @description  Handle the various ways to reference a gitlab MR
@@ -293,11 +313,11 @@ function gitlab_locate_patch
   fi
 
   case "${input}" in
-      GL:*)
-        gitlab_locate_mr_patch "${input}" "${output}"
-      ;;
       GLSHA:*)
         gitlab_locate_sha_patch "${input}" "${output}"
+      ;;
+      *)
+        gitlab_locate_mr_patch "${input}" "${output}"
       ;;
   esac
 }

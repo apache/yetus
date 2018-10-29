@@ -119,6 +119,7 @@ function github_jira_bridge
 
 ## @description given a URL, break it up into github plugin globals
 ## @description this will *override* any personality or yetus defaults
+## @description WARNING: Called from the Jenkins support system!
 ## @param url
 function github_breakup_url
 {
@@ -129,20 +130,25 @@ function github_breakup_url
 
   count=${url//[^\/]}
   count=${#count}
-  ((pos2=count-3))
-  ((pos1=pos2))
+  if [[ ${count} -gt 4 ]]; then
+    ((pos2=count-3))
+    ((pos1=pos2))
 
-  GITHUB_BASE_URL=$(echo "${url}" | cut -f1-${pos2} -d/)
+    GITHUB_BASE_URL=$(echo "${url}" | cut -f1-${pos2} -d/)
 
-  ((pos1=pos1+1))
-  ((pos2=pos1+1))
+    ((pos1=pos1+1))
+    ((pos2=pos1+1))
 
-  GITHUB_REPO=$(echo "${url}" | cut -f${pos1}-${pos2} -d/)
+    GITHUB_REPO=$(echo "${url}" | cut -f${pos1}-${pos2} -d/)
 
-  ((pos1=pos2+2))
-  unset pos2
+    ((pos1=pos2+2))
+    unset pos2
 
-  GITHUB_ISSUE=$(echo "${url}" | cut -f${pos1}-${pos2} -d/ | cut -f1 -d.)
+    GITHUB_ISSUE=$(echo "${url}" | cut -f${pos1}-${pos2} -d/ | cut -f1 -d.)
+  else
+    GITHUB_BASE_URL=$(echo "${url}" | cut -f1-3 -d/)
+    GITHUB_REPO=$(echo "${url}" | cut -f4- -d/)
+  fi
 }
 
 
@@ -405,11 +411,11 @@ function github_locate_patch
   fi
 
   case "${input}" in
-      GH:*)
-        github_locate_pr_patch "${input}" "${output}"
-      ;;
       GHSHA:*)
         github_locate_sha_patch "${input}" "${output}"
+      ;;
+      *)
+        github_locate_pr_patch "${input}" "${output}"
       ;;
   esac
 }

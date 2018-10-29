@@ -114,6 +114,10 @@ function locate_patch
           PATCH_SYSTEM=${bugsys}
         fi
       fi
+      # did the bug system actually make us change our mind?
+      if [[ "${BUILDMODE}" == full ]]; then
+        return 0
+      fi
     done
 
     # ok, none of the bug systems know. let's see how smart we are

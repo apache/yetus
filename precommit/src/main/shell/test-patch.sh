@@ -89,14 +89,13 @@ function setup_defaults
   # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
 
-  GIT_OFFLINE=false
   PROC_LIMIT=1000
   REEXECED=false
   RESETREPO=false
-  BUILDMODE=patch
+  BUILDMODE=${BUILDMODE:-patch}
   # shellcheck disable=SC2034
-  BUILDMODEMSG="The patch"
-  ISSUE=""
+  BUILDMODEMSG=${BUILDMODEMSG:-"The patch"}
+  ISSUE=${ISSUE:-""}
   TIMER=$("${AWK}" 'BEGIN {srand(); print srand()}')
   JVM_REQUIRED=true
   yetus_add_entry JDK_TEST_LIST compile
@@ -325,7 +324,7 @@ function prepopulate_footer
     add_footer_table "Personality" "${PERSONALITY}"
   fi
 
-  gitrev=$(${GIT} rev-parse --verify --short HEAD)
+  gitrev=$("${GIT}" rev-parse --verify --short HEAD)
 
   add_footer_table "git revision" "${PATCH_BRANCH} / ${gitrev}"
 }
@@ -473,7 +472,6 @@ function write_comment
 function verify_patchdir_still_exists
 {
   local -r commentfile=/tmp/testpatch.$$.${RANDOM}
-  local extra=""
 
   if [[ ! -d ${PATCH_DIR} ]]; then
     rm "${commentfile}" 2>/dev/null
@@ -483,11 +481,10 @@ function verify_patchdir_still_exists
     echo
     cat ${commentfile}
     echo
-    if [[ ${JENKINS} == true ]]; then
-      if [[ -n ${NODE_NAME} ]]; then
-        extra=" (Jenkins node ${NODE_NAME})"
+    if [[ ${ROBOT} == true ]]; then
+      if declare -f "${ROBOTTYPE}"_verify_patchdir >/dev/null; then
+        "${ROBOTTYPE}"_verify_patchdir "${commentfile}"
       fi
-      echo "Jenkins${extra} information at ${BUILD_URL}${BUILD_URL_CONSOLE} may provide some hints. " >> "${commentfile}"
 
       write_comment ${commentfile}
     fi
@@ -735,13 +732,15 @@ function yetus_usage
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
   yetus_add_option "--empty-patch" "Create a summary of the current source tree"
+  yetus_add_option "--git-offline" "Do not fail if git cannot do certain remote operations"
+  yetus_add_option "--git-shallow" "Repo does not know about other branches or tags"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
   yetus_add_option "--multijdkdirs=<paths>" "Comma delimited lists of JDK paths to use for multi-JDK tests"
   yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: '${jdktlist}')"
   yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
-  yetus_add_option "--offline" "Avoid connecting to the Internet"
+  yetus_add_option "--offline" "Avoid connecting to the network"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
   yetus_add_option "--personality=<file>" "The personality file to load"
   yetus_add_option "--proclimit=<num>" "Limit on the number of processes (default: ${PROC_LIMIT})"
@@ -784,9 +783,8 @@ function yetus_usage
   yetus_add_option "--console-report-file=<file>" "Save the final console-based report to a file in addition to the screen"
   yetus_add_option "--console-urls" "Use the build URL instead of path on the console report"
   yetus_add_option "--instance=<string>" "Parallel execution identifier string"
-  yetus_add_option "--jenkins" "Enable Jenkins-specifc handling (auto: --robot)"
   yetus_add_option "--mv-patch-dir" "Move the patch-dir into the basedir during cleanup"
-  yetus_add_option "--robot" "Assume this is an automated run"
+  yetus_add_option "--robot" "Assume this is an automated run (default: auto-detect supported CI system)"
   yetus_add_option "--sentinel" "A very aggressive robot (auto: --robot)"
 
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
@@ -874,14 +872,9 @@ function parse_args
       ;;
       --empty-patch)
         BUILDMODE=full
-        # shellcheck disable=SC2034
-        BUILDMODEMSG="The source tree"
       ;;
       --java-home=*)
         JAVA_HOME=${i#*=}
-      ;;
-      --jenkins)
-        JENKINS=true
       ;;
       --linecomments=*)
         BUGLINECOMMENTS=${i#*=}
@@ -955,7 +948,6 @@ function parse_args
       ;;
       --tpinstance=*)
         INSTANCE=${i#*=}
-        EXECUTOR_NUMBER=${INSTANCE}
       ;;
       --tpperson=*)
         REEXECPERSONALITY=${i#*=}
@@ -984,11 +976,7 @@ function parse_args
     exit 1
   fi
 
-  if [[ ${JENKINS} = true ]]; then
-    ROBOT=true
-    INSTANCE=${EXECUTOR_NUMBER}
-    yetus_add_entry EXEC_MODES Jenkins
-  fi
+  set_buildmode
 
   if [[ ${ROBOT} = true ]]; then
     # shellcheck disable=SC2034
@@ -1081,6 +1069,32 @@ function parse_args
      && -f "${PATCH_DIR}/precommit/personality/provided.sh" ]]; then
     REEXECPERSONALITY="${PERSONALITY}"
     PERSONALITY="${PATCH_DIR}/precommit/personality/provided.sh"
+  fi
+}
+
+## @description  Switch BUILDMODE. Callers are responsible for setting
+## @description  the appropriate vars.  Use with caution.
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function set_buildmode
+{
+  # if both a patch and --empty-patch has been set, a choice needs
+  # to be made.  If our exec is called qbt, then go full.
+  # otherwise, defer to the patch
+  if [[ -n "${PATCH_OR_ISSUE}" && "${BUILDMODE}" == full ]]; then
+    if [[ "${BINNAME}" =~ qbt ]]; then
+      BUILDMODE="full"
+    else
+      BUILDMODE="patch"
+    fi
+  fi
+
+  if [[ "${BUILDMODE}" == full ]]; then
+    # shellcheck disable=SC2034
+    BUILDMODEMSG="The source tree"
+  else
+    BUILDMODEMSG="The patch"
   fi
 }
 
@@ -1288,7 +1302,8 @@ function find_changed_modules
   fi
 }
 
-## @description  check if repo requires ssh creds to pull
+## @description  check if repo requires creds to do remote operations
+## @description  also sets and uses GIT_OFFLINE as appropriate
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
@@ -1297,16 +1312,20 @@ function find_changed_modules
 function git_requires_creds
 {
   declare status
-  declare -a remotes
 
-  # shellcheck disable=SC2207
-  remotes=( $("${GIT}" remote -v show -n) )
+  if [[ "${GIT_OFFLINE}" == true ]]; then
+    return 1
+  fi
 
-  for r in "${remotes[@]}"; do
-    if [[ ${r} =~ /@/ ]] || [[ ${r} =~ git:// ]]; then
-      return 1
-    fi
-  done
+  pushd "${BASEDIR}" >/dev/null || cleanup_and_exit 1
+
+  if ! "${GIT}" fetch --dry-run >/dev/null 2>&1; then
+    GIT_OFFLINE=true
+    return 1
+  fi
+
+  popd >/dev/null || cleanup_and_exit 1
+  GIT_OFFLINE=false
   return 0
 }
 
@@ -1322,9 +1341,10 @@ function git_checkout
   declare currentbranch
   declare exemptdir
   declare status
-  declare pullmayfail=false
 
   big_console_header "Confirming git environment"
+
+  git_requires_creds
 
   cd "${BASEDIR}" || cleanup_and_exit 1
   if [[ ! -e .git ]]; then
@@ -1332,18 +1352,14 @@ function git_checkout
     cleanup_and_exit 1
   fi
 
-  if git_requires_creds; then
-    pullmayfail=true
-  fi
-
   if [[ ${RESETREPO} == "true" ]] ; then
 
     if [[ -d .git/rebase-apply ]]; then
       yetus_error "ERROR: a previous rebase failed. Aborting it."
-      ${GIT} rebase --abort
+      "${GIT}" rebase --abort
     fi
 
-    if ! ${GIT} reset --hard; then
+    if ! "${GIT}" reset --hard; then
       yetus_error "ERROR: git reset is failing"
       cleanup_and_exit 1
     fi
@@ -1370,33 +1386,30 @@ function git_checkout
       cleanup_and_exit 1
     fi
 
-    if ! ${GIT} checkout --force "${PATCH_BRANCH_DEFAULT}"; then
-      yetus_error "ERROR: git checkout --force ${PATCH_BRANCH_DEFAULT} is failing"
-      cleanup_and_exit 1
+    if [[ "${GIT_SHALLOW}" == false ]]; then
+      if ! "${GIT}" checkout --force "${PATCH_BRANCH_DEFAULT}"; then
+        yetus_error "WARNING: git checkout --force ${PATCH_BRANCH_DEFAULT} is failing; assuming shallow"
+        GIT_SHALLOW=true
+      fi
     fi
 
     determine_branch
 
     # we need to explicitly fetch in case the
     # git ref hasn't been brought in tree yet
-    if [[ ${OFFLINE} == false ]] && [[ ${GIT_OFFLINE} == false ]]; then
-
-      if ! ${GIT} pull --rebase; then
-        if [[ ${pullmayfail} == true ]]; then
-          yetus_error "WARNING: Noted that pull failed, will treat git as offline from here on out"
-          GIT_OFFLINE=true
-        else
+    if [[ ${GIT_OFFLINE} == false ]]; then
+      if ! "${GIT}" pull --rebase; then
           yetus_error "ERROR: git pull is failing"
           cleanup_and_exit 1
-        fi
       fi
     fi
 
-    # forcibly checkout this branch or git ref
-
-    if ! ${GIT} checkout --force "${PATCH_BRANCH}"; then
-      yetus_error "ERROR: git checkout ${PATCH_BRANCH} is failing"
-      cleanup_and_exit 1
+    if [[ ${GIT_SHALLOW} == false ]]; then
+      # forcibly checkout this branch or git ref
+      if ! "${GIT}" checkout --force "${PATCH_BRANCH}"; then
+        yetus_error "ERROR: git checkout ${PATCH_BRANCH} is failing"
+        cleanup_and_exit 1
+      fi
     fi
 
     # if we've selected a feature branch that has new changes
@@ -2350,8 +2363,10 @@ function check_unittests
 
   modules_messages patch unit false
 
-  if [[ ${JENKINS} == true ]]; then
-    add_footer_table "${statusjdk} Test Results" "${BUILD_URL}testReport/"
+  if [[ "${ROBOT}" == true ]]; then
+    if declare -f "${ROBOTTYPE}"_unittest_footer >/dev/null; then
+      "${ROBOTTYPE}"_unittest_footer "${statusjdk}"
+    fi
   fi
 
   if [[ ${result} -gt 0 ]]; then
@@ -2405,10 +2420,10 @@ function bugsystem_finalreport
   declare version
   declare bugs
 
-  if [[ "${ROBOT}" = true &&
-        -n "${BUILD_URL}" &&
-        -n "${BUILD_URL_CONSOLE}" ]]; then
-    add_footer_table "Console output" "${BUILD_URL}${BUILD_URL_CONSOLE}"
+  if [[ "${ROBOT}" = true ]]; then
+    if declare -f "${ROBOTTYPE}"_finalreport >/dev/null; then
+      "${ROBOTTYPE}"_finalreport
+    fi
   fi
   add_footer_table "Powered by" "Apache Yetus ${VERSION} http://yetus.apache.org"
 
@@ -2428,16 +2443,22 @@ function cleanup_and_exit
 {
   local result=$1
 
-  if [[ ${ROBOT} == "true" && ${RELOCATE_PATCH_DIR} == "true" && \
-      -e ${PATCH_DIR} && -d ${PATCH_DIR} ]] ; then
-    # if PATCH_DIR is already inside BASEDIR, then
-    # there is no need to move it since we assume that
-    # Jenkins or whatever already knows where it is at
-    # since it told us to put it there!
-    relative_dir "${PATCH_DIR}" >/dev/null
-    if [[ $? == 1 ]]; then
-      yetus_debug "mv ${PATCH_DIR} ${BASEDIR}"
-      mv "${PATCH_DIR}" "${BASEDIR}"
+  if [[ ${ROBOT} == "true" ]]; then
+    if declare -f "${ROBOTTYPE}"_cleanup_and_exit >/dev/null; then
+      "${ROBOTTYPE}"_cleanup_and_exit "${result}"
+    fi
+
+    if [[ ${RELOCATE_PATCH_DIR} == "true" && \
+        -e ${PATCH_DIR} && -d ${PATCH_DIR} ]] ; then
+      # if PATCH_DIR is already inside BASEDIR, then
+      # there is no need to move it since we assume that
+      # Jenkins or whatever already knows where it is at
+      # since it told us to put it there!
+      relative_dir "${PATCH_DIR}" >/dev/null
+      if [[ $? == 1 ]]; then
+        yetus_debug "mv ${PATCH_DIR} ${BASEDIR}"
+        mv "${PATCH_DIR}" "${BASEDIR}"
+      fi
     fi
   fi
   big_console_header "Finished build."
@@ -3164,6 +3185,10 @@ function initialize
 
   importplugins
 
+  if [[ -z "${BUILDTOOL}" ]]; then
+    guess_build_tool
+  fi
+
   parse_args_plugins "$@"
 
   if declare -f personality_parse_args >/dev/null; then
@@ -3195,7 +3220,13 @@ function initialize
 
   if [[ "${BUILDMODE}" = patch ]]; then
     locate_patch
+  fi
 
+
+  # locate_patch might have changed our minds
+  if [[ "${BUILDMODE}" = full ]]; then
+    git_checkout
+  else
     # from here on out, we'll be in ${BASEDIR} for cwd
     # plugins need to pushd/popd if they change.
     git_checkout
@@ -3215,11 +3246,6 @@ function initialize
       bugsystem_finalreport 1
       cleanup_and_exit 1
     fi
-
-  else
-
-    git_checkout
-
   fi
 
   find_changed_files

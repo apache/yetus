@@ -14,6 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+
 ## @description  Setup the default global variables
 ## @audience     public
 ## @stability    stable
@@ -23,15 +25,19 @@ function common_defaults
   #shellcheck disable=SC2034
   BASEDIR=$(pwd)
   BUGSYSTEMS=""
-  BUILDTOOL="nobuild"
+  BUILDTOOL=""
   BUILDTOOLS=""
   #shellcheck disable=SC2034
   EXEC_MODES=""
-  #shellcheck disable=SC2034
-  JENKINS=false
+  ROBOTTYPE=""
   LOAD_SYSTEM_PLUGINS=true
   #shellcheck disable=SC2034
   OFFLINE=false
+  GIT_ASKPASS=${GIT_ASKPASS:-/bin/true}
+  #shellcheck disable=SC2034
+  GIT_OFFLINE=false
+  #shellcheck disable=SC2034
+  GIT_SHALLOW=false
   OSTYPE=$(uname -s)
   #shellcheck disable=SC2034
   PATCH_BRANCH=""
@@ -138,6 +144,14 @@ function common_args
       --git-cmd=*)
         GIT=${i#*=}
       ;;
+      --git-offline)
+        #shellcheck disable=SC2034
+        GIT_OFFLINE=true
+      ;;
+      --git-shallow)
+        #shellcheck disable=SC2034
+        GIT_SHALLOW=true
+      ;;
       --grep-cmd=*)
         GREP=${i#*=}
       ;;
@@ -151,6 +165,8 @@ function common_args
       --offline)
         #shellcheck disable=SC2034
         OFFLINE=true
+        #shellcheck disable=SC2034
+        GIT_OFFLINE=true
       ;;
       --patch-cmd=*)
         PATCH=${i#*=}
@@ -184,6 +200,8 @@ function common_args
       ;;
     esac
   done
+
+  activate_robots "$@"
 
   set_yetus_version
 
@@ -506,6 +524,12 @@ function importplugins
     fi
   done
 
+  if [[ ${ROBOT} == true ]]; then
+    if declare -f "${ROBOTTYPE}"_set_plugin_defaults >/dev/null; then
+      "${ROBOTTYPE}"_set_plugin_defaults
+    fi
+  fi
+
   if declare -f personality_globals > /dev/null; then
     personality_globals
   fi
@@ -640,4 +664,50 @@ function set_yetus_version
       | head -1 \
       | ${SED}  -e 's|^ *<version>||' -e 's|</version>.*$||' 2>/dev/null)
   fi
+}
+
+## @description  import and set defaults based upon any auto-detected automation
+## @audience     private
+## @stability    evolving
+## @replaceable  yes
+function activate_robots
+{
+  declare -a files
+  declare i
+
+  if [[ -d "${BINDIR}/robots.d" ]]; then
+    for i in "${BINDIR}"/robots.d/*.sh; do
+      if [[ -f ${i} ]]; then
+        yetus_debug "Importing ${i}"
+        #shellcheck disable=SC1090
+        . "${i}"
+      fi
+    done
+  fi
+}
+
+## @description  attempt to guess what the build tool should be
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function guess_build_tool
+{
+  declare plugin
+  declare filename
+
+  for plugin in ${BUILDTOOLS}; do
+    if [[ "${plugin}" != "nobuild" ]] && declare -f "${plugin}_buildfile" >/dev/null 2>&1; then
+      filename=$("${plugin}_buildfile")
+      if [[ -n "${filename}" ]] &&
+         [[ -f "${BASEDIR}/${filename}" ]]; then
+        BUILDTOOL=${plugin}
+      fi
+    fi
+  done
+
+  if [[ -z ${BUILDTOOL} ]]; then
+    BUILDTOOL=nobuild
+  fi
+
+  echo "Setting build tool to ${BUILDTOOL}"
 }

@@ -58,7 +58,7 @@ function maven_ws_replace
 {
   declare previous=${MAVEN_CUSTOM_REPOS_DIR}
 
-  if [[ ${JENKINS} == true ]] && [[ -n "${WORKSPACE}" ]]; then
+  if [[ ${ROBOTTYPE} == jenkins ]] && [[ -n "${WORKSPACE}" ]]; then
     MAVEN_CUSTOM_REPOS_DIR=$(echo "${MAVEN_CUSTOM_REPOS_DIR}" | "${SED}" -e "s,@@@WORKSPACE@@@,${WORKSPACE},g" )
   else
     MAVEN_CUSTOM_REPOS_DIR=$(echo "${MAVEN_CUSTOM_REPOS_DIR}" | "${SED}" -e "s,@@@WORKSPACE@@@,${HOME},g" )
@@ -150,7 +150,10 @@ function maven_initialize
       return 1
     elif [[ ! -d "${MAVEN_CUSTOM_REPOS_DIR}" ]]; then
       yetus_debug "Creating ${MAVEN_CUSTOM_REPOS_DIR}"
-      mkdir -p "${MAVEN_CUSTOM_REPOS_DIR}"
+      if ! mkdir -p "${MAVEN_CUSTOM_REPOS_DIR}"; then
+        yetus_error "ERROR: Cannot create ${MAVEN_CUSTOM_REPOS_DIR}"
+        return 1
+      fi
     fi
   fi
 
@@ -160,7 +163,11 @@ function maven_initialize
     return 1
   elif [[ ! -e "${HOME}/.m2" ]]; then
     yetus_debug "Creating ${HOME}/.m2"
-    mkdir -p "${HOME}/.m2"
+    if ! mkdir -p "${HOME}/.m2"; then
+      yetus_error "ERROR: ${HOME}/.m2 cannot be created. " \
+        "See --mvn-custom-repos and --mvn-custom-repos-dir to set a different location."
+        return 1
+    fi
   fi
 }
 

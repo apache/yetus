@@ -55,7 +55,7 @@ add_bugsystem <pluginname>
 Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with 'BZ:'.  For example:
 
 ```bash
-$ test-patch.sh (other options) BZ:4
+$ test-patch (other options) BZ:4
 ```
 
 ... will pull down Bugzilla ID #4.
@@ -64,7 +64,7 @@ Using the `--bugzilla-base-url` on the command line or BUGZILLA\_BASE\_URL in a 
 
 # GitHub Specific
 
-GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that test-patch.sh will (generally) require that GitHub PRs be fully rebased (i.e., a single commit) in many circumstances.
+GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that `test-patch` will (generally) require that GitHub PRs be fully squashed and rebased (i.e., a single commit) in many circumstances.
 
 By default, the GitHub plug-in assumes that https://github.com is the base URL for GitHub.  Enterprise users may override this with the `--github-base-url` for the normal web user interface and `--github-api-url` for the API URL.  Personalities may use GITHUB\_API\_URL and GITHUB\_BASE\_URL.
 
@@ -86,6 +86,25 @@ GitHub pull requests may be directly processed on the command line in two ways:
 
 The GitHub bugsystem plugin will attempt to download the unified diff that the pull request references.
 Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.
+
+# GitLab Specific
+
+GitLab supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that `test-patch` will (generally) require that GitLab MRs be fully squashed and rebased (i.e., a single commit) in many circumstances.
+
+By default, the GitLab plug-in assumes that https://gitlab.com is the base URL for GitHub.  Enterprise users may override this with the `--gitlab-base-url` for the normal web user interface and `--gitlab-api-url` for the API URL.  Personalities may use GITLAB\_API\_URL and GITLAB\_BASE\_URL.
+
+The specific repository on GitLab is defined with either `--gitlab-repo` on the command line or GITLAB\_REPO in a personality.  It should take the form of "user/repo".
+
+In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitLab plug-in supports tokens via the `--gitlab-token` option or GITLAB\_TOKEN environment variable.
+
+
+GitLab merge requests may be directly processed on the command line in two ways:
+
+  * GL:(MR number)
+  * GLSHA:(MR SHA1 number)
+
+The GitLab bugsystem plugin will attempt to download the unified diff that the merge request references.
+Merge requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the merge request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.
 
 # JIRA Specific
 
