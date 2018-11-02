@@ -1330,7 +1330,7 @@ function git_checkout
   big_console_header "Confirming git environment"
 
   cd "${BASEDIR}" || cleanup_and_exit 1
-  if [[ ! -d .git ]]; then
+  if [[ ! -e .git ]]; then
     yetus_error "ERROR: ${BASEDIR} is not a git repo."
     cleanup_and_exit 1
   fi
