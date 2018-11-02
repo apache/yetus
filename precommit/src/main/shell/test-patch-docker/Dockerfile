@@ -25,6 +25,9 @@
 
 FROM ubuntu:xenial
 
+## NOTE to committers: if this gets moved from Xenial to something else, be
+## sure to also fix the gpg link in asf-site-src as appropriate
+
 WORKDIR /root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -37,9 +40,7 @@ ENV DEBCONF_TERSE true
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     curl \
     git \
-    gnupg-agent \
     locales \
-    pinentry-curses \
     pkg-config \
     rsync \
     software-properties-common \

@@ -23,9 +23,13 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ARG GROUP_ID
 ARG USER_ID
 ARG USER_NAME
+
 # hadolint ignore=DL3008
 RUN apt-get -q update \
     && apt-get -q install --no-install-recommends -y \
+      gnupg2 \
+      gnupg-agent \
+      pinentry-curses \
       pinentry-tty \
       subversion \
       sudo \
@@ -33,6 +37,10 @@ RUN apt-get -q update \
       zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# we really want gpg2 to be the default gpg implementation
+# it doesn't appear Xenial supports that though
+RUN ln -s /usr/bin/gpg2 /usr/local/bin/gpg
 # pre-install most of the middleman stack to save time
 # on re-launches
 RUN gem install bundler \
@@ -45,6 +53,7 @@ RUN gem install bundler \
     rake:10.3.1 \
     nokogiri:1.8.5
 RUN bundle config --global github.https true
+RUN echo "export GPG_TTY=\$(tty)" >>  /root/.bashrc
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}"
 RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
 # shellcheck disable=SC2039,SC1117

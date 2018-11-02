@@ -42,7 +42,7 @@
     <dependency>
       <groupId>jdiff</groupId>
       <artifactId>jdiff</artifactId>
-      <version>1.0.9</version>
+      <version>${jdiff.version}</version>
       <scope>provided</scope>
       <optional>true</optional>
     </dependency>
@@ -73,7 +73,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>${maven-assembly-plugin.version}</version>
         <executions>
           <execution>
             <id>dist</id>

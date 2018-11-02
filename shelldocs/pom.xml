@@ -37,7 +37,7 @@
     <dependency>
       <groupId>org.scijava</groupId>
       <artifactId>jython-shaded</artifactId>
-      <version>2.7.1</version>
+      <version>${jython-shaded.version}</version>
     </dependency>
   </dependencies>
 
@@ -54,7 +54,7 @@
       <plugin>
         <groupId>net.sf.mavenjython</groupId>
         <artifactId>jython-compile-maven-plugin</artifactId>
-        <version>2.0</version>
+        <version>${jython-compile-maven-plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>

@@ -152,7 +152,7 @@
               </descriptors>
             </configuration>
           </execution>
-          <execution>
+          <!-- execution>
             <id>src-dist</id>
             <phase>package</phase>
             <goals>
@@ -162,13 +162,13 @@
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>gnu</tarLongFileMode>
               <attach>false</attach>
-              <finalName>artifacts/apache-yetus-${project.version}-src</finalName>
-              <outputDirectory>${project.build.directory}</outputDirectory>
+              <finalName>apache-yetus-${project.version}-src</finalName>
+              <outputDirectory>${project.build.directory}/artifacts</outputDirectory>
               <descriptors>
                 <descriptor>src/main/assemblies/source.xml</descriptor>
               </descriptors>
             </configuration>
-          </execution>
+          </execution -->
           <execution>
             <id>pre-site-dist</id>
             <phase>pre-site</phase>
@@ -270,4 +270,41 @@
 
   </build>
 
+  <profiles>
+    <profile>
+      <id>apache-release</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>src-copy</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>copy</goal>
+                </goals>
+                <configuration>
+                  <artifactItems>
+                    <artifactItem>
+                      <groupId>${project.groupId}</groupId>
+                      <artifactId>yetus-project</artifactId>
+                      <classifier>source-release</classifier>
+                      <version>${project.version}</version>
+                      <type>tar.gz</type>
+                      <outputDirectory>${project.build.directory}/artifacts</outputDirectory>
+                      <destFileName>apache-yetus-${project.version}-src.tar.gz</destFileName>
+                    </artifactItem>
+                  </artifactItems>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
