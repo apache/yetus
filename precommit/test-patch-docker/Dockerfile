@@ -186,7 +186,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y shellchec
 # Install hadolint
 ####
 RUN curl -L -s -S \
-   https://github.com/hadolint/hadolint/releases/download/v1.11.1/hadolint-Linux-x86_64 \
+   https://github.com/hadolint/hadolint/releases/download/v1.15.0/hadolint-Linux-x86_64 \
    -o /bin/hadolint && \
    chmod a+rx /bin/hadolint && \
    shasum -a 512 /bin/hadolint | \
