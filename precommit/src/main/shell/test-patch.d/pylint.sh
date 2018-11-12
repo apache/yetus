@@ -14,17 +14,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
 add_test_type pylint
 
 PYLINT_TIMER=0
 
-PYLINT=${PYLINT:-$(which pylint 2>/dev/null)}
+PYLINT=${PYLINT:-$(command -v pylint 2>/dev/null)}
+# backward compatibility, do not use
 PYLINT_OPTIONS=${PYLINT_OPTIONS:-}
 
 function pylint_usage
 {
   yetus_add_option "--pylint=<path>" "path to pylint executable"
-  yetus_add_option "--pylint-options=<path>" "pylint options other than output-format and reports"
+  yetus_add_option "--pylint-rcfile=<path>" "pylint configuration file"
 }
 
 function pylint_parse_args
@@ -36,7 +39,11 @@ function pylint_parse_args
     --pylint=*)
       PYLINT=${i#*=}
     ;;
+    --pylint-rcfile=*)
+      PYLINT_RCFILE=${i#*=}
+    ;;
     --pylint-options=*)
+      # backward compatibility
       PYLINT_OPTIONS=${i#*=}
     ;;
     esac
@@ -60,54 +67,12 @@ function pylint_precheck
   fi
 }
 
-
-function pylint_preapply
+function pylint_executor
 {
-  local i
-  local count
-  local pylintStderr=branch-pylint-stderr.txt
-
-  if ! verify_needed_test pylint; then
-    return 0
-  fi
-
-  big_console_header "pylint plugin: ${PATCH_BRANCH}"
-
-  start_clock
-
-  echo "Running pylint against identified python scripts."
-  pushd "${BASEDIR}" >/dev/null
-  for i in "${CHANGED_FILES[@]}"; do
-    if [[ ${i} =~ \.py$ && -f ${i} ]]; then
-      # shellcheck disable=SC2086
-      eval "${PYLINT} ${PYLINT_OPTIONS} --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' --reports=n ${i}" \
-        2>>${PATCH_DIR}/${pylintStderr} | ${AWK} '1<NR' >> "${PATCH_DIR}/branch-pylint-result.txt"
-    fi
-  done
-  if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
-    count=$(${GREP}  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
-    if [[ ${count} -gt 0 ]]; then
-      add_footer_table pylint "${PATCH_BRANCH} stderr: @@BASE@@/${pylintStderr}"
-      return 1
-    fi
-  fi
-  rm "${PATCH_DIR}/${pylintStderr}" 2>/dev/null
-  popd >/dev/null
-  # keep track of how much as elapsed for us already
-  PYLINT_TIMER=$(stop_clock)
-  return 0
-}
-
-function pylint_postapply
-{
+  declare repostatus=$1
   declare i
   declare count
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare pylintStderr=patch-pylint-stderr.txt
-  declare fixedpatch
-  declare statstring
+  declare pylintStderr=${repostatus}-pylint-stderr.txt
 
   if ! verify_needed_test pylint; then
     return 0
@@ -121,38 +86,81 @@ function pylint_postapply
   # by setting the clock back
   offset_clock "${PYLINT_TIMER}"
 
+  # backward compatibility
+  # shellcheck disable=SC2206
+  pylintopts=(${PYLINT_OPTIONS})
+
+  if [[ -n "${PYLINT_RCFILE}" ]] && [[ -f "${PYLINT_RCFILE}" ]]; then
+    pylintopts+=('--rcfile='"${PYLINT_RCFILE}")
+  fi
+
+  pylintops+=('--persistent=n')
+  pylintops+=('--reports=n')
+  pylintops+=('--score=n')
+
   echo "Running pylint against identified python scripts."
-  # we re-check this in case one has been added
-  pushd "${BASEDIR}" >/dev/null
+  pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
-      # shellcheck disable=SC2086
-      eval "${PYLINT} ${PYLINT_OPTIONS} --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' --reports=n ${i}" \
-        2>>${PATCH_DIR}/${pylintStderr} | ${AWK} '1<NR' >> "${PATCH_DIR}/patch-pylint-result.txt"
+      "${PYLINT}" "${pylintopts[@]}" --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' "${i}" \
+        2>>"${PATCH_DIR}/${pylintStderr}" | "${AWK}" '1<NR' >> "${PATCH_DIR}/${repostatus}-pylint-result.txt"
     fi
   done
   if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
-    count=$(${GREP}  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
+    count=$("${GREP}"  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
-      add_vote_table -1 pylint "Something bad seems to have happened in running pylint. Please check pylint stderr files."
-      add_footer_table pylint "${BUILDMODEMSG} stderr: @@BASE@@/${pylintStderr}"
+      add_vote_table -1 pylint "Error running pylint. Please check pylint stderr files."
+      add_footer_table pylint "@@BASE@@/${pylintStderr}"
       return 1
     fi
   fi
   rm "${PATCH_DIR}/${pylintStderr}" 2>/dev/null
-  popd >/dev/null
+  popd >/dev/null || return 1
+  return 0
+}
+
+
+function pylint_preapply
+{
+  declare retval
+
+  if ! verify_needed_test pylint; then
+    return 0
+  fi
+
+  pylint_executor "branch"
+  retval=$?
+
+  # keep track of how much as elapsed for us already
+  PYLINT_TIMER=$(stop_clock)
+  return ${retval}
+}
+
+function pylint_postapply
+{
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare fixedpatch
+  declare statstring
+
+  if ! verify_needed_test pylint; then
+    return 0
+  fi
+
+  pylint_executor patch
 
   # shellcheck disable=SC2016
-  PYLINT_VERSION=$(${PYLINT} --version 2>/dev/null | ${GREP} pylint | ${AWK} '{print $NF}')
+  PYLINT_VERSION=$("${PYLINT}" --version 2>/dev/null | "${GREP}" pylint | "${AWK}" '{print $NF}')
   add_footer_table pylint "v${PYLINT_VERSION%,}"
 
   calcdiffs "${PATCH_DIR}/branch-pylint-result.txt" \
             "${PATCH_DIR}/patch-pylint-result.txt" \
             pylint > "${PATCH_DIR}/diff-patch-pylint.txt"
-  numPrepatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/branch-pylint-result.txt")
-  numPostpatch=$(${GREP} -c "^.*:.*: \[.*\] " "${PATCH_DIR}/patch-pylint-result.txt")
+  numPrepatch=$("${GREP}" -c '^.*:.*: \[.*\] ' "${PATCH_DIR}/branch-pylint-result.txt")
+  numPostpatch=$("${GREP}" -c '^.*:.*: \[.*\] ' "${PATCH_DIR}/patch-pylint-result.txt")
   # Exclude Pylint messages from the information category to avoid false positives (see YETUS-309).
-  diffPostpatch=$(${GREP} -c "^.*:.*: \[[^I].*\] " "${PATCH_DIR}/diff-patch-pylint.txt")
+  diffPostpatch=$("${GREP}" -c '^.*:.*: \[[^I].*\] ' "${PATCH_DIR}/diff-patch-pylint.txt")
 
   ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
 

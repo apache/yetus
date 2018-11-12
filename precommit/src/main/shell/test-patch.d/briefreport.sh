@@ -96,6 +96,7 @@ function briefreport_finalreport
   declare hours
   declare newtime
   declare havelogs=false
+  declare fn
 
   if [[ -z "${BRIEFOUT_REPORTFILE}" ]]; then
     return
@@ -103,11 +104,10 @@ function briefreport_finalreport
 
   big_console_header "Writing Brief Text Report to ${BRIEFOUT_REPORTFILE}"
 
-
   if [[ ${result} == 0 ]]; then
-    printf "\n\n+1 overall\n\n" > "${BRIEFOUT_REPORTFILE}"
+    printf '\n\n+1 overall\n\n' > "${BRIEFOUT_REPORTFILE}"
   else
-    printf "\n\n-1 overall\n\n" > "${BRIEFOUT_REPORTFILE}"
+    printf '\n\n-1 overall\n\n' > "${BRIEFOUT_REPORTFILE}"
   fi
 
   i=0
@@ -137,11 +137,14 @@ function briefreport_finalreport
     ((i=i+1))
   done
 
-  tmparray=($(printf "%s\n" "${failed[@]}" | sort -u))
+  #shellcheck disable=SC2207
+  tmparray=($(printf '%s\n' "${failed[@]}" | sort -u))
   failed=("${tmparray[@]}")
-  tmparray=($(printf "%s\n" "${filtered[@]}" | sort -u))
+  #shellcheck disable=SC2207
+  tmparray=($(printf '%s\n' "${filtered[@]}" | sort -u))
   filtered=("${tmparray[@]}")
-  tmparray=($(printf "%s\n" "${long[@]}" | sort -u))
+  #shellcheck disable=SC2207
+  tmparray=($(printf '%s\n' "${long[@]}" | sort -u))
   long=("${tmparray[@]}")
 
   if [[ ${#failed[@]} -gt 0 ]]; then
@@ -198,11 +201,11 @@ function briefreport_finalreport
       {
         if [[ -n "${vote// }" ]]; then
           echo ""
-          printf "   %s:\n" "${vote}"
+          printf '   %s:\n' "${vote}"
           echo ""
           vote=""
         fi
-        printf "      %s\n" "${subs}"
+        printf '      %s\n' "${subs}"
       } >> "${BRIEFOUT_REPORTFILE}"
       ((i=i+1))
     done
@@ -231,22 +234,25 @@ function briefreport_finalreport
         subs=$(echo "${TP_FOOTER_TABLE[${i}]}" | cut -f2 -d\|)
         comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
                     cut -f3 -d\| |
-                    ${SED} -e "s,@@BASE@@,${PATCH_DIR},g")
-        # shellcheck disable=SC2016
-        size=$(du -sh "${comment// }" | ${AWK} '{print $1}')
+                    "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
+        fn="${comment// }"
+        if [[ -f ${fn} ]]; then
+          # shellcheck disable=SC2016
+          size=$(du -sh "${fn}" | "${AWK}" '{print $1}')
+        fi
         if [[ -n "${BUILD_URL}" ]]; then
           comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
                     cut -f3 -d\| |
-                    ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+                    "${SED}" -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
         fi
         {
           if [[ "${subs}" != "${vote}" ]]; then
             echo ""
-            printf "   %s:\n" "${subs// }"
+            printf '   %s:\n' "${subs// }"
             echo ""
             vote=${subs}
           fi
-          printf "      %s [%s]\n" "${comment}" "${size}"
+          printf '      %s [%s]\n' "${comment}" "${size}"
         } >> "${BRIEFOUT_REPORTFILE}"
       fi
       ((i=i+1))
