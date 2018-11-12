@@ -38,6 +38,23 @@ TRIGGER: ${CIRCLECI}=true
 
 Circle CI support in `test-patch` is limited to github.com.  Artifacts (the `--patch-dir` directory) location needs to be handled set on the command line.  Linking to the logs is not currently supported.
 
+To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `.circleci/config.yaml` file, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:
+
+```yaml
+jobs:
+  build:
+    docker:
+      - image: apache/yetus:0.9.0
+
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+
+  ...
+```
+
+See also
+  * See also the source tree's `.circleci/config.yaml` for some tips and tricks.
+
 Gitlab CI
 =========
 
@@ -54,6 +71,21 @@ Artifacts, patch logs, etc are configured to go to a yetus-out directory in the 
 
 ```
 
+To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `.gitlab-ci.yml` file, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:
+
+```yaml
+job:
+  image: apache/yetus:0.9.0
+  allow_failure: true
+  variables:
+    JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+
+  ...
+```
+
+See also
+  * See also the source tree's `.gitlab-ci.yml` for some tips and tricks.
+
 Jenkins
 =======
 
@@ -66,9 +98,29 @@ There is some support for a few well known environment variables:
   * `${GIT_URL}` will trigger the same extra handling if 'github' or 'gitlab' appear in the string.
   * If `${ghprbPullId}` is set, then test-patch will configure itself for a Github-style PR.
 
+To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `Jenkinsfile`, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:
+
+```groovy
+pipeline {
+  agent {
+    docker {
+      image 'apache/yetus:0.9.0'
+      args '-v /var/run/docker.sock:/var/run/docker.sock'
+    }
+  }
+
+  environment {
+    JAVA_HOME = '/usr/lib/jvm/java-8-openjdk-amd64'
+  }
+
+  ...
+
+}
+
+```
 
 See also
-  * See also the source tree's Jenkinsfile for some tips and tricks.
+  * See also the source tree's `Jenkinsfile` for some tips and tricks.
   * [precommit-admin](precommit-admin), for special utilities built for Jenkins.
   * [GitHub Branch Source Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin)
   * [GitHub Pull Request Builder Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin)
@@ -83,9 +135,12 @@ Travis CI support will update the local checked out source repository to include
 
 If `${ARTIFACTS_PATH}` is configured, then `--patch-dir` is set to the first listed directory path.  However, links to the location logs must still be configured manually.
 
-Personalities will override the auto-detected Github repository information.  It may be necessary to manually configure it in your .travis.yml file.
+Personalities will override the auto-detected Github repository information.  It may be necessary to manually configure it in your `.travis.yml` file.
 
+As of this writing, it is not possible to make the Travis CI build environment use the Apache Yetus pre-built docker images without using ` docker run` in the before_install phase.  Therefore, using the image is the same as described in the [Apache Yetus Docker Hub Images](/yetus-docker-image) page.
 
+See also
+  * See also the source tree's `.travis.yml` for some tips and tricks.
 
 Manual Configuration
 ====================

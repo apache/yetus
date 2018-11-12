@@ -84,7 +84,7 @@ Build Tools:
 Automation and Isolation:
 
 * [Circle CI](https://www.circleci.com)
-* [Docker](https://www.docker.com) version 1.6.0+
+* [Docker](https://www.docker.com) version 1.7.0+
 * [Gitlab CI](https://www.gitlab.com)
 * [Jenkins](https://www.jenkins-ci.org)
 * [Travis CI](https://www.travis-ci.com)
@@ -329,10 +329,10 @@ NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JA
 `test-patch` also has a mode to utilize Docker:
 
 ```bash
-$ test-patch. (other options) --docker
+$ test-patch (other options) --docker
 ```
 
-This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see [precommit-docker](../precommit-docker) for more information.
+This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../precommit-docker) page and the [Apache Yetus Docker Hub Images](/yetus-docker-image) page for more information on the convenience Docker images.
 
 # In Closing
 
