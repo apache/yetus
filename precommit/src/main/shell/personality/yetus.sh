@@ -30,3 +30,34 @@ function personality_globals
   #shellcheck disable=SC2034
   GITHUB_REPO="apache/yetus"
 }
+
+## @description  Queue up modules for this personality
+## @audience     private
+## @stability    evolving
+## @param        repostatus
+## @param        testtype
+function personality_modules
+{
+  declare repostatus=$1
+  declare testtype=$2
+
+  yetus_debug "Personality: ${repostatus} ${testtype}"
+
+  clear_personality_queue
+
+  case ${testtype} in
+    mvninstall)
+      if [[ "${repostatus}" = branch || "${BUILDMODE}" = full ]]; then
+        clear_personality_queue
+        personality_enqueue_module .
+        return
+      fi
+    ;;
+    *)
+    ;;
+  esac
+
+  if declare -f "${BUILDTOOL}_builtin_personality_modules" >/dev/null; then
+    "${BUILDTOOL}_builtin_personality_modules" "$@"
+  fi
+}
