@@ -225,11 +225,33 @@ function htmlout_finalreport
 
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g" |
-              tr -s ' ')
+
+    # turn off file globbing. break apart the string by spaces.
+    # if our string begins with @@BASE@@, then create a substring
+    # without the base url, and one with the base, but replace
+    # it with the URL magic.  then use those strings in an href
+    # structure.
+    # otherwise, copy it unmodified.  this also acts to strip
+    # excess spaces
+    set -f
+    ourstring=""
+    for j in ${TP_FOOTER_TABLE[${i}]}; do
+      if [[ "${j}" =~ ^@@BASE@@ ]]; then
+        t1=${j#@@BASE@@/}
+        t2=$(echo "${j}" | "${SED}" -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+        if [[ -n "${BUILD_URL}" ]]; then
+          t2="<a href=\"${t2}\">${t1}</a>"
+        fi
+        ourstring="${ourstring} ${t2}"
+      else
+        ourstring="${ourstring} ${j}"
+      fi
+    done
+    set +f
+
     subs=$(echo "${ourstring}"  | cut -f2 -d\|)
     comment=$(echo "${ourstring}"  | cut -f3 -d\|)
+
     {
       echo "<tr>"
       printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${subs}"
