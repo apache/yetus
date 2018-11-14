@@ -126,7 +126,22 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y perl libp
     && rm -rf /var/lib/apt/lists/*
 
 ######
-# Install python and pylint
+# Install python3 and pylint3
+######
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
+    python3 \
+    python3-pip \
+    python3-pkg-resources \
+    python3-setuptools \
+    python3-wheel \
+    python3-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+RUN pip3 install -v pylint==2.1.1
+RUN mv /usr/local/bin/pylint /usr/local/bin/pylint3
+
+######
+# Install python2 and pylint2
 ######
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y python \
     python2.7 \
@@ -134,9 +149,16 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y python \
     python-pkg-resources \
     python-setuptools \
     python-wheel \
+    python-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN pip2 install -v pylint==1.9.2 python-dateutil==2.7.3
+RUN mv /usr/local/bin/pylint /usr/local/bin/pylint2
+
+#####
+# backward compatibility
+#####
+RUN ln -s /usr/local/bin/pylint2 /usr/local/bin/pylint
 
 ####
 # Install ruby, rubocop, and ruby-lint
