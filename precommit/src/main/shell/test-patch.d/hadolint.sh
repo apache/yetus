@@ -29,7 +29,7 @@ function hadolint_filefilter
 {
   declare filename=$1
 
-  if [[ ${filename} =~ Dockerfile$ ]]; then
+  if [[ ${filename} =~ Dockerfile ]]; then
     add_test hadolint
     yetus_add_array_element HADOLINT_CHECKFILES "${filename}"
   fi
