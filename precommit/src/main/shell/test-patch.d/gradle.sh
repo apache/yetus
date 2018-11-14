@@ -290,5 +290,5 @@ function gradle_builtin_personality_file_tests
 
 function gradle_docker_support
 {
-  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.gradle:/home/${USER_NAME}/.gradle")
+  DOCKER_EXTRAARGS+=("-v" "${HOME}/.gradle:/home/${USER_NAME}/.gradle")
 }

@@ -57,6 +57,8 @@ function common_defaults
   #shellcheck disable=SC2034
   PATCH_SYSTEM=""
   PROJECT_NAME=unknown
+  # seed $RANDOM
+  RANDOM=$$
   RESULT=0
   #shellcheck disable=SC2034
   ROBOT=false
@@ -605,14 +607,10 @@ function faster_dirname
 ## @replaceable  no
 function determine_user
 {
-  # On the Apache Jenkins hosts, $USER is pretty much untrustable because
-  # something sets it to an account that doesn't actually exist.
-  # Instead, we need to try and override it with something that's
-  # probably close to reality.
-  if [[ ${TESTPATCHMODE} =~ jenkins ]]; then
-    USER=$(id | cut -f2 -d\( | cut -f1 -d\))
-  fi
-
+  # in some situations, USER isn't properly defined
+  # (e.g., Jenkins).  bash doesn't like you to set this
+  # so don't spit any errors to the screen
+  USER=$(id -u -n) 2>/dev/null
   USER_NAME=${SUDO_USER:=$USER}
   # shellcheck disable=SC2034
   USER_ID=$(id -u "${USER_NAME}")

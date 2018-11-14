@@ -16,15 +16,28 @@
 
 declare -a OVERWRITEARGS
 
-OVERWRITEARGS=("--reexec")
-OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--dockermode")
-OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--basedir=${BASEDIR}")
+# yetuslib is meant to be completely standalone.  This means
+# adding it as a common function library here is a-ok
+
+#shellcheck disable=SC1090
+source "${PATCH_DIR}/precommit/core.d/00-yetuslib.sh"
+
+if ! yetus_file_to_array OVERWRITEARGS /testptch/user_params.txt; then
+  yetus_error "ERROR: Cannot read user parameters file. Exiting."
+  exit 1
+fi
+
+# do not want this archived
+rm /testptch/user_params.txt
+
+OVERWRITEARGS+=("--reexec")
+OVERWRITEARGS+=("--dockermode")
+OVERWRITEARGS+=("--basedir=${BASEDIR}")
 
 cd "${BASEDIR}" || exit 1
 
-if [[ -n ${JAVA_HOME}
-  && ! -d ${JAVA_HOME} ]]; then
-  echo "JAVA_HOME: ${JAVA_HOME} does not exist. Dockermode: attempting to switch to another." 1>&2
+if [[ -n ${JAVA_HOME} && ! -d ${JAVA_HOME} ]]; then
+  yetus_error "WARNING: JAVA_HOME=${JAVA_HOME} does not exist. Dockermode: attempting to switch to another." 1>&2
   JAVA_HOME=""
 fi
 
@@ -32,24 +45,16 @@ if [[ -z ${JAVA_HOME} ]]; then
   JAVA_HOME=$(find /usr/lib/jvm/ -name "java-*" -type d | tail -1)
   export JAVA_HOME
   if [[ -n "${JAVA_HOME}" ]]; then
-    OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--java-home=${JAVA_HOME}")
-    echo "Setting ${JAVA_HOME} as the JAVA_HOME."
+    OVERWRITEARGS+=("--java-home=${JAVA_HOME}")
+    yetus_error "WARNING: Setting ${JAVA_HOME} as the JAVA_HOME."
   fi
 fi
 
-# Avoid out of memory errors in builds
-MAVEN_OPTS=${MAVEN_OPTS:-"-Xms256m -Xmx1g"}
-export MAVEN_OPTS
-
-# strip out --docker param to prevent re-exec again
-TESTPATCHMODE=${TESTPATCHMODE/--docker }
-TESTPATCHMODE=${TESTPATCHMODE%--docker}
-
-PATCH_DIR=$(cd -P -- "${PATCH_DIR}" >/dev/null && pwd -P)
-OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--patch-dir=${PATCH_DIR}")
-OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--user-plugins=${PATCH_DIR}/precommit/user-plugins")
+PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
+OVERWRITEARGS+=("--patch-dir=${PATCH_DIR}")
+OVERWRITEARGS+=("--user-plugins=${PATCH_DIR}/precommit/user-plugins")
 if [[ -f "${PATCH_DIR}/precommit/unit_test_filter_file.txt" ]]; then
-  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--unit-test-filter-file=${PATCH_DIR}/precommit/unit_test_filter_file.txt")
+  OVERWRITEARGS+=("--unit-test-filter-file=${PATCH_DIR}/precommit/unit_test_filter_file.txt")
 fi
 
 # if patch system is generic, then it's either a local
@@ -58,23 +63,13 @@ fi
 # test-patch where to find it.
 if [[ "${PATCH_SYSTEM}" = generic ]]; then
   cp -p "${PATCH_DIR}/patch" /testptch/extras/patch
-  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "/testptch/extras/patch")
-fi
-
-if [[ -f /testptch/console.txt ]]; then
-  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--console-report-file=/testptch/console.txt")
-fi
-
-if [[ -f /testptch/brief.txt ]]; then
-  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--brief-report-file=/testptch/brief.txt")
-fi
-
-if [[ -f /testptch/report.htm ]]; then
-  OVERWRITEARGS=("${OVERWRITEARGS[@]}" "--html-report-file=/testptch/report.htm")
+  OVERWRITEARGS+=("/testptch/extras/patch")
 fi
 
 cd "${PATCH_DIR}/precommit/" || exit 1
-#shellcheck disable=SC2086
-"${PATCH_DIR}/precommit/test-patch.sh" \
-   ${TESTPATCHMODE} \
-  "${OVERWRITEARGS[@]}"
+
+if [[ "${YETUS_DOCKER_BASH_DEBUG}" == true ]]; then
+  exec bash -x "${PATCH_DIR}/precommit/test-patch.sh" "${OVERWRITEARGS[@]}"
+else
+  exec "${PATCH_DIR}/precommit/test-patch.sh" "${OVERWRITEARGS[@]}"
+fi

@@ -332,7 +332,7 @@ NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JA
 $ test-patch. (other options) --docker
 ```
 
-This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the advanced guide.
+This will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see [precommit-docker](../precommit-docker) for more information.
 
 # In Closing
 

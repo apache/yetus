@@ -638,17 +638,19 @@ function maven_precompile
   return 0
 }
 
-## @description  set volumes as appropriate for maven
+## @description  set volumes and options as appropriate for maven
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  yes
 function maven_docker_support
 {
-  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HOME}/.m2:/home/${USER_NAME}/.m2")
+  DOCKER_EXTRAARGS+=("-v" "${HOME}/.m2:/home/${USER_NAME}/.m2")
 
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
-    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}")
+    DOCKER_EXTRAARGS+=("-v" "${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}")
   fi
+
+  add_docker_env MAVEN_OPTS
 }
 
 ## @description  worker for maven reordering. MAVEN_DEP_LOG is set to the log file name

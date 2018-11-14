@@ -669,27 +669,6 @@ function echo_and_redirect
 
     yetus_run_and_redirect "${logfile}" "${@}"
   fi
-
-}
-
-## @description is a given directory relative to BASEDIR?
-## @audience    public
-## @stability   stable
-## @replaceable yes
-## @param       path
-## @return      1 - no, path
-## @return      0 - yes, path - BASEDIR
-function relative_dir
-{
-  local p=${1#${BASEDIR}}
-
-  if [[ ${#p} -eq ${#1} ]]; then
-    echo "${p}"
-    return 1
-  fi
-  p=${p#/}
-  echo "${p}"
-  return 0
 }
 
 ## @description  Print the usage information
@@ -1068,7 +1047,6 @@ function parse_args
 
   if [[ "${REEXECED}" = true
      && -f "${PATCH_DIR}/precommit/personality/provided.sh" ]]; then
-    REEXECPERSONALITY="${PERSONALITY}"
     PERSONALITY="${PATCH_DIR}/precommit/personality/provided.sh"
   fi
 }
@@ -1373,7 +1351,7 @@ function git_checkout
 
     # if PATCH_DIR is in BASEDIR, then we don't want
     # git wiping it out.
-    exemptdir=$(relative_dir "${PATCH_DIR}")
+    exemptdir=$(yetus_relative_dir "${BASEDIR}" "${PATCH_DIR}")
     if [[ $? == 1 ]]; then
       "${GIT}" clean -xdf
       status=$?
@@ -1633,10 +1611,6 @@ function apply_patch_file
 ## @replaceable  no
 function copytpbits
 {
-  declare dockerdir
-  declare dockfile
-  declare lines
-
   # we need to copy/consolidate all the bits that might have changed
   # that are considered part of test-patch.  This *might* break
   # things that do off-path includes, but there isn't much we can
@@ -1679,38 +1653,6 @@ function copytpbits
     && -f ${UNIT_TEST_FILTER_FILE} ]]; then
     yetus_debug "copying '${UNIT_TEST_FILTER_FILE}' over to '${PATCH_DIR}/precommit/unit_test_filter_file.txt'"
     cp -pr "${UNIT_TEST_FILTER_FILE}" "${PATCH_DIR}/precommit/unit_test_filter_file.txt"
-  fi
-
-  if [[ -n ${DOCKERFILE}
-      && -f ${DOCKERFILE} ]]; then
-    yetus_debug "copying '${DOCKERFILE}' over to '${PATCH_DIR}/precommit/test-patch-docker/Dockerfile'"
-    dockerdir=$(dirname "${DOCKERFILE}")
-    dockfile=$(basename "${DOCKERFILE}")
-    pushd "${dockerdir}" >/dev/null || return 1
-    gitfilerev=$("${GIT}" log -n 1 --pretty=format:%h -- "${dockfile}" 2>/dev/null)
-    popd >/dev/null || return 1
-    if [[ -z ${gitfilerev} ]]; then
-      gitfilerev=$(date "+%F")
-      gitfilerev="date${gitfilerev}"
-    fi
-    (
-      echo "### YETUS_PRIVATE: dockerfile=${DOCKERFILE}"
-      echo "### YETUS_PRIVATE: gitrev=${gitfilerev}"
-      lines=$(${GREP} -n 'YETUS CUT HERE' "${DOCKERFILE}" | cut -f1 -d:)
-      if [[ -z "${lines}" ]]; then
-        cat "${DOCKERFILE}"
-      else
-        head -n "${lines}" "${DOCKERFILE}"
-      fi
-      # make sure we put some space between, just in case last
-      # line isn't an empty line or whatever
-      printf '\n\n'
-      echo "### YETUS_PRIVATE: start test-patch-bootstrap"
-      cat "${BINDIR}/test-patch-docker/Dockerfile-endstub"
-
-      printf '\n\n'
-    ) > "${PATCH_DIR}/precommit/test-patch-docker/Dockerfile"
-    DOCKERFILE="${PATCH_DIR}/precommit/test-patch-docker/Dockerfile"
   fi
 
   popd >/dev/null || return 1
@@ -1777,7 +1719,7 @@ function check_reexec
       "${PERSONALITY}" \
       "${USER_PLUGIN_DIR}" \
       "${DOCKERFILE}"; do
-    tpdir=$(relative_dir "${testdir}")
+    tpdir=$(yetus_relative_dir "${BASEDIR}" "${testdir}")
     # shellcheck disable=SC2181
     if [[ $? == 0
         && "${CHANGED_FILES[*]}" =~ ${tpdir} ]]; then
@@ -1821,40 +1763,12 @@ function check_reexec
   copytpbits
 
   if [[ ${DOCKERSUPPORT} == true ]]; then
-    # if we are doing docker, then we re-exec, but underneath the
-    # container
 
-    determine_user
+    #if we are doing docker, then we re-exec, but underneath the
+    #container
 
-    # need to call this explicitly
-    console_docker_support
-
-    for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${BUGSYSTEMS} ${TESTTYPES} ${TESTFORMATS}; do
-      if declare -f "${plugin}_docker_support" >/dev/null; then
-        "${plugin}_docker_support"
-      fi
-    done
-
-    TESTPATCHMODE="${USER_PARAMS[*]}"
-    if [[ -n "${BUILD_URL}" ]]; then
-      TESTPATCHMODE="--build-url=${BUILD_URL} ${TESTPATCHMODE}"
-    fi
-
-    if [[ -f "${PERSONALITY}" ]]; then
-      TESTPATCHMODE="--tpperson=${PERSONALITY} ${TESTPATCHMODE}"
-    fi
-
-    TESTPATCHMODE="--tpglobaltimer=${GLOBALTIMER} ${TESTPATCHMODE}"
-    TESTPATCHMODE="--tpreexectimer=${TIMER} ${TESTPATCHMODE}"
-    TESTPATCHMODE="--tpinstance=${INSTANCE} ${TESTPATCHMODE}"
-    TESTPATCHMODE="--plugins=${ENABLED_PLUGINS// /,} ${TESTPATCHMODE}"
-    TESTPATCHMODE=" ${TESTPATCHMODE}"
-    export TESTPATCHMODE
-
-    #shellcheck disable=SC2164
-    cd "${BASEDIR}"
-    #shellcheck disable=SC2093
     docker_handler
+    exit $?
   else
 
     # if we aren't doing docker, then just call ourselves
@@ -2457,14 +2371,18 @@ function cleanup_and_exit
       # there is no need to move it since we assume that
       # Jenkins or whatever already knows where it is at
       # since it told us to put it there!
-      relative_dir "${PATCH_DIR}" >/dev/null
+      yetus_relative_dir "${BASEDIR}" "${PATCH_DIR}" >/dev/null
       if [[ $? == 1 ]]; then
         yetus_debug "mv ${PATCH_DIR} ${BASEDIR}"
         mv "${PATCH_DIR}" "${BASEDIR}"
       fi
     fi
   fi
-  big_console_header "Finished build."
+
+  # docker mode will print this after exit
+  if [[ "${DOCKERMODE}" == false ]]; then
+    big_console_header "Finished build."
+  fi
 
   # shellcheck disable=SC2086
   exit ${result}

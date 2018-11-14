@@ -69,7 +69,8 @@ function briefreport_parse_args
 function briefreport_docker_support
 {
   if [[ -n ${BRIEFOUT_REPORTFILE} ]]; then
-    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${BRIEFOUT_REPORTFILE}:/testptch/brief.txt")
+    DOCKER_EXTRAARGS+=("-v" "${BRIEFOUT_REPORTFILE}:/testptch/brief.txt")
+    USER_PARAMS+=("--brief-report-file=/testptch/brief.txt")
   fi
 }
 
@@ -219,7 +220,8 @@ function briefreport_finalreport
 
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    if [[ "${TP_FOOTER_TABLE[${i}]}" =~ \@\@BASE\@\@ ]]; then
+    if [[ "${TP_FOOTER_TABLE[${i}]}" =~ \@\@BASE\@\@ ]] \
+       && [[ ! "${TP_FOOTER_TABLE[${i}]}" =~ Dockerfile ]]; then
       havelogs=true
       break
     fi

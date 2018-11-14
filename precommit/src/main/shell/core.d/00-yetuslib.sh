@@ -131,6 +131,29 @@ function yetus_abs
   return 1
 }
 
+## @description is a given path relative to given dirpath?
+## @audience    public
+## @stability   stable
+## @replaceable yes
+## @param       dirpath
+## @param       filepath
+## @return      1 - no, path
+## @return      0 - yes, path - dirpath
+function yetus_relative_dir
+{
+  declare dir=$1
+  declare path=$2
+  declare p=${path#${dir}}
+
+  if [[ ${#p} -eq ${#path} ]]; then
+    echo "${p}"
+    return 1
+  fi
+  p=${p#/}
+  echo "${p}"
+  return 0
+}
+
 ## @description  Add a header to the usage output
 ## @audience     public
 ## @stability    evolving
@@ -243,6 +266,42 @@ function yetus_comma_to_array
   #shellcheck disable=SC2229
   IFS=',' read -r -a "${var}" <<< "${string}"
   IFS="${oldifs}"
+}
+
+## @description  Convert a file to an array.
+## @description  Comments on the beginning of the line are stripped.
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        arrayname
+## @param        file
+## @return       0 for success
+## @return       1+ for failure
+function yetus_file_to_array
+{
+  declare var=$1
+  declare filename=$2
+  declare line
+  declare a
+
+  if [[ ! -f "${filename}" ]]; then
+    yetus_error "ERROR: ${filename} cannot be read."
+    return 1
+  fi
+
+  if [[ "${BASH_VERSINFO[0]}" -gt 3 ]]; then
+    # Using a pipe to input into mapfile doesn't
+    # work due to the variable only being present in
+    # the subshell.  So MUST force the grep into the
+    # subshell...
+    mapfile -t a < <("${GREP:-grep}" -v -e '^#' "${filename}" )
+  else
+    while read -r line; do
+      a+=("${line}")
+    done < <("${GREP:-grep}" -v -e '^#' "${filename}")
+  fi
+  eval "${var}=(\"\${a[@]}\")"
+  return 0
 }
 
 ## @description  Check if an array has a given value

@@ -14,8 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-COPY launch-test-patch.sh /testptch/launch-test-patch.sh
-RUN mkdir /testptch/extras
+ARG baseimagename
+# hadolint ignore=DL3006
+FROM ${baseimagename}
+
+ARG USER_NAME
+ARG GROUP_ID
+ARG USER_ID
+
+RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" || true
+RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
+RUN groupadd -g docker "${USER_NAME}" || true
+RUN mkdir -p /testptch/extras
 RUN chmod a+rwx /testptch/extras
+COPY user_params.txt /testptch/user_params.txt
+COPY launch-test-patch.sh /testptch/launch-test-patch.sh
+RUN chmod a+rwx /testptch/user_params.txt
 RUN chmod a+rx /testptch/launch-test-patch.sh
+RUN chown -R "${USER_NAME}" "/home/${USER_NAME}" || true
+ENV HOME "/home/${USER_NAME}"
+USER ${USER_NAME}
 CMD ["/testptch/launch-test-patch.sh"]

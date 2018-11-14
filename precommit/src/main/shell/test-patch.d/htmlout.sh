@@ -59,7 +59,8 @@ function htmlout_parse_args
 function htmlout_docker_support
 {
   if [[ -n ${HTMLOUT_REPORTFILE} ]]; then
-    DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS[@]}" "-v" "${HTMLOUT_REPORTFILE}:/testptch/report.htm")
+    DOCKER_EXTRAARGS+=("-v" "${HTMLOUT_REPORTFILE}:/testptch/report.htm")
+    USER_PARAMS+=("--html-report-file=/testptch/report.htm")
   fi
 }
 

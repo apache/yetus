@@ -25,7 +25,7 @@ fi
 
 add_build_tool ant
 
-declare -a ANT_ARGS=("-noinput")
+declare -a YETUS_ANT_ARGS=("-noinput")
 
 function ant_usage
 {
@@ -46,7 +46,7 @@ function ant_parse_args
 
   # if we requested offline, pass that to ant
   if [[ ${OFFLINE} == "true" ]]; then
-    ANT_ARGS=("${ANT_ARGS[@]}" '-Doffline=')
+    YETUS_ANT_ARGS+=('-Doffline=')
   fi
 }
 
@@ -95,7 +95,7 @@ function ant_buildfile
 
 function ant_executor
 {
-  echo "${ANT}" "${ANT_ARGS[@]}"
+  echo "${ANT}" "${YETUS_ANT_ARGS[@]}"
 }
 
 function ant_modules_worker
@@ -215,5 +215,7 @@ function ant_builtin_personality_file_tests
 
 function ant_docker_support
 {
-  DOCKER_EXTRAARGS=("${DOCKER_EXTRAARGS}" "-v" "${HOME}/.ivy2:/home/${USER_NAME}/.ivy2")
+  DOCKER_EXTRAARGS+=("-v" "${HOME}/.ivy2:/home/${USER_NAME}/.ivy2")
+  add_docker_env ANT_OPTS
+  add_docker_env ANT_ARGS
 }

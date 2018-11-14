@@ -17,6 +17,7 @@ ARG DOCKER_TAG=latest
 ARG DOCKER_REPO=apache/yetus
 FROM ${DOCKER_REPO}-base:${DOCKER_TAG}
 
+LABEL org.apache.yetus=""
 COPY . /ysrc/
 
 # hadolint ignore=DL3003

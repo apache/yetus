@@ -19,17 +19,23 @@ DOCKERCMD=$(command -v docker 2>/dev/null)
 DOCKER_ID=${RANDOM}
 DOCKER_DESTRUCTIVE=true
 DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
-DOCKERFAIL="fallback,continue,fail"
 DOCKERSUPPORT=false
-DOCKER_ENABLE_PRIVILEGED=true
+DOCKER_ENABLE_PRIVILEGED=false
 DOCKER_CLEANUP_CMD=false
 DOCKER_MEMORY="4g"
+DOCKER_PLATFORM=""
+DOCKER_TAG=""
+DOCKER_IN_DOCKER=false
+DOCKER_SOCKET="/var/run/docker.sock"
 
 declare -a DOCKER_EXTRAARGS
+declare -a DOCKER_VERSION
 
 DOCKER_EXTRAENVS+=("JAVA_HOME")
 DOCKER_EXTRAENVS+=("PATCH_SYSTEM")
 DOCKER_EXTRAENVS+=("PROJECT_NAME")
+
+YETUS_DOCKER_BASH_DEBUG=false
 
 ####
 #### IMPORTANT
@@ -54,9 +60,13 @@ function docker_usage
   fi
   yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: '${DOCKERCMD}')"
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
+    yetus_add_option "--docker-bash-debug=<bool>" "Enable bash -x mode running in a container (default: ${YETUS_DOCKER_BASH_DEBUG})"
     yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
-    yetus_add_option "--dockeronfail=<list>" "If Docker fails, determine fallback method order (default: ${DOCKERFAIL})"
+    yetus_add_option "--dockerind=<file>" "Enable Docker-in-Docker by mounting the Docker socket in the container (default: '${DOCKER_IN_DOCKER}')"
+    yetus_add_option "--docker-platform=<plat>" "Use a platform string for building and pulling (default: ${DOCKER_PLATFORM})"
     yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
+    yetus_add_option "--docker-socket=<socket>" "Mount given socket as /var/run/docker.sock into the container when Docker-in-Docker mode is enabled (default: '${DOCKER_SOCKET}')"
+    yetus_add_option "--docker-tag=<tag>" "Use the given Docker tag as the base"
   fi
   yetus_add_option "--dockerdelrep" "In Docker mode, only report image/container deletions, not act on them"
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
@@ -78,6 +88,10 @@ function docker_parse_args
       --docker)
         DOCKERSUPPORT=true
       ;;
+      --docker-bash-debug=*)
+        YETUS_DOCKER_BASH_DEBUG=${i#*=}
+        add_docker_env YETUS_DOCKER_BASH_DEBUG
+      ;;
       --dockercmd=*)
         #shellcheck disable=SC2034
         DOCKERCMD=${i#*=}
@@ -88,17 +102,26 @@ function docker_parse_args
       --dockerfile=*)
         DOCKERFILE=${i#*=}
       ;;
+      --dockerind=*)
+        DOCKER_IN_DOCKER=${i#*=}
+      ;;
       --dockermemlimit=*)
         DOCKER_MEMORY=${i#*=}
       ;;
       --dockermode)
         DOCKERMODE=true
       ;;
-      --dockeronfail=*)
-        DOCKERFAIL=${i#*=}
+      --docker-platform=*)
+        DOCKER_PLATFORM=${i#*=}
       ;;
       --dockerprivd=*)
         DOCKER_ENABLE_PRIVILEGED=${i#*=}
+      ;;
+      --docker-socket=*)
+        DOCKER_SOCKET=${i#*=}
+      ;;
+      --docker-tag=*)
+        DOCKER_TAG=${i#*=}
       ;;
     esac
   done
@@ -111,6 +134,7 @@ function docker_parse_args
 function docker_initialize
 {
   declare dockvers
+  declare -a footer
 
   # --docker and --dockermode are mutually
   # exclusive.  --docker is used by the user to
@@ -125,8 +149,18 @@ function docker_initialize
 
   # we are already in docker mode
   if [[ "${DOCKERMODE}" == true ]]; then
-    # DOCKER_VERSION is set by our creator.
-    add_footer_table "Docker" "${DOCKER_VERSION}"
+    # DOCKER_VERSION_STR is set by our creator.
+    footer=("${DOCKER_VERSION_STR}")
+
+    if [[ -n "${DOCKERFROM}" ]]; then
+      footer+=("base:" "${DOCKERFROM}")
+    elif [[ -f "${PATCH_DIR}/Dockerfile" ]]; then
+      footer+=("base:" "@@BASE@@/Dockerfile")
+    fi
+    if [[ -n "${DOCKER_PLATFORM}" ]]; then
+      footer+=("platform:" "${DOCKER_PLATFORM}")
+    fi
+    add_footer_table "Docker" "${footer[*]}"
     return
   fi
 
@@ -135,40 +169,12 @@ function docker_initialize
     return
   fi
 
-  # turn DOCKERFAIL into a string composed of numbers
-  # to ease interpretation:  123, 213, 321, ... whatever
-  # some of these combos are non-sensical but that's ok.
-  # we'll treat non-sense as effectively errors.
-  DOCKERFAIL=${DOCKERFAIL//,/ }
-  DOCKERFAIL=${DOCKERFAIL//fallback/1}
-  DOCKERFAIL=${DOCKERFAIL//continue/2}
-  DOCKERFAIL=${DOCKERFAIL//fail/3}
-  DOCKERFAIL=${DOCKERFAIL//[[:blank:]]/}
-
-  if ! docker_exeverify; then
-    if [[ "${DOCKERFAIL}" =~ ^12
-       || "${DOCKERFAIL}" =~ ^2 ]]; then
-      add_vote_table 0 docker "Docker command '${DOCKERCMD}' not found/broken. Disabling docker."
-      DOCKERSUPPORT=false
-    else
-      add_vote_table -1 docker "Docker command '${DOCKERCMD}' not found/broken."
-      bugsystem_finalreport 1
-      cleanup_and_exit 1
-    fi
-  fi
-
   dockvers=$(docker_version Client)
-  if [[ "${dockvers}" =~ ^0
-     || "${dockvers}" =~ ^1\.[0-5]$ || "${dockvers}" =~ ^1\.[0-5]\. ]]; then
-    if [[ "${DOCKERFAIL}" =~ ^12
-       || "${DOCKERFAIL}" =~ ^2 ]]; then
-      add_vote_table 0 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 1.6.0). Disabling docker."
-      DOCKERSUPPORT=false
-    else
-      add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 1.6.0). Disabling docker."
-      bugsystem_finalreport 1
-      cleanup_and_exit 1
-    fi
+  IFS='.' read -r -a DOCKER_VERSION <<< "${dockvers}"
+  if [[ "${DOCKER_VERSION[0]}" -lt 17 ]]; then
+    add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 17.0)."
+    bugsystem_finalreport 1
+    cleanup_and_exit 1
   fi
 }
 
@@ -186,24 +192,29 @@ function docker_fileverify
       if [[ -f ${DOCKERFILE} ]]; then
         DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
       else
-        if [[ "${DOCKERFAIL}" =~ ^1 ]]; then
-          yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
-          add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, falling back to built-in."
-          DOCKERFILE=${DOCKERFILE_DEFAULT}
-        elif [[ "${DOCKERFAIL}" =~ ^2 ]]; then
-          yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found, disabling docker."
-          add_vote_table 0 docker "Dockerfile '${DOCKERFILE}' not found, disabling docker."
-          DOCKERSUPPORT=false
-        else
-          yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found."
-          add_vote_table -1 docker "Dockerfile '${DOCKERFILE}' not found."
-          bugsystem_finalreport 1
-          cleanup_and_exit 1
-        fi
+        yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found."
+        add_vote_table -1 docker "Dockerfile '${DOCKERFILE}' not found."
+        bugsystem_finalreport 1
+        cleanup_and_exit 1
       fi
       popd >/dev/null || return 1
+    elif [[ -n "${DOCKER_TAG}" ]]; then
+      # do this later as part of the docker handler
+      :
     else
-      DOCKERFILE=${DOCKERFILE_DEFAULT}
+      if [[ -n "${DOCKER_PLATFORM}" ]]; then
+        dockplat=('--platform' "${DOCKER_PLATFORM}")
+      fi
+
+      echo "No --dockerfile or --dockertag provided. Attempting to pull apache/yetus:${VERSION}."
+
+      if dockercmd pull "${dockplat[@]}" "apache/yetus:${VERSION}"; then
+        echo "Pull succeeded; will build with pulled image."
+        DOCKER_TAG="apache/yetus:${VERSION}"
+      else
+        echo "Pull failed; will build with built-in Dockerfile."
+        DOCKERFILE=${DOCKERFILE_DEFAULT}
+      fi
     fi
   fi
 }
@@ -268,12 +279,10 @@ function dockerdate_to_ctime
 
   # believe it or not, date is not even close to standardized...
   if [[ $(uname -s) == Linux ]]; then
-
     # GNU date
     date -d "${mytime}" "+%s"
   else
-
-    # BSD date; docker gives us two different format because fun
+    # BSD date; go/docker gives us two different format because fun
     if ! date -j -f "%FT%T%z" "${mytime}" "+%s" 2>/dev/null; then
       date -j -f "%FT%T" "${mytime}" "+%s"
     fi
@@ -364,7 +373,7 @@ function docker_container_maintenance
 
   done < <(
      # shellcheck disable=SC2086
-     dockercmd inspect \
+     dockercmd container inspect \
         --format '{{.Id}},{{.State.Status}},{{.Created}},{{.State.StartedAt}},{{.State.FinishedAt}},{{.Name}}' \
        ${data})
 }
@@ -390,7 +399,7 @@ function docker_image_maintenance_helper
   fi
 
   for id in "$@"; do
-    tmptime=$(dockercmd inspect --format '{{.Created}}' "${id}" | cut -f1 -d. )
+    tmptime=$(dockercmd image inspect --format '{{.Created}}' "${id}" | cut -f1 -d. )
     createtime=$(dockerdate_to_ctime "${tmptime}")
     curtime=$(date "+%s")
 
@@ -414,8 +423,7 @@ function docker_get_sentinel_images
   dockercmd images \
     | tail -n +2 \
     | "${GREP}" -v hours \
-    | "${AWK}" '{print $1":"$2}' \
-    | "${GREP}" -v "<none>:<none>"
+    | "${AWK}" '{print $3}'
 }
 
 ## @description  Remove untagged/unused images
@@ -442,17 +450,8 @@ function docker_image_maintenance
 
   echo "Apache Yetus images:"
 
-  # removing this by image id doesn't always work without a force
-  # in the situations that, for whatever reason, docker decided
-  # to use the same image. this was a rare problem with older
-  # releases of yetus. at some point, we should revisit this
-  # in the mean time, we're going to reconstruct the
-  # repostory:tag and send that to get removed.
-
-  #shellcheck disable=SC2046,SC2016
-  docker_image_maintenance_helper $(dockercmd images | "${GREP}" -e ^yetus | "${GREP}" tp- | "${AWK}" '{print $1":"$2}')
-  #shellcheck disable=SC2046,SC2016
-  docker_image_maintenance_helper $(dockercmd images | "${GREP}" -e ^yetus | "${GREP}" -v hours | "${AWK}" '{print $1":"$2}')
+  #shellcheck disable=SC2046
+  docker_image_maintenance_helper $(dockercmd images --filter "label=org.apache.yetus" -q --no-trunc)
 
   if [[ "${SENTINEL}" = false ]]; then
     return
@@ -473,22 +472,9 @@ function docker_image_maintenance
 ## @param        args
 function docker_cleanup
 {
-
   docker_image_maintenance
 
   docker_container_maintenance
-}
-
-## @description  Determine the revision of a dockerfile
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @param        args
-function docker_getfilerev
-{
-  ${GREP} 'YETUS_PRIVATE: gitrev=' \
-        "${PATCH_DIR}/precommit/test-patch-docker/Dockerfile" \
-          | cut -f2 -d=
 }
 
 ## @description  determine the docker version
@@ -546,7 +532,7 @@ function docker_do_env_adds
 ## @param        args
 function docker_run_image
 {
-  declare dockerfilerev
+  declare gitfilerev
   declare baseimagename
   declare patchimagename="yetus/${PROJECT_NAME}:tp-${DOCKER_ID}"
   declare containername="yetus_tp-${DOCKER_ID}"
@@ -554,65 +540,148 @@ function docker_run_image
   declare server
   declare retval
   declare elapsed
+  declare dockerdir
+  declare lines
+  declare dockerversion
+  declare -a dockplat
 
-  dockerfilerev=$(docker_getfilerev)
-
-  baseimagename="yetus/${PROJECT_NAME}:${dockerfilerev}"
-
-  # make a base image, if it isn't available
-  big_console_header "Building base image: ${baseimagename}"
+  big_console_header "Docker Image Creation"
   start_clock
-  dockercmd build \
-    -t "${baseimagename}" \
-    "${PATCH_DIR}/precommit/test-patch-docker"
-  retval=$?
 
-  #shellcheck disable=SC2046
-  elapsed=$(clock_display $(stop_clock))
-
-  echo ""
-  echo "Total Elapsed time: ${elapsed}"
-  echo ""
-
-  if [[ ${retval} != 0 ]]; then
-    yetus_error "ERROR: Docker failed to build image."
-    add_vote_table -1 docker "Docker failed to build ${baseimagename}."
-    bugsystem_finalreport 1
-    cleanup_and_exit 1
+  if [[ -n "${DOCKER_PLATFORM}" ]]; then
+    dockplat=('--platform' "${DOCKER_PLATFORM}")
   fi
 
-  big_console_header "Building ${BUILDMODE} image: ${patchimagename}"
-  start_clock
+  if [[ -n "${DOCKER_TAG}" ]]; then
+    # pull the base image from the provided docker tag
+
+    if ! dockercmd pull "${dockplat[@]}" "${DOCKER_TAG}"; then
+      yetus_error "ERROR: Docker failed to pull ${DOCKER_TAG}."
+      add_vote_table -1 docker "Docker failed to pull ${DOCKER_TAG}."
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+    fi
+    baseimagename=${DOCKER_TAG}
+
+  elif [[ -n ${DOCKERFILE} && -f ${DOCKERFILE} ]]; then
+
+    # make a base image. if it is available/cached, this will go quick
+    dockerdir=$(dirname "${DOCKERFILE}")
+
+    pushd "${dockerdir}" >/dev/null || return 1
+    # grab the git commit sha if this is part of a git repo, even if
+    # it is part of another git repo other than the one being tested!
+    gitfilerev=$("${GIT}" log -n 1 --pretty=format:%h -- "${DOCKERFILE}" 2>/dev/null)
+    if [[ -z ${gitfilerev} ]]; then
+      gitfilerev=$(date "+%F")
+      gitfilerev="date${gitfilerev}"
+    fi
+
+    # we will need this for reporting later
+    baseimagename="yetus/${PROJECT_NAME}:${gitfilerev}"
+
+    # create a new Dockerfile in the patchdir to actually use to
+    # build with, stripping everything after the cut here line
+    # (if it exists)
+    lines=$("${AWK}" '/YETUS CUT HERE/ {print FNR; exit}' "${DOCKERFILE}")
+
+    buildfile="${PATCH_DIR}/Dockerfile"
+    if [[ "${DOCKER_VERSION[0]}" -lt 18 ]] && [[ ${lines} -gt 0 ]]; then
+
+      # versions less than 18 don't support having the
+      # Dockerfile outside of the build context. Let's fall back to
+      # pre-YETUS-723 behavior and put the re-written Dockerfile
+      # outside of the source tree rather than go through a lot of
+      # machinations.  This means COPY, ADD, etc do not work, but
+      # whatever
+
+      popd >/dev/null || return 1
+      buildfile="${PATCH_DIR}/test-patch-docker/Dockerfile"
+      dockerdir="${PATCH_DIR}/test-patch-docker"
+      mkdir -p "${dockerdir}"
+      pushd "${PATCH_DIR}/test-patch-docker" >/dev/null || return 1
+    fi
+
+    (
+      if [[ -z "${lines}" ]]; then
+        cat "${DOCKERFILE}"
+      else
+        head -n "${lines}" "${DOCKERFILE}"
+      fi
+    ) > "${buildfile}"
+
+    if [[ "${DOCKER_VERSION[0]}" -lt 18 ]] && [[ ${lines} -gt 0 ]]; then
+      # Need to put our re-constructed Dockerfile in a place
+      # where it can be referenced in the output post-run
+      cp -p "${buildfile}" "${PATCH_DIR}/Dockerfile"
+    fi
+
+    if ! dockercmd build \
+          "${dockplat[@]}" \
+          --label org.apache.yetus=\"\" \
+          --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
+          --tag "${baseimagename}" \
+          -f "${buildfile}" \
+          "${dockerdir}"; then
+      popd >/dev/null || return 1
+      yetus_error "ERROR: Docker failed to build ${baseimagename}."
+      add_vote_table -1 docker "Docker failed to build ${baseimagename}."
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+    fi
+    popd >/dev/null || return 1
+  fi
+
+  echo "Building run-specific image ${patchimagename}"
+
+  # create a directory from scratch so that our
+  # build context is tightly controlled
+  randir=${PATCH_DIR}/${RANDOM}
+  mkdir -p "${randir}"
+  pushd "${randir}" >/dev/null || return 1
+  cp -p "${BINDIR}"/test-patch-docker/Dockerfile.patchspecific \
+     "${randir}"/Dockerfile
+  cp -p "${BINDIR}"/test-patch-docker/launch-test-patch.sh \
+     "${randir}"
+
+
+  for lines in "${USER_PARAMS[@]}"; do
+    if [[ ${lines} != '--docker' ]]; then
+      echo "${lines}" >> "${randir}/user_params.txt"
+    fi
+  done
+
   # using the base image, make one that is patch specific
   dockercmd build \
-    -t "${patchimagename}" \
-    - <<PatchSpecificDocker
-FROM ${baseimagename}
-LABEL org.apache.yetus=""
-LABEL org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}"
-LABEL org.apache.yetus.testpatch.project=${PROJECT_NAME}
-RUN groupadd --non-unique -g ${GROUP_ID} ${USER_NAME} || true
-RUN useradd -g ${GROUP_ID} -u ${USER_ID} -m ${USER_NAME} || true
-RUN chown -R ${USER_NAME} /home/${USER_NAME} || true
-ENV HOME /home/${USER_NAME}
-USER ${USER_NAME}
-PatchSpecificDocker
-
+    "${dockplat[@]}" \
+    --no-cache \
+    --build-arg baseimagename="${baseimagename}" \
+    --build-arg GROUP_ID="${GROUP_ID}" \
+    --build-arg USER_ID="${USER_ID}" \
+    --build-arg USER_NAME="${USER_NAME}" \
+    --label org.apache.yetus=\"\" \
+    --label org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}" \
+    --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
+    --tag "${patchimagename}" \
+    "${randir}" >/dev/null
   retval=$?
+  popd >/dev/null || retun 1
+
+  rm -rf "${randir}"
+
+  if [[ ${retval} != 0 ]]; then
+    yetus_error "ERROR: Docker failed to build run-specific ${patchimagename}."
+    add_vote_table -1 docker "Docker failed to build run-specific ${patchimagename}}."
+    bugsystem_finalreport 1
+    cleanup_and_exit 1
+  fi
 
   #shellcheck disable=SC2046
   elapsed=$(clock_display $(stop_clock))
 
   echo ""
-  echo "Total Elapsed time: ${elapsed}"
+  echo "Total elapsed build time: ${elapsed}"
   echo ""
-
-  if [[ ${retval} != 0 ]]; then
-    yetus_error "ERROR: Docker failed to build image."
-    add_vote_table -1 docker "Docker failed to build ${patchimagename}."
-    bugsystem_finalreport 1
-    cleanup_and_exit 1
-  fi
 
   if [[ "${DOCKER_ENABLE_PRIVILEGED}" = true ]]; then
     DOCKER_EXTRAARGS+=("--privileged")
@@ -627,17 +696,22 @@ PatchSpecificDocker
 
   dockerversion="Client=${client} Server=${server}"
 
-
   # make the kernel prefer to kill us if we run out of RAM
   DOCKER_EXTRAARGS+=("--oom-score-adj" "500")
 
   DOCKER_EXTRAARGS+=("--cidfile=${PATCH_DIR}/cidfile")
+
+  if [[ "${DOCKER_IN_DOCKER}" == true ]]; then
+    if [[ -e "${DOCKER_SOCKET}" ]]; then
+      DOCKER_EXTRAARGS+=(-v "${DOCKER_SOCKET}:/var/run/docker.sock")
+    fi
+  fi
+
   DOCKER_EXTRAARGS+=(-v "${PWD}:/testptch/${PROJECT_NAME}")
   DOCKER_EXTRAARGS+=(-u "${USER_NAME}")
   DOCKER_EXTRAARGS+=(-w "/testptch/${PROJECT_NAME}")
   DOCKER_EXTRAARGS+=("--env=BASEDIR=/testptch/${PROJECT_NAME}")
-  DOCKER_EXTRAARGS+=("--env=DOCKER_VERSION=${dockerversion} Image:${baseimagename}")
-  DOCKER_EXTRAARGS+=("--env=TESTPATCHMODE=${TESTPATCHMODE}")
+  DOCKER_EXTRAARGS+=("--env=DOCKER_VERSION_STR=${dockerversion}")
 
   docker_do_env_adds
 
@@ -648,19 +722,25 @@ PatchSpecificDocker
 
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
     dockercmd run --rm=true -i \
+      "${dockplat[@]}" \
       "${DOCKER_EXTRAARGS[@]}" \
       -v "${PATCH_DIR}:/testptch/patchprocess" \
       --env=PATCH_DIR=/testptch/patchprocess \
       "${patchimagename}" &
   else
     dockercmd run --rm=true -i \
+      "${dockplat[@]}" \
       "${DOCKER_EXTRAARGS[@]}" \
       --env=PATCH_DIR="${PATCH_DIR}" \
       "${patchimagename}" &
   fi
-
   wait ${!}
-  cleanup_and_exit $?
+  retval=$?
+
+  printf '\n\n'
+  echo "Cleaning up docker image used for testing."
+  dockercmd rmi "${patchimagename}" > /dev/null
+  cleanup_and_exit ${retval}
 }
 
 ## @description  docker kill the container on SIGTERM
@@ -686,9 +766,52 @@ function docker_signal_handler
 ## @param        args
 function docker_handler
 {
-  PATCH_DIR=$(relative_dir "${PATCH_DIR}")
+  declare plugin
+  declare person
+
+  ## @description  strip paths for display
+  ## @audience     private
+  ## @stability    evolving
+  function strippaths {
+    declare p=$1
+    declare d
+    for d in "${BASEDIR}" "${PATCH_DIR}" "${BINDIR}"; do
+      p=$(yetus_relative_dir "${d}" "${p}")
+    done
+    echo "${p}"
+  }
+
+
+  determine_user
+
+  # need to call this explicitly
+  console_docker_support
+
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${BUGSYSTEMS} ${TESTTYPES} ${TESTFORMATS}; do
+    if declare -f "${plugin}_docker_support" >/dev/null; then
+      "${plugin}_docker_support"
+    fi
+  done
+
+  if [[ -n "${BUILD_URL}" ]]; then
+    USER_PARAMS+=("--build-url=${BUILD_URL}")
+  fi
+
+  if [[ -f "${PERSONALITY}" ]]; then
+    person=$(strippaths "${PERSONALITY}")
+    USER_PARAMS+=("--tpperson=${person}")
+  fi
+
+  USER_PARAMS+=("--tpglobaltimer=${GLOBALTIMER}")
+  USER_PARAMS+=("--tpreexectimer=${TIMER}")
+  USER_PARAMS+=("--tpinstance=${INSTANCE}")
+  USER_PARAMS+=("--plugins=${ENABLED_PLUGINS// /,}")
+
+  #shellcheck disable=SC2164
+  cd "${BASEDIR}"
+
+  PATCH_DIR=$(yetus_relative_dir "${BASEDIR}" "${PATCH_DIR}")
 
   docker_cleanup
-  determine_user
   docker_run_image
 }
