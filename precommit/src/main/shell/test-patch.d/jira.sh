@@ -90,6 +90,10 @@ function jira_determine_issue
     return 0
   fi
 
+  if [[ -z "${JIRA_ISSUE_RE}" ]]; then
+    return 1
+  fi
+
   # shellcheck disable=SC2016
   patchnamechunk=$(echo "${input}" | "${AWK}" -F/ '{print $NF}')
 
