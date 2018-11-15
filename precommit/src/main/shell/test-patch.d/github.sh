@@ -247,6 +247,7 @@ function github_locate_pr_patch
   declare input=$1
   declare output=$2
   declare githubauth
+  declare apiurl
 
   input=${input#GH:}
 
@@ -279,37 +280,46 @@ function github_locate_pr_patch
   # with the assumption that this way binary files work.
   # The downside of this is that the patch files are
   # significantly larger and therefore take longer to process
+
+  apiurl="${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"
+
+  # shellcheck disable=SC2034
   PATCHURL="${GITHUB_BASE_URL}/${GITHUB_REPO}/pull/${input}.patch"
-  echo "GITHUB PR #${input} is being downloaded at $(date) from"
-  echo "${GITHUB_BASE_URL}/${GITHUB_REPO}/pull/${input}"
 
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth="${GITHUB_USER}:${GITHUB_PASSWD}"
+    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth="Authorization: token ${GITHUB_TOKEN}"
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
-    githubauth="X-ignore-me: fake"
+    githubauth=(-H "X-ignore-me: fake")
   fi
 
+  echo "GITHUB PR #${input} is being downloaded from"
+  echo "${apiurl}"
+
+  echo "  JSON data at $(date)"
   # Let's pull the PR JSON for later use
-  ${CURL} --silent --fail \
+  if ! "${CURL}" --silent --fail \
           -H "Accept: application/vnd.github.v3.full+json" \
-          -H "${githubauth}" \
+          "${githubauth[@]}" \
           --output "${PATCH_DIR}/github-pull.json" \
           --location \
-         "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"
+         "${apiurl}"; then
+    yetus_debug "github_locate_patch: cannot download json"
+    return 1
+  fi
 
-  echo "Patch from GITHUB PR #${input} is being downloaded at $(date) from"
-  echo "${PATCHURL}"
+  echo "  Patch data at $(date)"
 
   # the actual patch file
-  if ! ${CURL} --silent --fail \
+  if ! "${CURL}" --silent --fail \
+          -H "Accept: application/vnd.github.v3.patch" \
           --output "${output}" \
           --location \
-          -H "${githubauth}" \
-         "${PATCHURL}"; then
-    yetus_debug "github_locate_patch: not a github pull request."
+          "${githubauth[@]}" \
+         "${apiurl}"; then
+    yetus_debug "github_locate_patch: cannot download patch"
     return 1
   fi
 
@@ -347,17 +357,17 @@ function github_locate_sha_patch
 
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth="${GITHUB_USER}:${GITHUB_PASSWD}"
+    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth="Authorization: token ${GITHUB_TOKEN}"
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
-    githubauth="X-ignore-me: fake"
+    githubauth=(-H "X-ignore-me: fake")
   fi
 
    # Let's pull the PR JSON for later use
   if ! "${CURL}" --silent --fail \
           -H "Accept: application/vnd.github.v3.full+json" \
-          -H "${githubauth}" \
+          "${githubauth[@]}" \
           --output "${PATCH_DIR}/github-search.json" \
           --location \
          "${GITHUB_API_URL}/search/issues?q=${gitsha}&type:pr&repo:${GITHUB_REPO}"; then
@@ -446,17 +456,17 @@ function github_linecomments
 
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth="${GITHUB_USER}:${GITHUB_PASSWD}"
+    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth="Authorization: token ${GITHUB_TOKEN}"
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
     return 0
   fi
 
-  ${CURL} -X POST \
+  "${CURL}" -X POST \
     -H "Accept: application/vnd.github.v3.full+json" \
     -H "Content-Type: application/json" \
-    -H "${githubauth}" \
+     "${githubauth[@]}" \
     -d @"${tempfile}" \
     --silent --location \
     "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${GITHUB_ISSUE}/comments" \
@@ -491,18 +501,18 @@ function github_write_comment
 
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth="${GITHUB_USER}:${GITHUB_PASSWD}"
+    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth="Authorization: token ${GITHUB_TOKEN}"
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
     echo "Github Plugin: no credentials provided to write a comment."
     return 0
   fi
 
-  ${CURL} -X POST \
+  "${CURL}" -X POST \
        -H "Accept: application/vnd.github.v3.full+json" \
        -H "Content-Type: application/json" \
-       -H "${githubauth}" \
+       "${githubauth[@]}" \
        -d @"${restfile}" \
        --silent --location \
          "${GITHUB_API_URL}/repos/${GITHUB_REPO}/issues/${GITHUB_ISSUE}/comments" \
