@@ -83,9 +83,11 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y autoconf 
 ####
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y bats \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN git clone --branch v1.1.0 \
+      https://github.com/bats-core/bats-core.git \
+      /tmp/bats-core \
+    && /tmp/bats-core/install.sh /usr/local \
+    && rm -rf /tmp/bats-core
 
 ####
 # Install cmake
