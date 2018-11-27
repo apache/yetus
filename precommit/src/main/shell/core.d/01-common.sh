@@ -777,3 +777,20 @@ function add_version_data
     VERSION_DATA+=("$1=$2")
   fi
 }
+
+## @description generate a stack trace when in debug mode
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @return       exits
+function generate_stack
+{
+  declare -i frame
+
+  frame=0
+
+  while caller "${frame}"; do
+    ((frame++));
+  done
+  exit 1
+}

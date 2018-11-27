@@ -405,6 +405,7 @@ plugins_initialize
 locate_patch
 
 if [[ "${REPORTONLY}" = true ]]; then
+  INPUT_APPLIED_FILE="${INPUT_PATCH_FILE}"
   patch_reports
   cleanup_and_exit 0
 fi
@@ -418,19 +419,22 @@ if [[ ${COMMITMODE} = true ]]; then
   fi
   PATCH_METHODS=("gitam" "${PATCH_METHODS[@]}")
 fi
-patch_file_hinter "${PATCH_DIR}/patch"
-patchfile_dryrun_driver "${PATCH_DIR}/patch"
-RESULT=$?
 
-if [[ ${RESULT} -gt 0 ]]; then
+if ! dryrun_both_files; then
   yetus_error "ERROR: Aborting! ${PATCH_OR_ISSUE} cannot be verified."
   cleanup_and_exit ${RESULT}
+fi
+
+patch_file_hinter "${INPUT_APPLIED_FILE}"
+
+if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
+  yetus_error "WARNING: "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary.""
 fi
 
 pushd "${BASEDIR}" >/dev/null || exit 1
 
 if [[ ${PATCH_DRYRUNMODE} == false ]]; then
-  patchfile_apply_driver "${PATCH_DIR}/patch" "${GPGSIGN}"
+  patchfile_apply_driver "${INPUT_APPLIED_FILE}" "${GPGSIGN}"
   RESULT=$?
 fi
 
