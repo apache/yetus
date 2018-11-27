@@ -1371,7 +1371,7 @@ function determine_needed_tests
   add_footer_table "Optional Tests" "${NEEDED_TESTS[*]}"
 }
 
-## @description  Given ${PATCH_DIR}/patch, apply the patch
+## @description  Given ${INPUT_APPLIED_FILE}, actually apply the patch
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -1379,9 +1379,16 @@ function determine_needed_tests
 ## @return       exit on failure
 function apply_patch_file
 {
-  big_console_header "Applying patch to ${PATCH_BRANCH}"
 
-  if ! patchfile_apply_driver "${PATCH_DIR}/patch"; then
+  if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
+    BUGLINECOMMENTS=""
+    add_vote_table '-0' patch "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
+    big_console_header "Applying diff to ${PATCH_BRANCH}"
+  else
+    big_console_header "Applying patch to ${PATCH_BRANCH}"
+  fi
+
+  if ! patchfile_apply_driver "${INPUT_APPLIED_FILE}"; then
     echo "PATCH APPLICATION FAILED"
     ((RESULT = RESULT + 1))
     add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
@@ -2881,7 +2888,7 @@ function patchfiletests
   for plugin in ${BUILDTOOL} "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
     if declare -f "${plugin}_patchfile" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_patchfile"
-      if ! "${plugin}_patchfile" "${PATCH_DIR}/patch"; then
+      if ! "${plugin}_patchfile" "${INPUT_APPLIED_FILE}"; then
         ((result = result+1))
       fi
       archive
@@ -2978,6 +2985,49 @@ function stop_coprocessors
   fi
 }
 
+## @description  Additional setup work when in patch mode, including
+## @description  setting ${INPUT_APPLIED_FILE} so that the system knows
+## @description  which one to use because it will have passed dryrun.
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function patch_setup_work
+{
+  declare applytype
+
+  # from here on out, we'll be in ${BASEDIR} for cwd
+  # plugins need to pushd/popd if they change.
+  git_checkout
+
+  determine_issue
+
+  # always prefer the patch file since git format patch files support a lot more
+
+  if [[ -f "${INPUT_PATCH_FILE}" ]] && patchfile_dryrun_driver "${INPUT_PATCH_FILE}"; then
+    applytype="patch"
+    INPUT_APPLIED_FILE="${INPUT_PATCH_FILE}"
+  elif [[ -f "${INPUT_DIFF_FILE}" ]] && patchfile_dryrun_driver "${INPUT_DIFF_FILE}"; then
+    applytype="diff"
+    INPUT_APPLIED_FILE="${INPUT_DIFF_FILE}"
+  fi
+
+  if [[ -z "${INPUT_APPLIED_FILE}" ]]; then
+      ((RESULT = RESULT + 1))
+      yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
+      add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+  fi
+
+  if [[ "${ISSUE}" == 'Unknown' ]]; then
+    echo ""
+    echo "Testing ${applytype} on ${PATCH_BRANCH}."
+  else
+    echo ""
+    echo "Testing ${ISSUE} ${applytype} on ${PATCH_BRANCH}."
+  fi
+}
+
 ## @description  Setup to execute
 ## @audience     public
 ## @stability    evolving
@@ -3039,29 +3089,10 @@ function initialize
     locate_patch
   fi
 
+  git_checkout
 
-  # locate_patch might have changed our minds
-  if [[ "${BUILDMODE}" = full ]]; then
-    git_checkout
-  else
-    # from here on out, we'll be in ${BASEDIR} for cwd
-    # plugins need to pushd/popd if they change.
-    git_checkout
-
-    determine_issue
-    if [[ "${ISSUE}" == 'Unknown' ]]; then
-      echo "Testing patch on ${PATCH_BRANCH}."
-    else
-      echo "Testing ${ISSUE} patch on ${PATCH_BRANCH}."
-    fi
-
-    if ! patchfile_dryrun_driver "${PATCH_DIR}/patch"; then
-      ((RESULT = RESULT + 1))
-      yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
-      add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
-      bugsystem_finalreport 1
-      cleanup_and_exit 1
-    fi
+  if [[ "${BUILDMODE}" = patch ]]; then
+    patch_setup_work
   fi
 
   find_changed_files

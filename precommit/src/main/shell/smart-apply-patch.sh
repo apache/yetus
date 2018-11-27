@@ -418,8 +418,9 @@ if [[ ${COMMITMODE} = true ]]; then
   fi
   PATCH_METHODS=("gitam" "${PATCH_METHODS[@]}")
 fi
-patch_file_hinter "${PATCH_DIR}/patch"
-patchfile_dryrun_driver "${PATCH_DIR}/patch"
+
+patch_file_hinter "${INPUT_PATCH_FILE}"
+patchfile_dryrun_driver "${INPUT_PATCH_FILE}"
 RESULT=$?
 
 if [[ ${RESULT} -gt 0 ]]; then
@@ -430,7 +431,7 @@ fi
 pushd "${BASEDIR}" >/dev/null || exit 1
 
 if [[ ${PATCH_DRYRUNMODE} == false ]]; then
-  patchfile_apply_driver "${PATCH_DIR}/patch" "${GPGSIGN}"
+  patchfile_apply_driver "${INPUT_PATCH_FILE}" "${GPGSIGN}"
   RESULT=$?
 fi
 

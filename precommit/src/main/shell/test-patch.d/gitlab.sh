@@ -168,7 +168,8 @@ function gitlab_determine_branch
 function gitlab_locate_mr_patch
 {
   declare input=$1
-  declare output=$2
+  declare patchout=$2
+  declare diffout=$3
   declare gitlabauth
 
   input=${input#GL:}
@@ -202,7 +203,7 @@ function gitlab_locate_mr_patch
   # with the assumption that this way binary files work.
   # The downside of this is that the patch files are
   # significantly larger and therefore take longer to process
-  PATCHURL="${GITLAB_BASE_URL}/${GITLAB_REPO}/merge_requests/${input}.patch"
+  PATCHURL="${GITLAB_BASE_URL}/${GITLAB_REPO}/merge_requests/${input}"
   echo "GITLAB MR #${input} is being downloaded at $(date) from"
   echo "${GITLAB_BASE_URL}/${GITLAB_REPO}/merge_requests/${input}"
 
@@ -224,10 +225,20 @@ function gitlab_locate_mr_patch
 
   # the actual patch file
   if ! "${CURL}" --silent --fail \
-          --output "${output}" \
+          --output "${patchout}" \
           --location \
           -H "${gitlabauth}" \
-         "${PATCHURL}"; then
+         "${PATCHURL}.patch"; then
+    yetus_debug "gitlab_locate_patch: not a gitlab merge request."
+    return 1
+  fi
+
+  # the actual patch file
+  if ! "${CURL}" --silent --fail \
+          --output "${diffout}" \
+          --location \
+          -H "${gitlabauth}" \
+         "${PATCHURL}.diff"; then
     yetus_debug "gitlab_locate_patch: not a gitlab merge request."
     return 1
   fi
@@ -254,7 +265,8 @@ function gitlab_locate_mr_patch
 function gitlab_locate_sha_patch
 {
   declare input=$1
-  declare output=$2
+  declare patchout=$2
+  declare diffout=$3
   declare mrid
   declare gitlabauth
 
@@ -295,7 +307,7 @@ function gitlab_locate_sha_patch
     return 0
   fi
 
-  gitlab_locate_mr_patch "GL:${mrid}" "${output}"
+  gitlab_locate_mr_patch "GL:${mrid}" "${patchout}" "${diffout}"
 }
 
 ## @description  Handle the various ways to reference a gitlab MR
@@ -309,7 +321,8 @@ function gitlab_locate_sha_patch
 function gitlab_locate_patch
 {
   declare input=$1
-  declare output=$2
+  declare patchout=$2
+  declare diffout=$3
 
   if [[ "${OFFLINE}" == true ]]; then
     yetus_debug "gitlab_locate_patch: offline, skipping"
@@ -318,10 +331,10 @@ function gitlab_locate_patch
 
   case "${input}" in
       GLSHA:*)
-        gitlab_locate_sha_patch "${input}" "${output}"
+        gitlab_locate_sha_patch "${input}" "${patchout}" "${diffout}"
       ;;
       *)
-        gitlab_locate_mr_patch "${input}" "${output}"
+        gitlab_locate_mr_patch "${input}" "${patchout}" "${diffout}"
       ;;
   esac
 }

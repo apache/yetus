@@ -93,8 +93,9 @@ function github_parse_args
 ## @description WARNING: Called from JIRA plugin!
 function github_jira_bridge
 {
-  declare fileloc=$1
-  declare jsonloc=$2
+  declare jsonloc=$1
+  declare patchout=$2
+  declare diffout=$3
   declare urlfromjira
 
   # shellcheck disable=SC2016
@@ -109,7 +110,7 @@ function github_jira_bridge
   GITHUB_BRIDGED=true
   yetus_debug "github_jira_bridge: Checking url ${urlfromjira}"
   github_breakup_url "${urlfromjira}"
-  github_locate_patch GH:"${GITHUB_ISSUE}" "${fileloc}"
+  github_locate_patch GH:"${GITHUB_ISSUE}" "${patchout}" "${diffout}"
 }
 
 ## @description given a URL, break it up into github plugin globals
@@ -259,7 +260,8 @@ function github_determine_branch
 function github_locate_pr_patch
 {
   declare input=$1
-  declare output=$2
+  declare patchout=$2
+  declare diffout=$3
   declare githubauth
   declare apiurl
 
@@ -290,8 +292,8 @@ function github_locate_pr_patch
     return 1
   fi
 
-  # we always pull the .patch version (even if .diff was given)
-  # with the assumption that this way binary files work.
+  # we always pull both the .patch and .diff versions
+  # but set the default to be .patch so that binary files work.
   # The downside of this is that the patch files are
   # significantly larger and therefore take longer to process
 
@@ -327,11 +329,22 @@ function github_locate_pr_patch
   # the actual patch file
   if ! "${CURL}" --silent --fail \
           -H "Accept: application/vnd.github.v3.patch" \
-          --output "${output}" \
+          --output "${patchout}" \
+          --location \
+          "${githubauth[@]}" \
+         "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"; then
+    yetus_debug "github_locate_patch: not a github pull request."
+    return 1
+  fi
+
+  echo "  Diff data at $(date)"
+  if ! "${CURL}" --silent --fail \
+          -H "Accept: application/vnd.github.v3.diff" \
+          --output "${diffout}" \
           --location \
           "${githubauth[@]}" \
          "${apiurl}"; then
-    yetus_debug "github_locate_patch: cannot download patch"
+    yetus_debug "github_locate_patch: cannot download diff"
     return 1
   fi
 
@@ -357,7 +370,8 @@ function github_locate_pr_patch
 function github_locate_sha_patch
 {
   declare input=$1
-  declare output=$2
+  declare patchout=$2
+  declare diffout=$3
   declare gitsha
   declare number
   declare githubauth
@@ -406,8 +420,7 @@ function github_locate_sha_patch
     return 0
   fi
 
-  github_locate_pr_patch "GH:${number}" "${output}"
-
+  github_locate_pr_patch "GH:${number}" "${patchout}" "${diffout}"
 }
 
 
@@ -422,7 +435,8 @@ function github_locate_sha_patch
 function github_locate_patch
 {
   declare input=$1
-  declare output=$2
+  declare patchout=$2
+  declare diffout=$3
 
   if [[ "${OFFLINE}" == true ]]; then
     yetus_debug "github_locate_patch: offline, skipping"
@@ -431,10 +445,10 @@ function github_locate_patch
 
   case "${input}" in
       GHSHA:*)
-        github_locate_sha_patch "${input}" "${output}"
+        github_locate_sha_patch "${input}" "${patchout}" "${diffout}"
       ;;
       *)
-        github_locate_pr_patch "${input}" "${output}"
+        github_locate_pr_patch "${input}" "${patchout}" "${diffout}"
       ;;
   esac
 }

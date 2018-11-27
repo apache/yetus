@@ -156,7 +156,8 @@ function jira_http_fetch
 function jira_locate_patch
 {
   declare input=$1
-  declare fileloc=$2
+  declare patchout=$2
+  declare diffout=$3
   declare jsonloc
   declare relativeurl
   declare retval
@@ -183,7 +184,7 @@ function jira_locate_patch
     jira_http_fetch "rest/api/2/issue/${input}" "${jsonloc}"
     # Parse the downloaded information to check if the issue is
     # just a pointer to GitHub.
-    if github_jira_bridge "${fileloc}" "${jsonloc}"; then
+    if github_jira_bridge "${jsonloc}" "${patchout}" "${diffout}"; then
       echo "${input} appears to be a Github PR. Switching Modes."
       return 0
     fi
@@ -219,7 +220,7 @@ function jira_locate_patch
 
     printf "  %s -> " "${PATCHURL}"
 
-    jira_http_fetch "${relativeurl}" "${fileloc}"
+    jira_http_fetch "${relativeurl}" "${patchout}"
     retval=$?
     if [[ ${retval} == 0 ]]; then
       found=true
@@ -239,7 +240,7 @@ function jira_locate_patch
   fi
 
   if [[ ! ${PATCHURL} =~ \.patch$ ]]; then
-    if guess_patch_file "${fileloc}"; then
+    if guess_patch_file "${patchout}"; then
       yetus_debug "The patch ${PATCHURL} was not named properly, but it looks like a patch file. Proceeding, but issue/branch matching might go awry."
       add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${PATCH_NAMING_RULE} for instructions."
     else

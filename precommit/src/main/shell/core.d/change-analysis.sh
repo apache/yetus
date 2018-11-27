@@ -43,7 +43,7 @@ function find_buildfile_dir
   done
 }
 
-## @description  List of files that ${PATCH_DIR}/patch modifies
+## @description  List of files that ${INPUT_APPLIED_FILE} modifies
 ## @audience     private
 ## @stability    stable
 ## @replaceable  no
@@ -53,6 +53,7 @@ function find_changed_files
   declare line
 
   BUILDMODE=${BUILDMODE:-patch}
+  INPUT_APPLIED_FILE=${INPUT_APPLIED_FILE:-${PATCH_DIR}/patch}
 
   pushd "${BASEDIR}" >/dev/null || return 1
 
@@ -71,7 +72,7 @@ function find_changed_files
       done < <(
         "${AWK}" 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"){print s}}
         /^diff --git /   { p($3); p($4) }
-        /^(\+\+\+|---) / { p($2) }' "${PATCH_DIR}/patch" | sort -u)
+        /^(\+\+\+|---) / { p($2) }' "${INPUT_APPLIED_FILE}" | sort -u)
       ;;
     esac
   popd >/dev/null || return 1
