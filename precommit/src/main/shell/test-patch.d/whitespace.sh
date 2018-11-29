@@ -16,9 +16,8 @@
 
 # SHELLDOC-IGNORE
 
-
 WHITESPACE_EOL_IGNORE_LIST=
-WHITESPACE_TABS_IGNORE_LIST='.*Makefile.*'
+WHITESPACE_TABS_IGNORE_LIST='.*Makefile.*','.*\.go'
 
 add_test_type whitespace
 
@@ -28,8 +27,8 @@ add_test_type whitespace
 ## @replaceable  no
 function whitespace_usage
 {
-  yetus_add_option "--whitespace-eol-ignore-list=<list>" "comma-separated regex list of filenames to ignore on checking whitespaces at EOL (default '${WHITESPACE_EOL_IGNORE_LIST}')"
-  yetus_add_option "--whitespace-tabs-ignore-list=<list>" "comma-separated regex list of filenames to ignore on checking tabs in a file (default '${WHITESPACE_TABS_IGNORE_LIST}')"
+  yetus_add_option "--whitespace-eol-ignore-list=<list>" "comma-separated regex list of filenames (default '${WHITESPACE_EOL_IGNORE_LIST}')"
+  yetus_add_option "--whitespace-tabs-ignore-list=<list>" "comma-separated regex list of filenames (default '${WHITESPACE_TABS_IGNORE_LIST}')"
 }
 
 ## @description  whitespace parse args hook
@@ -43,10 +42,10 @@ function whitespace_parse_args
   for i in "$@"; do
     case ${i} in
       --whitespace-eol-ignore-list=*)
-        yetus_comma_to_array WHITESPACE_EOL_IGNORE_LIST "${i#*=}"
+        WHITESPACE_EOL_IGNORE_LIST="${i#*=}"
       ;;
       --whitespace-tabs-ignore-list=*)
-        yetus_comma_to_array WHITESPACE_TABS_IGNORE_LIST "${i#*=}"
+        WHITESPACE_TABS_IGNORE_LIST="${i#*=}"
       ;;
     esac
   done
@@ -59,13 +58,11 @@ function whitespace_linecomment_reporter
   declare comment=$*
   declare tmpfile="${PATCH_DIR}/wlr.$$.${RANDOM}"
 
-  while read -r line; do
-    {
-      # shellcheck disable=SC2086
-      printf "%s" "$(echo ${line} | cut -f1-2 -d:)"
-      echo "${comment}"
-    } >> "${tmpfile}"
-  done < "${file}"
+  #shellcheck disable=SC2016
+  "${AWK}" -F: -v msg="${comment}" \
+    '{print $1":"$2":"msg}' \
+    "${file}" \
+    > "${tmpfile}"
 
   bugsystem_linecomments "whitespace:" "${tmpfile}"
   rm "${tmpfile}"
@@ -76,8 +73,10 @@ function whitespace_postcompile
   declare repostatus=$1
   declare count
   declare result=0
-  declare eolignore
-  declare tabsignore
+  declare -a eolignore
+  declare -a tabsignore
+  declare temp1
+  declare temp2
 
   if [[ "${repostatus}" = branch ]]; then
     return 0
@@ -88,30 +87,42 @@ function whitespace_postcompile
 
   pushd "${BASEDIR}" >/dev/null || return 1
 
-  eolignore=$(printf -- "-e ^%s: " "${WHITESPACE_EOL_IGNORE_LIST[@]}")
-  tabsignore=$(printf -- "-e ^%s: " "${WHITESPACE_TABS_IGNORE_LIST[@]}")
+  if [[ -n "${WHITESPACE_EOL_IGNORE_LIST}" ]]; then
+    eolignore=("${GREP}" "-v")
+    yetus_comma_to_array temp1 "${WHITESPACE_EOL_IGNORE_LIST}"
+    for temp2 in "${temp1[@]}"; do
+      eolignore+=("-e" "^$temp2:")
+    done
+  else
+    eolignore=("cat")
+  fi
+
+  if [[ -n "${WHITESPACE_TABS_IGNORE_LIST}" ]]; then
+    tabsignore=("${GREP}" "-v")
+    yetus_comma_to_array temp1 "${WHITESPACE_TABS_IGNORE_LIST}"
+    for temp2 in "${temp1[@]}"; do
+      tabsignore+=("-e" "^$temp2:")
+    done
+  else
+    tabsignore=("cat")
+  fi
 
   case "${BUILDMODE}" in
     patch)
-      # shellcheck disable=SC2016,SC2086
-      ${AWK} '/\t/ {print $0}' \
-          "${GITDIFFCONTENT}" \
-        | ${GREP} -v ${tabsignore} >> "${PATCH_DIR}/whitespace-tabs.txt"
-
-      # shellcheck disable=SC2086
-       ${GREP} -E '[[:blank:]]$' \
+       "${GREP}" -E '[[:blank:]]$' \
          "${GITDIFFCONTENT}" \
-        | ${GREP} -v ${eolignore} >> "${PATCH_DIR}/whitespace-eol.txt"
+        | "${eolignore[@]}" > "${PATCH_DIR}/whitespace-eol.txt"
+      # shellcheck disable=SC2016,SC2086
+      "${AWK}" '/\t/ {print $0}' \
+          "${GITDIFFCONTENT}" \
+        | "${tabsignore[@]}" > "${PATCH_DIR}/whitespace-tabs.txt"
     ;;
     full)
+      "${GIT}" grep -n -I --extended-regexp '[[:blank:]]$' \
+        | "${eolignore[@]}" > "${PATCH_DIR}/whitespace-eol.txt"
       # shellcheck disable=SC2086
-      ${GIT} grep -n -I --extended-regexp '[[:blank:]]$' \
-        | "${GREP}" -v ${eolignore} \
-         >> "${PATCH_DIR}/whitespace-eol.txt"
-      # shellcheck disable=SC2086
-      ${GIT} grep -n -I $'\t' \
-        | "${GREP}" -v ${tabsignore} \
-        >> "${PATCH_DIR}/whitespace-tabs.txt"
+      "${GIT}" grep -n -I $'\t' \
+        | "${tabsignore[@]}" > "${PATCH_DIR}/whitespace-tabs.txt"
     ;;
   esac
 
@@ -126,7 +137,9 @@ function whitespace_postcompile
         "${BUILDMODEMSG} has ${count} line(s) that end in whitespace. Use git apply --whitespace=fix <<patch_file>>. Refer https://git-scm.com/docs/git-apply"
     fi
 
-    whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-eol.txt" "end of line"
+    if [[ -n "${BUGLINECOMMENTS}" ]]; then
+      whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-eol.txt" "end of line"
+    fi
     add_footer_table whitespace "@@BASE@@/whitespace-eol.txt"
     ((result=result+1))
   fi
@@ -138,7 +151,9 @@ function whitespace_postcompile
     add_vote_table -1 whitespace "${BUILDMODEMSG} ${count}"\
       " line(s) with tabs."
     add_footer_table whitespace "@@BASE@@/whitespace-tabs.txt"
-    whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-tabs.txt" "tabs in line"
+    if [[ -n "${BUGLINECOMMENTS}" ]]; then
+      whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-tabs.txt" "tabs in line"
+    fi
     ((result=result+1))
   fi
 
