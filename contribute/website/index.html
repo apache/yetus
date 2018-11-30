@@ -123,15 +123,18 @@
 <h1 id="maintaining-the-yetus-website">Maintaining the Yetus Website</h1>
 
 <p>We use <a href="https://middlemanapp.com/">Middleman</a> to generate the website content from markdown and other
-dynamic templates. The following steps assume you have a working
-ruby 2.x environment setup:</p>
-<div class="highlight"><pre class="highlight shell"><code>gem <span class="nb">install </span>bundler
-bundle <span class="nb">install</span>
+dynamic templates.If you&rsquo;re interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
+by reading <a href="https://middlemanapp.com/basics/install/">Middleman&rsquo;s excellent documentation</a>.</p>
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: The Docker container launched by `./start-build-env.sh` should have everything you need to maintain the website.
+
+NOTE: You MUST have run `mvn install` at least once prior to running `mvn site`.
+</code></pre></div>
+<p>The following steps assume you have a working ruby 2.x environment setup:</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">sudo </span>gem <span class="nb">install </span>bundler
+<span class="nv">$ </span><span class="nb">cd </span>asf-site-src
+<span class="nv">$ </span>bundle <span class="nb">install</span>
 </code></pre></div>
 <p>and a working python 2.x environment for <a href="../in-progress/releasedocmaker/">releasedocmaker</a>.</p>
-
-<p>If you&rsquo;re interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
-by reading <a href="https://middlemanapp.com/basics/install/">Middleman&rsquo;s excellent documentation</a>.</p>
 
 <h2 id="make-changes-in-asf-site-src-source">Make changes in asf-site-src/source</h2>
 
@@ -147,25 +150,22 @@ vi contribute.html.md
 <div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> ../precommit/core.d
 vi 01-common.sh
 </code></pre></div>
-<p>e.g. Audience Annotations requires running Maven.</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nb">cd</span> ../audience-annotations-component
-mvn <span class="nt">-DskipTests</span> <span class="nt">-Pinclude-jdiff-module</span> javadoc:aggregate
-<span class="nb">cd</span> -
-</code></pre></div>
 <h2 id="generating-the-website">Generating the website</h2>
 
-<p>To generate the static website for Apache Yetus run the following commands at the root asf-site-src directory:</p>
-<div class="highlight"><pre class="highlight shell"><code>bundle <span class="nb">exec </span>middleman build
+<p>To generate the static website for Apache Yetus run the following command at the root directory:</p>
+<div class="highlight"><pre class="highlight shell"><code>mvn <span class="nt">--batch-mode</span> <span class="nb">install
+</span>mvn <span class="nt">--batch-mode</span> site
 </code></pre></div>
-<p>This command will create a static website in the <code>publish</code> sub directory. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:</p>
-<div class="highlight"><pre class="highlight shell"><code>open publish/index.html
+<p>Apache Yetus uses itself to build parts of its website. (&lsquo;Flying our own airplanes&rsquo;)  This command will first generate a full build of Apache Yetus and create a static website in the <code>asf-site-src/target/site</code> sub directory and a tarball of the site in yetus-dist/target/. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:</p>
+<div class="highlight"><pre class="highlight shell"><code>open asf-site-src/target/site/index.html
 </code></pre></div>
 <h2 id="live-development">Live Development</h2>
 
 <p>Live development of the site enables automatic reload when changes are saved.
-To enable run the following command and then open a browser and navigate to
+To enable, run the following commands and then open a browser and navigate to
 <a href="http://localhost:4567/">http://localhost:4567</a></p>
-<div class="highlight"><pre class="highlight shell"><code>bundle <span class="nb">exec </span>middleman
+<div class="highlight"><pre class="highlight shell"><code><span class="nb">cd </span>asf-site-src
+bundle <span class="nb">exec </span>middleman
 </code></pre></div>
 <h2 id="publishing-the-site">Publishing the Site</h2>
 
@@ -177,9 +177,9 @@ To enable run the following command and then open a browser and navigate to
 <span class="nv">$ </span>git checkout master
 <span class="nv">$ </span>git reset <span class="nt">--hard</span> origin/master
 <span class="nv">$ </span>git clean <span class="nt">-xdf</span>
-<span class="nv">$ </span><span class="nb">cd </span>asf-site-src
-<span class="nv">$ </span>bundle <span class="nb">exec </span>middleman build
-<span class="nv">$ </span>rsync <span class="nt">--quiet</span> <span class="nt">--checksum</span> <span class="nt">--inplace</span> <span class="nt">--recursive</span> publish/ ../../yetus-site/
+<span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> <span class="nb">install</span>
+<span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> site
+<span class="nv">$ </span>rsync <span class="nt">--quiet</span> <span class="nt">--checksum</span> <span class="nt">--inplace</span> <span class="nt">--recursive</span> yetus-dist/target/apache-yetus-<span class="k">${</span><span class="nv">project</span><span class="p">.version</span><span class="k">}</span><span class="nt">-SNAPSHOT-site</span>/ ../../yetus-site/
 <span class="nv">$ </span><span class="nb">cd</span> ../../yetus-site
 <span class="nv">$ </span><span class="c"># check the set of differences</span>
 <span class="nv">$ </span>git add <span class="nt">-p</span>
