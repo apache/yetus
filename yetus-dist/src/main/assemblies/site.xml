@@ -35,7 +35,7 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/../../precommit/target/site</directory>
-      <outputDirectory>documentation/in-progress/audience-annotations-apidocs</outputDirectory>
+      <outputDirectory>.</outputDirectory>
       <includes>
         <include>**</include>
       </includes>
@@ -56,6 +56,13 @@
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/../../asf-site-src/target/site</directory>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>**</include>
+      </includes>
+    </fileSet>
+        <fileSet>
+      <directory>${project.build.directory}/../../target/site</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>**</include>

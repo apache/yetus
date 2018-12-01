@@ -112,6 +112,8 @@
             </configuration>
           </execution>
           <execution>
+            <!-- we create a symlink of current version->in-progress.  This will cause
+                 middle man to generate two copies of the output. -->
             <id>in-progress</id>
             <phase>pre-site</phase>
             <goals>
@@ -233,25 +235,51 @@
 
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <configuration>
-          <filesets>
-            <fileset>
-              <directory>source/documentation/</directory>
-                <includes>
-                  <include>0*</include>
-                </includes>
-              <followSymlinks>false</followSymlinks>
-            </fileset>
-            <fileset>
-              <directory>source/documentation/in-progress</directory>
-                <includes>
-                  <include>CHANGELOG.md</include>
-                  <include>RELEASENOTES.md</include>
-                </includes>
-              <followSymlinks>false</followSymlinks>
-            </fileset>
-          </filesets>
-        </configuration>
+        <executions>
+          <execution>
+            <id>bogus-site</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <excludeDefaultDirectories>true</excludeDefaultDirectories>
+              <filesets>
+                <fileset>
+                  <!-- middleman generated two copies, in-progess and the project version. Remove
+                       the project version one. -->
+                  <directory>${project.build.directory}/site/documentation/${project.version}</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+          <execution>
+            <id>releng</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>source/documentation/</directory>
+                    <includes>
+                      <include>0*</include>
+                    </includes>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+                <fileset>
+                  <directory>source/documentation/in-progress</directory>
+                    <includes>
+                      <include>CHANGELOG.md</include>
+                      <include>RELEASENOTES.md</include>
+                    </includes>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>

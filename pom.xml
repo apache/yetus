@@ -279,8 +279,8 @@
               <source>${maven.compile.source}</source>
               <charset>${maven.compile.encoding}</charset>
               <reportOutputDirectory>${project.build.directory}/site</reportOutputDirectory>
-              <destDir>yetus-project/api</destDir>
-                             <doclet>org.apache.yetus.audience.tools.IncludePublicAnnotationsStandardDoclet</doclet>
+              <destDir>documentation/in-progress/javadocs</destDir>
+              <doclet>org.apache.yetus.audience.tools.IncludePublicAnnotationsStandardDoclet</doclet>
               <docletArtifacts>
                 <docletArtifact>
                   <groupId>org.apache.yetus</groupId>
