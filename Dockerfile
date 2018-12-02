@@ -26,4 +26,4 @@ RUN cd /ysrc \
     && cd /usr \
     && tar xzpf /ysrc/yetus-dist/target/artifacts/apache-yetus*bin.tar.gz \
        --strip 1 \
-    && rm -rf /ysrc
+    && rm -rf /ysrc /root/.m2
