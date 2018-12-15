@@ -182,12 +182,19 @@ RUN ln -s /usr/local/bin/pylint2 /usr/local/bin/pylint
 # Install ruby, rubocop, and ruby-lint
 ###
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y ruby ruby-dev \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
+    ruby \
+    ruby-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 RUN gem install rake
 RUN gem install rubocop
 RUN gem install ruby-lint
+RUN gem install bundler
+# set some reasonable defaults for ruby
+# user's can always override these as needed
+ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
+ENV BUNDLE_PATH /var/tmp/.bundler-gems
 
 ####
 # Install shellcheck (shell script lint)

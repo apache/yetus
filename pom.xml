@@ -47,6 +47,14 @@
     </mailingList>
   </mailingLists>
 
+  <distributionManagement>
+    <site>
+      <id>Apache Yetus</id>
+      <name>site</name>
+      <url>https://yetus.apache.org/</url>
+    </site>
+  </distributionManagement>
+
   <properties>
     <maven.min.version>3.2.0</maven.min.version>
     <maven.api.version>3.2</maven.api.version>
@@ -280,7 +288,7 @@
               <charset>${maven.compile.encoding}</charset>
               <reportOutputDirectory>${project.build.directory}/site</reportOutputDirectory>
               <destDir>documentation/in-progress/javadocs</destDir>
-              <doclet>org.apache.yetus.audience.tools.IncludePublicAnnotationsStandardDoclet</doclet>
+              <doclet>org.apache.yetus.audience.tools.ExcludePrivateAnnotationsStandardDoclet</doclet>
               <docletArtifacts>
                 <docletArtifact>
                   <groupId>org.apache.yetus</groupId>
@@ -289,13 +297,9 @@
                 </docletArtifact>
               </docletArtifacts>
               <useStandardDocletOptions>true</useStandardDocletOptions>
-
-              <!-- switch on dependency-driven aggregation -->
               <includeDependencySources>false</includeDependencySources>
-
               <dependencySourceIncludes>
-                <!-- include ONLY dependencies I control -->
-                <dependencySourceInclude>org.apache.hadoop:hadoop-annotations</dependencySourceInclude>
+                <dependencySourceInclude>org.apache.yetus:audience-annotations</dependencySourceInclude>
               </dependencySourceIncludes>
 
             </configuration>
