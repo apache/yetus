@@ -105,7 +105,7 @@ def releasenotes(output, version)
 
 end
 
-GITREPO = 'https://git-wip-us.apache.org/repos/asf/yetus.git'.freeze
+GITREPO = 'https://github.com/apache/yetus.git'.freeze
 
 def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize
   # TODO: get the version date from jira and do an up to date check instead of building each time.

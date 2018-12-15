@@ -72,9 +72,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:git://git.apache.org/yetus.git</connection>
-    <developerConnection>scm:git:https://git-wip-us.apache.org/repos/asf/yetus.git</developerConnection>
-    <url>https://git-wip-us.apache.org/repos/asf?p=yetus.git</url>
+    <connection>scm:git:https://github.com/apache/yetus.git</connection>
+    <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/yetus.git</developerConnection>
+    <url>https://github.com/apache/yetus.git</url>
   </scm>
   <issueManagement>
     <system>JIRA</system>

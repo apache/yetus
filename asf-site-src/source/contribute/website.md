@@ -82,7 +82,7 @@ bundle exec middleman
 Commit the publish directory to the asf-site branch. Presuming we start in a directory that holds your normal Yetus check out:
 
 ```bash
-$ git clone --single-branch --branch asf-site https://git-wip-us.apache.org/repos/asf/yetus.git yetus-site
+$ git clone --single-branch --branch asf-site https://github.com/apache/yetus.git yetus-site
 $ # Now build in the normal yetus check out
 $ cd yetus
 $ git fetch origin
