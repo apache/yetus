@@ -193,7 +193,7 @@
         <executions>
           <execution>
             <id>website-docs</id>
-            <phase>site</phase>
+            <phase>site:stage</phase>
             <goals>
               <goal>single</goal>
             </goals>

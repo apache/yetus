@@ -59,7 +59,7 @@ mvn clean install -Papache-release -Pgpg2
 mvn clean install -Papache-release -Dgpg.sign=skip
 
 # Build the website (requires a mvn install first)
-mvn site
+mvn site site:stage
 ```
 
 After executing one or more of the Apache Maven commands, artifacts will be in `yetus-dist/target/artifacts` or ready for a `mvn deploy`.

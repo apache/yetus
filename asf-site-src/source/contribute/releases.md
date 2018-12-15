@@ -200,7 +200,7 @@ Depending on how candidate evaluation goes, you may end up performing these step
 1. Build release artifacts. You should use our convenience script to create the tarballs and markdown documents for a release. Run the following from the release staging branch and inspect the results:
 
         $ mvn --batch-mode clean install -Papache-release
-        $ mvn --batch-mode site
+        $ mvn --batch-mode site site:stage
         $ ls -lah  yetus-dist/target/artifacts/*
 1. Check out the staging area for release candidates and make a directory for this candidate, somewhere outside of your working directory. Copy the artifacts (**except for the site.tar.gz**) from the previous step into place. For example, when working on RC1 for the 0.7.0 release
 

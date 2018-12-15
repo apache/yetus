@@ -59,7 +59,7 @@ To generate the static website for Apache Yetus run the following command at the
 
 ```bash
 mvn --batch-mode install
-mvn --batch-mode site
+mvn --batch-mode site site:stage
 ```
 
 Apache Yetus uses itself to build parts of its website. ('Flying our own airplanes')  This command will first generate a full build of Apache Yetus and create a static website in the `asf-site-src/target/site` sub directory and a tarball of the site in yetus-dist/target/. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:
@@ -90,7 +90,7 @@ $ git checkout master
 $ git reset --hard origin/master
 $ git clean -xdf
 $ mvn --batch-mode install
-$ mvn --batch-mode site
+$ mvn --batch-mode site site:stage
 $ rsync --quiet --checksum --inplace --recursive yetus-dist/target/apache-yetus-${project.version}-SNAPSHOT-site/ ../../yetus-site/
 $ cd ../../yetus-site
 $ # check the set of differences
