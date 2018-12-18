@@ -40,7 +40,7 @@
     <category rdf:resource="http://projects.apache.org/category/testing" />
     <repository>
       <GitRepository>
-        <location rdf:resource="https:/github.com/apache/yetus.git"/>
+        <location rdf:resource="https://github.com/apache/yetus.git"/>
         <browse rdf:resource="https://github.com/apache/yetus"/>
       </GitRepository>
     </repository>
