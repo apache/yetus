@@ -17,7 +17,7 @@
 pipeline {
   agent {
     // Hadoop and ubuntu for ASF, rest are private
-    label 'Hadoop||ubuntu||azaka||small'
+    label 'Hadoop||ubuntu||azaka||small&&!H19'
   }
   triggers {
     cron('@daily')
