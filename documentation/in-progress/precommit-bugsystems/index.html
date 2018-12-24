@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -161,7 +161,7 @@
 <h1 id="bugzilla-specific">Bugzilla Specific</h1>
 
 <p>Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with &lsquo;BZ:&rsquo;.  For example:</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch.sh <span class="o">(</span>other options<span class="o">)</span> BZ:4
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="o">(</span>other options<span class="o">)</span> BZ:4
 </code></pre></div>
 <p>&hellip; will pull down Bugzilla ID #4.</p>
 
@@ -169,7 +169,7 @@
 
 <h1 id="github-specific">GitHub Specific</h1>
 
-<p>GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that test-patch.sh will (generally) require that GitHub PRs be fully rebased (i.e., a single commit) in many circumstances.</p>
+<p>GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that <code>test-patch</code> will (generally) require that GitHub PRs be fully squashed and rebased (i.e., a single commit) in many circumstances.</p>
 
 <p>By default, the GitHub plug-in assumes that <a href="https://github.com">https://github.com</a> is the base URL for GitHub.  Enterprise users may override this with the <code>--github-base-url</code> for the normal web user interface and <code>--github-api-url</code> for the API URL.  Personalities may use GITHUB_API_URL and GITHUB_BASE_URL.</p>
 
@@ -194,6 +194,26 @@
 
 <p>The GitHub bugsystem plugin will attempt to download the unified diff that the pull request references.
 Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.</p>
+
+<h1 id="gitlab-specific">GitLab Specific</h1>
+
+<p>GitLab supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that <code>test-patch</code> will (generally) require that GitLab MRs be fully squashed and rebased (i.e., a single commit) in many circumstances.</p>
+
+<p>By default, the GitLab plug-in assumes that <a href="https://gitlab.com">https://gitlab.com</a> is the base URL for GitHub.  Enterprise users may override this with the <code>--gitlab-base-url</code> for the normal web user interface and <code>--gitlab-api-url</code> for the API URL.  Personalities may use GITLAB_API_URL and GITLAB_BASE_URL.</p>
+
+<p>The specific repository on GitLab is defined with either <code>--gitlab-repo</code> on the command line or GITLAB_REPO in a personality.  It should take the form of <q>user/repo</q>.</p>
+
+<p>In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitLab plug-in supports tokens via the <code>--gitlab-token</code> option or GITLAB_TOKEN environment variable.</p>
+
+<p>GitLab merge requests may be directly processed on the command line in two ways:</p>
+
+<ul>
+<li>GL:(MR number)</li>
+<li>GLSHA:(MR SHA1 number)</li>
+</ul>
+
+<p>The GitLab bugsystem plugin will attempt to download the unified diff that the merge request references.
+Merge requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the merge request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.</p>
 
 <h1 id="jira-specific">JIRA Specific</h1>
 

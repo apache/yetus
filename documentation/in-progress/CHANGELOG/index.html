@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -121,7 +121,7 @@
 
 <h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h2 id="release-0-9-0-snapshot-2018-11-30">Release 0.9.0-SNAPSHOT - 2018-11-30</h2>
+<h2 id="release-0-9-0-snapshot-2018-12-23">Release 0.9.0-SNAPSHOT - 2018-12-23</h2>
 
 <h3 id="important-issues">IMPORTANT ISSUES:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -136,6 +136,48 @@
 <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-15">YETUS-15</a></td>
 <td style="text-align: left">build environment</td>
 <td style="text-align: left">Critical</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-681">YETUS-681</a></td>
+<td style="text-align: left">Add robots plugin type</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-723">YETUS-723</a></td>
+<td style="text-align: left">Overhaul the docker support for 2018</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+</tbody></table>
+<h3 id="new-features">NEW FEATURES:</h3>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">JIRA</th>
+<th style="text-align: left">Summary</th>
+<th style="text-align: left">Priority</th>
+<th style="text-align: left">Component</th>
+<th style="text-align: left">Reporter</th>
+<th style="text-align: left">Contributor</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-35">YETUS-35</a></td>
+<td style="text-align: left">add support for jshint</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Kengo Seki</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-714">YETUS-714</a></td>
+<td style="text-align: left">add yamllint support</td>
+<td style="text-align: left">Major</td>
 <td style="text-align: left">Test Patch</td>
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
@@ -198,6 +240,30 @@
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-716">YETUS-716</a></td>
+<td style="text-align: left">Upgrade pylint to support both python2 and python3</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-699">YETUS-699</a></td>
+<td style="text-align: left">HTML report doesn&rsquo;t generate links when console-urls is turned on</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-708">YETUS-708</a></td>
+<td style="text-align: left">Clean up the source</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
 </tbody></table>
 <h3 id="bug-fixes">BUG FIXES:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -240,6 +306,80 @@
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-730">YETUS-730</a></td>
+<td style="text-align: left">Delete /root/.m2 from apache/yetus image</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-713">YETUS-713</a></td>
+<td style="text-align: left">pylint: rewrite to make it easier to maintain and fix stderr output in brief report</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-719">YETUS-719</a></td>
+<td style="text-align: left">github basic authentication is broken</td>
+<td style="text-align: left">Blocker</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-729">YETUS-729</a></td>
+<td style="text-align: left">in-progress docs post-mavenization are broken</td>
+<td style="text-align: left">Blocker</td>
+<td style="text-align: left">website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-720">YETUS-720</a></td>
+<td style="text-align: left">github/jira bridge collapses when jira issues list isn&rsquo;t defined</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-727">YETUS-727</a></td>
+<td style="text-align: left">whitespace plugin: multiple fixes</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-739">YETUS-739</a></td>
+<td style="text-align: left">yetus&rsquo; mvn site fails when run with built-in dockerifle</td>
+<td style="text-align: left">Blocker</td>
+<td style="text-align: left">build, Test Patch, website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+</tbody></table>
+<h3 id="sub-tasks">SUB-TASKS:</h3>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">JIRA</th>
+<th style="text-align: left">Summary</th>
+<th style="text-align: left">Priority</th>
+<th style="text-align: left">Component</th>
+<th style="text-align: left">Reporter</th>
+<th style="text-align: left">Contributor</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-682">YETUS-682</a></td>
+<td style="text-align: left">add gitlab as a supported bugsystem</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Test Patch</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
 </tbody></table>
 <h3 id="other">OTHER:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -256,6 +396,14 @@
 <td style="text-align: left">Major</td>
 <td style="text-align: left">Test Patch</td>
 <td style="text-align: left">Fokko Driesprong</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-736">YETUS-736</a></td>
+<td style="text-align: left">Update docs, etc, post gitbox move</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">build, website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
 </tbody></table>

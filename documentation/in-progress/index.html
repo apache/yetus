@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -129,10 +129,13 @@
 <li>For an overview of Yetus&rsquo; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
 <li>To get started on your project, including an explanation of what we&rsquo;ll expect in a runtime environment and what optional utilities we&rsquo;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
 <li>Customize how precommit interacts with your project by choosing amongst <a href="precommit-buildtools">build systems</a>, <a href="precommit-bugsystems">bug systems</a> and <a href="precommit-testformats">test formats</a>.</li>
+<li>Empower the test environment using <a href="precommit-docker">Docker</a>.</li>
 <li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&rsquo;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
 </ul>
 
 <p>For a complete guide to the Precommit API, see <a href="precommit-apidocs/">the generated API documentation</a>.</p>
+
+<p>For help with CI tools and automation, see our documentation about <a href="precommit-robots">robots</a>.</p>
 
 <h1 id="yetus-release-doc-maker">Yetus Release Doc Maker</h1>
 
@@ -157,10 +160,12 @@ Options:
 </code></pre></div>
 <p>You can mark a file to be ignored by shelldocs by adding <q>SHELLDOC-IGNORE</q> as a comment in its own line.</p>
 
-<h1 id="yetus-audience-annotations">Yetus Audience Annotations</h1>
+<h1 id="javadocs-yetus-audience-annotations-and-more">Javadocs: Yetus Audience Annotations and more</h1>
 
 <p>Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.
-You can refer the user documentation <a href="interface-classification">here</a> and the javadocs <a href="audience-annotations-apidocs/">here</a>.</p>
+You can refer the user documentation <a href="interface-classification">here</a>.</p>
+
+<p>All javadocs (including audience annotations) are located <a href="javadocs/">here</a>.</p>
 
     </div>
       <div class="container">

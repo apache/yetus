@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -154,7 +154,7 @@ vi 01-common.sh
 
 <p>To generate the static website for Apache Yetus run the following command at the root directory:</p>
 <div class="highlight"><pre class="highlight shell"><code>mvn <span class="nt">--batch-mode</span> <span class="nb">install
-</span>mvn <span class="nt">--batch-mode</span> site
+</span>mvn <span class="nt">--batch-mode</span> site site:stage
 </code></pre></div>
 <p>Apache Yetus uses itself to build parts of its website. (&lsquo;Flying our own airplanes&rsquo;)  This command will first generate a full build of Apache Yetus and create a static website in the <code>asf-site-src/target/site</code> sub directory and a tarball of the site in yetus-dist/target/. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:</p>
 <div class="highlight"><pre class="highlight shell"><code>open asf-site-src/target/site/index.html
@@ -170,7 +170,7 @@ bundle <span class="nb">exec </span>middleman
 <h2 id="publishing-the-site">Publishing the Site</h2>
 
 <p>Commit the publish directory to the asf-site branch. Presuming we start in a directory that holds your normal Yetus check out:</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>git clone <span class="nt">--single-branch</span> <span class="nt">--branch</span> asf-site https://git-wip-us.apache.org/repos/asf/yetus.git yetus-site
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>git clone <span class="nt">--single-branch</span> <span class="nt">--branch</span> asf-site https://github.com/apache/yetus.git yetus-site
 <span class="nv">$ </span><span class="c"># Now build in the normal yetus check out</span>
 <span class="nv">$ </span><span class="nb">cd </span>yetus
 <span class="nv">$ </span>git fetch origin
@@ -178,7 +178,7 @@ bundle <span class="nb">exec </span>middleman
 <span class="nv">$ </span>git reset <span class="nt">--hard</span> origin/master
 <span class="nv">$ </span>git clean <span class="nt">-xdf</span>
 <span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> <span class="nb">install</span>
-<span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> site
+<span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> site site:stage
 <span class="nv">$ </span>rsync <span class="nt">--quiet</span> <span class="nt">--checksum</span> <span class="nt">--inplace</span> <span class="nt">--recursive</span> yetus-dist/target/apache-yetus-<span class="k">${</span><span class="nv">project</span><span class="p">.version</span><span class="k">}</span><span class="nt">-SNAPSHOT-site</span>/ ../../yetus-site/
 <span class="nv">$ </span><span class="nb">cd</span> ../../yetus-site
 <span class="nv">$ </span><span class="c"># check the set of differences</span>

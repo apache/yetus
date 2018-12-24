@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -294,7 +294,7 @@ $ git format-patch --stdout origin/master &gt; path/to/patches/YETUS-XXX.1.patch
 <li>Update your <code>${HOME}/.m2/settings.xml</code> file to include the Maven snapshot information as indicated on <a href="https://www.apache.org/dev/publishing-maven-artifacts.html">https://www.apache.org/dev/publishing-maven-artifacts.html</a></li>
 <li><p>Build release artifacts. You should use our convenience script to create the tarballs and markdown documents for a release. Run the following from the release staging branch and inspect the results:</p>
 <div class="highlight"><pre class="highlight plaintext"><code>$ mvn --batch-mode clean install -Papache-release
-$ mvn --batch-mode site
+$ mvn --batch-mode site site:stage
 $ ls -lah  yetus-dist/target/artifacts/*
 </code></pre></div></li>
 <li><p>Check out the staging area for release candidates and make a directory for this candidate, somewhere outside of your working directory. Copy the artifacts (<strong>except for the site.tar.gz</strong>) from the previous step into place. For example, when working on RC1 for the 0.7.0 release</p>
@@ -455,7 +455,7 @@ $ /some/path/to/the/unpacked/candidate/bin/test-patch --project=hbase HBASE-1772
 ============================================================================
 |   0  |         reexec  |  0m 0s     | Docker mode activated.
 |  +1  |      hbaseanti  |  0m 0s     | Patch does not have any anti-patterns.
-|  +1  |        @author  |  0m 0s     | The patch does not contain any @author
+|  +1  |        @\author  |  0m 0s     | The patch does not contain any @\author
 |      |                 |            | tags.
 |  +1  |     test4tests  |  0m 0s     | The patch appears to include 2 new or
 |      |                 |            | modified test files.

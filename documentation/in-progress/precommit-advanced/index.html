@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -123,40 +123,11 @@
 <h1 id="test-patch">test-patch</h1>
 
 <ul>
-<li><a href="#docker-support">Docker Support</a></li>
 <li><a href="#test-reaper">Process Reaper</a></li>
 <li><a href="#plug-ins">Plug-ins</a></li>
 <li><a href="#personalities">Personalities</a></li>
 <li><a href="#important-variables">Important Variables</a></li>
 </ul>
-
-<h1 id="docker-support">Docker Support</h1>
-
-<p>By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a container.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a Jenkins instance.</p>
-
-<p>The <code>--docker</code> parameter tells test-patch to run in Docker mode. The <code>--dockerfile</code> parameter allows one to provide a custom Dockerfile. The Dockerfile should contain all of the necessary binaries and tooling needed to run the test.  test-patch will copy this file up until the text <q>YETUS CUT HERE</q> to a different directory and then append its necessary hooks to re-launch itself prior to executing docker.</p>
-
-<p>If a custom Dockerfile cannot be used or the docker executable does not work, test-patch will attempt to recover by switching to its bundled Dockerfile or disabling docker support and running locally.  This behavior can be changed with the <code>--dockeronfail</code> option.  It takes a list of comma-delimited settings:</p>
-
-<ul>
-<li>fallback - Use the bundled Dockerfile</li>
-<li>continue - Turn off docker support</li>
-<li>fail - fail the test</li>
-</ul>
-
-<p>The &lsquo;fail&rsquo; setting is always the last option that test-patch will use and may be omitted unless it is the only option.</p>
-
-<p>For example, <code>--dockeronfail=continue</code> means if the Dockerfile can&rsquo;t be found, just turn off Docker support and continue running.  <code>--dockeronfail=fallback</code> will switch to the bundled Dockerfile and then fail the build if docker fails to work. <code>--dockeronfail=fail</code> means to just fail the build and do not try any other mechanisms of recovery. The default is &lsquo;fallback,continue,fail&rsquo; which will allow test-patch to try to continue executing as much as it possibily can.</p>
-
-<p>Be aware that if the Dockerfile is found and the docker command works, test-patch will always fail the build if the Dockerfile itself fails the build.  It will not attempt to continue in the non-Docker mode.</p>
-
-<p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in &ndash;robot mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a <q>safe</q> mode that prevents deletions via the <code>--dockerdelrep</code> option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.</p>
-
-<h2 id="resource-controls">Resource Controls</h2>
-
-<p>Docker&rsquo;s <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container&rsquo;s memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details. Apache Yetus also sets the &ndash;oom-score-adj to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
-
-<p>Additionally, if bash v4 and Linux is in use, a separate process is launched to keep a rolling count of the maximum number of threads (not processes!) in use at one time. This number will be reported at the end of the test-patch run.  Depending upon the build, languages, features enabled, etc, this number may be helpful in determining what the value of <code>--proclimit</code></p>
 
 <h1 id="process-reaper">Process Reaper</h1>
 
@@ -384,7 +355,7 @@ function is called almost immediately after the personality is loaded and plug-i
 <p>There are a handful of extremely important system variables that make life easier for personality and plug-in writers.  Other variables may be provided by individual plug-ins.  Check their development documentation for more information.</p>
 
 <ul>
-<li><p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). Under Jenkins, this is always true.</p></li>
+<li><p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For <a href="precommit-robots">robots</a>, this is always true.</p></li>
 <li><p>BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz_ARGS to pass on to the build tool command line. (e.g., MAVEN_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.</p></li>
 <li><p>CHANGED_FILES[@] is an array of all files that appear to be added, deleted, or modified in the patch.</p></li>
 <li><p>CHANGED_MODULES[@] is an array of all modules that house all of the CHANGED_FILES[@].  Be aware that the root of the source tree is reported as &lsquo;.&rsquo;.</p></li>
@@ -395,7 +366,7 @@ function is called almost immediately after the personality is loaded and plug-i
 <li><p>PATCH_BRANCH_DEFAULT is the name of the branch in the git repo that is considered the master.  This is useful to set in personalities.</p></li>
 <li><p>PATCH_DIR is the name of the temporary directory that houses test-patch artifacts (such as logs and the patch file itself)</p></li>
 <li><p>PATCH_NAMING_RULE should be a URL that points to a project&rsquo;s on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project&rsquo;s personality.</p></li>
-<li><p>TEST_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST_THREADS is the number of threads that have been requested to run in parallel.</p></li>
+<li><p>TEST_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST_THREADS is the number of threads that have been requested to run in parallel. For <a href="precommit-robots">robots</a>, this is always true.</p></li>
 </ul>
 
     </div>
