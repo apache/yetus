@@ -18,7 +18,8 @@
 # SHELLDOC-IGNORE
 
 # shellcheck disable=2034
-if [[ "${GITLAB_CI}" = true ]]; then
+if [[ "${GITLAB_CI}" = true ]] &&
+  declare -f compile_cycle >/dev/null; then
   CONSOLE_USE_BUILD_URL=true
   PATCH_DIR=/tmp/yetus-out
   RELOCATE_PATCH_DIR=true

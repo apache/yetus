@@ -16,7 +16,8 @@
 
 # SHELLDOC-IGNORE
 
-if [[ "${TRAVIS}" == true ]]; then
+if [[ "${TRAVIS}" == true ]] &&
+  declare -f compile_cycle >/dev/null; then
   # shellcheck disable=SC2034
   ROBOT=true
 

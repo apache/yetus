@@ -18,7 +18,8 @@
 # SHELLDOC-IGNORE
 
 # shellcheck disable=2034
-if [[ "${CIRCLECI}" = true ]]; then
+if [[ "${CIRCLECI}" = true ]] &&
+  declare -f compile_cycle >/dev/null; then
   if [[ ${CIRCLE_REPOSITORY_URL} =~ github.com ]]; then
     # github artifacts show up like so:
     #BUILD_URL_ARTIFACTS=https://circle-artifacts.com/gh/username/repo/buildnum/artifacts/0/dir/file

@@ -20,7 +20,8 @@
 # we need two for Jenkins because users may
 # use the jenkins-cli which will also read JENKINS_URL
 # shellcheck disable=SC2034
-if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]]; then
+if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]] &&
+  declare -f compile_cycle >/dev/null; then
   ROBOT=true
   INSTANCE=${EXECUTOR_NUMBER}
   ROBOTTYPE=jenkins
