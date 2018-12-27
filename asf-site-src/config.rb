@@ -180,8 +180,8 @@ after_configuration do
   # has to be outside of hte asf-site-src directory.
   # TODO when we can, update to middleman 4 so we can use multiple source dirs
   # instead of symlinks
-  FileUtils.mkdir_p 'target/site/documentation/in-progress/precommit-apidocs'
-  precommit_shelldocs('target/site/documentation/in-progress/precommit-apidocs', '../precommit/src/main/shell')
+  FileUtils.mkdir_p 'target/in-progress/precommit-apidocs/'
+  precommit_shelldocs('target/in-progress/precommit-apidocs/', '../precommit/src/main/shell')
   unless data.versions.releases.nil?
     data.versions.releases.each do |release|
       build_release_docs('target', release)
