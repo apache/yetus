@@ -25,6 +25,8 @@ RUBY_LINT=${RUBY_LINT:-$(command -v ruby-lint 2>/dev/null)}
 function ruby_lint_usage
 {
   yetus_add_option "--ruby-lint=<path>" "path to ruby-lint executable"
+  yetus_add_option "--ruby-lint-config=<path>" "path to ruby-lint config, relative to source tree [default: none]"
+
 }
 
 function ruby_lint_parse_args
@@ -35,6 +37,9 @@ function ruby_lint_parse_args
     case ${i} in
     --ruby-lint=*)
       RUBY_LINT=${i#*=}
+    ;;
+    --ruby-lint-config=*)
+      RUBY_LINT_CONFIG=${i#*=}
     ;;
     esac
   done
@@ -57,6 +62,29 @@ function ruby_lint_precheck
   fi
 }
 
+function ruby_lint_exec
+{
+  declare i
+  declare repostatus=$1
+  declare args
+
+  args=('-p' 'syntastic')
+
+  echo "Running ruby-lint against identified ruby scripts."
+  pushd "${BASEDIR}" >/dev/null || return 1
+  if [[ -f "${RUBY_LINT_CONFIG}" ]]; then
+    args+=('-c' "${RUBY_LINT_CONFIG}")
+  fi
+
+  for i in "${CHANGED_FILES[@]}"; do
+    if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
+      "${RUBY_LINT}" -p "${args[@]}" "${i}" | sort -t : -k 1,1 -k 3,3n -k 4,4n >> "${PATCH_DIR}/branch-ruby-lint-result.txt"
+    fi
+  done
+  popd >/dev/null || return 1
+  return 0
+}
+
 function ruby_lint_preapply
 {
   local i
@@ -69,14 +97,8 @@ function ruby_lint_preapply
 
   start_clock
 
-  echo "Running ruby-lint against identified ruby scripts."
-  pushd "${BASEDIR}" >/dev/null || return 1
-  for i in "${CHANGED_FILES[@]}"; do
-    if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      "${RUBY_LINT}" -p syntastic "${i}" | sort -t : -k 1,1 -k 3,3n -k 4,4n >> "${PATCH_DIR}/branch-ruby-lint-result.txt"
-    fi
-  done
-  popd >/dev/null || return 1
+  ruby_lint_exec branch
+
   # keep track of how much as elapsed for us already
   RUBY_LINT_TIMER=$(stop_clock)
   return 0
@@ -143,15 +165,7 @@ function ruby_lint_postapply
   # by setting the clock back
   offset_clock "${RUBY_LINT_TIMER}"
 
-  echo "Running ruby-lint against identified ruby scripts."
-  # we re-check this in case one has been added
-  pushd "${BASEDIR}" >/dev/null || return 1
-  for i in "${CHANGED_FILES[@]}"; do
-    if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      "${RUBY_LINT}" -p syntastic "${i}" | sort -t : -k 1,1 -k 3,3n -k 4,4n >> "${PATCH_DIR}/patch-ruby-lint-result.txt"
-    fi
-  done
-  popd >/dev/null || return 1
+  ruby_lint_exec patch
 
   # shellcheck disable=SC2016
   RUBY_LINT_VERSION=$("${RUBY_LINT}" -v | "${AWK}" '{print $2}')
