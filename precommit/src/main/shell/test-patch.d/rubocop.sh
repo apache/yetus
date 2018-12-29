@@ -25,6 +25,7 @@ RUBOCOP=${RUBOCOP:-$(command -v rubocop 2>/dev/null)}
 function rubocop_usage
 {
   yetus_add_option "--rubocop=<path>" "path to rubocop executable"
+  yetus_add_option "--rubocopy-config=<path>" "relative path to rubocop config in source tree [default: none]"
 }
 
 function rubocop_parse_args
@@ -35,6 +36,9 @@ function rubocop_parse_args
     case ${i} in
     --rubocop=*)
       RUBOCOP=${i#*=}
+    ;;
+    --rubocop-config=*)
+      RUBOCOP_CONFIG=${i#*=}
     ;;
     esac
   done
@@ -58,9 +62,34 @@ function rubocop_precheck
 }
 
 
+function rubocop_exec
+{
+  declare i
+  declare repostatus=$1
+  declare -a args
+
+  args=('-f' 'e')
+
+  echo "Running rubocop against identified ruby scripts."
+  pushd "${BASEDIR}" >/dev/null || return 1
+
+  if [[ -f "${RUBOCOP_CONFIG}" ]]; then
+    args+=('-c' "${RUBOCOP_CONFIG}")
+  fi
+
+  for i in "${CHANGED_FILES[@]}"; do
+    if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
+      "${RUBOCOP}" "${args[@]}" "${i}" | "${AWK}" '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/${repostatus}-rubocop-result.txt"
+    fi
+  done
+  popd >/dev/null || return 1
+  return 0
+}
+
 function rubocop_preapply
 {
-  local i
+  declare i
+  declare -a args
 
   if ! verify_needed_test rubocop; then
     return 0
@@ -70,15 +99,8 @@ function rubocop_preapply
 
   start_clock
 
-  echo "Running rubocop against identified ruby scripts."
-  pushd "${BASEDIR}" >/dev/null || return 1
-  for i in "${CHANGED_FILES[@]}"; do
-    if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      "${RUBOCOP}" -f e "${i}" | "${AWK}" '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/branch-rubocop-result.txt"
-    fi
-  done
-  popd >/dev/null || return 1
-  # keep track of how much as elapsed for us already
+  rubocop_exec branch
+
   RUBOCOP_TIMER=$(stop_clock)
   return 0
 }
@@ -116,15 +138,7 @@ function rubocop_postapply
   # by setting the clock back
   offset_clock "${RUBOCOP_TIMER}"
 
-  echo "Running rubocop against identified ruby scripts."
-  # we re-check this in case one has been added
-  pushd "${BASEDIR}" >/dev/null || return 1
-  for i in "${CHANGED_FILES[@]}"; do
-    if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      "${RUBOCOP}" -f e "${i}" | "${AWK}" '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/patch-rubocop-result.txt"
-    fi
-  done
-  popd >/dev/null || return 1
+  rubocop_exec patch
 
   # shellcheck disable=SC2016
   RUBOCOP_VERSION=$("${RUBOCOP}" -v | "${AWK}" '{print $NF}')
