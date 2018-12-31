@@ -29,7 +29,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^HBASE-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/hbase"
+  GITHUB_REPO_DEFAULT="apache/hbase"
 
   # TODO use PATCH_BRANCH to select hadoop versions to use.
   # All supported Hadoop versions that we want to test the compilation with

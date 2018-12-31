@@ -24,7 +24,7 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=maven
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/drill"
+  GITHUB_REPO_DEFAULT="apache/drill"
   #shellcheck disable=SC2034
   PATCH_NAMING_RULE="https://drill.apache.org/docs/apache-drill-contribution-guidelines/"
   #shellcheck disable=SC2034

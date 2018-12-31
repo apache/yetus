@@ -28,7 +28,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^(GEODE)-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/incubator-geode"
+  GITHUB_REPO_DEFAULT="apache/incubator-geode"
   #shellcheck disable=SC2034
   BUILDTOOL=gradle
 #   PYLINT_OPTIONS="--indent-string='  '"

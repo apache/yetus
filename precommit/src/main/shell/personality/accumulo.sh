@@ -29,7 +29,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^ACCUMULO-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/accumulo"
+  GITHUB_REPO_DEFAULT="apache/accumulo"
   #shellcheck disable=SC2034
   PATCH_NAMING_RULE="http://accumulo.apache.org/git.html#contributors"
   # We want to invoke the 'check' goal, not the default 'checkstyle'. We define

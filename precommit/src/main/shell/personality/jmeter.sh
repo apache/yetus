@@ -26,7 +26,7 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=ant
   # shellcheck disable=SC2034
-  GITHUB_REPO="apache/jmeter"
+  GITHUB_REPO_DEFAULT="apache/jmeter"
   # shellcheck disable=SC2034
   JMETER_DOWNLOAD_JARS=false
 }

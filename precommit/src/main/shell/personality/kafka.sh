@@ -30,7 +30,7 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=gradle
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/kafka"
+  GITHUB_REPO_DEFAULT="apache/kafka"
 }
 
 ## @description  Queue up modules for this personality

@@ -28,7 +28,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^TEZ-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/tez"
+  GITHUB_REPO_DEFAULT="apache/tez"
   #shellcheck disable=SC2034
   PATCH_NAMING_RULE="https://cwiki.apache.org/confluence/display/TEZ/How+to+Contribute+to+Tez"
 }

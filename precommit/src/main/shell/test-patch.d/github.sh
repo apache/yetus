@@ -151,6 +151,13 @@ function github_breakup_url
   fi
 }
 
+## @description initalize github
+function github_initialize
+{
+  if [[ -z "${GITHUB_REPO}" ]]; then
+    GITHUB_REPO=${GITHUB_REPO_DEFAULT:-}
+  fi
+}
 
 ## @description based upon a github PR, attempt to link back to JIRA
 function github_find_jira_title
