@@ -64,7 +64,7 @@ function whitespace_linecomment_reporter
     "${file}" \
     > "${tmpfile}"
 
-  bugsystem_linecomments "whitespace:" "${tmpfile}"
+  bugsystem_linecomments_queue "whitespace" "${tmpfile}"
   rm "${tmpfile}"
 }
 

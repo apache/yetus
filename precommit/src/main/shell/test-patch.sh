@@ -860,6 +860,9 @@ function parse_args
       --linecomments=*)
         BUGLINECOMMENTS=${i#*=}
         BUGLINECOMMENTS=${BUGLINECOMMENTS//,/ }
+        if [[ -z "${BUGLINECOMMENTS}" ]]; then
+          BUGLINECOMMENTS=" "
+        fi
       ;;
       --modulelist=*)
         yetus_comma_to_array USER_MODULE_LIST "${i#*=}"
@@ -2292,40 +2295,121 @@ function check_unittests
   return 0
 }
 
-## @description  Write comments onto bug systems that have code review support.
+## @description  Queue up comments to write into bug systems
+## @description  that have code review support, if such support
+## @description  enabled/available.
 ## @description  File should be in the form of "file:line:comment"
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
+## @param        plugin
 ## @param        filename
-function bugsystem_linecomments
+function bugsystem_linecomments_queue
 {
-  declare title=$1
+  declare plugin=$1
   declare fn=$2
   declare line
-  declare bugs
-  declare realline
+  declare linenum
   declare text
-  declare idxline
-  declare uniline
 
   if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
     return
   fi
 
-  while read -r line;do
+  while read -r line; do
     file=$(echo "${line}" | cut -f1 -d:)
-    realline=$(echo "${line}" | cut -f2 -d:)
+    if [[ "${file}" =~ ^\./ ]]; then
+      file=${file:2}
+    fi
+    linenum=$(echo "${line}" | cut -f2 -d:)
     text=$(echo "${line}" | cut -f3- -d:)
-    idxline="${file}:${realline}:"
-    uniline=$(${GREP} "${idxline}" "${GITUNIDIFFLINES}" | cut -f3 -d: )
 
-    for bugs in ${BUGLINECOMMENTS}; do
-      if declare -f "${bugs}_linecomments" >/dev/null;then
-        "${bugs}_linecomments" "${title}" "${file}" "${realline}" "${uniline}" "${text}"
-      fi
-    done
+    echo "${file}:${linenum}:${plugin}:${text}" >> "${PATCH_DIR}/linecomments-in.txt"
+
   done < "${fn}"
+}
+
+## @description  Call relevant bug systems to write comments
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function bugsystem_linecomments_writer
+{
+  declare fn=$1
+  declare linenum=$2
+  shift 2
+  declare -a text
+  text=("$@")
+  declare idxline
+  declare uniline
+
+  if [[ -z "${fn}" ]]; then
+    return
+  fi
+
+  idxline="${fn}:${linenum}:"
+  uniline=$("${GREP}" "${idxline}" "${GITUNIDIFFLINES}" | cut -f3 -d: )
+
+  for bugs in ${BUGLINECOMMENTS}; do
+    if declare -f "${bugs}_linecomments" >/dev/null;then
+      "${bugs}_linecomments" "${fn}" "${linenum}" "${uniline}" "${linetext[@]}"
+    fi
+  done
+}
+
+## @description  Write all of the bugsystem linecomments
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function bugsystem_linecomments_trigger
+{
+  declare line
+  declare fn
+  declare linenum
+  declare text
+  declare -a linetext
+  declare prevnum
+  declare prevfn
+  declare plugin
+
+  if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
+    return
+  fi
+
+  # sort the file such that all files and lines are now next to each other
+  sort "${PATCH_DIR}/linecomments-in.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
+
+  while read -r line;do
+    fn=$(echo "${line}" | cut -f1 -d:)
+    if [[ -z "${prevfn}" ]]; then
+      prevfn=${fn}
+    fi
+
+    linenum=$(echo "${line}" | cut -f2 -d:)
+    if [[ -z "${prevnum}" ]]; then
+      prevnum=${linenum}
+    fi
+
+    text=$(echo "${line}" | cut -f3- -d:)
+
+    if [[ "${prevfn}" == "${fn}" ]] &&
+       [[ ${prevnum} -eq ${linenum} ]]; then
+      linetext+=("${text}")
+      continue
+    fi
+
+    bugsystem_linecomments_writer "${prevfn}" "${prevnum}" "${linetext[@]}"
+    prevfn=${fn}
+    prevnum=${linenum}
+    linetext=("${text}")
+  done < "${PATCH_DIR}/linecomments-sorted.txt"
+
+  bugsystem_linecomments_writer "${prevfn}" "${prevnum}" "${linetext[@]}"
+  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
+    yetus_debug "Keeping linecomments files for debugging"
+  else
+    rm "${PATCH_DIR}/linecomments-in.txt" "${PATCH_DIR}/linecomments-sorted.txt"
+  fi
 }
 
 ## @description  Write the final output to the selected bug system
@@ -2343,6 +2427,8 @@ function bugsystem_finalreport
     fi
   fi
   add_footer_table "Powered by" "Apache Yetus ${VERSION} http://yetus.apache.org"
+
+  bugsystem_linecomments_trigger
 
   for bugs in ${BUGCOMMENTS}; do
     if declare -f "${bugs}_finalreport" >/dev/null;then
@@ -3108,7 +3194,12 @@ function initialize
     BUGCOMMENTS="${BUGCOMMENTS} console"
   fi
 
-  BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
+
+  if [[ "${BUGLINECOMMENTS}" == " " ]]; then
+    BUGLINECOMMENTS=""
+  else
+    BUGLINECOMMENTS=${BUGLINECOMMENTS:-${BUGCOMMENTS}}
+  fi
 
   # we need to do this BEFORE plugins initialize
   # because they may change what they do based upon

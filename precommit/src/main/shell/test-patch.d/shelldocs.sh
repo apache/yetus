@@ -177,7 +177,7 @@ function shelldocs_postapply
   if [[ ${diffPostpatch} -gt 0 ]] ; then
     add_vote_table -1 shelldocs "${BUILDMODEMSG} ${statstring}"
     add_footer_table shelldocs "@@BASE@@/diff-patch-shelldocs.txt"
-    bugsystem_linecomments "shelldocs" "${PATCH_DIR}/diff-patch-shelldocs.txt"
+    bugsystem_linecomments_queue "shelldocs" "${PATCH_DIR}/diff-patch-shelldocs.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
     add_vote_table +1 shelldocs "${BUILDMODEMSG} ${statstring}"

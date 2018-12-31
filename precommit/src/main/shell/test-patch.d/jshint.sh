@@ -184,7 +184,7 @@ function jshint_postapply
   if [[ ${diffPostpatch} -gt 0 ]] ; then
     add_vote_table -1 jshint "${BUILDMODEMSG} ${statstring}"
     add_footer_table jshint "@@BASE@@/diff-patch-jshint.txt"
-    bugsystem_linecomments "jshint" "${PATCH_DIR}/diff-patch-jshint.txt"
+    bugsystem_linecomments_queue "jshint" "${PATCH_DIR}/diff-patch-jshint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
     add_vote_table +1 jshint "${BUILDMODEMSG} ${statstring}"
