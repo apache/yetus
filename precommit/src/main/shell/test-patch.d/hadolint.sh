@@ -179,7 +179,7 @@ function hadolint_postapply
   if [[ ${diffPostpatch} -gt 0 ]] ; then
     add_vote_table -1 hadolint "${BUILDMODEMSG} ${statstring}"
     add_footer_table hadolint "@@BASE@@/diff-patch-hadolint.txt"
-    bugsystem_linecomments "hadolint" "${PATCH_DIR}/diff-patch-hadolint.txt"
+    bugsystem_linecomments_queue "hadolint" "${PATCH_DIR}/diff-patch-hadolint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
     add_vote_table +1 hadolint "${BUILDMODEMSG} ${statstring}"

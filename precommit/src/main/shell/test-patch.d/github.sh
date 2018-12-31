@@ -421,18 +421,15 @@ function github_locate_patch
 
 function github_linecomments
 {
-  declare plugin=$1
-  declare file=$2
+  declare file=$1
   # shellcheck disable=SC2034
-  declare realline=$3
-  declare uniline=$4
-  declare text=$5
+  declare linenum=$2
+  declare uniline=$3
+  shift 3
+  declare -a text
+  text=("$@")
   declare tempfile="${PATCH_DIR}/ghcomment.$$.${RANDOM}"
   declare githubauth
-
-  if [[ "${file}" =~ ^./ ]]; then
-    file=${file##./}
-  fi
 
   if [[ -z "${GITHUB_COMMITSHA}" ]]; then
     GITHUB_COMMITSHA=$("${GREP}" \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
@@ -447,11 +444,13 @@ function github_linecomments
   # build our REST post
   {
     printf "{\"body\":\""
-    echo "${plugin}: ${text}" \
+    for line in "${text[@]}"; do
+      echo "${line}" \
       | "${SED}" -e 's,\\,\\\\,g' \
         -e 's,\",\\\",g' \
         -e 's,$,\\r\\n,g' \
       | tr -d '\n'
+    done
     echo "\","
     echo "\"commit_id\":\"${GITHUB_COMMITSHA}\","
     echo "\"path\":\"${file}\","

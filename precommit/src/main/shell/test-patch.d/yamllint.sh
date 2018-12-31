@@ -141,7 +141,7 @@ function yamllint_postapply
   if [[ ${diffPostpatch} -gt 0 ]] ; then
     add_vote_table -1 yamllint "${BUILDMODEMSG} ${statstring}"
     add_footer_table yamllint "@@BASE@@/diff-patch-yamllint.txt"
-    bugsystem_linecomments "yamllint" "${PATCH_DIR}/diff-patch-yamllint.txt"
+    bugsystem_linecomments_queue "yamllint" "${PATCH_DIR}/diff-patch-yamllint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
     add_vote_table +1 yamllint "${BUILDMODEMSG} ${statstring}"

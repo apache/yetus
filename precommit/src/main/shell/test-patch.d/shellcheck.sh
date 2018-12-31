@@ -240,7 +240,7 @@ function shellcheck_postapply
   if [[ ${diffPostpatch} -gt 0 ]] ; then
     add_vote_table -1 shellcheck "${BUILDMODEMSG} ${statstring}"
     add_footer_table shellcheck "@@BASE@@/diff-patch-shellcheck.txt"
-    bugsystem_linecomments "shellcheck" "${PATCH_DIR}/diff-patch-shellcheck.txt"
+    bugsystem_linecomments_queue "shellcheck" "${PATCH_DIR}/diff-patch-shellcheck.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
     add_vote_table +1 shellcheck "${BUILDMODEMSG} ${statstring}"
