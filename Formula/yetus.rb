@@ -16,35 +16,37 @@
 #
 # Homebrew formula to install Apache Yetus
 class Yetus < Formula
-  desc 'Enable contribution and release processes for software projects'
-  homepage 'https://yetus.apache.org/'
-  url 'https://www.apache.org/dyn/closer.lua?path=/yetus/0.8.0/yetus-0.8.0-bin.tar.gz'
-  sha256 'dea3bcec00c54ff27bcdc3f829749c3ea13bacdcd048792f6aae486ecf2e022e'
+  desc "Enable contribution and release processes for software projects"
+  homepage "https://yetus.apache.org/"
+  url "https://www.apache.org/dyn/closer.lua?path=/yetus/0.8.0/yetus-0.8.0-bin.tar.gz"
+  sha256 "dea3bcec00c54ff27bcdc3f829749c3ea13bacdcd048792f6aae486ecf2e022e"
 
-  option 'with-all', 'Build with all dependencies. Note that some dependencies such as '\
-    'Perl::Critic, Pylint, RuboCop and ruby-lint still need to be installed manually.'
+  option "with-all", "Build with all dependencies. Note that some dependencies such as "\
+    "Perl::Critic, Pylint, RuboCop and ruby-lint still need to be installed manually."
 
   dependencies = [
     # programming languages
     :java,
-    'scala',
+    "scala",
 
     # build tools
-    'ant',
-    'autoconf',
-    'automake',
-    'cmake',
-    'libtool',
-    'gradle',
-    'maven',
+    "ant",
+    "autoconf",
+    "automake",
+    "cmake",
+    "libtool",
+    "gradle",
+    "maven",
 
     # test tools
-    'findbugs',
-    'shellcheck'
+    "hadolint",
+    "shellcheck",
+    "spotbugs",
+    "yamllint"
   ]
 
   dependencies.each do |dependency|
-    if build.with?('all')
+    if build.with?("all")
       depends_on dependency
     else
       depends_on dependency => :optional
@@ -52,17 +54,17 @@ class Yetus < Formula
   end
 
   def install
-    rm Dir['bin/*.{bat,cmd,dll,exe}']
-    inreplace Dir['bin/*'], '$(dirname -- "${BASH_SOURCE-0}")/..', libexec
-    libexec.install Dir['*']
+    rm Dir["bin/*.{bat,cmd,dll,exe}"]
+    inreplace Dir["bin/*"], '$(dirname -- "${BASH_SOURCE-0}")/..', libexec
+    libexec.install Dir["*"]
     bin.install_symlink Dir["#{libexec}/bin/*"]
   end
 
   test do
-    system "#{bin}/qbt", '--version'
-    system "#{bin}/releasedocmaker", '-V'
-    system "#{bin}/shelldocs", '-V'
-    system "#{bin}/smart-apply-patch", '--version'
-    system "#{bin}/test-patch", '--version'
+    system "#{bin}/qbt", "--version"
+    system "#{bin}/releasedocmaker", "-V"
+    system "#{bin}/shelldocs", "-V"
+    system "#{bin}/smart-apply-patch", "--version"
+    system "#{bin}/test-patch", "--version"
   end
 end
