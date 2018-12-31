@@ -35,7 +35,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^(HADOOP|YARN|MAPREDUCE|HDFS|HDDS)-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/hadoop"
+  GITHUB_REPO_DEFAULT="apache/hadoop"
   #shellcheck disable=SC2034
   PYLINT_OPTIONS="--indent-string='  '"
 

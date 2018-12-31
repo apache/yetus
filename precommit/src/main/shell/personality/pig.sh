@@ -26,7 +26,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^PIG-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/pig"
+  GITHUB_REPO_DEFAULT="apache/pig"
   #shellcheck disable=SC2034
   BUILDTOOL=ant
 }

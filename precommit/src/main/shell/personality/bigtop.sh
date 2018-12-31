@@ -28,5 +28,5 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=gradle
   # shellcheck disable=SC2034
-  GITHUB_REPO="apache/bigtop"
+  GITHUB_REPO_DEFAULT="apache/bigtop"
 }

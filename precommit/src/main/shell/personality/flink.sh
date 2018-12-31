@@ -28,7 +28,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^FLINK-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/flink"
+  GITHUB_REPO_DEFAULT="apache/flink"
 }
 
 add_test_type flinklib

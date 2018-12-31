@@ -28,7 +28,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^TAJO-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/tajo"
+  GITHUB_REPO_DEFAULT="apache/tajo"
   #shellcheck disable=SC2034
   PATCH_NAMING_RULE="https://cwiki.apache.org/confluence/display/TAJO/How+to+Contribute+to+Tajo"
 }

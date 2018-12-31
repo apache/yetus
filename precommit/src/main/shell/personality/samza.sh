@@ -30,5 +30,5 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=gradle
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/samza"
+  GITHUB_REPO_DEFAULT="apache/samza"
 }

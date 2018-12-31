@@ -72,6 +72,10 @@ function gitlab_parse_args
 
 function gitlab_initialize
 {
+  if [[ -z "${GITLAB_REPO}" ]]; then
+    GITLAB_REPO=${GITLAB_REPO_DEFAULT:-}
+  fi
+
   # convert the repo into a URL encoded one.  Need this for lots of things.
   GITLAB_REPO_ENC=${GITLAB_REPO/\//%2F}
 }

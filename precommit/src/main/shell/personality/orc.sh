@@ -28,7 +28,7 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=cmake
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/orc"
+  GITHUB_REPO_DEFAULT="apache/orc"
 
   # protobuf fails
   #shellcheck disable=SC2034

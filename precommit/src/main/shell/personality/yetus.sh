@@ -28,7 +28,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^YETUS-[0-9]+$'
   #shellcheck disable=SC2034
-  GITHUB_REPO="apache/yetus"
+  GITHUB_REPO_DEFAULT="apache/yetus"
 }
 
 ## @description  Queue up modules for this personality
