@@ -14,6 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+PATCH_METHOD=""
+PATCH_METHODS=("gitapply" "patchcmd")
+PATCH_LEVEL=0
+PATCH_HINT=""
+
 ## @description Use curl to download the patch as a last resort
 ## @audience    private
 ## @stability   evolving
@@ -71,6 +76,28 @@ function guess_patch_file
   fi
 
   patchfile_dryrun_driver "${patch}"
+}
+
+## @description  Provide a hint on what tool should be used to process a patch file
+## @description  Sets PATCH_HINT to provide the hint. Will not do anything if
+## @description  PATCH_HINT or PATCH_METHOD is already set
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param path to patch file to test
+function patch_file_hinter
+{
+  declare patch=$1
+
+  if [[ -z "${PATCH_HINT}" ]] && [[ -z "${PATCH_METHOD}" ]]; then
+    if head -n 1 "${patch}" | "${GREP}" -q -E "^From [a-z0-9]* Mon Sep 17 00:00:00 2001" &&
+      "${GREP}" -q "^From: " "${patch}" &&
+      "${GREP}" -q "^Subject: \[PATCH" "${patch}" &&
+      "${GREP}" -q "^---" "${patch}"; then
+      PATCH_HINT="git"
+      return
+    fi
+  fi
 }
 
 ## @description  Given ${PATCH_OR_ISSUE}, determine what type of patch file is in use,
@@ -204,7 +231,7 @@ function gitapply_dryrun
   declare patchfile=$1
   declare prefixsize=${2:-0}
 
-  while [[ ${prefixsize} -lt 4
+  while [[ ${prefixsize} -lt 2
     && -z ${PATCH_METHOD} ]]; do
     if yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
        "${GIT}" apply --binary -v --check "-p${prefixsize}" "${patchfile}"; then
@@ -234,7 +261,7 @@ function patchcmd_dryrun
   declare patchfile=$1
   declare prefixsize=${2:-0}
 
-  while [[ ${prefixsize} -lt 4
+  while [[ ${prefixsize} -lt 2
     && -z ${PATCH_METHOD} ]]; do
     # shellcheck disable=SC2153
     if yetus_run_and_redirect "${PATCH_DIR}/patch-dryrun.log" \
@@ -265,8 +292,14 @@ function patchfile_dryrun_driver
   declare patchfile=$1
   declare method
 
+  patch_file_hinter "${patchfile}"
+
   #shellcheck disable=SC2153
   for method in "${PATCH_METHODS[@]}"; do
+    if [[ -n "${PATCH_HINT}" ]] &&
+       [[ !  "${method}" =~ ${PATCH_HINT} ]]; then
+        continue
+    fi
     if declare -f "${method}_dryrun" >/dev/null; then
       "${method}_dryrun" "${patchfile}"
     fi

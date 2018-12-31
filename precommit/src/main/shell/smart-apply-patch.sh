@@ -324,7 +324,7 @@ if [[ ${COMMITMODE} = true ]]; then
   fi
   PATCH_METHODS=("gitam" "${PATCH_METHODS[@]}")
 fi
-
+patch_file_hinter "${PATCH_DIR}/patch"
 patchfile_dryrun_driver "${PATCH_DIR}/patch"
 RESULT=$?
 
