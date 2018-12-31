@@ -77,6 +77,7 @@ function common_defaults
       GREP=${GREP:-/usr/xpg4/bin/grep}
       PATCH=${PATCH:-/usr/gnu/bin/patch}
       SED=${SED:-/usr/xpg4/bin/sed}
+      STAT=${STAT:-stat}
     ;;
     *)
       AWK=${AWK:-awk}
@@ -87,6 +88,7 @@ function common_defaults
       GREP=${GREP:-grep}
       PATCH=${PATCH:-patch}
       SED=${SED:-sed}
+      STAT=${STAT:-stat}
     ;;
   esac
 
@@ -185,6 +187,12 @@ function common_args
       ;;
       --sed-cmd=*)
         SED=${i#*=}
+      ;;
+      --stat-cmd=*)
+        # This is used by Docker-in-Docker mode presently, but if other
+        # things end up needing it later, it's better to just put it here
+        #shellcheck disable=SC2034
+        STAT=${i#*=}
       ;;
       --user-plugins=*)
         USER_PLUGIN_DIR=${i#*=}

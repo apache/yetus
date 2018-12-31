@@ -27,6 +27,7 @@ DOCKER_PLATFORM=""
 DOCKER_TAG=""
 DOCKER_IN_DOCKER=false
 DOCKER_SOCKET="/var/run/docker.sock"
+DOCKER_SOCKET_GID=-1
 
 declare -a DOCKER_EXTRAARGS
 declare -a DOCKER_VERSION
@@ -173,6 +174,22 @@ function docker_initialize
   IFS='.' read -r -a DOCKER_VERSION <<< "${dockvers}"
   if [[ "${DOCKER_VERSION[0]}" -lt 17 ]]; then
     add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 17.0)."
+    bugsystem_finalreport 1
+    cleanup_and_exit 1
+  fi
+
+  # stat is non-POSIX but one of two forms is generally
+  # present on a machine.  See also precommit-docker.md docs.
+  if [[ "${OSTYPE}" == "Darwin" ]]; then
+    # At the user level, OS X lies about the permissions on the
+    # socker due to the VM-layer that is present.
+    DOCKER_SOCKET_GID=0
+  elif "${STAT}" -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
+    DOCKER_SOCKET_GID=$("${STAT}" -c '%g' "${DOCKER_SOCKET}")
+  elif "${STAT}" -f '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
+    DOCKER_SOCKET_GID=$("${STAT}" -f '%g' "${DOCKER_SOCKET}")
+  elif [[ ${DOCKER_IN_DOCKER} == true ]]; then
+    add_vote_table -1 docker "Docker-in-Docker mode (--dockerind) requires a working stat command."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -659,6 +676,7 @@ function docker_run_image
     --build-arg GROUP_ID="${GROUP_ID}" \
     --build-arg USER_ID="${USER_ID}" \
     --build-arg USER_NAME="${USER_NAME}" \
+    --build-arg DOCKER_SOCKET_GID="${DOCKER_SOCKET_GID}" \
     --label org.apache.yetus=\"\" \
     --label org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}" \
     --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \

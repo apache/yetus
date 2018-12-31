@@ -18,13 +18,22 @@ ARG baseimagename
 # hadolint ignore=DL3006
 FROM ${baseimagename}
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 ARG USER_NAME
 ARG GROUP_ID
 ARG USER_ID
+ARG DOCKER_SOCKET_GID
 
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" || true
 RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
-RUN groupadd -g docker "${USER_NAME}" || true
+
+# docker socket handling.  unless /etc/group is mounted, we have to do this.
+
+RUN if [ "${DOCKER_SOCKET_GID}" != -1 ]; then groupadd --non-unique --gid ${DOCKER_SOCKET_GID} dockersock || true; fi
+RUN if [ "${DOCKER_SOCKET_GID}" = -1 ]; then groupadd  --non-unique --gid ${DOCKER_SOCKET_GID} dockersock || true; fi
+RUN adduser "${USER_NAME}" dockersock || true
+
 RUN mkdir -p /testptch/extras
 RUN chmod a+rwx /testptch/extras
 COPY user_params.txt /testptch/user_params.txt

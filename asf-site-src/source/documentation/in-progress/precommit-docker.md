@@ -74,3 +74,5 @@ In some cases, the work being preformed inside the Docker container requires ext
 # Docker in Docker
 
 With the usage of the `--dockerind` flag, test-patch will mount the `/var/run/docker.sock` UNIX socket into the container to enable Docker-in-Docker mode.  Additionally, the `--docker-socket` option will let one set the socket to mount in situations where that isn't the location of the socket, such as a dockerd proxy providing authentication.
+
+    NOTE: Using --dockerind requires the availability of the `stat` command that supports either -c '%g' (GNU form) or -f '%g' (BSD form).
