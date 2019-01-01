@@ -62,7 +62,7 @@ function docker_usage
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
     yetus_add_option "--docker-bash-debug=<bool>" "Enable bash -x mode running in a container (default: ${YETUS_DOCKER_BASH_DEBUG})"
     yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
-    yetus_add_option "--dockerind=<file>" "Enable Docker-in-Docker by mounting the Docker socket in the container (default: '${DOCKER_IN_DOCKER}')"
+    yetus_add_option "--dockerind=<bool>" "Enable Docker-in-Docker by mounting the Docker socket in the container (default: '${DOCKER_IN_DOCKER}')"
     yetus_add_option "--docker-platform=<plat>" "Use a platform string for building and pulling (default: ${DOCKER_PLATFORM})"
     yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
     yetus_add_option "--docker-socket=<socket>" "Mount given socket as /var/run/docker.sock into the container when Docker-in-Docker mode is enabled (default: '${DOCKER_SOCKET}')"
