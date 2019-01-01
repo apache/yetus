@@ -39,6 +39,11 @@
       <artifactId>jython-shaded</artifactId>
       <version>${jython-shaded.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.yetus</groupId>
+      <artifactId>audience-annotations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

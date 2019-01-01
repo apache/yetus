@@ -26,7 +26,24 @@ import org.python.core.PyException;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.yetus.audience.InterfaceStability;
+
+/**
+ * Jython-based interface to shelldocs.
+ */
+
 public class ShellDocs {
+  /**
+   *
+   * This method calls the main() method of the shelldocs Python program.
+   *
+   * @param args argument string
+   * @throws PyException standard exception thrown for Jython
+   */
+
+  @InterfaceAudience.Public
+  @InterfaceStability.Evolving
   public static void main(final String[] args) throws PyException {
     List<String> list = new LinkedList<String>(Arrays.asList(args));
     list.add(0,"shelldocs");
