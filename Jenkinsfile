@@ -21,12 +21,6 @@ pipeline {
     label 'Hadoop||ubuntu||azaka||small'
   }
 
-  // Waiting on INFRA-17471 so that webhooks work
-  // in the meantime ...
-  triggers {
-    pollSCM('@hourly')
-  }
-
   options {
     buildDiscarder(logRotator(numToKeepStr: '5'))
     timeout (time: 9, unit: 'HOURS')
@@ -213,9 +207,9 @@ pipeline {
                       reportFiles: 'report.html',
                       reportName: 'Yetus Report'
         ])
-          if (env.BRANCH_NAME == 'master') {
-            emailext(subject: '$DEFAULT_SUBJECT',
-                  body:
+        if (env.BRANCH_NAME == 'master') and (env.BUILD_URL.contains('apache.org')) {
+          emailext(subject: '$DEFAULT_SUBJECT',
+                   body:
 '''For more details, see ${BUILD_URL}
 
 ${CHANGES, format="[%d] (%a) %m"}
@@ -236,8 +230,10 @@ ${FILE,path="out/brief.txt"}
     // on failure, we send an email to the person who changed
     // the code and the person who requested the job to get run
     failure {
-      emailext(subject: '$DEFAULT_SUBJECT',
-              body:
+      script {
+        if (env.BUILD_URL.contains('apache.org')) {
+          emailext(subject: '$DEFAULT_SUBJECT',
+                  body:
 '''For more details, see ${BUILD_URL}
 
 ${CHANGES, format="[%d] (%a) %m"}
@@ -246,13 +242,15 @@ HTML Version: ${BUILD_URL}Yetus_20Report/
 
 ${FILE,path="out/brief.txt"}
 ''',
-              recipientProviders: [
-                [$class: 'DevelopersRecipientProvider'],
-                [$class: 'RequesterRecipientProvider']
-              ],
-              replyTo: '$DEFAULT_REPLYTO',
-              to: '$DEFAULT_RECIPIENTS'
-      )
+                  recipientProviders: [
+                    [$class: 'DevelopersRecipientProvider'],
+                    [$class: 'RequesterRecipientProvider']
+                  ],
+                  replyTo: '$DEFAULT_REPLYTO',
+                  to: '$DEFAULT_RECIPIENTS'
+          )
+        }
+      }
     }
 
     // Jenkins pipeline jobs fill slaves on PRs without this :(
