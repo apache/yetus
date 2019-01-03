@@ -190,7 +190,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 RUN gem install rake
 RUN gem install rubocop
 RUN gem install ruby-lint
-RUN gem install bundler
+RUN gem install bundler -v 1.17.3
 # set some reasonable defaults for ruby
 # user's can always override these as needed
 ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
