@@ -28,7 +28,7 @@ if ! yetus_file_to_array OVERWRITEARGS /testptch/user_params.txt; then
 fi
 
 # do not want this archived
-rm /testptch/user_params.txt
+rm -f /testptch/user_params.txt
 
 OVERWRITEARGS+=("--reexec")
 OVERWRITEARGS+=("--dockermode")
