@@ -208,7 +208,7 @@ pipeline {
                       reportFiles: 'report.html',
                       reportName: 'Yetus Report'
         ])
-        if (env.BRANCH_NAME == 'master') and (env.BUILD_URL.contains('apache.org')) {
+        if ((env.BRANCH_NAME == 'master') && (env.BUILD_URL.contains('apache.org'))) {
           emailext(subject: '$DEFAULT_SUBJECT',
                    body:
 '''For more details, see ${BUILD_URL}
