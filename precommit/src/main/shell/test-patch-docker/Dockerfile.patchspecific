@@ -38,7 +38,7 @@ RUN mkdir -p /testptch/extras
 RUN chmod a+rwx /testptch/extras
 COPY user_params.txt /testptch/user_params.txt
 COPY launch-test-patch.sh /testptch/launch-test-patch.sh
-RUN chmod a+rwx /testptch/user_params.txt
+RUN chown -R "${USER_NAME}":"${GROUP_ID}" /testptch || true
 RUN chmod a+rx /testptch/launch-test-patch.sh
 RUN chown -R "${USER_NAME}" "/home/${USER_NAME}" || true
 ENV HOME "/home/${USER_NAME}"
