@@ -21,12 +21,17 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.yetus.audience.InterfaceStability;
+
 /**
  * Goal which creates the X directories.
  */
 @Mojo(name = "parallel-mkdirs",
       defaultPhase = LifecyclePhase.GENERATE_TEST_RESOURCES,
         threadSafe = true)
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
 public final class CreateDirsMojo extends AbstractMojo {
 
   /**
@@ -45,6 +50,8 @@ public final class CreateDirsMojo extends AbstractMojo {
    * Execute our plugin.
    * @throws MojoExecutionException  an error occurred
    */
+  @InterfaceAudience.Private
+  @InterfaceStability.Unstable
   public void execute() throws MojoExecutionException {
     int numDirs = getForkCount();
 
@@ -55,6 +62,8 @@ public final class CreateDirsMojo extends AbstractMojo {
    * Get the real number of parallel threads.
    * @return int number of threads
    */
+  @InterfaceAudience.Private
+  @InterfaceStability.Unstable
   public int getForkCount() {
     int calcForkCount = 1;
     if (forkCount != null) {

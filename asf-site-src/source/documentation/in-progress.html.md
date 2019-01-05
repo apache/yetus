@@ -35,7 +35,7 @@ For help with CI tools and automation, see our documentation about [robots](prec
 # Yetus Release Doc Maker
 
 The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
-documenation [here](releasedocmaker).
+documenation [here](releasedocmaker). See also the (yetus-maven-plugin)[#yetus-maven-plugin] for Apache Maven-specific information.
 
 # Yetus Shelldocs
 
@@ -57,6 +57,10 @@ Options:
 ```
 
 You can mark a file to be ignored by shelldocs by adding "SHELLDOC-IGNORE" as a comment in its own line.
+
+# yetus-maven-plugin
+
+Many Apache Yetus functions are available directly from Apache Maven and compatible build systems, without the need to use annoying wrappers!  The (yetus-maven-plugin documentation)[yetus-maven-plugin/] provides all the key details.
 
 # Javadocs: Yetus Audience Annotations and more
 

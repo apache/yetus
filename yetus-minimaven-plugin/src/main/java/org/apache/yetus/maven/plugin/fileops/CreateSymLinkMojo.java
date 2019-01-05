@@ -26,12 +26,17 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.yetus.audience.InterfaceStability;
+
 /**
  * Goal which creates symlinks.
  */
 @Mojo(name = "symlink",
       defaultPhase = LifecyclePhase.PACKAGE,
       threadSafe = true)
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
 public final class CreateSymLinkMojo extends AbstractMojo {
 
   /**
