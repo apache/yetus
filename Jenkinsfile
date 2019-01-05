@@ -61,6 +61,7 @@ pipeline {
                            usernameVariable: 'JIRA_USER')]) {
             sh '''#!/usr/bin/env bash
 
+                USE_DOCKER_FLAG=${USE_DOCKER_FLAG:-true}
                 # The ASF Jenkins servers are always full of broken JVMs left over
                 # from really terrible jobs/bugs in Java. This should get moved to
                 # the core code as part of YETUS-745
