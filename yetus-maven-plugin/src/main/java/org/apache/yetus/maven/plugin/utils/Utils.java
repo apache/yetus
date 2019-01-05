@@ -32,7 +32,7 @@ import org.apache.yetus.audience.InterfaceStability;
  * Random utilities for running Yetus components.
  */
 @InterfaceAudience.Private
-@InterfaceStability.Unstable
+@InterfaceStability.Evolving
 public final class Utils {
 
   /**
@@ -55,6 +55,8 @@ public final class Utils {
   /**
    * Constructor for generic utilities.
    */
+  @InterfaceAudience.Private
+  @InterfaceStability.Evolving
   public Utils() {
     this.zipFile = new ZipInputStream(this.getClass()
           .getClassLoader()
@@ -69,6 +71,8 @@ public final class Utils {
    * @throws InterruptedException an error occurred
    * @return int process return code
    */
+  @InterfaceAudience.Private
+  @InterfaceStability.Evolving
   public int execCmd(final String cmd, final String... args)
       throws IOException, InterruptedException {
     File cmdFile = new File(binDir, cmd);
@@ -91,6 +95,8 @@ public final class Utils {
    * @param destDir The unzip directory where to extractthe  file.
    * @throws IOException an error occurred
    */
+  @InterfaceAudience.Private
+  @InterfaceStability.Evolving
   public void extractYetus(final File destDir) throws IOException {
     this.binDir = new File(destDir, "bin");
 

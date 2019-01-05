@@ -23,6 +23,8 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.yetus.audience.InterfaceStability;
 import org.apache.yetus.releasedocmaker.ReleaseDocMaker;
 
 /**
@@ -31,6 +33,8 @@ import org.apache.yetus.releasedocmaker.ReleaseDocMaker;
 @Mojo(name = "releasedocmaker",
       defaultPhase = LifecyclePhase.PRE_SITE,
         threadSafe = true)
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
 public final class ReleaseDocMakerMojo extends AbstractMojo {
 
   /**
@@ -144,6 +148,8 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
    * Execute our plugin.
    * @throws MojoExecutionException  an error occurred
    */
+  @InterfaceAudience.Private
+  @InterfaceStability.Unstable
   public void execute() throws MojoExecutionException {
 
     buildArgs();

@@ -32,6 +32,8 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
+import org.apache.yetus.audience.InterfaceAudience;
+import org.apache.yetus.audience.InterfaceStability;
 
 /**
  * Goal which creates symlinks.
@@ -39,6 +41,8 @@ import org.apache.commons.io.IOUtils;
 @Mojo(name = "bin4libs",
       defaultPhase = LifecyclePhase.PACKAGE,
       threadSafe = true)
+@InterfaceAudience.Private
+@InterfaceStability.Unstable
 public final class MakeBins4Libs extends AbstractMojo {
 
   /**

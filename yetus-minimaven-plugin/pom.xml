@@ -51,6 +51,11 @@
       <version>${maven.api.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.yetus</groupId>
+      <artifactId>audience-annotations</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
