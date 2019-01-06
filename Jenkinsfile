@@ -254,9 +254,27 @@ ${FILE,path="out/brief.txt"}
       }
     }
 
-    // Jenkins pipeline jobs fill slaves on PRs without this :(
+    // Jenkins has issues in some configurations sending
+    // signals to child processes. Additionally, Github Branch
+    // Source plug-in will quickly fill Jenkins build hosts
+    // with PR directories.  This cleanup stanze kills
+    // any left over processes/containers and frees disk space
+    // on exit
     cleanup() {
-      deleteDir()
+      script {
+        sh '''
+            if [ -f "${WORKSPACE}/${PATCHDIR}/pidfile.txt" ]; then
+              echo "test-patch process appears to still be running: killing"
+              kill `cat "${WORKSPACE}/${PATCHDIR}/pidfile.txt"` || true
+              sleep 10
+            fi
+            if [ -f "${WORKSPACE}/${PATCHDIR}/cidfile.txt" ]; then
+              echo "test-patch container appears to still be running: killing"
+              docker kill `cat "${WORKSPACE}/${PATCHDIR}/cidfile.txt"` || true
+            fi
+            '''
+        deleteDir()
+      }
     }
   }
 }

@@ -717,7 +717,7 @@ function docker_run_image
   # make the kernel prefer to kill us if we run out of RAM
   DOCKER_EXTRAARGS+=("--oom-score-adj" "500")
 
-  DOCKER_EXTRAARGS+=("--cidfile=${PATCH_DIR}/cidfile")
+  DOCKER_EXTRAARGS+=("--cidfile=${PATCH_DIR}/cidfile.txt")
 
   if [[ "${DOCKER_IN_DOCKER}" == true ]]; then
     if [[ -e "${DOCKER_SOCKET}" ]]; then
@@ -735,8 +735,7 @@ function docker_run_image
 
   DOCKER_EXTRAARGS+=(--name "${containername}")
 
-  trap 'docker_signal_handler' SIGTERM
-  trap 'docker_signal_handler' SIGINT
+  trap 'docker_signal_handler' SIGTERM SIGINT SIGHUP
 
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
     dockercmd run --rm=true -i \
@@ -758,6 +757,7 @@ function docker_run_image
   printf '\n\n'
   echo "Cleaning up docker image used for testing."
   dockercmd rmi "${patchimagename}" > /dev/null
+  rm "${PATCH_DIR}/cidfile.txt"
   cleanup_and_exit ${retval}
 }
 
@@ -769,10 +769,12 @@ function docker_signal_handler
 {
   declare cid
 
-  cid=$(cat "${PATCH_DIR}/cidfile")
+  cid=$(cat "${PATCH_DIR}/cidfile.txt")
 
   yetus_error "ERROR: Caught signal. Killing docker container:"
-  dockercmd kill "${cid}"
+  echo "ERROR: Caught signal. Killing docker container: ${cid}" > "${PATCH_DIR}/signal.log"
+  dockercmd kill "${cid}" | tee -a "${PATCH_DIR}/signal.log"
+  rm "${PATCH_DIR}/cidfile.txt"
   yetus_error "ERROR: Exiting."
   cleanup_and_exit 143 # 128 + 15 -- SIGTERM
 }
