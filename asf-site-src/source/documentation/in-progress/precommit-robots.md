@@ -113,11 +113,34 @@ pipeline {
     JAVA_HOME = '/usr/lib/jvm/java-8-openjdk-amd64'
   }
 
-  ...
-
 }
 
 ```
+
+ Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  `test-patch` will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  `pidfile.txt` contains the master `test-patch` process id and `cidfile.txt` contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:
+
+ ```groovy
+    post {
+      cleanup() {
+        script {
+          sh '''
+            if [ -f "${env.PATCH_DIR}/pidfile.txt" ]; then
+              kill `cat "${env.PATCH_DIR}/pidfile.txt"` || true
+              sleep 5
+            fi
+            if [ -f "${env.PATCH_DIR}/cidfile.txt" ]; then
+              docker kill `cat "${env.PATCH_DIR}/cidfile.txt"` || true
+              sleep 5
+            fi
+            '''
+            ...
+            deletedir()
+        }
+      }
+    }
+ ```
+
+
 
 See also
   * See also the source tree's `Jenkinsfile` for some tips and tricks.

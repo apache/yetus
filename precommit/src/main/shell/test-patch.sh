@@ -2470,6 +2470,10 @@ function cleanup_and_exit
     big_console_header "Finished build."
   fi
 
+  if [[ "${DOCKERMODE}" != true ]]; then
+    rm "${PATCH_DIR}/pidfile.txt"
+  fi
+
   # shellcheck disable=SC2086
   exit ${result}
 }
@@ -3208,6 +3212,10 @@ function initialize
   # to be working even after this is executed here!
   if declare -f docker_initialize >/dev/null; then
     docker_initialize
+  fi
+
+  if [[ "${DOCKERMODE}" != true ]]; then
+    echo "$$" > "${PATCH_DIR}/pidfile.txt"
   fi
 
   plugins_initialize
