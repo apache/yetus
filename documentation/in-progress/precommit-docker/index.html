@@ -180,7 +180,8 @@
 <h1 id="docker-in-docker">Docker in Docker</h1>
 
 <p>With the usage of the <code>--dockerind</code> flag, test-patch will mount the <code>/var/run/docker.sock</code> UNIX socket into the container to enable Docker-in-Docker mode.  Additionally, the <code>--docker-socket</code> option will let one set the socket to mount in situations where that isn&rsquo;t the location of the socket, such as a dockerd proxy providing authentication.</p>
-
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: Using --dockerind requires the availability of the `stat` command that supports either -c '%g' (GNU form) or -f '%g' (BSD form).
+</code></pre></div>
     </div>
       <div class="container">
     <hr>

@@ -245,6 +245,34 @@
 <li>Many changes to how parameters are passed between pre-Docker and post-Docker.</li>
 </ul>
 
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-750">YETUS-750</a> | <em>Major</em> | <strong>don&rsquo;t try patch on a git format-patch file</strong></li>
+</ul>
+
+<p>Apache Yetus tools no longer support patch levels greater than 1.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-751">YETUS-751</a> | <em>Minor</em> | <strong>line comments generate too many messages; not obvious how to disable</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>The API for bug system line comments has completely changed.  Please see the relevant documentation.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-721">YETUS-721</a> | <em>Critical</em> | <strong>personalities shouldn&rsquo;t directly set repository information</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>Personalities should no longer directly set GITHUB_REPO or GITLAB_REPO.  Instead, they should set GITHUB_REPO_DEFAULT and GITLAB_REPO_DEFAULT.  This will allow for certain CI environments to proper auto-determine the place where the build is coming from.</p>
+
     </div>
       <div class="container">
     <hr>

@@ -102,106 +102,80 @@
 
       <div class="container">
         <!---
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
 -->
 
-<ul>
-<li>Public/Stable/Not Replaceable
+<h1 id="convenience-docker-hub-images">Convenience Docker Hub Images</h1>
+
+<p>While not official releases, the Apache Yetus project makes available two types of images on hub.docker.com:</p>
 
 <ul>
-<li><a href="#setup_defaults">setup_defaults</a></li>
-<li><a href="#yetus_usage">yetus_usage</a></li>
-</ul></li>
+<li><p>apache/yetus-base</p>
+
+<p>This image is the same as the &lsquo;built-in&rsquo; Dockerfile when <code>--docker</code> is used without <code>--dockerfile</code>  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in <code>precommit/src/main/shell/test-patch-docker/</code>.</p></li>
+<li><p>apache/yetus</p>
+
+<p>This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.</p></li>
 </ul>
 
-<hr>
+<p>Both images should be suitable to be used as a building block or even directly if your build environment needs no other dependencies.  These images are especially useful for various CI systems that require a Docker image to be used.</p>
 
-<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
+<p>Images are tagged such that &lsquo;master&rsquo; represents the last successful Docker image build of the master branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no &lsquo;latest&rsquo; tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.</p>
 
-<h3 id="setup_defaults"><code>setup_defaults</code></h3>
+<h1 id="file-access">File Access</h1>
 
-<ul>
-<li>Synopsis</li>
-</ul>
-<div class="highlight"><pre class="highlight plaintext"><code>setup_defaults
+<p>All of the executables that Apache Yetus provides requires access to one or more directories.  These directories should be provided on the command line via the volume flags to docker run. For example, to run shelldocs against test-patch.sh:</p>
+<div class="highlight"><pre class="highlight shell"><code>docker run <span class="se">\</span>
+  <span class="nt">--rm</span> <span class="se">\</span>
+  <span class="nt">-v</span> /tmp/out:/output <span class="se">\</span>
+  <span class="nt">-v</span> /src/precommit/src/main/shell:/input:ro <span class="se">\</span>
+  apache/yetus:0.9.0 <span class="se">\</span>
+    shelldocs <span class="nt">--output</span> /output/test-patch.md <span class="nt">--input</span> /input/test-patch.sh
 </code></pre></div>
-<ul>
-<li>Description</li>
-</ul>
+<p>In this example, we mount two volumes: one for input (marked read-only), one for output.  After execution, shelldocs has processed test-patch.sh and generated a test-patch.md file in /tmp/out on our local machine.</p>
 
-<p>Setup the default global variables</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-<table class='table table-bordered table-striped'><thead><tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody><tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Public</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Stable</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">No</td>
-</tr>
-</tbody></table>
-<h3 id="yetus_usage"><code>yetus_usage</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<div class="highlight"><pre class="highlight plaintext"><code>yetus_usage
+<p>Precommit also works, assuming that Apache Yetus image has all of your project&rsquo;s dependencies.  For example:</p>
+<div class="highlight"><pre class="highlight shell"><code>docker run <span class="se">\</span>
+  <span class="nt">--rm</span> <span class="se">\</span>
+  <span class="nt">-v</span> /tmp/patchdir:/patchdir <span class="se">\</span>
+  <span class="nt">-v</span> /src:/basedir <span class="se">\</span>
+  apache/yetus:0.9.0 <span class="se">\</span>
+  qbt <span class="se">\</span>
+    <span class="nt">--plugins</span><span class="o">=</span>all <span class="se">\</span>
+    <span class="nt">--basedir</span><span class="o">=</span>/basedir <span class="se">\</span>
+    <span class="nt">--patch-dir</span><span class="o">=</span>/patchdir <span class="se">\</span>
+    <span class="nt">--project</span><span class="o">=</span>yetus
 </code></pre></div>
-<ul>
-<li>Description</li>
-</ul>
+<p>If your project needs additional dependencies, it is trivial to build off of the Apache Yetus image:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>FROM apache/yetus:0.9.0
+RUN apt-get -q update &amp;&amp; apt-get -q install -y \
+      clang \
+      libssl-dev \
+      valgrind \
+      zlib1g-dev
+</code></pre></div><div class="highlight"><pre class="highlight shell"><code>docker build <span class="nt">-t</span> project/build:0.9.0 <span class="nt">-f</span> <span class="nb">.</span>
+</code></pre></div>
+<p>This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of apache/yetus:0.9.0 since it has all of Apache Yetus and the additions needed by our project.</p>
 
-<p>Print the usage information</p>
+<h1 id="a-note-about-precommit">A Note About Precommit</h1>
 
-<ul>
-<li>Returns</li>
-</ul>
+<p>test-patch and friends have direct support for Docker outside of the convenience images.  That information is covered in-depth in the<a href="../precommit-docker">precommit-docker</a> section.</p>
 
-<p>Nothing</p>
-<table class='table table-bordered table-striped'><thead><tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody><tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Public</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Stable</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">No</td>
-</tr>
-</tbody></table>
     </div>
       <div class="container">
     <hr>

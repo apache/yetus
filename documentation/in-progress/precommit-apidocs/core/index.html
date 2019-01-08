@@ -67,7 +67,7 @@
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://git-wip-us.apache.org/repos/asf?s=yetus"><i class="fa fa-code"></i> Source (Apache)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
                         </li>
@@ -125,6 +125,7 @@
 <ul>
 <li><a href="#add_bugsystem">add_bugsystem</a></li>
 <li><a href="#add_build_tool">add_build_tool</a></li>
+<li><a href="#add_docker_env">add_docker_env</a></li>
 <li><a href="#add_test">add_test</a></li>
 <li><a href="#add_test_format">add_test_format</a></li>
 <li><a href="#add_test_type">add_test_type</a></li>
@@ -138,6 +139,8 @@
 <li><a href="#verify_plugin_enabled">verify_plugin_enabled</a></li>
 <li><a href="#yetus_add_array_element">yetus_add_array_element</a></li>
 <li><a href="#yetus_array_contains">yetus_array_contains</a></li>
+<li><a href="#yetus_relative_dir">yetus_relative_dir</a></li>
+<li><a href="#yetus_sort_and_unique_array">yetus_sort_and_unique_array</a></li>
 <li><a href="#yetus_sort_array">yetus_sort_array</a></li>
 </ul></li>
 <li>Public/Stable/Not Replaceable
@@ -156,36 +159,32 @@
 <li>Public/Evolving/Not Replaceable
 
 <ul>
+<li><a href="#guess_build_tool">guess_build_tool</a></li>
 <li><a href="#list_plugins">list_plugins</a></li>
 <li><a href="#plugin_usage_output">plugin_usage_output</a></li>
 <li><a href="#reaper_add_name">reaper_add_name</a></li>
 <li><a href="#yetus_add_header">yetus_add_header</a></li>
 <li><a href="#yetus_add_option">yetus_add_option</a></li>
 <li><a href="#yetus_comma_to_array">yetus_comma_to_array</a></li>
+<li><a href="#yetus_file_to_array">yetus_file_to_array</a></li>
 <li><a href="#yetus_generic_columnprinter">yetus_generic_columnprinter</a></li>
 </ul></li>
 <li>Private/Stable/Replaceable
 
 <ul>
+<li><a href="#docker_do_env_adds">docker_do_env_adds</a></li>
 <li><a href="#reaper_initialize">reaper_initialize</a></li>
 </ul></li>
 <li>Private/Evolving/Replaceable
 
 <ul>
+<li><a href="#activate_robots">activate_robots</a></li>
 <li><a href="#pid_kill">pid_kill</a></li>
-</ul></li>
-<li>None/None/Not Replaceable
-
-<ul>
-<li><a href="#docker_version">docker_version</a></li>
-</ul></li>
-<li>Private/Evolving/Replaceable
-
-<ul>
 <li><a href="#reaper_coproc_func">reaper_coproc_func</a></li>
 <li><a href="#reaper_finalize_results">reaper_finalize_results</a></li>
 <li><a href="#reaper_post_exec">reaper_post_exec</a></li>
 <li><a href="#reaper_total_count">reaper_total_count</a></li>
+<li><a href="#set_yetus_version">set_yetus_version</a></li>
 </ul></li>
 </ul>
 
@@ -240,6 +239,41 @@
 </ul>
 
 <p>Add the given build tool type</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
+<h3 id="add_docker_env"><code>add_docker_env</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>add_docker_env envname ...
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Queue env vars to add to the docker env</p>
 
 <ul>
 <li>Returns</li>
@@ -722,6 +756,78 @@
 <td style="text-align: left">Yes</td>
 </tr>
 </tbody></table>
+<h3 id="yetus_relative_dir"><code>yetus_relative_dir</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>yetus_relative_dir dirpath filepath
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>is a given path relative to given dirpath?</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>1 - no, path</p>
+
+<p>0 - yes, path - dirpath</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
+<h3 id="yetus_sort_and_unique_array"><code>yetus_sort_and_unique_array</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>yetus_sort_and_unique_array arrayvar
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Sort and unique an array by its elements</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
 <h3 id="yetus_sort_array"><code>yetus_sort_array</code></h3>
 
 <ul>
@@ -1080,6 +1186,41 @@
 </tbody></table>
 <h2 id="public-evolving-not-replaceable">Public/Evolving/Not Replaceable</h2>
 
+<h3 id="guess_build_tool"><code>guess_build_tool</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>guess_build_tool
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>attempt to guess what the build tool should be</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
 <h3 id="list_plugins"><code>list_plugins</code></h3>
 
 <ul>
@@ -1290,6 +1431,43 @@
 <td style="text-align: left">No</td>
 </tr>
 </tbody></table>
+<h3 id="yetus_file_to_array"><code>yetus_file_to_array</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>yetus_file_to_array arrayname file
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Convert a file to an array. Comments on the beginning of the line are stripped.</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>0 for success</p>
+
+<p>1+ for failure</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Public</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">No</td>
+</tr>
+</tbody></table>
 <h3 id="yetus_generic_columnprinter"><code>yetus_generic_columnprinter</code></h3>
 
 <ul>
@@ -1327,6 +1505,41 @@
 </tbody></table>
 <h2 id="private-stable-replaceable">Private/Stable/Replaceable</h2>
 
+<h3 id="docker_do_env_adds"><code>docker_do_env_adds</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>docker_do_env_adds
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>Do the work to add the env vars onto the Docker cmd</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Private</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Stable</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
 <h3 id="reaper_initialize"><code>reaper_initialize</code></h3>
 
 <ul>
@@ -1364,6 +1577,41 @@
 </tbody></table>
 <h2 id="private-evolving-replaceable">Private/Evolving/Replaceable</h2>
 
+<h3 id="activate_robots"><code>activate_robots</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>activate_robots
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>import and set defaults based upon any auto-detected automation</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Private</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
 <h3 id="pid_kill"><code>pid_kill</code></h3>
 
 <ul>
@@ -1399,45 +1647,6 @@
 <td style="text-align: left">Yes</td>
 </tr>
 </tbody></table>
-<h2 id="none-none-not-replaceable">None/None/Not Replaceable</h2>
-
-<h3 id="docker_version"><code>docker_version</code></h3>
-
-<ul>
-<li>Synopsis</li>
-</ul>
-<div class="highlight"><pre class="highlight plaintext"><code>docker_version
-</code></pre></div>
-<ul>
-<li>Description</li>
-</ul>
-
-<p>None</p>
-
-<ul>
-<li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-<table class='table table-bordered table-striped'><thead><tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody><tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">None</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">No</td>
-</tr>
-</tbody></table>
-<h2 id="private-evolving-replaceable">Private/Evolving/Replaceable</h2>
-
 <h3 id="reaper_coproc_func"><code>reaper_coproc_func</code></h3>
 
 <ul>
@@ -1555,6 +1764,41 @@
 </ul>
 
 <p>Reaper output to the user</p>
+
+<ul>
+<li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th style="text-align: left">Classification</th>
+<th style="text-align: left">Level</th>
+</tr>
+</thead><tbody><tr>
+<td style="text-align: left">Audience</td>
+<td style="text-align: left">Private</td>
+</tr>
+<tr>
+<td style="text-align: left">Stability</td>
+<td style="text-align: left">Evolving</td>
+</tr>
+<tr>
+<td style="text-align: left">Replaceable</td>
+<td style="text-align: left">Yes</td>
+</tr>
+</tbody></table>
+<h3 id="set_yetus_version"><code>set_yetus_version</code></h3>
+
+<ul>
+<li>Synopsis</li>
+</ul>
+<div class="highlight"><pre class="highlight plaintext"><code>set_yetus_version
+</code></pre></div>
+<ul>
+<li>Description</li>
+</ul>
+
+<p>set VERSION to the current version if not set</p>
 
 <ul>
 <li>Returns</li>
