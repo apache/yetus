@@ -2376,6 +2376,10 @@ function bugsystem_linecomments_trigger
     return
   fi
 
+  if [[ ! -f "${PATCH_DIR}/linecomments-in.txt" ]]; then
+    return 0
+  fi
+
   # sort the file such that all files and lines are now next to each other
   sort "${PATCH_DIR}/linecomments-in.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
 
