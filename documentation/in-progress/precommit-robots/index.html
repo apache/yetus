@@ -212,10 +212,28 @@
     <span class="n">JAVA_HOME</span> <span class="o">=</span> <span class="s1">'/usr/lib/jvm/java-8-openjdk-amd64'</span>
   <span class="o">}</span>
 
-  <span class="o">...</span>
-
 <span class="o">}</span>
 
+</code></pre></div>
+<p>Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  <code>test-patch</code> will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  <code>pidfile.txt</code> contains the master <code>test-patch</code> process id and <code>cidfile.txt</code> contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:</p>
+<div class="highlight"><pre class="highlight groovy"><code>    <span class="n">post</span> <span class="o">{</span>
+      <span class="n">cleanup</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">script</span> <span class="o">{</span>
+          <span class="n">sh</span> <span class="s1">'''
+            if [ -f "${env.PATCH_DIR}/pidfile.txt" ]; then
+              kill `cat "${env.PATCH_DIR}/pidfile.txt"` || true
+              sleep 5
+            fi
+            if [ -f "${env.PATCH_DIR}/cidfile.txt" ]; then
+              docker kill `cat "${env.PATCH_DIR}/cidfile.txt"` || true
+              sleep 5
+            fi
+            '''</span>
+            <span class="o">...</span>
+            <span class="n">deletedir</span><span class="o">()</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
 </code></pre></div>
 <p>See also</p>
 
@@ -269,7 +287,7 @@ have a location to look at the output artifacts:</p>
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2018 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2019 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 
