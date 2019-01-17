@@ -107,7 +107,7 @@ end
 
 GITREPO = 'https://github.com/apache/yetus.git'.freeze
 
-def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize
+def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   # TODO: get the version date from jira and do an up to date check instead of building each time.
   puts "Building docs for release #{version}"
   puts "\tcleaning up output directories in #{output}"
@@ -130,10 +130,17 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize
     "#{output}/#{version}.html.md"
   )
   FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
-  precommit_shelldocs(
-    "#{output}/#{version}/precommit-apidocs",
-    "#{output}/build-#{version}/precommit"
-  )
+  if version =~ /^0.[0-8]./
+    precommit_shelldocs(
+      "#{output}/#{version}/precommit-apidocs",
+      "#{output}/build-#{version}/precommit"
+    )
+  else
+    precommit_shelldocs(
+      "#{output}/#{version}/precommit-apidocs",
+      "#{output}/build-#{version}/precommit/src/main/shell"
+    )
+  end
 
   puts "\tgenerating javadocs"
   `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Metrics/LineLength
