@@ -53,9 +53,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.6.0/">Docs for v0.6.0</a></li>
                       <li><a href="/documentation/0.7.0/">Docs for v0.7.0</a></li>
                       <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
+                      <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -119,159 +119,9 @@
 # limitations under the License.
 -->
 
-<h1 id="apache-yetus-0-9-0-release-notes">Apache Yetus  0.9.0 Release Notes</h1>
+<h1 id="apache-yetus-0-10-0-snapshot-release-notes">Apache Yetus  0.10.0-SNAPSHOT Release Notes</h1>
 
 <p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-15">YETUS-15</a> | <em>Critical</em> | <strong>build environment</strong></li>
-</ul>
-
-<!-- markdown -->
-
-<p>Apache Yetus has been converted to use Apache Maven as a build tool. As a result, many changes have taken place that directly impacts the project.  </p>
-
-<ul>
-<li>Source directories have been re-arranged and re-named:
-
-<ul>
-<li>All bash code is now in (feature)/src/main/shell</li>
-<li>All python code is now in (feature)/src/main/python</li>
-</ul></li>
-<li>audience-annotations is mostly unchanged.</li>
-<li>releasedocmaker and shelldocs are now available as Jython-built jars.</li>
-<li>Introduction of the yetus-minimaven-plugin and yetus-maven-plugins.  The yetus-minimaven-plugin is used to build Apache Yetus.  yetus-maven-plugin is an end-user artifact that gives access some Apache Yetus features to Apache Maven and compatible build systems without needing any external help (e.g., yetus-wrapper)</li>
-<li>Middleman is still used for creating the static website, however, it is now tied into the &lsquo;mvn site&rsquo; command. &lsquo;mvn install&rsquo; MUST be executed before running &lsquo;mvn site&rsquo; as website generation depends upon the yetus-minimaven-plugin.</li>
-<li>The content of yetus-project is now in the root of the source tree.</li>
-<li>The new yetus-dist module handles the creation of a complete distribution. The artifacts are now in the yetus-dist/target directory.  The artifact contents are largely unchanged.  New yetus-assemblies module and various Apache Maven configuration files have been added to create distribution parity.</li>
-<li>The website is also available as a tar.gz tarball in the yetus-dist artifact area.</li>
-<li>The jdiff module is now always built.</li>
-<li>Version handling has been modified in several different locations and the executables themselves.</li>
-</ul>
-
-<p>Also, other changes  introduced:</p>
-
-<ul>
-<li>start-build-env.sh has been added to create a Docker-ized development environment. In particular, this imports the .ssh and .gnupg directories and has all pre-requisites for building Apache Yetus and making releases.</li>
-<li>A Dockerfile in root has been added for hub.docker.com and CI-system integration.</li>
-<li>The old Dockerfile (previously located at precommit/test-patch-docker and now located at precommit/src/main/shell/test-patch-docker) has been changed to be able also to run releasedocmaker.</li>
-<li>Some ruby dependencies for the website have been for security reasons.</li>
-<li>JDK8 is now the minimum version of Java used to build the Apache Yetus Java components.</li>
-<li>precommit&rsquo;s shellcheck.sh now recognizes src/main/shell as containing shell code to check.</li>
-<li>releasedocmaker and shelldocs now explicitly call for python2</li>
-</ul>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-681">YETUS-681</a> | <em>Major</em> | <strong>Add robots plugin type</strong></li>
-</ul>
-
-<!-- markdown -->
-
-<p>This change makes significant changes to precommit to support a variety of automation systems for continuous integration (aka robots or the <code>--robot</code> flag) as well as rework the existing Jenkins support (<code>--jenkins</code>).</p>
-
-<h1 id="end-user-changes">End User Changes</h1>
-
-<ul>
-<li><code>--jenkins</code> flag has been removed.  <code>test-patch</code>/<code>qbt</code> should now autodetect not only if it is running Jenkins, but also Circle CI, Gitlab CI, and Travis CI.  Please see the robots document for specifics as to how that works, limitations, etc.</li>
-<li>In the specific case of Jenkins, much better support for general Jenkins settings but also Github Branch Source Plugin using Pipelines and Github Pull Request Plugin.  In many cases, options that were previously set specifically on the command line may be unnecessary/duplicate information and should be removed.</li>
-<li>Configuration for how to run Apache Yetus against Apache Yetus for various CI systems is now bundled with the project source.</li>
-<li>When running under a robot, <code>test-patch</code>/<code>qbt</code> may update the git remote repository information for branches.  This is done because in some configurations, the information is missing and is required for proper functionality. In cases where this is not possible, the programs will treat the remote repositories as offline or the local repository as shallow. As a result, some functionality may not be available.  The limitations may include <code>test-patch</code> functioning as though it was <code>qbt</code>. In other words, performing a full build rather than a patch-based build.</li>
-<li><code>--git-shallow</code> may be used to pre-warn that the local checkout is shallow/other branches are not available.</li>
-<li><code>--git-offline</code> may be used to pre-warn that remote repositories are not available/pulls will fail.</li>
-<li><code>--offline</code> sets <code>--git-offline</code> as well.</li>
-<li>As a result of that work, git repositories that require authentication, are non-HTTP-based, and various other configurations should be much better understood and hanlded much more appropriately.</li>
-<li>precommit will now attempt to guess what build tool a repository may be using.  This may be overridden by specifying the build tool with <code>--build-tool</code> set to the appropriate plugin, including <code>nobuild</code> to disable build tools altogether.</li>
-<li>If Apache Yetus is launched in a Docker container under a Jenkins pipeline as the agent definition, <code>${HOME}</code> should now be set to somewhere valid if it isn&rsquo;t valid.  This will enable Apache Maven and other utilities that would otherwise crash due to broken homes.</li>
-</ul>
-
-<h1 id="developer-changes">Developer Changes</h1>
-
-<ul>
-<li>Personalities setting <code>${GITHUB_REPO}</code> information will likely cause problems with autodetection of Github information.  See YETUS-721 for more information.</li>
-<li>Developers that check for <code>${JENKINS}</code> should specifically start checking for <code>${ROBOTTYPE}=jenkins</code> for equivalent functionality.  But be aware that coding specifically for Jenkins may be incorrect.</li>
-<li>Environment variable handling for Docker has been given a rewrite with the introduction of <code>add_docker_env</code>.  For environment variables, this should be used instead of directly setting <code>${DOCKER_EXTRAARGS}</code>.  Environment variables set via <code>add_docker_env</code> will be resolved just prior to Docker run thus enabling the value to change.</li>
-<li>It is now possible set <code>${BUILDMODE}</code> during <code>locate_patch</code> resolution.  This change was made due to limitations with some bug system/CI integrations.  See <code>set_buildmode</code> for more information.</li>
-<li><code>github_breakup_url</code> can now be used for Github repo URLs and not just pull requests.</li>
-<li><code>gitlab_breakup_url</code> can now be used for Gitlab repo URLs and not just merge requests.</li>
-<li>A lot of defaults are now defined much later.  This should only impact plug-ins and overrides that are triggered extremely early in the boot up process.</li>
-</ul>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-723">YETUS-723</a> | <em>Major</em> | <strong>Overhaul the docker support for 2018</strong></li>
-</ul>
-
-<!-- markdown -->
-
-<p>This change represents a fairly large overhaul of precommit&rsquo;s Docker support in order to fix many outstanding bugs and feature requests.  As a result, there are several incompatible changes from previous versions.  Please see the precommit Docker documentation for additional information.</p>
-
-<h1 id="end-users-new-features">End Users: New Features</h1>
-
-<ul>
-<li>Support for pulling a pre-built tag instead of building the base image, platforms, non-standard dockerd socket, and Docker-in-Docker.</li>
-<li><code>COPY</code> and <code>ADD</code> support when building (requires Docker API version 18+).</li>
-<li>All Yetus built images are now labeled with <code>org.apache.yetus</code> to make them easier to find via docker inspect.</li>
-<li>Docker information in the vote table now properly includes a link to the Dockerfile if URLs, artifacting, etc, are turned on.</li>
-<li>Image cleanup should be more reliable.</li>
-</ul>
-
-<h1 id="end-users-incompatible-changes">End Users: Incompatible Changes</h1>
-
-<ul>
-<li>The minimum Docker version is now version 17.xx.  It was prevously 6.xx.</li>
-<li><code>--dockeronfail</code> is no longer supported.</li>
-<li><code>ANT_ARGS</code>, <code>ANT_OPTS</code>, and <code>MAVEN_OPTS</code> are now honored.  Before they were always overwritten.</li>
-<li><code>yetus/tp-(number)</code> images are now removed after normal completion.</li>
-<li>Because of the addition of Docker-in-Docker support, Docker mode no longer defaults to privileged mode and the flag has been renamed to be consistent with the other flags.  To enable privileged mode, the <code>--docker-privd</code> flag must be set to true.</li>
-</ul>
-
-<h1 id="developers-new-features">Developers: New Features</h1>
-
-<ul>
-<li><code>--docker-bash-debug</code> will run test-patch.sh with <code>bash -x</code> inside the container for extensive debugging.</li>
-<li>yetuslib now sports a new <code>yetus_file_to_array</code> function.</li>
-</ul>
-
-<h1 id="developers-incompatible-changes">Developers: Incompatible Changes</h1>
-
-<ul>
-<li>test-patch.sh&rsquo;s <code>relative_dir</code> has been promoted to yetuslib as <code>yetus_relative_dir</code> </li>
-<li>The internal <code>ANT_ARGS</code> has been replaced with <code>YETUS_ANT_ARGS</code></li>
-<li>Many changes to how parameters are passed between pre-Docker and post-Docker.</li>
-</ul>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-750">YETUS-750</a> | <em>Major</em> | <strong>don&rsquo;t try patch on a git format-patch file</strong></li>
-</ul>
-
-<p>Apache Yetus tools no longer support patch levels greater than 1.</p>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-751">YETUS-751</a> | <em>Minor</em> | <strong>line comments generate too many messages; not obvious how to disable</strong></li>
-</ul>
-
-<!-- markdown -->
-
-<p>The API for bug system line comments has completely changed.  Please see the relevant documentation.</p>
-
-<hr>
-
-<ul>
-<li><a href="https://issues.apache.org/jira/browse/YETUS-721">YETUS-721</a> | <em>Critical</em> | <strong>personalities shouldn&rsquo;t directly set repository information</strong></li>
-</ul>
-
-<!-- markdown -->
-
-<p>Personalities should no longer directly set GITHUB_REPO or GITLAB_REPO.  Instead, they should set GITHUB_REPO_DEFAULT and GITLAB_REPO_DEFAULT.  This will allow for certain CI environments to proper auto-determine the place where the build is coming from.</p>
 
     </div>
       <div class="container">
