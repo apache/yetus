@@ -2396,6 +2396,16 @@ function bugsystem_linecomments_trigger
 
     text=$(echo "${line}" | cut -f3- -d:)
 
+    # if, for some reason either one of these
+    # isn't a number, force it to be zero.
+    if [[ ! ${prevnum} =~ ^[0-9]+$ ]]; then
+      prevnum=0
+    fi
+
+    if [[ ! ${linenum} =~ ^[0-9]+$ ]]; then
+      linenum=0
+    fi
+
     if [[ "${prevfn}" == "${fn}" ]] &&
        [[ ${prevnum} -eq ${linenum} ]]; then
       linetext+=("${text}")
