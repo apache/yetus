@@ -27,6 +27,8 @@ this="${BASH_SOURCE-$0}"
 BINDIR=$(cd -P -- "$(dirname -- "${this}")" >/dev/null && pwd -P)
 #shellcheck disable=SC2034
 QATESTMODE=false
+STARTINGDIR=$(pwd)
+
 
 ## @description  disable function
 ## @stability    stable
@@ -60,6 +62,16 @@ function big_console_header
 ## @audience     private
 ## @replaceable  no
 function add_test
+{
+  true
+}
+
+
+## @description  disable function
+## @stability    stable
+## @audience     private
+## @replaceable  no
+function bugsystem_finalreport
 {
   true
 }
@@ -135,6 +147,15 @@ function yetus_usage
   yetus_reset_usage
 
   echo ""
+  echo "Patch reporting:"
+  yetus_add_option "--build-tool=<tool>" "Override the build tool"
+  yetus_add_option "--changedfilesreport=<name>" "List of files that this patch modifies"
+  yetus_add_option "--changedmodulesreport=<name>" "List of modules that this patch modifies"
+  yetus_add_option "--changedunionreport=<name>" "Union of modules that this patch modifies"
+  yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
+  yetus_reset_usage
+
+  echo ""
   importplugins
 
   unset TESTFORMATS
@@ -166,6 +187,9 @@ function parse_args
 
   for i in "$@"; do
     case ${i} in
+      --build-tool=*)
+        BUILDTOOL=${i#*=}
+      ;;
       --committer)
         COMMITMODE=true
       ;;
@@ -174,6 +198,15 @@ function parse_args
       ;;
       --dry-run)
         PATCH_DRYRUNMODE=true
+      ;;
+      --changedfilesreport=*)
+        FILEREPORT=${i#*=}
+      ;;
+      --changedmodulesreport=*)
+        MODULEREPORT=${i#*=}
+      ;;
+      --changedunionreport=*)
+        UNIONREPORT=${i#*=}
       ;;
       --*)
         ## PATCH_OR_ISSUE can't be a --.  So this is probably
@@ -190,6 +223,55 @@ function parse_args
    if ! mkdir -p "${PATCH_DIR}"; then
       yetus_error "ERROR: Unable to create ${PATCH_DIR}"
       cleanup_and_exit 1
+    fi
+  fi
+
+  # we need absolute dir for ${BASEDIR}
+  cd "${STARTINGDIR}" || cleanup_and_exit 1
+  BASEDIR=$(yetus_abs "${BASEDIR}")
+}
+
+## @description  generate reports on the given patch file
+## @replaceable  no
+## @audience     private
+## @stability    evolving
+function patch_reports
+{
+  declare i
+
+  if [[ -z "${FILEREPORT}" ]] && [[ -z "${MODULEREPORT}" ]] && [[ -z "${UNIONREPORT}" ]]; then
+    return
+  fi
+
+  set -x
+
+  find_changed_files
+
+  if [[ -n "${FILEREPORT}" ]]; then
+    : > "${FILEREPORT}"
+    for i in "${CHANGED_FILES[@]}"; do
+      echo "${i}" >> "${FILEREPORT}"
+    done
+  fi
+
+  if [[ -n "${MODULEREPORT}" ]] || [[ -n "${UNIONREPORT}" ]]; then
+    if [[ -z "${BUILDTOOL}" ]]; then
+      guess_build_tool
+    fi
+
+    unset -f "${BUILDTOOL}_reorder_modules"
+
+    find_changed_modules
+
+    if [[ -n "${MODULEREPORT}" ]]; then
+      : > "${MODULEREPORT}"
+      for i in "${CHANGED_MODULES[@]}"; do
+        echo "${i}" >> "${MODULEREPORT}"
+      done
+    fi
+
+    if [[ -n "${UNIONREPORT}" ]]; then
+      cat "${CHANGED_UNION_MODULES}" > "${UNIONREPORT}"
     fi
   fi
 }
@@ -305,7 +387,6 @@ parse_args "$@"
 
 importplugins
 yetus_debug "Removing BUILDTOOLS, TESTTYPES, and TESTFORMATS from installed plug-in list"
-unset BUILDTOOLS
 unset TESTTYPES
 unset TESTFORMATS
 
@@ -333,6 +414,8 @@ if [[ ${RESULT} -gt 0 ]]; then
   cleanup_and_exit ${RESULT}
 fi
 
+pushd "${BASEDIR}" >/dev/null || exit 1
+
 if [[ ${PATCH_DRYRUNMODE} == false ]]; then
   patchfile_apply_driver "${PATCH_DIR}/patch" "${GPGSIGN}"
   RESULT=$?
@@ -343,5 +426,9 @@ if [[ ${COMMITMODE} = true
   yetus_debug "Running git add -A"
   git add -A
 fi
+
+patch_reports
+
+popd >/dev/null || exit 1
 
 cleanup_and_exit ${RESULT}

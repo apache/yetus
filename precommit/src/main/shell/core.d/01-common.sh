@@ -713,3 +713,19 @@ function guess_build_tool
 
   echo "Setting build tool to ${BUILDTOOL}"
 }
+
+## @description  Convert the given module name to a file fragment
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @param        module
+function module_file_fragment
+{
+  local mod=$1
+  if [[ ${mod} = \. ]]; then
+    echo root
+  else
+    #shellcheck disable=SC1003
+    echo "$1" | tr '/' '_' | tr '\\' '_'
+  fi
+}
