@@ -26,11 +26,14 @@ if [[ "${BRANCH}" =~ HEAD ]]; then
   BRANCH=$(git branch | grep '\*' | awk '{print $NF}'  | sed -e s,rel/,,g -e s,\),,g )
 fi
 
-echo "Attempting a pull of apache/yetus-base:${BRANCH} and apache/yetus-base:master to save time"
+echo "Attempting a few pulls of apache/yetus and apache/yetus-base to save time"
 echo "Errors here will be ignored!"
 docker pull "apache/yetus-base:${BRANCH}" || docker pull "apache/yetus-base:master" || true
+docker pull "apache/yetus:${BRANCH}"  || docker pull "apache/yetus:master" || true
 
-docker build -t "apache/yetus-build:${BRANCH}" .
+docker build \
+  --cache-from="apache/yetus-base:${BRANCH},apache/yetus-base:master,apache/yetus:${BRANCH},apache/yetus:master" \
+  -t "apache/yetus-build:${BRANCH}" .
 
 USER_NAME=${SUDO_USER:=$USER}
 USER_ID=$(id -u "${USER_NAME}")
