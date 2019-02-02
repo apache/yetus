@@ -57,6 +57,10 @@ In order to use both 'YETUS CUT HERE' and a Dockerfile that uses COPY and ADD di
 
 Instead of processing a Dockerfile, test-patch can pull a tag from a repository using the `--docker-tag` parameter. Note that the repository must already be logged into and configured prior to executing test-patch.
 
+## Using a cache
+
+With the `--docker-cache-from` parameter, other images may be utilized to provide a cache when building a Dockerfile. This comma delimited list will automatically be pulled (errors are ignored) and given to the docker command line to use.
+
 ## Platforms
 
 When either building or pull an image, test-patch supports the `--docker-platform` flag to pass in the Docker `--platform` flag.  This allows you full control over what kind of image the software either creates or fetches.

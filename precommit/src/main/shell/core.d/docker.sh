@@ -62,6 +62,7 @@ function docker_usage
   yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: '${DOCKERCMD}')"
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
     yetus_add_option "--docker-bash-debug=<bool>" "Enable bash -x mode running in a container (default: ${YETUS_DOCKER_BASH_DEBUG})"
+    yetus_add_option "--docker-cache-from=<image>" "Comma delimited images to use as a cache when building"
     yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
     yetus_add_option "--dockerind=<bool>" "Enable Docker-in-Docker by mounting the Docker socket in the container (default: '${DOCKER_IN_DOCKER}')"
     yetus_add_option "--docker-platform=<plat>" "Use a platform string for building and pulling (default: ${DOCKER_PLATFORM})"
@@ -92,6 +93,9 @@ function docker_parse_args
       --docker-bash-debug=*)
         YETUS_DOCKER_BASH_DEBUG=${i#*=}
         add_docker_env YETUS_DOCKER_BASH_DEBUG
+      ;;
+      --docker-cache-from=*)
+        DOCKER_CACHE_FROM=${i#*=}
       ;;
       --dockercmd=*)
         #shellcheck disable=SC2034
@@ -561,6 +565,8 @@ function docker_run_image
   declare lines
   declare dockerversion
   declare -a dockplat
+  declare -a cachefrom
+  declare -a images
 
   big_console_header "Docker Image Creation"
   start_clock
@@ -633,8 +639,17 @@ function docker_run_image
       cp -p "${buildfile}" "${PATCH_DIR}/Dockerfile"
     fi
 
+    if [[ -n "${DOCKER_CACHE_FROM}" ]]; then
+      yetus_comma_to_array images "${DOCKER_CACHE_FROM}"
+      for i in "${images[@]}"; do
+        docker pull "${i}" || true
+      done
+      cachefrom=("--cache-from=yetus/${PROJECT_NAME}:${gitfilerev},${DOCKER_CACHE_FROM}")
+    fi
+
     if ! dockercmd build \
           "${dockplat[@]}" \
+          "${cachefrom[@]}" \
           --label org.apache.yetus=\"\" \
           --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
           --tag "${baseimagename}" \
