@@ -30,9 +30,7 @@ RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
 
 # docker socket handling.  unless /etc/group is mounted, we have to do this.
 
-RUN if [ "${DOCKER_SOCKET_GID}" != -1 ]; then groupadd --non-unique --gid ${DOCKER_SOCKET_GID} dockersock || true; fi
-RUN if [ "${DOCKER_SOCKET_GID}" = -1 ]; then groupadd  --non-unique --gid ${DOCKER_SOCKET_GID} dockersock || true; fi
-RUN adduser "${USER_NAME}" dockersock || true
+RUN if [ "${DOCKER_SOCKET_GID}" != -1 ]; then (groupadd --non-unique --gid ${DOCKER_SOCKET_GID} dockersock && adduser "${USER_NAME}" dockersock ) || true; fi
 
 RUN mkdir -p /testptch/extras
 RUN chmod a+rwx /testptch/extras
