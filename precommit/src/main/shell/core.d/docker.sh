@@ -399,6 +399,31 @@ function docker_container_maintenance
        ${data})
 }
 
+## @description  Untag docker images for a given id
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        imageid
+function docker_untag_images
+{
+  declare id=$1
+  declare i
+  declare imagestr
+  declare -a images
+
+  # ["image1","image2","image3"]
+  imagestr=$(dockercmd inspect -f '{{json .RepoTags}}' "${id}")
+  imagestr=${imagestr#"["}
+  imagestr=${imagestr%"]"}
+  imagestr=${imagestr//\"}
+
+  yetus_comma_to_array images "${imagestr}"
+
+  for i in "${images[@]}"; do
+    dockercmd rmi "${i}"
+  done
+}
+
 ## @description  Delete images after ${DOCKER_IMAGE_PURGE}
 ## @audience     private
 ## @stability    evolving
@@ -427,6 +452,7 @@ function docker_image_maintenance_helper
     ((difftime = curtime - createtime))
     if [[ ${difftime} -gt ${DOCKER_IMAGE_PURGE} ]]; then
       echo "Attempting to remove docker image ${id}"
+      docker_untag_images "${id}"
       dockercmd rmi "${id}"
     fi
   done
