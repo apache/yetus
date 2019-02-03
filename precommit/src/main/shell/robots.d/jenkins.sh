@@ -16,6 +16,8 @@
 
 # SHELLDOC-IGNORE
 
+# Work around JENKINS-55752 / YETUS-786
+JENKINS_URL=${JENKINS_URL:-${HUDSON_URL}}
 
 # we need two for Jenkins because users may
 # use the jenkins-cli which will also read JENKINS_URL
@@ -139,6 +141,7 @@ function jenkins_set_plugin_defaults
     # in case of re-exec
     USER_PARAMS+=("--mvn-custom-repos")
     yetus_error "WARNING: Setting --mvn-custom-repos due to previously invalid home directory"
+    # shellcheck disable=SC2034
     MAVEN_CUSTOM_REPOS=true
   fi
 }
