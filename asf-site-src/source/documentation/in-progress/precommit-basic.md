@@ -107,7 +107,6 @@ Language Support, Licensing, and more:
 * [Perl::Critic](http://perlcritic.com/) installed
 * [pylint](http://www.pylint.org/) installed
 * [rubocop](http://batsov.com/rubocop/) installed
-* [ruby-lint](https://github.com/YorickPeterse/ruby-lint) installed
 * [shellcheck](https://github.com/koalaman/shellcheck) installed, preferably 0.3.6 or higher
 * [yamllint](https://github.com/adrienverge/yamllint) installed
 

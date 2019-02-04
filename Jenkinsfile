@@ -159,7 +159,7 @@ pipeline {
 
                 # don't let these tests cause -1s because we aren't really paying that
                 # much attention to them
-                YETUS_ARGS+=("--tests-filter=checkstyle,javadoc,rubocop,ruby-lint,test4tests")
+                YETUS_ARGS+=("--tests-filter=checkstyle,javadoc,rubocop,test4tests")
 
                 if [[ "${USE_DEBUG_FLAG}" == true ]]; then
                   YETUS_ARGS+=("--debug")

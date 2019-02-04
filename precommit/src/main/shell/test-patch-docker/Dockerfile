@@ -179,7 +179,7 @@ RUN mv /usr/local/bin/pylint /usr/local/bin/pylint2
 RUN ln -s /usr/local/bin/pylint2 /usr/local/bin/pylint
 
 ####
-# Install ruby, rubocop, and ruby-lint
+# Install ruby and associated bits
 ###
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -189,7 +189,6 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm -rf /var/lib/apt/lists/*
 RUN gem install rake
 RUN gem install rubocop
-RUN gem install ruby-lint
 RUN gem install bundler -v 1.17.3
 # set some reasonable defaults for ruby
 # user's can always override these as needed

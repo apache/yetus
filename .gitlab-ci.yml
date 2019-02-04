@@ -24,7 +24,7 @@ buretoolbox-job:
       --patch-dir=/tmp/yetus-out
       --plugins=all
       --java-home=/usr/lib/jvm/java-8-openjdk-amd64
-      --tests-filter=checkstyle,javadoc,rubocop,ruby-lint,test4tests
+      --tests-filter=checkstyle,javadoc,rubocop,test4tests
 
   artifacts:
     expire_in: 1 week
