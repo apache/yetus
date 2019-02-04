@@ -158,11 +158,14 @@ function yetus_usage
   echo ""
   importplugins
 
-  unset TESTFORMATS
-  unset TESTTYPES
-  unset BUILDTOOLS
+  #shellcheck disable=SC2034
+  BUILDTOOLS=()
+  #shellcheck disable=SC2034
+  TESTTYPES=()
+  #shellcheck disable=SC2034
+  TESTFORMATS=()
 
-  for plugin in ${BUGSYSTEMS}; do
+  for plugin in "${BUGSYSTEMS[@]}"; do
     if declare -f "${plugin}_usage" >/dev/null 2>&1; then
       echo ""
       echo "${plugin} plugin usage options:"
@@ -386,9 +389,11 @@ setup_defaults
 parse_args "$@"
 
 importplugins
-yetus_debug "Removing BUILDTOOLS, TESTTYPES, and TESTFORMATS from installed plug-in list"
-unset TESTTYPES
-unset TESTFORMATS
+yetus_debug "Removing TESTTYPES and TESTFORMATS from installed plug-in list"
+#shellcheck disable=SC2034
+TESTTYPES=()
+#shellcheck disable=SC2034
+TESTFORMATS=()
 
 parse_args_plugins "$@"
 
