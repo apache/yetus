@@ -19,7 +19,7 @@
 add_test_type javac
 add_test_type javadoc
 
-yetus_add_entry JDK_TEST_LIST javadoc
+yetus_add_array_element JDK_TEST_LIST javadoc
 
 JAVA_INITIALIZED=false
 
@@ -69,19 +69,18 @@ function initialize_java
 
   JAVA_HOME=$(yetus_abs "${JAVA_HOME}")
 
-  for i in ${JDK_DIR_LIST}; do
+  for i in "${JDK_DIR_LIST[@]}"; do
     if [[ -d "${i}" ]]; then
       jdkdir=$(yetus_abs "${i}")
       if [[ ${jdkdir} != "${JAVA_HOME}" ]]; then
-        tmplist="${tmplist} ${jdkdir}"
+        tmplist+=("${jdkdir}")
       fi
     else
       yetus_error "WARNING: Cannot locate JDK directory ${i}: ignoring"
     fi
   done
 
-  JDK_DIR_LIST="${tmplist} ${JAVA_HOME}"
-  JDK_DIR_LIST=${JDK_DIR_LIST/ }
+  JDK_DIR_LIST+=("${JAVA_HOME}")
 }
 
 function javac_initialize
@@ -103,7 +102,7 @@ function javadoc_initialize
 function javac_precheck
 {
   declare javaversion
-  declare listofjdks
+  declare -a listofjdks
   declare i
 
   start_clock
@@ -117,13 +116,12 @@ function javac_precheck
   javaversion=$(report_jvm_version "${JAVA_HOME}")
   add_footer_table "Default Java" "${javaversion}"
 
-  if [[ -n ${JDK_DIR_LIST}
-     && ${JDK_DIR_LIST} != "${JAVA_HOME}" ]]; then
-    for i in ${JDK_DIR_LIST}; do
+  if [[ "${#JDK_DIR_LIST[@]}" -gt 1 ]]; then
+    for i in "${JDK_DIR_LIST[@]}"; do
       javaversion=$(report_jvm_version "${i}")
-      listofjdks="${listofjdks} ${i}:${javaversion}"
+      listofjdks+=("${i}:${javaversion}")
     done
-    add_footer_table "Multi-JDK versions" "${listofjdks}"
+    add_footer_table "Multi-JDK versions" "${listofjdks[*]}"
   fi
   return 0
 }

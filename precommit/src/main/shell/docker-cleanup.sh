@@ -75,9 +75,12 @@ function import_and_clean
 {
   importplugins
   yetus_debug "Removing BUILDTOOLS, TESTTYPES, and TESTFORMATS from installed plug-in list"
-  unset BUILDTOOLS
-  unset TESTTYPES
-  unset TESTFORMATS
+  #shellcheck disable=SC2034
+  BUILDTOOLS=()
+  #shellcheck disable=SC2034
+  TESTTYPES=()
+  #shellcheck disable=SC2034
+  TESTFORMATS=()
 
   #shellcheck disable=SC2034
   DOCKER_CLEANUP_CMD=true
@@ -139,7 +142,7 @@ function parse_args
         ROBOT=true
         # shellcheck disable=SC2034
         SENTINEL=true
-        yetus_add_entry EXEC_MODES Sentinel
+        yetus_add_array_element EXEC_MODES Sentinel
       ;;
     esac
   done
