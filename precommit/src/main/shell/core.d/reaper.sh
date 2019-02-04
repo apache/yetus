@@ -78,7 +78,7 @@ function reaper_parse_args
   # as necessary
   if [[ "${REAPER_MODE}" = "report" || "${REAPER_MODE}" = "kill" ]]; then
     add_test_format reaper
-    yetus_add_entry EXEC_MODES Reaper
+    yetus_add_array_element EXEC_MODES Reaper
   else
     REAPER_MODE="off"
   fi

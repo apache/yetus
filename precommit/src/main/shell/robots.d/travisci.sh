@@ -66,7 +66,7 @@ if [[ "${TRAVIS}" == true ]] &&
     pushd "${BASEDIR}" >/dev/null || exit 1
   fi
 
-  yetus_add_entry EXEC_MODES TravisCI
+  yetus_add_array_element EXEC_MODES TravisCI
 fi
 
 function travisci_set_plugin_defaults

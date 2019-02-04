@@ -24,11 +24,11 @@ function common_defaults
 {
   #shellcheck disable=SC2034
   BASEDIR=$(pwd)
-  BUGSYSTEMS=""
+  BUGSYSTEMS=()
   BUILDTOOL=""
-  BUILDTOOLS=""
+  BUILDTOOLS=()
   #shellcheck disable=SC2034
-  EXEC_MODES=""
+  EXEC_MODES=()
   ROBOTTYPE=""
   LOAD_SYSTEM_PLUGINS=true
   #shellcheck disable=SC2034
@@ -59,8 +59,8 @@ function common_defaults
   #shellcheck disable=SC2034
   SENTINEL=false
   #shellcheck disable=SC2034
-  TESTTYPES=""
-  TESTFORMATS=""
+  TESTTYPES=()
+  TESTFORMATS=()
   USER_PLUGIN_DIR=""
 
   #shellcheck disable=SC2034
@@ -249,6 +249,8 @@ function list_plugins
 {
   declare plugintype
   declare name
+  declare plugref
+  declare plugarray
 
   ENABLED_PLUGINS="all"
   importplugins
@@ -256,8 +258,10 @@ function list_plugins
   printf "Reminder: every plug-in may be enabled via 'all'.\\n\\n"
   for plugintype in BUILDTOOLS TESTTYPES BUGSYSTEMS TESTFORMATS; do
     printf '%s:\n\t' ${plugintype}
-    for name in ${!plugintype}; do
-      printf "%s " ${name}
+    plugref="${plugintype}[@]"
+    plugarray=("${!plugref}")
+    for name in "${plugarray[@]}"; do
+      printf "%s " "${name}"
     done
     echo ""
   done
@@ -271,8 +275,8 @@ function parse_args_plugins
 {
   declare plugin
 
-  for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOLS}; do
-    if declare -f ${plugin}_parse_args >/dev/null 2>&1; then
+  for plugin in "${TESTTYPES[@]}" "${BUGSYSTEMS[@]}" "${TESTFORMATS[@]}" "${BUILDTOOLS[@]}"; do
+    if declare -f "${plugin}_parse_args" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_parse_args"
       "${plugin}_parse_args" "$@"
       (( RESULT = RESULT + $? ))
@@ -288,8 +292,8 @@ function plugins_initialize
 {
   declare plugin
 
-  for plugin in ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS} ${BUILDTOOL}; do
-    if declare -f ${plugin}_initialize >/dev/null 2>&1; then
+  for plugin in "${TESTTYPES[@]}" "${BUGSYSTEMS[@]}" "${TESTFORMATS[@]}" "${BUILDTOOL}"; do
+    if declare -f "${plugin}_initialize" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_initialize"
       "${plugin}_initialize"
       (( RESULT = RESULT + $? ))
@@ -364,7 +368,7 @@ function personality_plugins
 function add_test
 {
   if verify_plugin_enabled "${1}"; then
-    yetus_add_entry NEEDED_TESTS "${1}"
+    yetus_add_array_element NEEDED_TESTS "${1}"
   fi
 }
 
@@ -375,7 +379,7 @@ function add_test
 ## @param        test
 function delete_test
 {
-  yetus_delete_entry NEEDED_TESTS "${1}"
+  yetus_del_array_element NEEDED_TESTS "${1}"
 }
 
 ## @description  Verify if a given test was requested
@@ -387,7 +391,7 @@ function delete_test
 ## @return       1 = no
 function verify_needed_test
 {
-  yetus_verify_entry NEEDED_TESTS "${1}"
+  yetus_ver_array_element NEEDED_TESTS "${1}"
 }
 
 ## @description  Add the given test type
@@ -398,7 +402,7 @@ function verify_needed_test
 function add_test_type
 {
   if verify_plugin_enabled "${1}"; then
-    yetus_add_entry TESTTYPES "${1}"
+    yetus_add_array_element TESTTYPES "${1}"
   fi
 }
 
@@ -409,7 +413,7 @@ function add_test_type
 ## @param        plugin
 function delete_test_type
 {
-  yetus_delete_entry TESTTYPES "${1}"
+  yetus_del_array_element TESTTYPES "${1}"
 }
 
 ## @description  Add the given bugsystem type
@@ -420,7 +424,7 @@ function delete_test_type
 function add_bugsystem
 {
   if verify_plugin_enabled "${1}"; then
-    yetus_add_entry BUGSYSTEMS "${1}"
+    yetus_add_array_element BUGSYSTEMS "${1}"
   fi
 }
 
@@ -431,7 +435,7 @@ function add_bugsystem
 ## @param        bugsystem
 function delete_bugsystem
 {
-  yetus_delete_entry BUGSYSTEMS "${1}"
+  yetus_del_array_element BUGSYSTEMS "${1}"
 }
 
 ## @description  Add the given test format type
@@ -442,7 +446,7 @@ function delete_bugsystem
 function add_test_format
 {
   if verify_plugin_enabled "${1}"; then
-    yetus_add_entry TESTFORMATS "${1}"
+    yetus_add_array_element TESTFORMATS "${1}"
   fi
 }
 
@@ -453,7 +457,7 @@ function add_test_format
 ## @param        test format
 function delete_test_format
 {
-  yetus_delete_entry TESTFORMATS "${1}"
+  yetus_del_array_element TESTFORMATS "${1}"
 }
 
 ## @description  Add the given build tool type
@@ -464,7 +468,7 @@ function delete_test_format
 function add_build_tool
 {
   if verify_plugin_enabled "${1}"; then
-    yetus_add_entry BUILDTOOLS "${1}"
+    yetus_add_array_element BUILDTOOLS "${1}"
   fi
 }
 
@@ -475,7 +479,7 @@ function add_build_tool
 ## @param        build tool
 function delete_build_tool
 {
-  yetus_delete_entry BUILDTOOLS "${1}"
+  yetus_del_array_element BUILDTOOLS "${1}"
 }
 
 ## @description  Import content from test-patch.d and optionally
@@ -697,7 +701,7 @@ function guess_build_tool
   declare plugin
   declare filename
 
-  for plugin in ${BUILDTOOLS}; do
+  for plugin in "${BUILDTOOLS[@]}"; do
     if [[ "${plugin}" != "nobuild" ]] && declare -f "${plugin}_buildfile" >/dev/null 2>&1; then
       filename=$("${plugin}_buildfile")
       if [[ -n "${filename}" ]] &&

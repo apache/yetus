@@ -40,10 +40,10 @@ if [[ "${GITLAB_CI}" = true ]] &&
     CI_PROJECT_PATH \
     GITLAB_CI
 
-  yetus_add_entry EXEC_MODES Gitlab_CI
-  yetus_add_entry EXEC_MODES ResetRepo
-  yetus_add_entry EXEC_MODES Robot
-  yetus_add_entry EXEC_MODES UnitTests
+  yetus_add_array_element EXEC_MODES Gitlab_CI
+  yetus_add_array_element EXEC_MODES ResetRepo
+  yetus_add_array_element EXEC_MODES Robot
+  yetus_add_array_element EXEC_MODES UnitTests
 fi
 
 function gitlabci_set_plugin_defaults
