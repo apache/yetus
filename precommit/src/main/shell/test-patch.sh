@@ -99,8 +99,8 @@ function setup_defaults
   ISSUE=${ISSUE:-""}
   TIMER=$("${AWK}" 'BEGIN {srand(); print srand()}')
   JVM_REQUIRED=true
-  yetus_add_array_element JDK_TEST_LIST compile
-  yetus_add_array_element JDK_TEST_LIST unit
+  yetus_add_entry JDK_TEST_LIST compile
+  yetus_add_entry JDK_TEST_LIST unit
 }
 
 
@@ -280,13 +280,13 @@ function verify_multijdk_test
 {
   local i=$1
 
-  if [[ "${#JDK_DIR_LIST[@]}" -lt 2 ]] ; then
+  if [[ "${JDK_DIR_LIST}" == "${JAVA_HOME}" ]]; then
     yetus_debug "MultiJDK not configured."
     return 1
   fi
 
-  if yetus_ver_array_element JDK_TEST_LIST "${i}"; then
-    yetus_debug "${i} is in JDK_TEST_LIST and MultiJDK configured."
+  if [[ ${JDK_TEST_LIST} =~ $i ]]; then
+    yetus_debug "${i} is in ${JDK_TEST_LIST} and MultiJDK configured."
     return 0
   fi
   return 1
@@ -667,10 +667,12 @@ function yetus_usage
 
   importplugins
 
-  bugsys="${BUGSYSTEMS[*]}"
+  # shellcheck disable=SC2116,SC2086
+  bugsys=$(echo ${BUGSYSTEMS})
   bugsys=${bugsys// /,}
 
-  jdktlist="${JDK_TEST_LIST[*]}"
+  # shellcheck disable=SC2116,SC2086
+  jdktlist=$(echo ${JDK_TEST_LIST})
   jdktlist=${jdktlist// /,}
 
   if [[ "${BUILDMODE}" = patch ]]; then
@@ -690,8 +692,8 @@ function yetus_usage
   yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
   yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
   # shellcheck disable=SC2153
-  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (one of ${BUILDTOOLS[*]})"
-  yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: '${bugsys}')"
+  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (one of ${BUILDTOOLS})"
+  yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: ${bugsys})"
   yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
@@ -767,7 +769,7 @@ function yetus_usage
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
-  for plugin in "${BUILDTOOLS[@]}" "${TESTTYPES[@]}" "${BUGSYSTEMS[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${BUILDTOOLS} ${TESTTYPES} ${BUGSYSTEMS} ${TESTFORMATS}; do
     if declare -f "${plugin}_usage" >/dev/null 2>&1; then
       echo ""
       echo "'${plugin}' plugin usage options:"
@@ -852,13 +854,15 @@ function parse_args
         yetus_debug "Manually forcing modules ${USER_MODULE_LIST[*]}"
       ;;
       --multijdkdirs=*)
-        yetus_comma_to_array JDK_DIR_LIST "${i#*=}"
-        yetus_debug "Multi-JDK mode activated with ${JDK_DIR_LIST[*]}"
-        yetus_add_array_element EXEC_MODES MultiJDK
+        JDK_DIR_LIST=${i#*=}
+        JDK_DIR_LIST=${JDK_DIR_LIST//,/ }
+        yetus_debug "Multi-JDK mode activated with ${JDK_DIR_LIST}"
+        yetus_add_entry EXEC_MODES MultiJDK
       ;;
       --multijdktests=*)
-        yetus_comma_to_array JDK_TEST_LIST "${i#*=}"
-        yetus_debug "MultiJDK test list=${JDK_TEST_LIST[*]}"
+        JDK_TEST_LIST=${i#*=}
+        JDK_TEST_LIST=${JDK_TEST_LIST//,/ }
+        yetus_debug "Multi-JDK test list: ${JDK_TEST_LIST}"
       ;;
       --mv-patch-dir)
         RELOCATE_PATCH_DIR=true;
@@ -884,7 +888,7 @@ function parse_args
       --sentinel)
         # shellcheck disable=SC2034
         SENTINEL=true
-        yetus_add_array_element EXEC_MODES Sentinel
+        yetus_add_entry EXEC_MODES Sentinel
       ;;
       --skip-dirs=*)
         MODULE_SKIPDIRS=${i#*=}
@@ -949,7 +953,7 @@ function parse_args
     RESETREPO=true
     RUN_TESTS=true
     ISSUE=${PATCH_OR_ISSUE}
-    yetus_add_array_element EXEC_MODES Robot
+    yetus_add_entry EXEC_MODES Robot
   fi
 
   if [[ -n $UNIT_TEST_FILTER_FILE ]]; then
@@ -969,14 +973,14 @@ function parse_args
 
   if [[ "${DOCKERMODE}" = true || "${DOCKERSUPPORT}" = true ]]; then
     if [[ "${DOCKER_DESTRCUTIVE}" = true ]]; then
-      yetus_add_array_element EXEC_MODES DestructiveDocker
+      yetus_add_entry EXEC_MODES DestructiveDocker
     else
-      yetus_add_array_element EXEC_MODES Docker
+      yetus_add_entry EXEC_MODES Docker
     fi
     add_vote_table 0 reexec "Docker mode activated."
     start_clock
   elif [[ "${REEXECED}" = true ]]; then
-    yetus_add_array_element EXEC_MODES Re-exec
+    yetus_add_entry EXEC_MODES Re-exec
     add_vote_table 0 reexec "Precommit patch detected."
     start_clock
   fi
@@ -1014,11 +1018,11 @@ function parse_args
   fi
 
   if [[ ${RESETREPO} == "true" ]] ; then
-    yetus_add_array_element EXEC_MODES ResetRepo
+    yetus_add_entry EXEC_MODES ResetRepo
   fi
 
   if [[ ${RUN_TESTS} == "true" ]] ; then
-    yetus_add_array_element EXEC_MODES UnitTests
+    yetus_add_entry EXEC_MODES UnitTests
   fi
 
   if [[ -n "${USER_PLUGIN_DIR}" ]]; then
@@ -1290,7 +1294,7 @@ function determine_branch
     return
   fi
 
-  for bugs in "${BUGSYSTEMS[@]}"; do
+  for bugs in ${BUGSYSTEMS}; do
     if declare -f "${bugs}_determine_branch" >/dev/null;then
       "${bugs}_determine_branch"
       retval=$?
@@ -1318,7 +1322,7 @@ function determine_issue
 
   yetus_debug "Determine issue"
 
-  for bugsys in "${BUGSYSTEMS[@]}"; do
+  for bugsys in ${BUGSYSTEMS}; do
     if declare -f "${bugsys}_determine_issue" >/dev/null; then
       if "${bugsys}_determine_issue" "${PATCH_OR_ISSUE}"; then
         yetus_debug "${bugsys} says ${ISSUE}"
@@ -1346,14 +1350,14 @@ function determine_needed_tests
     yetus_debug "Determining needed tests for ${i}"
     personality_file_tests "${i}"
 
-    for plugin in "${TESTTYPES[@]}" ${BUILDTOOL}; do
+    for plugin in ${TESTTYPES} ${BUILDTOOL}; do
       if declare -f "${plugin}_filefilter" >/dev/null 2>&1; then
         "${plugin}_filefilter" "${i}"
       fi
     done
   done
 
-  add_footer_table "Optional Tests" "${NEEDED_TESTS[*]}"
+  add_footer_table "Optional Tests" "${NEEDED_TESTS}"
 }
 
 ## @description  Given ${PATCH_DIR}/patch, apply the patch
@@ -1978,7 +1982,7 @@ function check_unittests
   declare multijdkmode
   declare jdk=""
   declare jdkindex=0
-  declare -a jdklist
+  declare jdklist
   declare statusjdk
   declare formatresult=0
   declare needlog
@@ -1991,13 +1995,13 @@ function check_unittests
 
   if verify_multijdk_test unit; then
     multijdkmode=true
-    jdklist=("${JDK_DIR_LIST[@]}")
+    jdklist=${JDK_DIR_LIST}
   else
     multijdkmode=false
-    jdklist=("${JAVA_HOME}")
+    jdklist=${JAVA_HOME}
   fi
 
-  for jdkindex in "${jdklist[@]}"; do
+  for jdkindex in ${jdklist}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
       jdk=$(report_jvm_version "${JAVA_HOME}")
@@ -2021,7 +2025,7 @@ function check_unittests
       buildtool_cwd "${i}"
 
       needlog=0
-      for testsys in "${TESTFORMATS[@]}"; do
+      for testsys in ${TESTFORMATS}; do
         if declare -f "${testsys}_process_tests" >/dev/null; then
           yetus_debug "Calling ${testsys}_process_tests"
           "${testsys}_process_tests" "${module}" "${test_logfile}" "${fn}"
@@ -2042,7 +2046,7 @@ function check_unittests
       ((i=i+1))
     done
 
-    for testsys in "${TESTFORMATS[@]}"; do
+    for testsys in ${TESTFORMATS}; do
       if declare -f "${testsys}_finalize_results" >/dev/null; then
         yetus_debug "Calling ${testsys}_finalize_results"
         "${testsys}_finalize_results" "${statusjdk}"
@@ -2277,7 +2281,7 @@ function runtests
     check_unittests
   fi
 
-  for plugin in "${TESTTYPES[@]}"; do
+  for plugin in ${TESTTYPES}; do
     verify_patchdir_still_exists
     if declare -f "${plugin}_tests" >/dev/null 2>&1; then
       modules_reset
@@ -2484,7 +2488,7 @@ function generic_pre_handler
   declare -r savejavahome=${JAVA_HOME}
   declare multijdkmode
   declare jdkindex=0
-  declare -a jdklist
+  declare jdklist
 
   if ! verify_needed_test "${testtype}"; then
      return 0
@@ -2494,13 +2498,13 @@ function generic_pre_handler
 
   if verify_multijdk_test "${testtype}"; then
     multijdkmode=true
-    jdklist=("${JDK_DIR_LIST[@]}")
+    jdklist=${JDK_DIR_LIST}
   else
     multijdkmode=false
-    jdklist=("${JAVA_HOME}")
+    jdklist=${JAVA_HOME}
   fi
 
-  for jdkindex in "${jdklist[@]}"; do
+  for jdkindex in ${jdklist}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
     fi
@@ -2650,7 +2654,7 @@ function generic_post_handler
 
   big_console_header "${testtype} verification: ${BUILDMODE}"
 
-  for jdkindex in "${JDK_DIR_LIST[@]}"; do
+  for jdkindex in ${JDK_DIR_LIST}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
       yetus_debug "Using ${JAVA_HOME} to run this set of tests"
@@ -2691,17 +2695,17 @@ function compile_jvm
   declare -r savejavahome=${JAVA_HOME}
   declare multijdkmode
   declare jdkindex=0
-  declare -a jdklist
+  declare jdklist
 
   if verify_multijdk_test compile; then
     multijdkmode=true
-    jdklist=("${JDK_DIR_LIST[@]}")
+    jdklist=${JDK_DIR_LIST}
   else
     multijdkmode=false
-    jdklist=("${JAVA_HOME}")
+    jdklist=${JAVA_HOME}
   fi
 
-  for jdkindex in "${jdklist[@]}"; do
+  for jdkindex in ${jdklist}; do
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
     fi
@@ -2739,7 +2743,7 @@ function compile_nonjvm
 
   modules_backup
 
-  for plugin in "${TESTTYPES[@]}"; do
+  for plugin in ${TESTTYPES}; do
     modules_restore
     verify_patchdir_still_exists
     if declare -f "${plugin}_compile" >/dev/null 2>&1; then
@@ -2802,7 +2806,7 @@ function compile_cycle
 
   find_changed_modules "${codebase}"
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f "${plugin}_precompile" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_precompile"
       if ! "${plugin}_precompile" "${codebase}"; then
@@ -2814,7 +2818,7 @@ function compile_cycle
 
   compile "${codebase}"
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f "${plugin}_postcompile" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_postcompile"
       if ! "${plugin}_postcompile" "${codebase}"; then
@@ -2824,7 +2828,7 @@ function compile_cycle
     fi
   done
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f "${plugin}_rebuild" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_rebuild"
       if ! "${plugin}_rebuild" "${codebase}"; then
@@ -2853,7 +2857,7 @@ function patchfiletests
   declare plugin
   declare result=0
 
-  for plugin in ${BUILDTOOL} "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${BUILDTOOL} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f "${plugin}_patchfile" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_patchfile"
       if ! "${plugin}_patchfile" "${PATCH_DIR}/patch"; then
@@ -2883,7 +2887,7 @@ function distclean
 
   big_console_header "Cleaning the source tree"
 
-  for plugin in "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f "${plugin}_clean" >/dev/null 2>&1; then
       yetus_debug "Running ${plugin}_distclean"
       if ! "${plugin}_clean"; then
@@ -2978,7 +2982,7 @@ function initialize
     personality_parse_args "$@"
   fi
 
-  BUGCOMMENTS=${BUGCOMMENTS:-"${BUGSYSTEMS[@]}"}
+  BUGCOMMENTS=${BUGCOMMENTS:-${BUGSYSTEMS}}
   if [[ ! ${BUGCOMMENTS} =~ console ]]; then
     BUGCOMMENTS="${BUGCOMMENTS} console"
   fi
@@ -3008,7 +3012,7 @@ function initialize
     cleanup_and_exit 1
   fi
 
-  echo "Modes: ${EXEC_MODES[*]}"
+  echo "Modes: ${EXEC_MODES}"
 
   if [[ "${BUILDMODE}" = patch ]]; then
     locate_patch
@@ -3064,7 +3068,7 @@ function prechecks
   declare plugin
   declare result=0
 
-  for plugin in ${BUILDTOOL} "${NEEDED_TESTS[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${BUILDTOOL} ${NEEDED_TESTS} ${TESTFORMATS}; do
     verify_patchdir_still_exists
 
     if declare -f "${plugin}_precheck" >/dev/null 2>&1; then

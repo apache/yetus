@@ -102,7 +102,7 @@ if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]] &&
     GIT_URL \
     JENKINS_URL
 
-  yetus_add_array_element EXEC_MODES Jenkins
+  yetus_add_entry EXEC_MODES Jenkins
 fi
 
 function jenkins_set_plugin_defaults

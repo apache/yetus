@@ -57,7 +57,7 @@ if [[ "${CIRCLECI}" = true ]] &&
       CIRCLE_PROJECT_REPONAME \
       CIRCLE_REPOSITORY_URL
 
-    yetus_add_array_element EXEC_MODES Circle_CI
+    yetus_add_entry EXEC_MODES Circle_CI
   fi
 fi
 

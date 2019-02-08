@@ -36,7 +36,7 @@ add_build_tool maven
 ## @param        test
 function maven_add_install
 {
-    yetus_add_array_element MAVEN_NEED_INSTALL "${1}"
+    yetus_add_entry MAVEN_NEED_INSTALL "${1}"
 }
 
 ## @description  Remove the given test type as requiring a mvn install
@@ -46,7 +46,7 @@ function maven_add_install
 ## @param        test
 function maven_delete_install
 {
-  yetus_del_array_element MAVEN_NEED_INSTALL "${1}"
+  yetus_delete_entry MAVEN_NEED_INSTALL "${1}"
 }
 
 ## @description  replace the custom repo with either home or workspace if jenkins.
@@ -609,7 +609,7 @@ function maven_precompile
   # not everything needs a maven install
   # but quite a few do ...
   # shellcheck disable=SC2086
-  for index in "${MAVEN_NEED_INSTALL[@]}"; do
+  for index in ${MAVEN_NEED_INSTALL}; do
     if verify_needed_test "${index}"; then
       need=true
     fi

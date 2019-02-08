@@ -305,7 +305,7 @@ function yetus_file_to_array
 }
 
 ## @description  Check if an array has a given value
-## @audience     private
+## @audience     public
 ## @stability    stable
 ## @replaceable  yes
 ## @param        element
@@ -330,26 +330,6 @@ function yetus_array_contains
   return 1
 }
 
-## @description  Check if an arrayname has a given value
-## @audience     public
-## @stability    stable
-## @replaceable  yes
-## @param        arrayname
-## @param        element
-## @returns      0 = yes
-## @returns      1 = no
-function yetus_ver_array_element
-{
-  declare arrname=$1
-  declare element=$2
-
-  declare arrref="${arrname}[@]"
-  declare array=("${!arrref}")
-
-  # shellcheck disable=SC2046
-  return $(yetus_array_contains "${element}" "${array[@]}")
-}
-
 ## @description  Add the element if it is not
 ## @description  present in the given array
 ## @audience     public
@@ -372,36 +352,6 @@ function yetus_add_array_element
   else
     yetus_debug "$1 declined $2"
   fi
-}
-
-## @description  Check if an array has a given value
-## @audience     public
-## @stability    stable
-## @replaceable  yes
-## @param        arrayname
-## @param        element
-function yetus_del_array_element
-{
-  if [[ "$#" -eq 0 ]]; then
-    return 1
-  fi
-
-  declare arrname=$1
-  declare element=$2
-  shift
-  declare val
-
-  declare arrref="${arrname}[@]"
-  declare array=("${!arrref}")
-  declare -a newarr
-
-  for val in "${array[@]}"; do
-    if [[ "${val}" != "${element}" ]]; then
-      newarr+=("${val}")
-    fi
-  done
-    # shellcheck disable=SC1083,SC2086
-  eval "${arrname}"=\(\"\${newarr[@]}\"\)
 }
 
 ## @description  Sort an array by its elements

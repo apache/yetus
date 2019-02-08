@@ -133,7 +133,7 @@ function locate_patch
     fi
   else
     # run through the bug systems.  maybe they know?
-    for bugsys in "${BUGSYSTEMS[@]}"; do
+    for bugsys in ${BUGSYSTEMS}; do
       if declare -f "${bugsys}_locate_patch" >/dev/null 2>&1; then
         if "${bugsys}_locate_patch" "${PATCH_OR_ISSUE}" "${PATCH_DIR}/patch"; then
           gotit=true

@@ -848,7 +848,7 @@ function docker_handler
   # need to call this explicitly
   console_docker_support
 
-  for plugin in ${PROJECT_NAME} ${BUILDTOOL} "${BUGSYSTEMS[@]}" "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
+  for plugin in ${PROJECT_NAME} ${BUILDTOOL} ${BUGSYSTEMS} ${TESTTYPES} ${TESTFORMATS}; do
     if declare -f "${plugin}_docker_support" >/dev/null; then
       "${plugin}_docker_support"
     fi
