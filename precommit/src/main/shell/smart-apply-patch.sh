@@ -101,6 +101,7 @@ function cleanup_and_exit
 function setup_defaults
 {
   common_defaults
+  REPORTONLY=false
 }
 
 ## @description  Print the usage information
@@ -148,6 +149,7 @@ function yetus_usage
 
   echo ""
   echo "Patch reporting:"
+  yetus_add_option "--report-only" "Do not try to apply at all; just report on the patch"
   yetus_add_option "--build-tool=<tool>" "Override the build tool"
   yetus_add_option "--changedfilesreport=<name>" "List of files that this patch modifies"
   yetus_add_option "--changedmodulesreport=<name>" "List of modules that this patch modifies"
@@ -211,6 +213,9 @@ function parse_args
       --changedunionreport=*)
         UNIONREPORT=${i#*=}
       ;;
+      --report-only)
+        REPORTONLY=true
+      ;;
       --*)
         ## PATCH_OR_ISSUE can't be a --.  So this is probably
         ## a plugin thing.
@@ -245,8 +250,6 @@ function patch_reports
   if [[ -z "${FILEREPORT}" ]] && [[ -z "${MODULEREPORT}" ]] && [[ -z "${UNIONREPORT}" ]]; then
     return
   fi
-
-  set -x
 
   find_changed_files
 
@@ -400,6 +403,11 @@ parse_args_plugins "$@"
 plugins_initialize
 
 locate_patch
+
+if [[ "${REPORTONLY}" = true ]]; then
+  patch_reports
+  cleanup_and_exit 0
+fi
 
 if [[ ${COMMITMODE} = true ]]; then
   status=$("${GIT}" status --porcelain)
