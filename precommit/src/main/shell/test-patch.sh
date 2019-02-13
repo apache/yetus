@@ -696,6 +696,7 @@ function yetus_usage
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
   yetus_add_option "--empty-patch" "Create a summary of the current source tree"
+  yetus_add_option "--excludes=<file>" "File of regexs to keep project files out of the set of changes passed to plugins."
   yetus_add_option "--git-offline" "Do not fail if git cannot do certain remote operations"
   yetus_add_option "--git-shallow" "Repo does not know about other branches or tags"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
@@ -831,6 +832,9 @@ function parse_args
       --dirty-workspace)
         DIRTY_WORKSPACE=true
       ;;
+      --excludes=*)
+        EXCLUDE_PATHS_FILE=$(yetus_abs "${i#*=}")
+      ;;
       --instance=*)
         INSTANCE=${i#*=}
       ;;
@@ -950,6 +954,15 @@ function parse_args
     RUN_TESTS=true
     ISSUE=${PATCH_OR_ISSUE}
     yetus_add_array_element EXEC_MODES Robot
+  fi
+
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+      EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
+    else
+      yetus_error "ERROR: Excluded paths file (${EXCLUDE_PATHS_FILE}}) does not exist!"
+      cleanup_and_exit 1
+    fi
   fi
 
   if [[ -n $UNIT_TEST_FILTER_FILE ]]; then
@@ -1342,6 +1355,8 @@ function determine_needed_tests
   big_console_header "Determining needed tests"
   echo "(Depending upon input size and number of plug-ins, this may take a while)"
 
+  exclude_paths_from_changed_files
+
   for i in "${CHANGED_FILES[@]}"; do
     yetus_debug "Determining needed tests for ${i}"
     personality_file_tests "${i}"
@@ -1417,6 +1432,11 @@ function copytpbits
   # Set to be relative to ${PATCH_DIR}/precommit
   USER_PLUGIN_DIR="${PATCH_DIR}/precommit/user-plugins"
 
+  if [[ -n ${EXCLUDE_PATHS_FILE}
+    && -f ${EXCLUDE_PATHS_FILE} ]]; then
+    yetus_debug "copying '${EXCLUDE_PATHS_FILE}' over to '${PATCH_DIR}/precommit/excluded.txt'"
+    cp -pr "${EXCLUDE_PATHS_FILE}" "${PATCH_DIR}/precommit/excluded.txt"
+  fi
   if [[ -n ${PERSONALITY}
     && -f ${PERSONALITY} ]]; then
     yetus_debug "copying '${PERSONALITY}' over to '${PATCH_DIR}/precommit/personality/provided.sh'"

@@ -104,7 +104,7 @@ function author_patchfile
     fi
   done
 
-  ${GREP} -i -n '^[^-].*@author' "${patchfile}" >> "${PATCH_DIR}/author-tags.txt"
+  "${GREP}" -i -n '^[^-].*@author' "${patchfile}" >> "${PATCH_DIR}/author-tags.txt"
   author_generic
 }
 
@@ -119,7 +119,7 @@ function author_postcompile
 {
   # shellcheck disable=SC2155
   declare -r appname=$(basename "${BASH_SOURCE-$0}")
-  declare fn
+  declare -a globalignore
 
   if [[ "${BUILDMODE}" != full ]]; then
     return
@@ -129,19 +129,25 @@ function author_postcompile
 
   start_clock
 
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+    globalignore=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  else
+    globalignore=("cat")
+  fi
+
   "${GIT}" grep -n -I --extended-regexp -i -e '^[^-].*@author' \
-    | ${GREP} -v "${appname}" \
+    | "${GREP}" -v "${appname}" \
+    | "${globalignore[@]}" \
     >> "${PATCH_DIR}/author-tags-git.txt"
 
   if [[ -z "${AUTHOR_IGNORE_LIST[0]}" ]]; then
     cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/author-tags.txt"
   else
-    cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/author-tags.1"
-    for fn in "${AUTHOR_IGNORE_LIST[@]}"; do
-      ${GREP} -v -E "^${fn}" "${PATCH_DIR}/author-tags.1" >> "${PATCH_DIR}/author-tags.2"
-      mv "${PATCH_DIR}/author-tags.2" "${PATCH_DIR}/author-tags.1"
-    done
-    mv "${PATCH_DIR}/author-tags.1" "${PATCH_DIR}/author-tags.txt"
+    printf "^%s\n" "${AUTHOR_IGNORE_LIST[@]}" > "${PATCH_DIR}/author-tags-filter.txt"
+    "${GREP}" -v -E \
+      -f "${PATCH_DIR}/author-tags-filter.txt" \
+      "${PATCH_DIR}/author-tags-git.txt" \
+      > "${PATCH_DIR}/author-tags.txt"
   fi
 
   author_generic

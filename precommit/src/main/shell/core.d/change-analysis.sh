@@ -77,6 +77,38 @@ function find_changed_files
   popd >/dev/null || return 1
 }
 
+## @description  Apply the EXCLUDE_PATHS to CHANGED_FILES
+## @audience     private
+## @stability    stable
+## @replaceable  no
+## @return       None; sets ${CHANGED_FILES[@]}
+function exclude_paths_from_changed_files
+{
+  declare f
+  declare p
+  declare strip
+  declare -a a
+
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+    yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
+  fi
+
+  for f in "${CHANGED_FILES[@]}"; do
+    strip=false
+    for p in "${EXCLUDE_PATHS[@]}"; do
+      if [[  "${f}" =~ ${p} ]]; then
+        strip=true
+        echo "${f}" >> "${PATCH_DIR}/excluded.txt"
+      fi
+    done
+    if [[ ${strip} = false ]]; then
+      a+=("${f}")
+    fi
+  done
+
+  CHANGED_FILES=("${a[@]}")
+}
+
 ## @description Check for directories to skip during
 ## @description changed module calcuation
 ## @description requires $MODULE_SKIPDIRS to be set

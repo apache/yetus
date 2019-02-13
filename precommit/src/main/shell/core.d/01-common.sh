@@ -29,6 +29,8 @@ function common_defaults
   BUILDTOOLS=()
   #shellcheck disable=SC2034
   EXEC_MODES=()
+  #shellcheck disable=SC2034
+  EXCLUDE_PATHS=()
   ROBOTTYPE=""
   LOAD_SYSTEM_PLUGINS=true
   #shellcheck disable=SC2034

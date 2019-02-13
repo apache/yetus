@@ -75,6 +75,7 @@ function whitespace_postcompile
   declare result=0
   declare -a eolignore
   declare -a tabsignore
+  declare -a globalignore
   declare temp1
   declare temp2
 
@@ -89,7 +90,7 @@ function whitespace_postcompile
 
   if [[ -n "${WHITESPACE_EOL_IGNORE_LIST}" ]]; then
     eolignore=("${GREP}" "-v")
-    yetus_comma_to_array temp1 "${WHITESPACE_EOL_IGNORE_LIST}"
+    yetus_comma_to_array temp1 "${WHITESPACE_EOL_IGNORE_LIST}" ""
     for temp2 in "${temp1[@]}"; do
       eolignore+=("-e" "^$temp2:")
     done
@@ -107,21 +108,31 @@ function whitespace_postcompile
     tabsignore=("cat")
   fi
 
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+    globalignore=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  else
+    globalignore=("cat")
+  fi
+
   case "${BUILDMODE}" in
     patch)
        "${GREP}" -E '[[:blank:]]$' \
          "${GITDIFFCONTENT}" \
+        | "${globalignore[@]}" \
         | "${eolignore[@]}" > "${PATCH_DIR}/whitespace-eol.txt"
       # shellcheck disable=SC2016,SC2086
       "${AWK}" '/\t/ {print $0}' \
           "${GITDIFFCONTENT}" \
+        | "${globalignore[@]}" \
         | "${tabsignore[@]}" > "${PATCH_DIR}/whitespace-tabs.txt"
     ;;
     full)
       "${GIT}" grep -n -I --extended-regexp '[[:blank:]]$' \
+        | "${globalignore[@]}" \
         | "${eolignore[@]}" > "${PATCH_DIR}/whitespace-eol.txt"
       # shellcheck disable=SC2086
       "${GIT}" grep -n -I $'\t' \
+        | "${globalignore[@]}" \
         | "${tabsignore[@]}" > "${PATCH_DIR}/whitespace-tabs.txt"
     ;;
   esac
