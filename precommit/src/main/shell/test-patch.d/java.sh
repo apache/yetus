@@ -25,9 +25,11 @@ JAVA_INITIALIZED=false
 
 function initialize_java
 {
-  local i
-  local jdkdir
-  local tmplist
+  declare i
+  declare jdkdir
+  declare -a tmplist
+
+  tmplist=()
 
   if [[ ${JAVA_INITIALIZED} == true ]]; then
     return
@@ -80,7 +82,7 @@ function initialize_java
     fi
   done
 
-  JDK_DIR_LIST+=("${JAVA_HOME}")
+  JDK_DIR_LIST=("${tmplist[@]}" "${JAVA_HOME}")
 }
 
 function javac_initialize
