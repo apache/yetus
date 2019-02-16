@@ -182,6 +182,14 @@ function find_changed_modules
 
   CHANGED_MODULES+=("${USER_MODULE_LIST[@]}")
 
+  for i in "${CHANGED_MODULES[@]}"; do
+    if [[ -d "${i}" ]]; then
+      tmpmods+=("${i}")
+    fi
+  done
+
+  CHANGED_MODULES=("${tmpmods[@]}")
+
   yetus_sort_and_unique_array CHANGED_MODULES
 
   yetus_debug "Locate the union of ${CHANGED_MODULES[*]}"

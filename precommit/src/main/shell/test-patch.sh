@@ -182,13 +182,13 @@ function offset_clock
 ## @return       exits
 function generate_stack
 {
-  declare frame
+  declare -i frame
 
-  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
-    while caller "${frame}"; do
-      ((frame++));
-    done
-  fi
+  frame=0
+
+  while caller "${frame}"; do
+    ((frame++));
+  done
   exit 1
 }
 
@@ -1447,7 +1447,7 @@ function buildtool_cwd
   if [[ "${BUILDTOOLCWD}" =~ ^/ ]]; then
     yetus_debug "buildtool_cwd: ${BUILDTOOLCWD}"
     if [[ ! -e "${BUILDTOOLCWD}" ]]; then
-      mkdir -p "${BUILDTOOLCWD}"
+      mkdir -p "${BUILDTOOLCWD}" || return 1
     fi
     pushd "${BUILDTOOLCWD}" >/dev/null || return 1
     return 0
@@ -1458,10 +1458,13 @@ function buildtool_cwd
       pushd "${BASEDIR}" >/dev/null || return 1
     ;;
     module)
+      if [[ ! -d "${BASEDIR}/${MODULE[${modindex}]}" ]]; then
+        return 1
+      fi
       pushd "${BASEDIR}/${MODULE[${modindex}]}" >/dev/null || return 1
     ;;
     *)
-      pushd "$(pwd)" || return 1
+      pushd "$(pwd)" >/dev/null || return 1
     ;;
   esac
 }
@@ -1832,6 +1835,8 @@ function modules_workers
     if ! buildtool_cwd "${modindex}"; then
       echo "${BASEDIR}/${MODULE[${modindex}]} no longer exists. Skipping."
       ((modindex=modindex+1))
+      savestop=$(stop_clock)
+      MODULE_STATUS_TIMER[${modindex}]=${savestop}
       continue
     fi
 
