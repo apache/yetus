@@ -95,7 +95,7 @@ def releasenotes(output, version)
   #       file timestamp
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
-                                       --dirversions \
+                                       --dirversions --empty \
                                        --usetoday --license --lint=all)`
   errmsg = $stderr
   unless $CHILD_STATUS.exitstatus == 0

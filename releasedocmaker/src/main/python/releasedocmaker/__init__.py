@@ -547,6 +547,11 @@ def parse_args():
                       action="store_true",
                       default=False,
                       help="Put files in versioned directories")
+    parser.add_option("--empty",
+                      dest="empty",
+                      action="store_true",
+                      default=False,
+                      help="Create empty files when no issues")
     parser.add_option("--fileversions",
                       dest="versionfiles",
                       action="store_true",
@@ -742,7 +747,7 @@ def main():
         vstr = str(version)
         linter = Linter(vstr, options)
         jlist = sorted(JiraIter(vstr, projects))
-        if not jlist:
+        if not jlist and not options.empty:
             print "There is no issue which has the specified version: %s" % version
             continue
 

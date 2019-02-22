@@ -56,6 +56,12 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
   private Boolean dirversions;
 
   /**
+   * Allow empty files.
+   */
+  @Parameter(defaultValue = "false")
+  private Boolean empty;
+
+  /**
    * Create file versions.
    */
   @Parameter(defaultValue = "false")
@@ -172,6 +178,10 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
 
     if (dirversions) {
       argList.add("--dirversions");
+    }
+
+    if (empty) {
+      argList.add("--empty");
     }
 
     if (fileversions) {
