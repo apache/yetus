@@ -39,7 +39,6 @@ GITHUB_ISSUE=""
 
 # private globals...
 GITHUB_BRIDGED=false
-GITHUB_COMMITSHA=""
 
 # Simple function to set a default GitHub user after PROJECT_NAME has been set
 function github_set_github_user
@@ -448,17 +447,15 @@ function github_linecomments
   shift 3
   declare -a text
   text=("$@")
-  declare tempfile="${PATCH_DIR}/ghcomment.$$.${RANDOM}"
   declare githubauth
-
-  if [[ -z "${GITHUB_COMMITSHA}" ]]; then
-    GITHUB_COMMITSHA=$("${GREP}" \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
-      | head -1 \
-      | cut -f4 -d\")
-  fi
 
   if [[ -z "${uniline}" ]]; then
     return
+  fi
+
+
+  if [[ -f "${PATCH_DIR}/github.linecomments.txt" ]]; then
+    echo "," >> "${PATCH_DIR}/github.linecomments.txt"
   fi
 
   # build our REST post
@@ -472,28 +469,10 @@ function github_linecomments
       | tr -d '\n'
     done
     echo "\","
-    echo "\"commit_id\":\"${GITHUB_COMMITSHA}\","
     echo "\"path\":\"${file}\","
     echo "\"position\":${uniline}"
-    echo "}"
-  } > "${tempfile}"
-
-  if [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
-    return 0
-  fi
-
-  "${CURL}" -X POST \
-    -H "Accept: application/vnd.github.v3.full+json" \
-    -H "Content-Type: application/json" \
-     "${githubauth[@]}" \
-    -d @"${tempfile}" \
-    --silent --location \
-    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${GITHUB_ISSUE}/comments" \
-    >/dev/null
-  rm "${tempfile}"
+    echo "} "
+  } >> "${PATCH_DIR}/github.linecomments.txt"
 }
 
 ## @description Write the contents of a file to github
@@ -503,9 +482,12 @@ function github_linecomments
 function github_write_comment
 {
   declare -r commentfile=${1}
+  declare status=${2}
   declare retval=0
-  declare restfile="${PATCH_DIR}/ghcomment.$$"
+  declare restfile="${PATCH_DIR}/ghcomment.txt"
   declare githubauth
+
+  status=${status:-'COMMENT'}
 
   if [[ "${OFFLINE}" == true ]]; then
     echo "Github Plugin: Running in offline, comment skipped."
@@ -513,7 +495,13 @@ function github_write_comment
   fi
 
   {
-    printf "{\"body\":\""
+    printf "{\"event\": \"%s\"," "${status}"
+    if [[ -f "${PATCH_DIR}/github.linecomments.txt" ]]; then
+      echo "\"comments\": ["
+      cat "${PATCH_DIR}/github.linecomments.txt"
+      echo "],"
+    fi
+    printf " \"body\":\""
     "${SED}" -e 's,\\,\\\\,g' \
         -e 's,\",\\\",g' \
         -e 's,$,\\r\\n,g' "${commentfile}" \
@@ -535,7 +523,7 @@ function github_write_comment
        "${githubauth[@]}" \
        -d @"${restfile}" \
        --silent --location \
-         "${GITHUB_API_URL}/repos/${GITHUB_REPO}/issues/${GITHUB_ISSUE}/comments" \
+         "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${GITHUB_ISSUE}/reviews" \
         >/dev/null
 
   retval=$?
@@ -625,5 +613,9 @@ function github_finalreport
   done
   printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
 
-  github_write_comment "${commentfile}"
+  if [[ ${result} == 0 ]]; then
+    github_write_comment "${commentfile}" "APPROVE"
+  else
+    github_write_comment "${commentfile}" "REQUEST_CHANGES"
+  fi
 }

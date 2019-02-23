@@ -139,7 +139,7 @@ pipeline {
                 YETUS_ARGS+=(--jira-user="${JIRA_USER}")
 
                 # disable per-line comments
-                YETUS_ARGS+=(--linecomments='')
+                #YETUS_ARGS+=(--linecomments='')
 
                 # auto-kill any surefire stragglers during unit test runs
                 YETUS_ARGS+=(--reapermode=report)
