@@ -34,7 +34,6 @@ GITHUB_REPO=""
 
 # user settings
 GITHUB_PASSWD=""
-GITHUB_TOKEN=""
 GITHUB_USER=""
 GITHUB_ISSUE=""
 
@@ -56,9 +55,8 @@ function github_usage
 
   yetus_add_option "--github-api-url=<url>" "The URL of the API for github (default: '${GITHUB_API_URL}')"
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
-  yetus_add_option "--github-password=<pw>" "Github password"
+  yetus_add_option "--github-password=<pw>" "Github password (or OAuth token)"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
-  yetus_add_option "--github-token=<token>" "The token to use to write to github"
   yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
 }
 
@@ -78,9 +76,6 @@ function github_parse_args
       ;;
       --github-repo=*)
         GITHUB_REPO=${i#*=}
-      ;;
-      --github-token=*)
-        GITHUB_TOKEN=${i#*=}
       ;;
       --github-password=*)
         GITHUB_PASSWD=${i#*=}
@@ -301,8 +296,6 @@ function github_locate_pr_patch
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
     githubauth=(-H "X-ignore-me: fake")
   fi
@@ -370,8 +363,6 @@ function github_locate_sha_patch
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
     githubauth=(-H "X-ignore-me: fake")
   fi
@@ -468,8 +459,6 @@ function github_linecomments
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
     return 0
   fi
@@ -513,8 +502,6 @@ function github_write_comment
   if [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  elif [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
   else
     echo "Github Plugin: no credentials provided to write a comment."
     return 0
