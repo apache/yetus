@@ -122,13 +122,6 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-deploy-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>net.sf.mavenjython</groupId>
         <artifactId>jython-compile-maven-plugin</artifactId>
         <version>${jython-compile-maven-plugin.version}</version>
