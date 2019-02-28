@@ -70,14 +70,14 @@ By default, the GitHub plug-in assumes that https://github.com is the base URL f
 
 The specific repository on GitHub is defined with either `--github-repo` on the command line or GITHUB\_REPO in a personality.  It should take the form of "user/repo".
 
-In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports two types:
+In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports authentication via user name/passphrase or token.
 
-  * Token-based:  `--github-token` or GITHUB\_TOKEN
-
-  * Username/password: `--github-user`/ GITHUB\_USER , `--github-password` / GITHUB\_PASSWD
-
-The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
+The user name is provided via the `--github-user` option or the GITHUB\_USER environment variable.  The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
 `--project=yetus` will set `GITHUB_USER=yetusqa`.
+
+The password or OAuth token is provided via the `--github-password` or GITHUB\_PASSWD environment variable.
+
+Both username and password options must be provided.
 
 GitHub pull requests may be directly processed on the command line in two ways:
 
