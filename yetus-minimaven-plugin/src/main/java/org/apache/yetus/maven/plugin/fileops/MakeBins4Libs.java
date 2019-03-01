@@ -122,10 +122,13 @@ public final class MakeBins4Libs extends AbstractMojo {
     }
 
     File[] libListOfFiles = libFile.listFiles();
+    if (libListOfFiles == null) {
+      throw new MojoExecutionException("No files in " + libPath.toString());
+    }
     System.out.println("Processing dir " + libPath.toString());
 
     for (int i = 0; i < libListOfFiles.length; i++) {
-      if (libListOfFiles[i].isFile()) {
+      if ((libListOfFiles[i] != null) && (libListOfFiles[i].isFile())) {
         String basename = FilenameUtils
             .getBaseName(libListOfFiles[i].getName());
         String theName = FilenameUtils.getName(libListOfFiles[i].getName());
