@@ -162,7 +162,7 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
     String [] args = argList.toArray(new String[0]);
 
     ReleaseDocMaker rdm=new ReleaseDocMaker();
-    ReleaseDocMaker.main(args);
+    rdm.main(args);
   }
 
 
