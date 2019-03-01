@@ -237,23 +237,6 @@
         <artifactId>maven-clean-plugin</artifactId>
         <executions>
           <execution>
-            <id>bogus-site</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-            <configuration>
-              <excludeDefaultDirectories>true</excludeDefaultDirectories>
-              <filesets>
-                <fileset>
-                  <!-- middleman generated two copies, in-progess and the project version. Remove
-                       the project version one. -->
-                  <directory>${project.build.directory}/site/documentation/${project.version}</directory>
-                </fileset>
-              </filesets>
-            </configuration>
-          </execution>
-          <execution>
             <id>releng</id>
             <phase>clean</phase>
             <goals>
