@@ -90,21 +90,24 @@ function dupname_precheck
 
   popd >/dev/null || return 1
 
-  dupname_icase_sort_array tmpfiles
+  if [[ "${BUILDMODE}" != full ]]; then
 
-  for cur in "${tmpfiles[@]}"; do
-    if [[ -n ${prev} ]]; then
-      if [[ "${cur}" != "${prev}" ]]; then
-        curlc=$(echo "${cur}" | tr '[:upper:]' '[:lower:]')
-        if [[ "${curlc}" == "${prevlc}" ]]; then
-          echo "patch:${cur} patch:${prev}" >> "${PATCH_DIR}/dupnames.txt"
-          ((count=count + 1))
+    dupname_icase_sort_array tmpfiles
+
+    for cur in "${tmpfiles[@]}"; do
+      if [[ -n ${prev} ]]; then
+        if [[ "${cur}" != "${prev}" ]]; then
+          curlc=$(echo "${cur}" | tr '[:upper:]' '[:lower:]')
+          if [[ "${curlc}" == "${prevlc}" ]]; then
+            echo "patch:${cur} patch:${prev}" >> "${PATCH_DIR}/dupnames.txt"
+            ((count=count + 1))
+          fi
         fi
       fi
-    fi
-    prev=${cur}
-    prevlc=${curlc}
-  done
+      prev=${cur}
+      prevlc=${curlc}
+    done
+  fi
 
   if [[ ${count} -gt 0 ]]; then
     if [[ "${BUILDMODE}" != full ]]; then
