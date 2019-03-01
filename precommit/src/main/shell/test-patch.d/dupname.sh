@@ -121,6 +121,8 @@ function dupname_precheck
         " duplicated filenames that differ only in case."
       add_footer_table dupname "@@BASE@@/dupnames.txt"
     fi
+  else
+    add_vote_table +1 dupname "No case conflicting files found."
   fi
 
   return 0
