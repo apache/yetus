@@ -123,6 +123,13 @@ function github_breakup_url
   declare pos1
   declare pos2
 
+  if [[ "${url}" =~ \@ ]]; then
+    url=${url//:/\/}
+    url=${url//git@/https://}
+  fi
+
+  url=${url%\.git}
+
   count=${url//[^\/]}
   count=${#count}
   if [[ ${count} -gt 4 ]]; then
@@ -383,6 +390,21 @@ function github_locate_sha_patch
            "${AWK}" '{print $NF}')
   number=${number//\s/}
   number=${number%,}
+
+  # Semaphore CI doesn't tell us if the sha is a PR or not, so...
+  if [[ -z "${number}" ]] && [[ "${ROBOTTYPE}" = semaphoreci ]]; then
+
+    echo "This appears to be a full build on Semaphore CI. Switching modes."
+
+    PATCH_BRANCH=${SEMAPHORE_GIT_BRANCH}
+
+    # shellcheck disable=SC2034
+    PATCH_OR_ISSUE=""
+    # shellcheck disable=SC2034
+    BUILDMODE=full
+    set_buildmode
+    return 0
+  fi
 
   github_locate_pr_patch "GH:${number}" "${output}"
 
