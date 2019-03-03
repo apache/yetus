@@ -298,10 +298,8 @@ def marked_as_ignored(file_path):
     UPPERCASE.
     """
     with open(file_path) as input_file:
-        for line_num, line in enumerate(input_file, 1):
+        for line in input_file:
             if line.startswith("#") and line[1:].strip() == "SHELLDOC-IGNORE":
-                print >> sys.stderr, "Yo! Got an ignore directive in",\
-                                    "file:{} on line number:{}".format(file_path, line_num)
                 return True
         return False
 
