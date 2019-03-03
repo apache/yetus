@@ -102,7 +102,6 @@ def releasenotes(output, version)
     puts(errmsg)
     abort("releasedocmaker failed to generate release notes for #{version}.")
   end
-
 end
 
 GITREPO = 'https://github.com/apache/yetus.git'.freeze
@@ -113,39 +112,43 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metri
   puts "\tcleaning up output directories in #{output}"
   FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
   FileUtils.rm_rf("#{output}/#{version}", secure: true)
-  puts "\tcloning from tag."
-  `(cd "#{output}" && \
-    git clone --depth 1 --branch "rel/#{version}" --single-branch -- \
-        "#{GITREPO}" "build-#{version}" \
-   ) >"#{output}/#{version}_git_checkout.log" 2>&1`
-  abort("building docs failed to for #{version}.") unless $CHILD_STATUS.exitstatus == 0
-  puts "\tsetting up markdown docs"
-  FileUtils.mkdir "#{output}/#{version}"
-  FileUtils.mv(
-    Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"),
-    "#{output}/#{version}/"
-  )
-  FileUtils.mv(
-    "#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md",
-    "#{output}/#{version}.html.md"
-  )
-  FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
   if version =~ /^0.[0-8]./
+    puts "\tcloning from tag."
+    `(cd "#{output}" && \
+      git clone --depth 1 --branch "rel/#{version}" --single-branch -- \
+          "#{GITREPO}" "build-#{version}" \
+     ) >"#{output}/#{version}_git_checkout.log" 2>&1`
+    abort("building docs failed to for #{version}.") unless $CHILD_STATUS.exitstatus.zero?
+    puts "\tsetting up markdown docs"
+    FileUtils.mkdir "#{output}/#{version}"
+    FileUtils.mv(
+      Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"),
+      "#{output}/#{version}/"
+    )
+    FileUtils.mv(
+      "#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md",
+      "#{output}/#{version}.html.md"
+    )
+    FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
     precommit_shelldocs(
       "#{output}/#{version}/precommit-apidocs",
       "#{output}/build-#{version}/precommit"
     )
+    puts "\tgenerating javadocs"
+    `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Metrics/LineLength
+    unless $CHILD_STATUS.exitstatus.zero?
+      puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log" # rubocop:disable Metrics/LineLength
+    end
   else
-    precommit_shelldocs(
-      "#{output}/#{version}/precommit-apidocs",
-      "#{output}/build-#{version}/precommit/src/main/shell"
-    )
-  end
-
-  puts "\tgenerating javadocs"
-  `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Metrics/LineLength
-  unless $CHILD_STATUS.exitstatus == 0
-    puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log" # rubocop:disable Metrics/LineLength
+    puts "Downloading and extracting #{version} from ASF archives"
+    `(cd  #{output} \
+      && mkdir -p build-#{version} \
+      && curl --fail --location --output site-#{version}.tar.gz \
+        http://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
+      && tar -C build-#{version} \
+         --strip-components 3 -xzpf site-#{version}.tar.gz \
+        apache-yetus-#{version}-site/documentation/in-progress/ \
+    )`
   end
 end
 
@@ -161,7 +164,7 @@ def precommit_shelldocs(apidocs_dir, source_dir)
 end
 
 # Add in apidocs rendered by other parts of the repo
-after_configuration do
+after_configuration do # rubocop:disable Metrics/BlockLength
   # This allows us to set the style for tables.
   ::Middleman::Renderers::MiddlemanRedcarpetHTML.class_eval do
     def table(header, body)
@@ -177,8 +180,8 @@ after_configuration do
     :audience_annotations,
     ApiDocs.new(
       sitemap,
-      'documentation/in-progress/audience-annotations-apidocs',
-      '../audience-annotations-component/target/site/apidocs'
+      'documentation/in-progress/javadocs',
+      '../target/site/documentation/in-progress/javadocs'
     )
   )
 
@@ -193,15 +196,26 @@ after_configuration do
     data.versions.releases.each do |release|
       build_release_docs('target', release)
       releasenotes('target', release)
-      # stitch the javadoc in place
-      sitemap.register_resource_list_manipulator(
-        "#{release}_javadocs".to_sym,
-        ApiDocs.new(
-          sitemap,
-          "documentation/#{release}/audience-annotations-apidocs",
-          "target/build-#{release}/audience-annotations-component/target/site/apidocs"
+      if release =~ /^0.[0-8]./
+        # stitch the javadoc in place
+        sitemap.register_resource_list_manipulator(
+          "#{release}_javadocs".to_sym,
+          ApiDocs.new(
+            sitemap,
+            "documentation/#{release}/audience-annotations-apidocs",
+            "target/build-#{release}/audience-annotations-component/target/site/apidocs"
+          )
         )
-      )
+      else
+        sitemap.register_resource_list_manipulator(
+          "#{release}_javadocs".to_sym,
+          ApiDocs.new(
+            sitemap,
+            "documentation/#{release}",
+            "target/build-#{release}"
+          )
+        )
+      end
     end
   end
 end
