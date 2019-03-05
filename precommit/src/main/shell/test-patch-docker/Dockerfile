@@ -154,8 +154,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     python3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+# astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 #hadolint ignore=DL3013
-RUN pip3 install -v pylint==2.1.1 docker-compose
+RUN pip3 install -v  astroid==2.2.4 pylint==2.3.1 docker-compose
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint3
 
 ######
@@ -170,7 +171,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y python \
     python-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN pip2 install -v pylint==1.9.2 python-dateutil==2.7.3 yamllint==1.12.1
+RUN pip2 install -v astroid==1.6.5 pylint==1.9.2 python-dateutil==2.7.3 yamllint==1.12.1
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint2
 
 #####
