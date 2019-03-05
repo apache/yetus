@@ -17,8 +17,26 @@
   under the License.
 -->
 
+
 Robots: Continuous Integration Support
 ======================================
+
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Intro](#intro)
+* [Azure Pipelines](#azure-pipelines)
+* [Circle CI](#circle-ci)
+* [Gitlab CI](#gitlab-ci)
+* [Jenkins](#jenkins)
+* [Semaphore CI](#semaphore-ci)
+* [Travis CI](#travis-ci)
+* [Manual Configuration](#manual-configuration)
+* [Sentinel Mode](#sentinel-mode)
+
+<!-- /MarkdownTOC -->
+
+Intro
+=====
 
 `test-patch` works hand-in-hand with various CI and other automated build systems.  `test-patch` will attempt to auto-determine if it is running under such a system and change its defaults to match known configuration parameters automatically. When robots are activated, there is generally some additional/changed behavior:
 
@@ -30,6 +48,13 @@ Robots: Continuous Integration Support
   * attempt to determine the build tool in use
   * activate Docker maintenance when `--docker` is passed
   * attempt to determine whether this is a full build (`qbt`) or testing a patch/merge request/pull request.
+
+Azure Pipelines
+===============
+
+TRIGGER: ${TF_BUILD}=True
+
+Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the source repository. It automatically configures `--patch-dir` to be `${BUILD_ARTIFACTSTAGINGDIRECTORY}/yetus`.  While the URL to the console is provided in the report, links are not provided due to the URLs to artifacts not being available at runtime.
 
 Circle CI
 =========
