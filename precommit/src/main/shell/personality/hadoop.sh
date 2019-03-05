@@ -422,8 +422,10 @@ function personality_modules
   fi
 
   if [ "$CORE_HADOOP_CHANGED" = false ] && [ "$OZONE_CHANGED" = true ]; then
-    personality_enqueue_module hadoop-hdds ${extra}
-    personality_enqueue_module hadoop-ozone ${extra}
+    if [ "$testtype" != "mvnsite" ] && [ "$testtype" != "shadedclient" ]; then
+      personality_enqueue_module hadoop-hdds ${extra}
+      personality_enqueue_module hadoop-ozone ${extra}
+    fi
   else
     for module in $(hadoop_order ${ordering}); do
       # shellcheck disable=SC2086
