@@ -18,7 +18,6 @@
 # SHELLDOC-IGNORE
 #
 # Override these to match Apache Hadoop's requirements
-
 personality_plugins "all,-ant,-gradle,-scalac,-scaladoc"
 
 ## @description  Globals specific to this personality
@@ -406,7 +405,7 @@ function personality_modules
   extra="-Ptest-patch ${extra}"
   OZONE_CHANGED=false
   CORE_HADOOP_CHANGED=false
-  for module in $CHANGED_MODULES
+  for module in "${CHANGED_MODULES[@]}"
   do
     if [[ "$module" =~ "hdds" ]]; then
       OZONE_CHANGED=true
@@ -423,7 +422,9 @@ function personality_modules
 
   if [ "$CORE_HADOOP_CHANGED" = false ] && [ "$OZONE_CHANGED" = true ]; then
     if [ "$testtype" != "mvnsite" ] && [ "$testtype" != "shadedclient" ]; then
+      #shellcheck disable=SC2086
       personality_enqueue_module hadoop-hdds ${extra}
+      #shellcheck disable=SC2086
       personality_enqueue_module hadoop-ozone ${extra}
     fi
   else
