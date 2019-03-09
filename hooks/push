@@ -14,22 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-GIT_URL=$(git config --get remote.origin.url)
-
-# Build the -base image
-docker build \
-  --label "git-commit-sha=${SOURCE_COMMIT}" \
-  --label "git-commit-branch=${SOURCE_BRANCH}" \
-  --label "git-commit-url=${GIT_URL}" \
-  --tag "${DOCKER_REPO}-base:${DOCKER_TAG}" \
-  precommit/src/main/shell/test-patch-docker
-
-# Build the full image using base above
-docker build \
-  --label "git-commit-sha=${SOURCE_COMMIT}" \
-  --label "git-commit-branch=${SOURCE_BRANCH}" \
-  --label "git-commit-url=${GIT_URL}" \
-  --tag "${DOCKER_REPO}:${DOCKER_TAG}" \
-  --build-arg DOCKER_TAG="${DOCKER_TAG}" \
-  --build-arg DOCKER_REPO="${DOCKER_REPO}" \
-  .
+docker push "${DOCKER_REPO}-base:${DOCKER_TAG}"
+docker push "${DOCKER_REPO}:${DOCKER_TAG}"
