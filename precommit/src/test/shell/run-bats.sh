@@ -17,7 +17,7 @@
 targetdir=../../../target
 mkdir -p ${targetdir}/surefire-reports ${targetdir}/tap
 
-batsexe=$(which bats) 2>/dev/null
+batsexe=$(command -v bats) 2>/dev/null
 
 if [[ -z ${batsexe} ]]; then
   echo "not ok - no bats executable found" >  "${targetdir}/tap/shelltest.tap"

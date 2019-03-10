@@ -538,7 +538,7 @@ function maven_unit_test_filter()
 {
   declare filtered
 
-  if [[ ! -z "${UNIT_TEST_FILTER_FILE}" ]]; then
+  if [[ -n "${UNIT_TEST_FILTER_FILE}" ]]; then
     while read -r line || [[ -n "${line}" ]]; do
       if [[ -z $line ]]; then
         continue

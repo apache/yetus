@@ -199,10 +199,12 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 ####
 # Install shellcheck (shell script lint)
 ####
-RUN add-apt-repository -y ppa:jonathonf/ghc-8.0.2
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y shellcheck \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y cabal-install \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+RUN cabal update
+RUN cabal install ShellCheck \
+    && cp -p /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck
 
 ###
 # Install hadolint
