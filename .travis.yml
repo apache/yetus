@@ -31,4 +31,5 @@ script:
     --docker
     --patch-dir=/tmp/yetus-out
     --plugins=all
+    --docker-cache-from=apache/yetus:master
     --tests-filter=checkstyle,javadoc,rubocop,test4tests
