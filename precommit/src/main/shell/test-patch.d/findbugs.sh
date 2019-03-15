@@ -18,7 +18,6 @@
 
 FINDBUGS_HOME=${FINDBUGS_HOME:-}
 FINDBUGS_WARNINGS_FAIL_PRECHECK=false
-FINDBUGS_SKIP_MAVEN_SOURCE_CHECK=false
 
 add_test_type findbugs
 
@@ -26,7 +25,6 @@ function findbugs_usage
 {
   yetus_add_option "--findbugs-home=<path>" "Findbugs home directory (default \${FINDBUGS_HOME})"
   yetus_add_option "--findbugs-strict-precheck" "If there are Findbugs warnings during precheck, fail"
-  yetus_add_option "--findbugs-skip-maven-source-check" "If the buildtool is maven, then skip the source check and run Findbugs for every module"
 }
 
 function findbugs_parse_args
@@ -40,9 +38,6 @@ function findbugs_parse_args
     ;;
     --findbugs-strict-precheck)
       FINDBUGS_WARNINGS_FAIL_PRECHECK=true
-    ;;
-    --findbugs-skip-maven-source-check)
-      FINDBUGS_SKIP_MAVEN_SOURCE_CHECK=true
     ;;
     esac
   done
@@ -81,11 +76,11 @@ function findbugs_precheck
     yetus_error "FINDBUGS_HOME was not specified."
     status=1
   else
-    for exec in findbugs \
-                computeBugHistory \
+    for exec in computeBugHistory \
                 convertXmlToText \
                 filterBugs \
-                setBugDatabaseInfo; do
+                setBugDatabaseInfo\
+                unionBugs; do
       if ! verify_command "${exec}" "${FINDBUGS_HOME}/bin/${exec}"; then
         status=1
       fi
@@ -94,42 +89,6 @@ function findbugs_precheck
   if [[ ${status} == 1 ]]; then
     add_vote_table 0 findbugs "Findbugs executables are not available."
     delete_test findbugs
-  fi
-}
-
-## @description  Dequeue maven modules that lack java sources
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function findbugs_maven_skipper
-{
-  declare -i i=0
-  declare skiplist=()
-  declare modname
-
-  start_clock
-  #shellcheck disable=SC2153
-  until [[ ${i} -eq ${#MODULE[@]} ]]; do
-    # If there are no java source code in the module,
-    # skip parsing output xml file.
-    if [[ ! -d "${MODULE[${i}]}/src/main/java" ]]; then
-       skiplist=("${skiplist[@]}" "${MODULE[$i]}")
-    fi
-    ((i=i+1))
-  done
-
-  i=0
-
-  for modname in "${skiplist[@]}"; do
-    dequeue_personality_module "${modname}"
-  done
-
-  if [[ -n "${modname}" ]]; then
-    if [[ "${BUILDMODE}" = patch ]]; then
-      add_vote_table 0 findbugs "Skipped patched modules with no Java source: ${skiplist[*]}"
-    else
-      add_vote_table 0 findbugs "Skipped ${#skiplist[@]} modules in the source tree with no Java source."
-    fi
   fi
 }
 
@@ -154,12 +113,6 @@ function findbugs_runner
 
   personality_modules "${name}" findbugs
 
-  # strip out any modules that aren't actually java modules
-  # this can save a lot of time during testing
-  if [[ "${BUILDTOOL}" = maven && ${FINDBUGS_SKIP_MAVEN_SOURCE_CHECK} == false ]]; then
-    findbugs_maven_skipper
-  fi
-
   "${BUILDTOOL}_modules_worker" "${name}" findbugs
 
   if [[ ${UNSUPPORTED_TEST} = true ]]; then
@@ -178,24 +131,32 @@ function findbugs_runner
     module="${MODULE[${i}]}"
     fn=$(module_file_fragment "${module}")
 
+    if [[ "${module}" == . ]]; then
+      module=root
+    fi
+
     case ${BUILDTOOL} in
       maven)
-        file="${module}/target/findbugsXml.xml"
+        targetfile="findbugsXml.xml"
       ;;
       ant)
-        file="${ANT_FINDBUGSXML}"
+        targetfile="${ANT_FINDBUGSXML}"
       ;;
     esac
 
-    if [[ ! -f ${file} ]]; then
-      module_status ${i} -1 "" "${name}/${module} no findbugs output file (${file})"
+    while read -r line; do
+      files+=("${line}")
+    done < <(find . -name "${targetfile}")
+
+    if [[ "${#files[@]}" -lt 1 ]]; then
+      module_status ${i} 0 "" "${name}/${module} no findbugs output file (${targetfile})"
       ((i=i+1))
       continue
     fi
 
     warnings_file="${PATCH_DIR}/${name}-findbugs-${fn}-warnings"
 
-    cp -p "${file}" "${warnings_file}.xml"
+    "${FINDBUGS_HOME}/bin/unionBugs" -withMessages -output "${warnings_file}.xml" "${files[@]}"
 
     if [[ ${name} == branch ]]; then
       "${FINDBUGS_HOME}/bin/setBugDatabaseInfo" -name "${PATCH_BRANCH}" \
@@ -280,6 +241,11 @@ function findbugs_preapply
     start_clock
     offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
     fn=$(module_file_fragment "${module}")
+
+    if [[ "${module}" == . ]]; then
+      module=root
+    fi
+
     warnings_file="${PATCH_DIR}/branch-findbugs-${fn}-warnings"
     # shellcheck disable=SC2016
     module_findbugs_warnings=$("${FINDBUGS_HOME}/bin/filterBugs" -first \
@@ -373,6 +339,10 @@ function findbugs_postinstall
     buildtool_cwd "${i}"
 
     fn=$(module_file_fragment "${module}")
+
+    if [[ "${module}" == . ]]; then
+      module=root
+    fi
 
     combined_xml="${PATCH_DIR}/combined-findbugs-${fn}.xml"
     branchxml="${PATCH_DIR}/branch-findbugs-${fn}-warnings.xml"
