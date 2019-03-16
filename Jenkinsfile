@@ -148,7 +148,7 @@ pipeline {
                 YETUS_ARGS+=(--proclimit=2000)
 
                 # rsync these files back into the archive dir
-                YETUS_ARGS+=("--archive-list=checkstyle-errors.xml,findbugsXml.xml")
+                YETUS_ARGS+=("--archive-list=checkstyle-errors.xml,spotbugsXml.xml")
 
                 # URL for user-side presentation in reports and such to our artifacts
                 # (needs to match the archive bits below)

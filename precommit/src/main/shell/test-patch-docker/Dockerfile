@@ -121,6 +121,18 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y findbugs 
     && rm -rf /var/lib/apt/lists/*
 ENV FINDBUGS_HOME /usr
 
+#####
+# Install SpotBugs
+#####
+RUN curl -fsSL http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.tgz -o spotbugs.tgz \
+    && curl -fsSL http://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.tgz.sha1 -o spotbugs.tgz.sha1 \
+    && echo -n "  spotbugs.tgz" >> spotbugs.tgz.sha1 \
+    && shasum -c spotbugs.tgz.sha1 \
+    && mkdir -p /opt/spotbugs \
+    && tar -C /opt/spotbugs --strip-components 1  -xpf spotbugs.tgz \
+    && rm spotbugs.tgz spotbugs.tgz.sha1
+ENV SPOTBUGS_HOME /opt/spotbugs
+
 ####
 # Install GNU C/C++
 ####

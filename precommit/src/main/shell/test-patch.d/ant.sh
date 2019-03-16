@@ -120,6 +120,9 @@ function ant_modules_worker
     javadoc)
       modules_workers "${repostatus}" javadoc clean javadoc
     ;;
+    spotbugs)
+      modules_workers "${repostatus}" spotbugs spotbugs
+    ;;
     unit)
       modules_workers "${repostatus}" unit
     ;;
@@ -209,6 +212,7 @@ function ant_builtin_personality_file_tests
   fi
 
   if [[ ${filename} =~ \.java$ ]]; then
+    add_test spotbugs
     add_test findbugs
   fi
 }

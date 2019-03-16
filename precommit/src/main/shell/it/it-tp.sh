@@ -58,7 +58,7 @@ fi
 # our 'default' args, in (mostly) alphabetical order
 
 # rsync these files back into the archive dir
-YETUS_ARGS+=("--archive-list=checkstyle-errors.xml,findbugsXml.xml")
+YETUS_ARGS+=("--archive-list=checkstyle-errors.xml,spotbugsXml.xml")
 
 # where the source is located
 YETUS_ARGS+=("--basedir=${BASEDIR}")

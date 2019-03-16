@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-personality_plugins "all,-checkstyle,-findbugs"
+personality_plugins "all,-checkstyle,-findbugs,-spotbugs"
 
 ## @description  Globals specific to this personality
 ## @audience     private
