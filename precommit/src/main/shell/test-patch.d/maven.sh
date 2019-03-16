@@ -326,6 +326,9 @@ function maven_modules_worker
     scaladoc)
       modules_workers "${repostatus}" scaladoc clean scala:doc -DskipTests=true
     ;;
+    spotbugs)
+      modules_workers "${repostatus}" spotbugs test-compile spotbugs:spotbugs -DskipTests=true
+    ;;
     unit)
       if [[ -n "${maven_unit_test_filter}" ]]; then
         modules_workers "${repostatus}" unit clean test -fae "${maven_unit_test_filter}"
@@ -525,6 +528,7 @@ function maven_builtin_personality_file_tests
   fi
 
   if [[ ${filename} =~ \.java$ ]]; then
+    add_test spotbugs
     add_test findbugs
   fi
 }
@@ -629,7 +633,8 @@ function maven_precompile
   modules_workers "${repostatus}" mvninstall -fae \
     clean install \
     -DskipTests=true -Dmaven.javadoc.skip=true \
-    -Dcheckstyle.skip=true -Dfindbugs.skip=true
+    -Dcheckstyle.skip=true -Dfindbugs.skip=true \
+    -Dspotbugs.skip=true
   result=$?
   modules_messages "${repostatus}" mvninstall true
   if [[ ${result} != 0 ]]; then

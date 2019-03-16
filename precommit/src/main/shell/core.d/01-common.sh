@@ -317,12 +317,11 @@ function verify_plugin_enabled
   declare strip
   declare stridx
 
-  yetus_debug "Testing if $1 has been enabled by user"
+  yetus_debug "Testing if ${toadd} has been enabled by user"
 
   bar=""
   for idx in ${ENABLED_PLUGINS}; do
     stridx=${idx// }
-    yetus_debug "verify_plugin_enabled: processing ${stridx}"
     case ${stridx} in
       all)
         bar=${toadd}
@@ -343,7 +342,9 @@ function verify_plugin_enabled
   done
 
   if [[ -n ${bar} ]]; then
-    yetus_debug "Post-parsing: checking ${bar} = ${toadd}"
+    if [[ "${bar}" = "${toadd}" ]]; then
+      yetus_debug "Post-parsing: ${toadd} enabled"
+    fi
   fi
   [[ ${bar} = "${toadd}" ]]
 }
@@ -416,6 +417,23 @@ function add_test_type
 function delete_test_type
 {
   yetus_del_array_element TESTTYPES "${1}"
+}
+
+## @description  Add the given test type
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        plugin
+function replace_test_type
+{
+  if verify_plugin_enabled "${1}" && verify_plugin_enabled "${2}"; then
+    yetus_error "WARNING: $2 has been replaced with $1. Disabling $2."
+    ENABLED_PLUGINS=${ENABLED_PLUGINS%$2}
+    delete_test_type "$2"
+    delete_test "$2"
+    return 0
+  fi
+  return 1
 }
 
 ## @description  Add the given bugsystem type
@@ -533,6 +551,12 @@ function importplugins
       yetus_debug "Importing ${i}"
       #shellcheck disable=SC1090
       . "${i}"
+    fi
+  done
+
+  for i in "${TESTTYPES[@]}"; do
+    if declare -f "${i}_deprecate_test_type" >/dev/null; then
+      "${i}_deprecate_test_type"
     fi
   done
 

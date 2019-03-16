@@ -50,6 +50,8 @@ class StabilityOptions {
         case STABLE_OPTION:
           RootDocProcessor.stability = STABLE_OPTION;
           break;
+        default:
+          break;
       }
     }
   }

@@ -101,7 +101,9 @@ Language Support, Licensing, and more:
 * [Apache Creadur Rat](http://creadur.apache.org/rat/) entries in build system
 * [checkstyle](http://checkstyle.sourceforge.net/) entries in build system (ant and maven only)
 * [FindBugs](http://findbugs.sourceforge.net/) entries in build system and 3.x executables
-   (NOTE: FindBugs executables are required even if the build system is using [Spotbugs](https://spotbugs.github.io/))
+  - NOTE: only one of FindBugs or SpotBugs may be used at a time.
+* [SpotBugs](https://spotbugs.github.io/)) entries in build system and 3.x executables
+  - NOTE: only one of FindBugs or SpotBugs may be used at a time.
 * [jshint](https://jshint.com) installed
 * [hadolint](https://github.com/hadolint/hadolint) installed
 * [Perl::Critic](http://perlcritic.com/) installed

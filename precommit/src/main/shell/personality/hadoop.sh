@@ -18,7 +18,7 @@
 # SHELLDOC-IGNORE
 #
 # Override these to match Apache Hadoop's requirements
-personality_plugins "all,-ant,-gradle,-scalac,-scaladoc"
+personality_plugins "all,-ant,-gradle,-scalac,-scaladoc,-spotbugs"
 
 ## @description  Globals specific to this personality
 ## @audience     private

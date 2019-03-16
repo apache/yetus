@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-personality_plugins "all,-javadoc,-findbugs,-asflicense"
+personality_plugins "all,-javadoc,-findbugs,-asflicense,-spotbugs"
 
 ## @description  Globals specific to this personality
 ## @audience     private
