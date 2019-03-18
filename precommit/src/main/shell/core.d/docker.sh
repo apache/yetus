@@ -28,6 +28,7 @@ DOCKER_TAG=""
 DOCKER_IN_DOCKER=false
 DOCKER_SOCKET="/var/run/docker.sock"
 DOCKER_SOCKET_GID=-1
+DOCKER_WORK_DIR="/precommit"
 
 declare -a DOCKER_EXTRAARGS
 declare -a DOCKER_VERSION
@@ -69,6 +70,7 @@ function docker_usage
     yetus_add_option "--dockerprivd=<bool>" "Run docker in privileged mode (default: '${DOCKER_ENABLE_PRIVILEGED}')"
     yetus_add_option "--docker-socket=<socket>" "Mount given socket as /var/run/docker.sock into the container when Docker-in-Docker mode is enabled (default: '${DOCKER_SOCKET}')"
     yetus_add_option "--docker-tag=<tag>" "Use the given Docker tag as the base"
+    yetus_add_option "--docker-work-dir=<directory>" "Disposable, safe dir for precommit work (default: ${DOCKER_WORK_DIR}"
   fi
   yetus_add_option "--dockerdelrep" "In Docker mode, only report image/container deletions, not act on them"
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
@@ -126,6 +128,9 @@ function docker_parse_args
         DOCKER_SOCKET=${i#*=}
       ;;
       --docker-tag=*)
+        DOCKER_TAG=${i#*=}
+      ;;
+      --docker-work-dir=*)
         DOCKER_TAG=${i#*=}
       ;;
     esac
@@ -709,6 +714,8 @@ function docker_run_image
     fi
   done
 
+  add_docker_env DOCKER_WORK_DIR
+
   # using the base image, make one that is patch specific
   dockercmd build \
     "${dockplat[@]}" \
@@ -718,6 +725,7 @@ function docker_run_image
     --build-arg USER_ID="${USER_ID}" \
     --build-arg USER_NAME="${USER_NAME}" \
     --build-arg DOCKER_SOCKET_GID="${DOCKER_SOCKET_GID}" \
+    --build-arg DOCKER_WORK_DIR="${DOCKER_WORK_DIR}" \
     --label org.apache.yetus=\"\" \
     --label org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}" \
     --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
@@ -766,10 +774,10 @@ function docker_run_image
     fi
   fi
 
-  DOCKER_EXTRAARGS+=(-v "${PWD}:/testptch/${PROJECT_NAME}")
+  DOCKER_EXTRAARGS+=(-v "${BASEDIR}:${BASEDIR}")
   DOCKER_EXTRAARGS+=(-u "${USER_NAME}")
-  DOCKER_EXTRAARGS+=(-w "/testptch/${PROJECT_NAME}")
-  DOCKER_EXTRAARGS+=("--env=BASEDIR=/testptch/${PROJECT_NAME}")
+  DOCKER_EXTRAARGS+=(-w "${BASEDIR}")
+  DOCKER_EXTRAARGS+=("--env=BASEDIR=${BASEDIR}")
   DOCKER_EXTRAARGS+=("--env=DOCKER_VERSION_STR=${dockerversion}")
 
   docker_do_env_adds
@@ -782,8 +790,8 @@ function docker_run_image
     dockercmd run --rm=true -i \
       "${dockplat[@]}" \
       "${DOCKER_EXTRAARGS[@]}" \
-      -v "${PATCH_DIR}:/testptch/patchprocess" \
-      --env=PATCH_DIR=/testptch/patchprocess \
+      -v "${PATCH_DIR}:${PATCH_DIR}" \
+      --env=PATCH_DIR="${PATCH_DIR}" \
       "${patchimagename}" &
   else
     dockercmd run --rm=true -i \

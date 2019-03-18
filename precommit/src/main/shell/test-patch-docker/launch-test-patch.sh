@@ -22,13 +22,13 @@ declare -a OVERWRITEARGS
 #shellcheck disable=SC1090
 source "${PATCH_DIR}/precommit/core.d/00-yetuslib.sh"
 
-if ! yetus_file_to_array OVERWRITEARGS /testptch/user_params.txt; then
+if ! yetus_file_to_array OVERWRITEARGS "${DOCKER_WORK_DIR}/user_params.txt"; then
   yetus_error "ERROR: Cannot read user parameters file. Exiting."
   exit 1
 fi
 
 # do not want this archived
-rm -f /testptch/user_params.txt
+rm -f "${DOCKER_WORK_DIR}/user_params.txt"
 
 OVERWRITEARGS+=("--reexec")
 OVERWRITEARGS+=("--dockermode")
@@ -67,8 +67,8 @@ fi
 # system.  So we need to rescue it and then tell
 # test-patch where to find it.
 if [[ "${PATCH_SYSTEM}" = generic ]]; then
-  cp -p "${PATCH_DIR}/patch" /testptch/extras/patch
-  OVERWRITEARGS+=("/testptch/extras/patch")
+  cp -p "${PATCH_DIR}/patch" "${DOCKER_WORK_DIR}/extras/patch"
+  OVERWRITEARGS+=("${DOCKER_WORK_DIR}/extras/patch")
 fi
 
 cd "${PATCH_DIR}/precommit/" || exit 1

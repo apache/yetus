@@ -180,7 +180,7 @@ function console_finalreport
 function console_docker_support
 {
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
-    DOCKER_EXTRAARGS+=("-v" "${CONSOLE_REPORT_FILE}:/testptch/console.txt")
-    USER_PARAMS+=("--console-report-file=/testptch/console.txt")
+    DOCKER_EXTRAARGS+=("-v" "${CONSOLE_REPORT_FILE}:${DOCKER_WORK_DIR}/console.txt")
+    USER_PARAMS+=("--console-report-file=${DOCKER_WORK_DIR}/console.txt")
   fi
 }

@@ -24,6 +24,7 @@ ARG USER_NAME
 ARG GROUP_ID
 ARG USER_ID
 ARG DOCKER_SOCKET_GID
+ARG DOCKER_WORK_DIR
 
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" || true
 RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
@@ -32,13 +33,14 @@ RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
 
 RUN if [ "${DOCKER_SOCKET_GID}" != -1 ]; then (groupadd --non-unique --gid ${DOCKER_SOCKET_GID} dockersock && adduser "${USER_NAME}" dockersock ) || true; fi
 
-RUN mkdir -p /testptch/extras
-RUN chmod a+rwx /testptch/extras
-COPY user_params.txt /testptch/user_params.txt
-COPY launch-test-patch.sh /testptch/launch-test-patch.sh
-RUN chown -R "${USER_NAME}":"${GROUP_ID}" /testptch || true
-RUN chmod a+rx /testptch/launch-test-patch.sh
+RUN mkdir -p ${DOCKER_WORK_DIR}/extras
+RUN chmod a+rwx ${DOCKER_WORK_DIR}/extras
+COPY user_params.txt ${DOCKER_WORK_DIR}/user_params.txt
+COPY launch-test-patch.sh /launch-test-patch.sh
+RUN chown -R "${USER_NAME}":"${GROUP_ID}" ${DOCKER_WORK_DIR} /launch-test-patch.sh || true
+RUN chmod a+rx /launch-test-patch.sh
 RUN chown -R "${USER_NAME}" "/home/${USER_NAME}" || true
 ENV HOME "/home/${USER_NAME}"
 USER ${USER_NAME}
-CMD ["/testptch/launch-test-patch.sh"]
+ENV DOCKER_WORK_DIR ${DOCKER_WORK_DIR}
+CMD ["/launch-test-patch.sh"]

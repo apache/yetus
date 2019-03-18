@@ -69,8 +69,8 @@ function briefreport_parse_args
 function briefreport_docker_support
 {
   if [[ -n ${BRIEFOUT_REPORTFILE} ]]; then
-    DOCKER_EXTRAARGS+=("-v" "${BRIEFOUT_REPORTFILE}:/testptch/brief.txt")
-    USER_PARAMS+=("--brief-report-file=/testptch/brief.txt")
+    DOCKER_EXTRAARGS+=("-v" "${BRIEFOUT_REPORTFILE}:${DOCKER_WORK_DIR}/brief.txt")
+    USER_PARAMS+=("--brief-report-file=${DOCKER_WORK_DIR}/brief.txt")
   fi
 }
 
