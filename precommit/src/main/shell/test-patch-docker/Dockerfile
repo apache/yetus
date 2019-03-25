@@ -145,17 +145,17 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y perl libp
 ######
 # Install python3 and pylint3
 ######
+RUN add-apt-repository -y ppa:deadsnakes/ppa
+# hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
-    python3 \
-    python3-pip \
-    python3-pkg-resources \
-    python3-setuptools \
-    python3-wheel \
-    python3-dev \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+   python3.7 \
+   python3.7-dev \
+   && apt-get clean \
+   && rm -rf /var/lib/apt/lists/*
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+   && python3.7 get-pip.py
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
-#hadolint ignore=DL3013
+# hadolint ignore=DL3013
 RUN pip3 install -v  astroid==2.2.4 pylint==2.3.1 docker-compose
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint3
 
