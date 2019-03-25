@@ -210,11 +210,11 @@ RUN cabal install ShellCheck \
 # Install hadolint
 ####
 RUN curl -L -s -S \
-   https://github.com/hadolint/hadolint/releases/download/v1.15.0/hadolint-Linux-x86_64 \
+   https://github.com/hadolint/hadolint/releases/download/v1.16.2/hadolint-Linux-x86_64 \
    -o /bin/hadolint && \
    chmod a+rx /bin/hadolint && \
    shasum -a 512 /bin/hadolint | \
-   awk '$1!="f42e69dddfd2e4ce69848cc67b0800be9ae7ac729360fb9aa7250ee84499e635dc524a470766570d7fa2bd57c58529c4dbbefea80f583e5640b651d4a3b10f63" {exit(1)}'
+   awk '$1!="7044f2f5a8a9f2a52d9921f34a5cca5fee6a26c1de052f5348d832624976eb760195c65d79a69454f3056359e23b382353977340a7a1ca5c7805b164690c0485" {exit(1)}'
 
 ###
 # Install npm and JSHint
