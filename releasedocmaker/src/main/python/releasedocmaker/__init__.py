@@ -698,14 +698,15 @@ def main():
     if options.output_directory is not None:
         # Create the output directory if it does not exist.
         try:
-            os.makedirs(options.output_directory)
+            if not os.path.exists(options.output_directory):
+                os.makedirs(options.output_directory)
         except OSError as exc:
             if exc.errno == errno.EEXIST and os.path.isdir(
                     options.output_directory):
                 pass
             else:
-                print "Unable to create output directory %s: %s" % \
-                        (options.output_directory, exc.message)
+                print "Unable to create output directory %s: %u, %s" % \
+                        (options.output_directory, exc.errno, exc.message)
                 sys.exit(1)
         os.chdir(options.output_directory)
 

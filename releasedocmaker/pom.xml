@@ -112,9 +112,9 @@
                   <mainClass>org.apache.yetus.releasedocmaker.ReleaseDocMaker</mainClass>
                 </manifest>
               </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
+              <descriptors>
+                <descriptor>src/main/assemblies/jar-with-dependencies.xml</descriptor>
+              </descriptors>
             </configuration>
           </execution>
 
@@ -127,7 +127,7 @@
         <version>${jython-compile-maven-plugin.version}</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>compile</phase>
             <goals>
               <goal>jython</goal>
             </goals>
