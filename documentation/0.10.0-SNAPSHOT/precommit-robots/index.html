@@ -122,6 +122,24 @@
 
 <h1 id="robots-continuous-integration-support">Robots: Continuous Integration Support</h1>
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+<ul>
+<li><a href="#intro">Intro</a></li>
+<li><a href="#azure-pipelines">Azure Pipelines</a></li>
+<li><a href="#circle-ci">Circle CI</a></li>
+<li><a href="#gitlab-ci">Gitlab CI</a></li>
+<li><a href="#jenkins">Jenkins</a></li>
+<li><a href="#semaphore-ci">Semaphore CI</a></li>
+<li><a href="#travis-ci">Travis CI</a></li>
+<li><a href="#manual-configuration">Manual Configuration</a></li>
+<li><a href="#sentinel-mode">Sentinel Mode</a></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
+<h1 id="intro">Intro</h1>
+
 <p><code>test-patch</code> works hand-in-hand with various CI and other automated build systems.  <code>test-patch</code> will attempt to auto-determine if it is running under such a system and change its defaults to match known configuration parameters automatically. When robots are activated, there is generally some additional/changed behavior:</p>
 
 <ul>
@@ -134,6 +152,12 @@
 <li>activate Docker maintenance when <code>--docker</code> is passed</li>
 <li>attempt to determine whether this is a full build (<code>qbt</code>) or testing a patch/merge request/pull request.</li>
 </ul>
+
+<h1 id="azure-pipelines">Azure Pipelines</h1>
+
+<p>TRIGGER: ${TF_BUILD}=True</p>
+
+<p>Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the source repository. It automatically configures <code>--patch-dir</code> to be <code>${BUILD_ARTIFACTSTAGINGDIRECTORY}/yetus</code>.  While the URL to the console is provided in the report, links are not provided due to the URLs to artifacts not being available at runtime.</p>
 
 <h1 id="circle-ci">Circle CI</h1>
 
@@ -244,6 +268,15 @@
 <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin">GitHub Pull Request Builder Plugin</a></li>
 <li>https://{your local server}/env-vars.html/</li>
 </ul>
+
+<h1 id="semaphore-ci">Semaphore CI</h1>
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: Semaphore CI support is not stable and should be viewed as experimental, at best.
+</code></pre></div>
+<p>TRIGGER: ${CI}=true and ${SEMAPHORE}=true</p>
+
+<p>Semaphore CI requires that <code>checkout --use-cache</code> has been used prior to trigging test-patch. It is HIGHLY recommended to use a helper script checked into the repository to control precommit options to avoid problems with Semaphore CI&rsquo;s parsing of long lines in the YAML file.</p>
+
+<p>The GitHub repo and the Pull Request in use are automatically detected.  However, some personalities may override the auto-detected Github repository information.  It may be necessary to manually configure it in your <code>.semaphore.yml</code> file.</p>
 
 <h1 id="travis-ci">Travis CI</h1>
 
