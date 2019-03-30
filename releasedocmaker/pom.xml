@@ -132,6 +132,7 @@
               <goal>jython</goal>
             </goals>
             <configuration>
+              <temporaryBuildDirectory>${project.build.directory}/jython-plugins-tmp/</temporaryBuildDirectory>
               <libraries>
                 <param>--index-url=https://pypi.python.org/simple/</param>
                 <param>python-dateutil</param>

@@ -66,6 +66,9 @@
             <goals>
               <goal>jython</goal>
             </goals>
+            <configuration>
+              <temporaryBuildDirectory>${project.build.directory}/jython-plugins-tmp/</temporaryBuildDirectory>
+            </configuration>
           </execution>
         </executions>
       </plugin>
