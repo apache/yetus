@@ -23,11 +23,17 @@ PYLINT_TIMER=0
 PYLINT=${PYLINT:-$(command -v pylint 2>/dev/null)}
 # backward compatibility, do not use
 PYLINT_OPTIONS=${PYLINT_OPTIONS:-}
+PYLINT_PIP_CMD=$(command -v pip 2>/dev/null)
+PYLINT_REQUIREMENTS=false
+PYLINT_PIP_USER=true
 
 function pylint_usage
 {
-  yetus_add_option "--pylint=<path>" "path to pylint executable"
+  yetus_add_option "--pylint=<path>" "path to pylint executable (default: ${PYLINT})"
+  yetus_add_option "--pylint-pip-cmd=<file>" "Command to use for pip when installing requirements.txt (default: ${PYLINT_PIP_CMD})"
   yetus_add_option "--pylint-rcfile=<path>" "pylint configuration file"
+  yetus_add_option "--pylint-requirements=<bool>" "pip install requirements.txt (default: ${PYLINT_REQUIREMENTS})"
+  yetus_add_option "--pylint-use-user=<bool>" "Use --user for the requirements.txt (default: ${PYLINT_PIP_USER})"
 }
 
 function pylint_parse_args
@@ -39,12 +45,21 @@ function pylint_parse_args
     --pylint=*)
       PYLINT=${i#*=}
     ;;
-    --pylint-rcfile=*)
-      PYLINT_RCFILE=${i#*=}
-    ;;
     --pylint-options=*)
       # backward compatibility
       PYLINT_OPTIONS=${i#*=}
+    ;;
+    --pylint-pip-cmd=*)
+      PYLINT_PIP_CMD=${i#*=}
+    ;;
+    --pylint-rcfile=*)
+      PYLINT_RCFILE=${i#*=}
+    ;;
+    --pylint-requirements=*)
+      PYLINT_REQUIREMENTS=${i#*=}
+    ;;
+    --pylint-use-user=*)
+      PYLINT_PIP_USER=${i#*=}
     ;;
     esac
   done
@@ -65,6 +80,10 @@ function pylint_precheck
     add_vote_table 0 pylint "Pylint was not available."
     delete_test pylint
   fi
+
+  if [[ "${PYLINT_REQUIREMENTS}" == true ]] && ! verify_command pip "${PYLINT_PIP_CMD}"; then
+    add_vote_table 0 pylint "pip command not available. Will process without it."
+  fi
 }
 
 function pylint_executor
@@ -73,6 +92,9 @@ function pylint_executor
   declare i
   declare count
   declare pylintStderr=${repostatus}-pylint-stderr.txt
+  declare oldpp
+  declare -a pylintopts
+  declare -a reqfiles
 
   if ! verify_needed_test pylint; then
     return 0
@@ -86,6 +108,31 @@ function pylint_executor
   # by setting the clock back
   offset_clock "${PYLINT_TIMER}"
 
+  if [[ "${PYLINT_REQUIREMENTS}" == true ]]; then
+    echo "Processing all requirements.txt files. Errors will be ignored."
+
+    if [[ "${PYLINT_PIP_USER}" == true ]]; then
+      pylintopts=("--user")
+    fi
+
+    reqfiles=()
+    for i in "${CHANGED_FILES[@]}"; do
+      dirname=$(yetus_abs "${i}")
+      dirname=$(dirname "${dirname}")
+      if [[ -f "${dirname}/requirements.txt" ]]; then
+        reqfiles+=("${dirname}/requirements.txt")
+      fi
+    done
+    yetus_sort_and_unique_array reqfiles
+    for i in "${reqfiles[@]}"; do
+      "${PYLINT_PIP_CMD}" install "${pylintopts[@]}" -r "${i}" || true
+    done
+    oldpp=${PYTHONPATH}
+    for i in "${HOME}/.local/lib/python"*/site-packages; do
+      export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${i}"
+    done
+  fi
+
   # backward compatibility
   # shellcheck disable=SC2206
   pylintopts=(${PYLINT_OPTIONS})
@@ -94,9 +141,9 @@ function pylint_executor
     pylintopts+=('--rcfile='"${PYLINT_RCFILE}")
   fi
 
-  pylintops+=('--persistent=n')
-  pylintops+=('--reports=n')
-  pylintops+=('--score=n')
+  pylintopts+=('--persistent=n')
+  pylintopts+=('--reports=n')
+  pylintopts+=('--score=n')
 
   echo "Running pylint against identified python scripts."
   pushd "${BASEDIR}" >/dev/null || return 1
@@ -106,6 +153,11 @@ function pylint_executor
         2>>"${PATCH_DIR}/${pylintStderr}" | "${AWK}" '1<NR' >> "${PATCH_DIR}/${repostatus}-pylint-result.txt"
     fi
   done
+
+  if [[ -n "${oldpp}" ]]; then
+    export PYTHONPATH=${oldpp}
+  fi
+
   if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
     count=$("${GREP}"  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
