@@ -64,6 +64,8 @@ function common_defaults
   TESTTYPES=()
   TESTFORMATS=()
   USER_PLUGIN_DIR=""
+  #shellcheck disable=SC2034
+  VERSION_DATA=()
 
   #shellcheck disable=SC2034
   YETUS_SHELL_SCRIPT_DEBUG=false
@@ -224,15 +226,16 @@ function common_args
   # versions lower than this either have bugs with
   # git apply or don't support all the
   # expected options
-  version=$(${GIT} --version)
+  version=$("${GIT}" --version)
   # shellcheck disable=SC2181
   if [[ $? != 0 ]]; then
     yetus_error "ERROR: ${GIT} failed during version detection."
     exit 1
   fi
 
-  # shellcheck disable=SC2016
-  version=$(echo "${version}" | "${AWK}" '{print $NF}')
+  version=${version##* }
+  add_version_data git "${version}"
+
   if [[ ${version} =~ ^0
      || ${version} =~ ^1.[0-6]
      || ${version} =~ ^1.7.[0-2]$
@@ -756,5 +759,21 @@ function module_file_fragment
   else
     #shellcheck disable=SC1003
     echo "$1" | tr '/' '_' | tr '\\' '_'
+  fi
+}
+
+## @description  Report on executable versions
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @param        executable name
+## @param        version
+function add_version_data
+{
+  declare name=$1
+  declare version=$2
+
+  if [[ -n "${name}" ]] && [[ -n "${version}" ]]; then
+    VERSION_DATA+=("$1=$2")
   fi
 }

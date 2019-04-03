@@ -250,7 +250,8 @@ function maven_precheck
 
   # finally let folks know what version they'll be dealing with.
   maven_version=$(${MAVEN} --offline --version 2>/dev/null | head -n 1 2>/dev/null)
-  add_footer_table maven "version: ${maven_version}"
+  maven_version=${maven_version##* }
+  add_version_data maven "${maven_version}"
 }
 
 ## @description  maven trigger

@@ -73,7 +73,9 @@ function ant_precheck
   fi
   # finally let folks know what version they'll be dealing with.
   ant_version=$(${ANT} -version 2>/dev/null)
-  add_footer_table ant "version: ${ant_version}"
+  ant_version=${ant_version#* version }
+  ant_version=${ant_version% compiled *}
+  add_footer_table ant "${ant_version}"
   return 0
 }
 

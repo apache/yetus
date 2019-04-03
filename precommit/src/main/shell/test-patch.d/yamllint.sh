@@ -103,6 +103,7 @@ function yamllint_postapply
   declare diffPostpatch
   declare fixedpatch
   declare statstring
+  declare version
 
   if ! verify_needed_test yamllint; then
     return 0
@@ -117,6 +118,10 @@ function yamllint_postapply
   offset_clock "${YAMLLINT_TIMER}"
 
   yamllint_logic patch
+
+  # shellcheck disable=SC2016
+  version=$("${YAMLLINT}" --version 2>&1)
+  add_version_data yamllint "${version#* }"
 
   calcdiffs \
     "${PATCH_DIR}/branch-yamllint-result.txt" \

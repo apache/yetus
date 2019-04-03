@@ -60,7 +60,7 @@ function gradle_precheck
   fi
   # finally let folks know what version they'll be dealing with.
   gradle_version=$("${GRADLE}" --version 2>/dev/null | grep Gradle 2>/dev/null)
-  add_footer_table gradle "version: ${gradle_version}"
+  add_version_data gradle "${gradle_version##* }"
   return 0
 }
 

@@ -127,7 +127,7 @@ function perlcritic_postapply
   popd >/dev/null || return 1
 
   PERLCRITIC_VERSION=$(${PERLCRITIC} --version 2>/dev/null)
-  add_footer_table perlcritic "v${PERLCRITIC_VERSION}"
+  add_version_data perlcritic "${PERLCRITIC_VERSION}"
 
   calcdiffs \
     "${PATCH_DIR}/branch-perlcritic-result.txt" \

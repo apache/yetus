@@ -146,6 +146,7 @@ function jshint_postapply
   declare diffPostpatch
   declare fixedpatch
   declare statstring
+  declare version
 
   if ! verify_needed_test jshint; then
     return 0
@@ -160,6 +161,9 @@ function jshint_postapply
   offset_clock "${JSHINT_TIMER}"
 
   jshint_logic patch
+
+  version=$("${JSHINT}" --version 2>&1)
+  add_version_data jshint "${version#*v}"
 
   calcdiffs \
     "${PATCH_DIR}/branch-jshint-result.txt" \

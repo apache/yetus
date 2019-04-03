@@ -141,6 +141,7 @@ function hadolint_postapply
   declare diffPostpatch
   declare fixedpatch
   declare statstring
+  declare version
 
   if ! verify_needed_test hadolint; then
     return 0
@@ -161,6 +162,9 @@ function hadolint_postapply
     "${PATCH_DIR}/patch-hadolint-result.txt" \
     hadolint \
       > "${PATCH_DIR}/diff-patch-hadolint.txt"
+
+  version=$("${HADOLINT}" --version)
+  add_version_data hadolint "${version##* v}"
 
   # shellcheck disable=SC2016
   numPrepatch=$(wc -l "${PATCH_DIR}/branch-hadolint-result.txt" | "${AWK}" '{print $1}')

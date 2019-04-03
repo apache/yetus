@@ -142,7 +142,7 @@ function rubocop_postapply
 
   # shellcheck disable=SC2016
   RUBOCOP_VERSION=$("${RUBOCOP}" -v | "${AWK}" '{print $NF}')
-  add_footer_table rubocop "v${RUBOCOP_VERSION}"
+  add_version_data rubocop "${RUBOCOP_VERSION}"
 
   calcdiffs \
     "${PATCH_DIR}/branch-rubocop-result.txt" \

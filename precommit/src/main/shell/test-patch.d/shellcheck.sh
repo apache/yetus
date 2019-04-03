@@ -171,11 +171,11 @@ function shellcheck_preapply
 
   shellcheck_logic branch
 
-  msg="v${SHELLCHECK_VERSION}"
   if [[ ${SHELLCHECK_VERSION} =~ 0.[0-3].[0-5] ]]; then
-    msg="${msg} (This is an old version that has serious bugs. Consider upgrading.)"
+    msg="v${SHELLCHECK_VERSION} is an old version that has serious bugs. Consider upgrading."
+    add_footer_table shellcheck "${msg}"
   fi
-  add_footer_table shellcheck "${msg}"
+  add_version_data shellcheck "${SHELLCHECK_VERSION}"
 
   # keep track of how much as elapsed for us already
   SHELLCHECK_TIMER=$(stop_clock)

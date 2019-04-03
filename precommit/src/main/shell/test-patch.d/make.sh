@@ -42,7 +42,7 @@ function make_precheck
   fi
   # finally let folks know what version they'll be dealing with.
   if make_version=$(set -o pipefail; ${MAKE} --version 2>/dev/null | head -n 1  2>/dev/null) && [ -n "${make_version}" ]; then
-    add_footer_table make "version: ${make_version}"
+    add_version_data make "${make_version}"
   fi
   return 0
 }

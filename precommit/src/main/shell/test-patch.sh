@@ -2236,6 +2236,11 @@ function bugsystem_finalreport
       "${ROBOTTYPE}"_finalreport
     fi
   fi
+
+  if [[ "${#VERSION_DATA[@]}" -gt 0 ]]; then
+    add_footer_table "versions" "${VERSION_DATA[@]}"
+  fi
+
   add_footer_table "Powered by" "Apache Yetus ${VERSION} http://yetus.apache.org"
 
   bugsystem_linecomments_trigger

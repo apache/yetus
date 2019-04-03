@@ -241,7 +241,7 @@ function spotbugs_runner
         | cut -f2 -d\" \
         | cut -f1 -d\" )
       if [[ -n ${SPOTBUGS_VERSION} ]]; then
-        add_footer_table "${SPOTBUGS_MODE}" "v${SPOTBUGS_VERSION}"
+        add_version_data "${SPOTBUGS_MODE}" "${SPOTBUGS_VERSION}"
       fi
     fi
 
