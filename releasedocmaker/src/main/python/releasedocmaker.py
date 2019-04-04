@@ -16,6 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+""" wrapper to launch releasedocmaker from the CLI """
+
 import sys
 sys.dont_write_bytecode = True
 # pylint: disable=wrong-import-position,import-self

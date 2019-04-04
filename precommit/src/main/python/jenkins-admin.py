@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+#pylint: disable=invalid-name
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -18,6 +19,8 @@
 # under the License.
 #
 
+""" Process patch file attachments from JIRA using a query """
+
 from optparse import OptionParser
 from tempfile import NamedTemporaryFile
 from xml.etree import ElementTree
@@ -28,69 +31,68 @@ import re
 import sys
 import urllib2
 
-def httpGet(resource, ignoreError=False, username=None, password=None):
+def http_get(resource, ignore_error=False, username=None, password=None):
+    """ get the contents of a URL """
     request = urllib2.Request(resource)
     if username and password:
-      base64string = base64.b64encode('%s:%s' % (username, password))
-      request.add_header("Authorization", "Basic %s" % base64string)
+        base64string = base64.b64encode('%s:%s' % (username, password))
+        request.add_header("Authorization", "Basic %s" % base64string)
     try:
         response = urllib2.urlopen(request)
     except urllib2.HTTPError, http_err:
         code = http_err.code
         print '%s returns HTTP error %d: %s' \
               % (resource, code, http_err.reason)
-        if ignoreError:
+        if ignore_error:
             return ''
         else:
             print 'Aborting.'
             sys.exit(1)
     except urllib2.URLError, url_err:
         print 'Error contacting %s: %s' % (resource, url_err.reason)
-        if ignoreError:
+        if ignore_error:
             return ''
         else:
             raise url_err
     except httplib.BadStatusLine, err:
-        if ignoreError:
+        if ignore_error:
             return ''
         else:
             raise err
     return response.read()
 
-
-# returns a map of (project, issue) => attachment id
-
-def parseJiraData(fileName):
-    tree = ElementTree.parse(fileName)
+def parse_jira_data(filename):
+    """ returns a map of (project, issue) => attachment id """
+    tree = ElementTree.parse(filename)
     root = tree.getroot()
-    jiraPattern = re.compile('([A-Z]+)\-([0-9]+)')
+    jirapattern = re.compile(r'([A-Z]+)\-([0-9]+)')
     result = {}
     for item in root.findall('./channel/item'):
         jirakey = item.find('key')
         if jirakey is None:
             continue
         jiraissue = jirakey.text
-        matcher = jiraPattern.match(jiraissue)
+        matcher = jirapattern.match(jiraissue)
         if not matcher:
             continue
         jiraissue = (matcher.group(1), matcher.group(2))
-        attachmentIds = []
+        attachmentids = []
         for jiraattachment in item.findall('./attachments/attachment'):
-            attachmentId = jiraattachment.get('id')
+            attachmentid = jiraattachment.get('id')
             try:
-                attachmentIds.append(int(attachmentId))
+                attachmentids.append(int(attachmentid))
             except ValueError:
                 pass
-        if attachmentIds:
-            attachmentIds.sort()
-            result[jiraissue] = attachmentIds[-1]
+        if attachmentids:
+            attachmentids.sort()
+            result[jiraissue] = attachmentids[-1]
     return result
 
-
-if __name__ == '__main__':
-    parser = OptionParser(prog = 'jenkins-admin')
+def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-locals
+    """ main program """
+    parser = OptionParser(prog='jenkins-admin')
     if os.getenv('JENKINS_URL'):
-        parser.set_defaults(jenkinsUrl=os.getenv('JENKINS_URL'))
+        parser.set_defaults(jenkinsurl=os.getenv('JENKINS_URL'))
     if os.getenv('JOB_NAME'):
         parser.set_defaults(jenkinsJobName=os.getenv('JOB_NAME'))
     else:
@@ -110,12 +112,12 @@ if __name__ == '__main__':
     parser.add_option('--jenkins-token', type='string',
                       dest='jenkinsToken', help='Jenkins Token',
                       metavar='TOKEN')
-    parser.add_option('--jenkins-url', type='string', dest='jenkinsUrl'
+    parser.add_option('--jenkins-url', type='string', dest='jenkinsurl'
                       , help='Jenkins base URL', metavar='URL')
     parser.add_option(
         '--jenkins-url-override',
         type='string',
-        dest='jenkinsUrlOverrides',
+        dest='jenkinsurloverrides',
         action='append',
         help='Project specific Jenkins base URL',
         metavar='PROJECT=URL',
@@ -138,108 +140,111 @@ if __name__ == '__main__':
         default=False,
         help="display version information for jenkins-admin and exit.")
 
-    (options, args) = parser.parse_args()
+    (options, args) = parser.parse_args() #pylint: disable=unused-variable
 
     # Handle the version string right away and exit
     if options.release_version:
         with open(
-                os.path.join(
-                    os.path.dirname(__file__), "../../VERSION"), 'r') as ver_file:
+            os.path.join(
+                os.path.dirname(__file__), "../../VERSION"), 'r') as ver_file:
             print ver_file.read()
         sys.exit(0)
 
-    tokenFrag = ''
+    token_frag = ''
     if options.jenkinsToken:
-        tokenFrag = 'token=%s' % options.jenkinsToken
+        token_frag = 'token=%s' % options.jenkinsToken
     else:
-        tokenFrag = 'token={project}-token'
+        token_frag = 'token={project}-token'
     if not options.jiraFilter:
         parser.error('ERROR: --jira-filter is a required argument.')
-    if not options.jenkinsUrl:
+    if not options.jenkinsurl:
         parser.error('ERROR: --jenkins-url or the JENKINS_URL environment variable is required.'
-                     )
+                    )
     if options.history < 0:
         parser.error('ERROR: --max-history must be 0 or a positive integer.'
-                     )
-    jenkinsUrlOverrides = {}
-    if options.jenkinsUrlOverrides:
-        for override in options.jenkinsUrlOverrides:
+                    )
+    jenkinsurloverrides = {}
+    if options.jenkinsurloverrides:
+        for override in options.jenkinsurloverrides:
             if '=' not in override:
                 parser.error('Invalid Jenkins Url Override: '
                              + override)
             (project, url) = override.split('=', 1)
-            jenkinsUrlOverrides[project.upper()] = url
-    tempFile = NamedTemporaryFile(delete=False)
+            jenkinsurloverrides[project.upper()] = url
+    tempfile = NamedTemporaryFile(delete=False)
     try:
-        jobLogHistory = None
+        jobloghistory = None
         if not options.jenkinsInit:
-            jobLogHistory = httpGet(options.jenkinsUrl
-                                    + '/job/%s/lastSuccessfulBuild/artifact/patch_tested.txt'
+            jobloghistory = http_get(options.jenkinsurl
+                                     + '/job/%s/lastSuccessfulBuild/artifact/patch_tested.txt'
                                      % options.jenkinsJobName, True)
 
             # if we don't have a successful build available try the last build
 
-            if not jobLogHistory:
-                jobLogHistory = httpGet(options.jenkinsUrl
-                        + '/job/%s/lastCompletedBuild/artifact/patch_tested.txt'
-                         % options.jenkinsJobName)
-            jobLogHistory = jobLogHistory.strip().split('\n')
-            if 'TESTED ISSUES' not in jobLogHistory[0]:
+            if not jobloghistory:
+                jobloghistory = http_get(options.jenkinsurl
+                                         + '/job/%s/lastCompletedBuild/artifact/patch_tested.txt'
+                                         % options.jenkinsJobName)
+            jobloghistory = jobloghistory.strip().split('\n')
+            if 'TESTED ISSUES' not in jobloghistory[0]:
                 print 'Downloaded patch_tested.txt control file may be corrupted. Failing.'
                 sys.exit(1)
 
         # we are either going to write a new one or rewrite the old one
 
-        jobLog = open('patch_tested.txt', 'w+')
+        joblog = open('patch_tested.txt', 'w+')
 
-        if jobLogHistory:
-            if len(jobLogHistory) > options.history:
-                jobLogHistory = [jobLogHistory[0]] \
-                    + jobLogHistory[len(jobLogHistory)
-                    - options.history:]
-            for jobHistoryRecord in jobLogHistory:
-                jobLog.write(jobHistoryRecord + '\n')
+        if jobloghistory:
+            if len(jobloghistory) > options.history:
+                jobloghistory = [jobloghistory[0]] \
+                                 + jobloghistory[len(jobloghistory) \
+                                 - options.history:]
+            for jobhistoryrecord in jobloghistory:
+                joblog.write(jobhistoryrecord + '\n')
         else:
-            jobLog.write('TESTED ISSUES\n')
-        jobLog.flush()
-        rssData = httpGet(options.jiraFilter,False,options.jiraUser,options.jiraPassword)
-        tempFile.write(rssData)
-        tempFile.flush()
-        for (key, attachment) in parseJiraData(tempFile.name).items():
+            joblog.write('TESTED ISSUES\n')
+        joblog.flush()
+        rssdata = http_get(options.jiraFilter, False, options.jiraUser, options.jiraPassword)
+        tempfile.write(rssdata)
+        tempfile.flush()
+        for (key, attachment) in parse_jira_data(tempfile.name).items():
             (project, issue) = key
-            if jenkinsUrlOverrides.has_key(project):
-                url = jenkinsUrlOverrides[project]
+            if jenkinsurloverrides.has_key(project):
+                url = jenkinsurloverrides[project]
             else:
-                url = options.jenkinsUrl
+                url = options.jenkinsurl
 
-            jenkinsUrlTemplate = url + '/job/' \
+            jenkinsurltemplate = url + '/job/' \
                 + options.jenkinsJobTemplate \
-                + '/buildWithParameters?' + tokenFrag \
+                + '/buildWithParameters?' + token_frag \
                 + '&ISSUE_NUM={issue}&ATTACHMENT_ID={attachment}'
 
-            urlArgs = {
+            url_args = {
                 'project': project,
                 'issue': issue,
                 'attachment': attachment,
                 }
-            jenkinsUrl = jenkinsUrlTemplate.format(**urlArgs)
+            jenkinsurl = jenkinsurltemplate.format(**url_args)
 
             # submit job
 
-            jobName = '%s-%s,%s' % (project, issue, attachment)
-            if not jobLogHistory or jobName not in jobLogHistory:
-                print jobName + ' has not been processed, submitting'
-                jobLog.write(jobName + '\n')
-                jobLog.flush()
+            jobname = '%s-%s,%s' % (project, issue, attachment)
+            if not jobloghistory or jobname not in jobloghistory:
+                print jobname + ' has not been processed, submitting'
+                joblog.write(jobname + '\n')
+                joblog.flush()
                 if options.live:
-                    httpGet(jenkinsUrl, True)
+                    http_get(jenkinsurl, True)
                 else:
-                    print 'GET ' + jenkinsUrl
+                    print 'GET ' + jenkinsurl
             else:
-                print jobName + ' has been processed, ignoring'
-        jobLog.close()
+                print jobname + ' has been processed, ignoring'
+        joblog.close()
     finally:
         if options.live:
-            os.remove(tempFile.name)
+            os.remove(tempfile.name)
         else:
-            print 'JIRA Data is located: ' + tempFile.name
+            print 'JIRA Data is located: ' + tempfile.name
+
+if __name__ == '__main__':
+    main()

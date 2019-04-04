@@ -16,6 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+""" Utility methods used by releasedocmaker """
+
+from __future__ import print_function
 import base64
 import os
 import re
@@ -26,10 +29,6 @@ import httplib
 sys.dont_write_bytecode = True
 
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
-
-def clean(input_string):
-    return sanitize_markdown(re.sub(NAME_PATTERN, "", input_string))
-
 
 def get_jira(jira_url):
     """ Provide standard method for fetching content from apache jira and
@@ -48,21 +47,21 @@ def get_jira(jira_url):
         response = urllib2.urlopen(req)
     except urllib2.HTTPError as http_err:
         code = http_err.code
-        print "JIRA returns HTTP error %d: %s. Aborting." % \
-              (code, http_err.msg)
+        print("JIRA returns HTTP error %d: %s. Aborting." % \
+              (code, http_err.msg))
         error_response = http_err.read()
         try:
             error_response = json.loads(error_response)
-            print "- Please ensure that specified authentication, projects,"\
-                  " fixVersions etc. are correct."
+            print("- Please ensure that specified authentication, projects,"\
+                  " fixVersions etc. are correct.")
             for message in error_response['errorMessages']:
-                print "-", message
+                print("-", message)
         except ValueError:
-            print "FATAL: Could not parse json response from server."
+            print("FATAL: Could not parse json response from server.")
         sys.exit(1)
     except urllib2.URLError as url_err:
-        print "Error contacting JIRA: %s\n" % jira_url
-        print "Reason: %s" % url_err.reason
+        print("Error contacting JIRA: %s\n" % jira_url)
+        print("Reason: %s" % url_err.reason)
         raise url_err
     except httplib.BadStatusLine as err:
         raise err
@@ -70,40 +69,41 @@ def get_jira(jira_url):
 
 
 def format_components(input_string):
+    """ format the string """
     input_string = re.sub(NAME_PATTERN, '', input_string).replace("'", "")
     if input_string != "":
         ret = input_string
     else:
         # some markdown parsers don't like empty tables
         ret = "."
-    return clean(ret)
+    return sanitize_markdown(re.sub(NAME_PATTERN, "", ret))
 
-
-# Return the string encoded as UTF-8.
-#
-# This is necessary for handling markdown in Python.
 def encode_utf8(input_string):
+    """ Return the string encoded as UTF-8.
+        This is necessary for handling markdown in Python. """
     return input_string.encode('utf-8')
 
 
-# Sanitize Markdown input so it can be handled by Python.
-#
-# The expectation is that the input is already valid Markdown,
-# so no additional escaping is required.
 def sanitize_markdown(input_string):
+    """ Sanitize Markdown input so it can be handled by Python.
+
+        The expectation is that the input is already valid Markdown,
+        so no additional escaping is required. """
     input_string = encode_utf8(input_string)
     input_string = input_string.replace("\r", "")
     input_string = input_string.rstrip()
     return input_string
 
 
-# Sanitize arbitrary text so it can be embedded in MultiMarkdown output.
-#
-# Note that MultiMarkdown is not Markdown, and cannot be parsed as such.
-# For instance, when using pandoc, invoke it as `pandoc -f markdown_mmd`.
-#
-# Calls sanitize_markdown at the end as a final pass.
+
 def sanitize_text(input_string):
+    """ Sanitize arbitrary text so it can be embedded in MultiMarkdown output.
+
+      Note that MultiMarkdown is not Markdown, and cannot be parsed as such.
+      For instance, when using pandoc, invoke it as `pandoc -f markdown_mmd`.
+
+      Calls sanitize_markdown at the end as a final pass.
+    """
     escapes = dict()
     # See: https://daringfireball.net/projects/markdown/syntax#backslash
     # We only escape a subset of special characters. We ignore characters
@@ -113,26 +113,25 @@ def sanitize_text(input_string):
     slash_escapes += "\\"
     all_chars = set()
     # Construct a set of escapes
-    for c in slash_escapes:
-        all_chars.add(c)
-    for c in all_chars:
-        escapes[c] = "\\" + c
+    for char in slash_escapes:
+        all_chars.add(char)
+    for char in all_chars:
+        escapes[char] = "\\" + char
 
     # Build the output string character by character to prevent double escaping
     output_string = ""
-    for c in input_string:
-        o = c
-        if c in escapes:
-            o = escapes[c]
-        output_string += o
+    for char in input_string:
+        out = char
+        if char in escapes:
+            out = escapes[char]
+        output_string += out
 
     return sanitize_markdown(output_string.rstrip())
 
 
-# if release notes have a special marker,
-# we'll treat them as already in markdown format
 def processrelnote(input_string):
-    relnote_pattern = re.compile('^\<\!\-\- ([a-z]+) \-\-\>')
+    """ if release notes have a special marker, we'll treat them as already in markdown format """
+    relnote_pattern = re.compile(r'^\<\!\-\- ([a-z]+) \-\-\>')
     fmt = relnote_pattern.match(input_string)
     if fmt is None:
         return sanitize_text(input_string)
@@ -142,6 +141,7 @@ def processrelnote(input_string):
 
 
 def to_unicode(obj):
+    """ convert string to unicode """
     if obj is None:
         return ""
     return unicode(obj)
@@ -162,6 +162,7 @@ class Outputs(object):
             self.others[key] = open(file_name_pattern % both, 'w')
 
     def write_all(self, pattern):
+        """ write everything given a pattern """
         both = dict(self.params)
         both['key'] = ''
         self.base.write(pattern % both)
@@ -171,11 +172,13 @@ class Outputs(object):
             self.others[key].write(pattern % both)
 
     def write_key_raw(self, key, input_string):
+        """ write everything withotu changes """
         self.base.write(input_string)
         if key in self.others:
             self.others[key].write(input_string)
 
     def close(self):
+        """ close all the outputs """
         self.base.close()
         for value in self.others.values():
             value.close()

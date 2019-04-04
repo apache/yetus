@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -14,6 +14,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+""" process bash scripts and generate documentation from them """
 
 # Do this immediately to prevent compiled forms
 import sys
@@ -67,7 +69,7 @@ def toc(tlist):
     return tocout
 
 
-class ShellFunction(object):
+class ShellFunction(object): # pylint: disable=too-many-public-methods, too-many-instance-attributes
     """a shell function"""
 
     def __init__(self, filename):
@@ -304,7 +306,7 @@ def marked_as_ignored(file_path):
         return False
 
 
-def main():
+def main(): # pylint: disable=too-many-statements, too-many-branches
     '''main entry point'''
     parser = OptionParser(
         usage="usage: %prog [--skipprnorep] " + "[--output OUTFILE|--lint] " +
@@ -347,8 +349,8 @@ def main():
 
     if options.release_version:
         with open(
-                os.path.join(
-                    os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+            os.path.join(
+                os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
             print ver_file.read()
         sys.exit(0)
 

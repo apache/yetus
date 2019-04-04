@@ -216,7 +216,6 @@
         <configuration>
           <excludeSubprojects>false</excludeSubprojects>
           <excludes>
-            <exclude>.pylintrc</exclude>
             <exclude>.rubocop.yml</exclude>
             <exclude>Formula/.rubocop.yml</exclude>
           </excludes>

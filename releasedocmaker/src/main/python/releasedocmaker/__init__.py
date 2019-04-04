@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python2
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -15,6 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+""" Generate releasenotes based upon JIRA """
+
+from __future__ import print_function
 import sys
 from glob import glob
 from optparse import OptionParser
@@ -36,8 +39,8 @@ from utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
 try:
     import dateutil.parser
 except ImportError:
-    print "This script requires python-dateutil module to be installed. " \
-          "You can install it using:\n\t pip install python-dateutil"
+    print("This script requires python-dateutil module to be installed. " \
+          "You can install it using:\n\t pip install python-dateutil")
     sys.exit(1)
 
 RELEASE_VERSION = {}
@@ -100,7 +103,7 @@ def buildreadme(title, asf_license):
                                  version))
 
 
-class GetVersions(object):
+class GetVersions(object): # pylint: disable=too-few-public-methods
     """ List of version strings """
 
     def __init__(self, versions, projects):
@@ -108,7 +111,7 @@ class GetVersions(object):
         projects = projects
         self.newversions = []
         versions.sort(key=LooseVersion)
-        print "Looking for %s through %s" % (versions[0], versions[-1])
+        print("Looking for %s through %s" % (versions[0], versions[-1]))
         newversions = set()
         for project in projects:
             url = JIRA_BASE_URL + \
@@ -129,10 +132,11 @@ class GetVersions(object):
         end_index = len(newlist) - 1 - newlist[::-1].index(versions[-1])
         for newversion in newlist[start_index + 1:end_index]:
             if newversion in newversions:
-                print "Adding %s to the list" % newversion
+                print("Adding %s to the list" % newversion)
                 self.newversions.append(newversion)
 
     def getlist(self):
+        """ Get the list of versions """
         return self.newversions
 
 
@@ -172,12 +176,15 @@ class Jira(object):
         self.important = None
 
     def get_id(self):
+        """ get the Issue ID """
         return to_unicode(self.key)
 
     def get_description(self):
+        """ get the description """
         return to_unicode(self.fields['description'])
 
     def get_release_note(self):
+        """ get the release note field """
         if self.notes is None:
             field = self.parent.field_id_map['Release Note']
             if field in self.fields:
@@ -189,6 +196,7 @@ class Jira(object):
         return self.notes
 
     def get_priority(self):
+        """ Get the priority """
         ret = ""
         pri = self.fields['priority']
         if pri is not None:
@@ -196,6 +204,7 @@ class Jira(object):
         return to_unicode(ret)
 
     def get_assignee(self):
+        """ Get the assignee """
         ret = ""
         mid = self.fields['assignee']
         if mid is not None:
@@ -203,15 +212,18 @@ class Jira(object):
         return to_unicode(ret)
 
     def get_components(self):
+        """ Get the component(s) """
         if self.fields['components']:
             return ", ".join([comp['name'] for comp in self.fields['components']
                              ])
         return ""
 
     def get_summary(self):
+        """ Get the summary """
         return self.fields['summary']
 
     def get_type(self):
+        """ Get the Issue type """
         ret = ""
         mid = self.fields['issuetype']
         if mid is not None:
@@ -219,6 +231,7 @@ class Jira(object):
         return to_unicode(ret)
 
     def get_reporter(self):
+        """ Get the issue reporter """
         ret = ""
         mid = self.fields['reporter']
         if mid is not None:
@@ -226,6 +239,7 @@ class Jira(object):
         return to_unicode(ret)
 
     def get_project(self):
+        """ get the project """
         ret = ""
         mid = self.fields['project']
         if mid is not None:
@@ -244,18 +258,19 @@ class Jira(object):
                 result = cmp(int(selfsplit[1]), int(othersplit[1]))
                 # dec is supported for backward compatibility
                 if SORTORDER in ['dec', 'desc']:
-                        result *= -1
+                    result *= -1
 
         elif SORTTYPE == 'resolutiondate':
             dts = dateutil.parser.parse(self.fields['resolutiondate'])
             dto = dateutil.parser.parse(other.fields['resolutiondate'])
             result = cmp(dts, dto)
             if SORTORDER == 'newer':
-                    result *= -1
+                result *= -1
 
         return result
 
     def get_incompatible_change(self):
+        """ get incompatible flag """
         if self.incompat is None:
             field = self.parent.field_id_map['Hadoop Flags']
             self.reviewed = False
@@ -278,6 +293,7 @@ class Jira(object):
         return self.incompat
 
     def get_important(self):
+        """ get importat flag """
         if self.important is None:
             field = self.parent.field_id_map['Flags']
             self.important = False
@@ -339,11 +355,11 @@ class JiraIter(object):
         print(err)
         fail_count += 1
         if fail_count <= NUM_RETRIES:
-            print "Connection failed %d times. Retrying." % (fail_count)
+            print("Connection failed %d times. Retrying." % (fail_count))
             sleep(1)
             return JiraIter.load_jira(params, fail_count)
         else:
-            print "Connection failed %d times. Aborting." % (fail_count)
+            print("Connection failed %d times. Aborting." % (fail_count))
             sys.exit(1)
 
     @staticmethod
@@ -356,7 +372,7 @@ class JiraIter(object):
         while pos < end:
             data = JiraIter.query_jira(ver, projects, pos)
             if 'error_messages' in data:
-                print "JIRA returns error message: %s" % data['error_messages']
+                print("JIRA returns error message: %s" % data['error_messages'])
                 sys.exit(1)
             pos = data['startAt'] + data['maxResults']
             end = data['total']
@@ -382,6 +398,7 @@ class JiraIter(object):
         return self
 
     def next(self):
+        """ get next """
         data = self.iter.next()
         j = Jira(data, self)
         return j
@@ -438,25 +455,25 @@ class Linter(object):
         enabled = []
         disabled = []
 
-        for o in options.lint:
-            for token in o.split(","):
+        for opt in options.lint:
+            for token in opt.split(","):
                 if token not in valid:
-                    print "Unknown lint filter '%s', valid options are: %s" % \
-                            (token, ", ".join(v for v in sorted(valid)))
+                    print("Unknown lint filter '%s', valid options are: %s" % \
+                            (token, ", ".join(v for v in sorted(valid))))
                     sys.exit(1)
                 if token.startswith("-"):
                     disabled.append(token[1:])
                 else:
                     enabled.append(token)
 
-        for e in enabled:
-            if e == "all":
-                for f in self._valid_filters:
-                    self._filters[f] = True
+        for eopt in enabled:
+            if eopt == "all":
+                for filt in self._valid_filters:
+                    self._filters[filt] = True
             else:
-                self._filters[e] = True
-        for d in disabled:
-            self._filters[d] = False
+                self._filters[eopt] = True
+        for disopt in disabled:
+            self._filters[disopt] = False
 
     def had_errors(self):
         """Returns True if a lint error was encountered, else False."""
@@ -532,7 +549,7 @@ class Linter(object):
                             % (" and ".join(error_message), jira.get_id())
 
 
-def parse_args():
+def parse_args(): # pylint: disable=too-many-branches
     """Parse command-line arguments with optparse."""
     usage = "usage: %prog [OPTIONS] " + \
             "--project PROJECT [--project PROJECT] " + \
@@ -663,9 +680,9 @@ def parse_args():
     # Handle the version string right away and exit
     if options.release_version:
         with open(
-                os.path.join(
-                    os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
-            print ver_file.read()
+            os.path.join(
+                os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+            print(ver_file.read())
         sys.exit(0)
 
     # Validate options
@@ -686,13 +703,20 @@ def parse_args():
                 options.output_directory = options.output_directory[0]
 
     if options.range or len(options.versions) > 1:
-      if not options.versiondirs and not options.versionfiles:
-        parser.error("Multiple versions require either --fileversions or --dirversions")
+        if not options.versiondirs and not options.versionfiles:
+            parser.error("Multiple versions require either --fileversions or --dirversions")
 
     return options
 
 
-def main():
+def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-locals
+    """ hey, it's main """
+    global JIRA_BASE_URL #pylint: disable=global-statement
+    global BACKWARD_INCOMPATIBLE_LABEL #pylint: disable=global-statement
+    global SORTTYPE #pylint: disable=global-statement
+    global SORTORDER #pylint: disable=global-statement
+    global NUM_RETRIES #pylint: disable=global-statement
+
     options = parse_args()
 
     if options.output_directory is not None:
@@ -705,17 +729,15 @@ def main():
                     options.output_directory):
                 pass
             else:
-                print "Unable to create output directory %s: %u, %s" % \
-                        (options.output_directory, exc.errno, exc.message)
+                print("Unable to create output directory %s: %u, %s" % \
+                        (options.output_directory, exc.errno, exc.message))
                 sys.exit(1)
         os.chdir(options.output_directory)
 
     if options.base_url is not None:
-        global JIRA_BASE_URL
         JIRA_BASE_URL = options.base_url
 
     if options.incompatible_label is not None:
-        global BACKWARD_INCOMPATIBLE_LABEL
         BACKWARD_INCOMPATIBLE_LABEL = options.incompatible_label
 
 
@@ -728,9 +750,7 @@ def main():
         versions = [Version(v) for v in options.versions]
     versions.sort()
 
-    global SORTTYPE
     SORTTYPE = options.sorttype
-    global SORTORDER
     SORTORDER = options.sortorder
 
     if options.title is None:
@@ -739,7 +759,6 @@ def main():
         title = options.title
 
     if options.retries is not None:
-        global NUM_RETRIES
         NUM_RETRIES = options.retries[0]
 
     haderrors = False
@@ -749,7 +768,7 @@ def main():
         linter = Linter(vstr, options)
         jlist = sorted(JiraIter(vstr, projects))
         if not jlist and not options.empty:
-            print "There is no issue which has the specified version: %s" % version
+            print("There is no issue which has the specified version: %s" % version)
             continue
 
         if vstr in RELEASE_VERSION:
@@ -763,49 +782,49 @@ def main():
             os.mkdir(vstr)
 
         if options.versionfiles and options.versiondirs:
-          reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s.md",
-                               "%(ver)s/RELEASENOTES.%(key)s.%(ver)s.md", [],
-                               {"ver": version,
-                                "date": reldate,
-                                "title": title})
-          choutputs = Outputs("%(ver)s/CHANGELOG.%(ver)s.md",
-                              "%(ver)s/CHANGELOG.%(key)s.%(ver)s.md", [],
-                              {"ver": version,
-                               "date": reldate,
-                               "title": title})
+            reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s.md",
+                                 "%(ver)s/RELEASENOTES.%(key)s.%(ver)s.md", [],
+                                 {"ver": version,
+                                  "date": reldate,
+                                  "title": title})
+            choutputs = Outputs("%(ver)s/CHANGELOG.%(ver)s.md",
+                                "%(ver)s/CHANGELOG.%(key)s.%(ver)s.md", [],
+                                {"ver": version,
+                                 "date": reldate,
+                                 "title": title})
         elif options.versiondirs:
-          reloutputs = Outputs("%(ver)s/RELEASENOTES.md",
-                               "%(ver)s/RELEASENOTES.%(key)s.md", [],
-                               {"ver": version,
-                                "date": reldate,
-                                "title": title})
-          choutputs = Outputs("%(ver)s/CHANGELOG.md",
-                              "%(ver)s/CHANGELOG.%(key)s.md", [],
-                              {"ver": version,
-                               "date": reldate,
-                               "title": title})
+            reloutputs = Outputs("%(ver)s/RELEASENOTES.md",
+                                 "%(ver)s/RELEASENOTES.%(key)s.md", [],
+                                 {"ver": version,
+                                  "date": reldate,
+                                  "title": title})
+            choutputs = Outputs("%(ver)s/CHANGELOG.md",
+                                "%(ver)s/CHANGELOG.%(key)s.md", [],
+                                {"ver": version,
+                                 "date": reldate,
+                                 "title": title})
         elif options.versionfiles:
-          reloutputs = Outputs("RELEASENOTES.%(ver)s.md",
-                               "RELEASENOTES.%(key)s.%(ver)s.md", [],
-                               {"ver": version,
-                                "date": reldate,
-                                "title": title})
-          choutputs = Outputs("CHANGELOG.%(ver)s.md",
-                              "CHANGELOG.%(key)s.%(ver)s.md", [],
-                              {"ver": version,
-                               "date": reldate,
-                               "title": title})
+            reloutputs = Outputs("RELEASENOTES.%(ver)s.md",
+                                 "RELEASENOTES.%(key)s.%(ver)s.md", [],
+                                 {"ver": version,
+                                  "date": reldate,
+                                  "title": title})
+            choutputs = Outputs("CHANGELOG.%(ver)s.md",
+                                "CHANGELOG.%(key)s.%(ver)s.md", [],
+                                {"ver": version,
+                                 "date": reldate,
+                                 "title": title})
         else:
-          reloutputs = Outputs("RELEASENOTES.md",
-                               "RELEASENOTES.%(key)s.md", [],
-                               {"ver": version,
-                                "date": reldate,
-                                "title": title})
-          choutputs = Outputs("CHANGELOG.md",
-                              "CHANGELOG.%(key)s.md", [],
-                              {"ver": version,
-                               "date": reldate,
-                               "title": title})
+            reloutputs = Outputs("RELEASENOTES.md",
+                                 "RELEASENOTES.%(key)s.md", [],
+                                 {"ver": version,
+                                  "date": reldate,
+                                  "title": title})
+            choutputs = Outputs("CHANGELOG.md",
+                                "CHANGELOG.%(key)s.md", [],
+                                {"ver": version,
+                                 "date": reldate,
+                                 "title": title})
 
         if options.license is True:
             reloutputs.write_all(ASF_LICENSE)
@@ -870,7 +889,7 @@ def main():
             linter.lint(jira)
 
         if linter.enabled:
-            print linter.message()
+            print(linter.message())
             if linter.had_errors():
                 haderrors = True
                 shutil.rmtree(vstr)
@@ -880,60 +899,60 @@ def main():
         reloutputs.close()
 
         if options.skip_credits:
-            CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
+            change_header21 = "| JIRA | Summary | Priority | " + \
                      "Component |\n"
-            CHANGEHDR2 = "|:---- |:---- | :--- |:---- |\n"
+            change_header22 = "|:---- |:---- | :--- |:---- |\n"
         else:
-            CHANGEHDR1 = "| JIRA | Summary | Priority | " + \
+            change_header21 = "| JIRA | Summary | Priority | " + \
                          "Component | Reporter | Contributor |\n"
-            CHANGEHDR2 = "|:---- |:---- | :--- |:---- |:---- |:---- |\n"
+            change_header22 = "|:---- |:---- | :--- |:---- |:---- |:---- |\n"
 
         if incompatlist:
             choutputs.write_all("### INCOMPATIBLE CHANGES:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(incompatlist, options.skip_credits, JIRA_BASE_URL)
 
         if importantlist:
             choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(importantlist, options.skip_credits, JIRA_BASE_URL)
 
         if newfeaturelist:
             choutputs.write_all("\n\n### NEW FEATURES:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(newfeaturelist, options.skip_credits, JIRA_BASE_URL)
 
         if improvementlist:
             choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(improvementlist, options.skip_credits, JIRA_BASE_URL)
 
         if buglist:
             choutputs.write_all("\n\n### BUG FIXES:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(buglist, options.skip_credits, JIRA_BASE_URL)
 
         if testlist:
             choutputs.write_all("\n\n### TESTS:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(testlist, options.skip_credits, JIRA_BASE_URL)
 
         if subtasklist:
             choutputs.write_all("\n\n### SUB-TASKS:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(subtasklist, options.skip_credits, JIRA_BASE_URL)
 
         if tasklist or otherlist:
             choutputs.write_all("\n\n### OTHER:\n\n")
-            choutputs.write_all(CHANGEHDR1)
-            choutputs.write_all(CHANGEHDR2)
+            choutputs.write_all(change_header21)
+            choutputs.write_all(change_header22)
             choutputs.write_list(otherlist, options.skip_credits, JIRA_BASE_URL)
             choutputs.write_list(tasklist, options.skip_credits, JIRA_BASE_URL)
 
