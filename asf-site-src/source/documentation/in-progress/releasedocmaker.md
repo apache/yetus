@@ -46,9 +46,9 @@ In order to solve these problems, releasedocmaker was written to automatically g
 
 # Requirements
 
-* Python 2.6 with dateutil extension
+* Python 2.7 with dateutil extension
 
-dateutil may be installed via pip:  `pip install python-dateutil`
+dateutil may be installed via pip:  `pip2 install python-dateutil`
 
 # Basic Usage
 

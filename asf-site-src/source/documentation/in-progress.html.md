@@ -41,22 +41,9 @@ documenation [here](releasedocmaker). See also the [yetus-maven-plugin](#yetus-m
 
 Shelldocs provides generation of html formatted api documentation based on comments on Bash functions. Currently supports documenting API status (public / private) as well as parameters and return values.
 
-See the shelldocs cli help for more information on usage.
+See the [shelldocs page](shelldocs) for more information on usage.
 
-```bash
-$ ./shelldocs/shelldocs.py --help
-Usage: shelldocs.py --skipprnorep --output OUTFILE --input INFILE [--input INFILE ...]
-
-Options:
-  -h, --help            show this help message and exit
-  -o OUTFILE, --output=OUTFILE
-                        file to create
-  -i INFILE, --input=INFILE
-                        file to read
-  --skipprnorep         Skip Private & Not Replaceable
-```
-
-You can mark a file to be ignored by shelldocs by adding "SHELLDOC-IGNORE" as a comment in its own line.
+See also the [yetus-maven-plugin](#yetus-maven-plugin) for Apache Maven-specific information.
 
 # yetus-maven-plugin
 

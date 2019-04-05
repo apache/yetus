@@ -20,12 +20,17 @@
 Yetus Maven Plug-in
 ===================
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
 * [Introduction](#introduction)
 * [File Utility Goals](#file-utility-goals)
   * [bin4libs](#bin4libs)
   * [symlink](#symlink)
   * [parallel-mkdirs](#parallel-mkdirs)
 * [releasedocmaker](#releasedocmaker)
+* [shelldocs](#shelldocs)
+
+<!-- /MarkdownTOC -->
 
 # Introduction
 
@@ -160,7 +165,7 @@ This goal runs releasedocmaker without the need to download or build an Apache Y
             <id>rdm</id>
             <phase>pre-site</phase>
             <goals>
-              <goal>releaseodcmaker</goal>
+              <goal>releasedocmaker</goal>
             </goals>
             <configuration>
               <projects>
@@ -195,3 +200,31 @@ The configuration options generally map 1:1 to the `releasedocmaker` executable'
 | `sorttype` | --sorttype | resolutiondate |
 | `useToday` | --usetoday | false |
 | `versions` | ArrayList; --versions | `${project.version}` |
+
+# shelldocs
+
+Similar to the `releasedocmaker` goal, the `shelldocs` goal runs the Apache Yetus `shelldocs` utility against a given set of input files or directories and generates a single output MultiMarkdown file:
+
+      <plugin>
+        <groupId>org.apache.yetus</groupId>
+        <artifactId>yetus-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>shelldocs</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>shelldocs</goal>
+            </goals>
+          </execution>
+        </plugin>
+
+
+
+The configuration options generally map 1:1 to the `shelldocs` executable's options.  Unless otherwise specified, defaults are set by the actual executable.
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `lint` | boolean; --lint | false |
+| `output` | --output | `${project.build.directory}/generated-site/markdown/${project.name}.md` |
+| `inputs` | ArrayList; --input ... | *sh files located in`${project.basedir}/src/main/shell` |
+| `skipprnorep` | --skipprnorep | false |
