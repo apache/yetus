@@ -21,6 +21,7 @@
 import sys
 import os
 import re
+import errno
 from optparse import OptionParser
 
 sys.dont_write_bytecode = True
@@ -305,8 +306,99 @@ def marked_as_ignored(file_path):
                 return True
         return False
 
+def process_file(filename, skipprnorep):
+    """ stuff all of the functions into an array """
+    allfuncs = []
+    try:
+        with open(filename, "r") as shellcode:
+            # if the file contains a comment containing
+            # only "SHELLDOC-IGNORE" then skip that file
+            if marked_as_ignored(filename):
+                return None
+            funcdef = ShellFunction(filename)
+            linenum = 0
+            for line in shellcode:
+                linenum = linenum + 1
+                if line.startswith('## @description'):
+                    funcdef.adddesc(line)
+                elif line.startswith('## @audience'):
+                    funcdef.setaudience(line)
+                elif line.startswith('## @stability'):
+                    funcdef.setstability(line)
+                elif line.startswith('## @replaceable'):
+                    funcdef.setreplace(line)
+                elif line.startswith('## @param'):
+                    funcdef.addparam(line)
+                elif line.startswith('## @return'):
+                    funcdef.addreturn(line)
+                elif line.startswith('function'):
+                    funcdef.setname(line)
+                    funcdef.setlinenum(linenum)
+                    if skipprnorep and \
+                      funcdef.getaudience() == "Private" and \
+                      funcdef.getreplace() == "No":
+                        pass
+                    else:
+                        allfuncs.append(funcdef)
+                    funcdef = ShellFunction(filename)
+    except IOError, err:
+        print >> sys.stderr, "ERROR: Failed to read from file: %s. Skipping." % err.filename
+        return None
+    return allfuncs
 
-def main(): # pylint: disable=too-many-statements, too-many-branches
+def process_input(inputlist, skipprnorep):
+    """ take the input and loop around it """
+    allfuncs = []
+    for filename in inputlist: #pylint: disable=too-many-nested-blocks
+        if os.path.isdir(filename):
+            for root, dirs, files in os.walk(filename): #pylint: disable=unused-variable
+                for fname in files:
+                    if fname.endswith('sh'):
+                        newfuncs = process_file(filename=os.path.join(root, fname),
+                                                skipprnorep=skipprnorep)
+                        if newfuncs:
+                            allfuncs = allfuncs + newfuncs
+        else:
+            newfuncs = process_file(filename=filename, skipprnorep=skipprnorep)
+            if newfuncs:
+                allfuncs = allfuncs + newfuncs
+
+    if allfuncs is None:
+        print >> sys.stderr, "ERROR: no functions found."
+        sys.exit(1)
+
+    allfuncs = sorted(allfuncs)
+    return allfuncs
+
+def write_output(filename, functions):
+    """ write the markdown file """
+    try:
+        directory = os.path.dirname(filename)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(directory):
+            pass
+        else:
+            print "Unable to create output directory %s: %u, %s" % \
+                    (directory, exc.errno, exc.message)
+            sys.exit(1)
+
+    with open(filename, "w") as outfile:
+        outfile.write(ASFLICENSE)
+        for line in toc(functions):
+            outfile.write(line)
+        outfile.write("\n------\n\n")
+
+        header = []
+        for funcs in functions:
+            if header != funcs.getinter():
+                header = funcs.getinter()
+                line = "## %s\n" % (funcs.headerbuild())
+                outfile.write(line)
+            outfile.write(funcs.getdocpage())
+
+def main():
     '''main entry point'''
     parser = OptionParser(
         usage="usage: %prog [--skipprnorep] " + "[--output OUTFILE|--lint] " +
@@ -360,45 +452,7 @@ def main(): # pylint: disable=too-many-statements, too-many-branches
         parser.error(
             "At least one of output file and lint mode needs to be specified")
 
-    allfuncs = []
-    try:
-        for filename in options.infile:
-            with open(filename, "r") as shellcode:
-                # if the file contains a comment containing
-                # only "SHELLDOC-IGNORE" then skip that file
-                if marked_as_ignored(filename):
-                    continue
-                funcdef = ShellFunction(filename)
-                linenum = 0
-                for line in shellcode:
-                    linenum = linenum + 1
-                    if line.startswith('## @description'):
-                        funcdef.adddesc(line)
-                    elif line.startswith('## @audience'):
-                        funcdef.setaudience(line)
-                    elif line.startswith('## @stability'):
-                        funcdef.setstability(line)
-                    elif line.startswith('## @replaceable'):
-                        funcdef.setreplace(line)
-                    elif line.startswith('## @param'):
-                        funcdef.addparam(line)
-                    elif line.startswith('## @return'):
-                        funcdef.addreturn(line)
-                    elif line.startswith('function'):
-                        funcdef.setname(line)
-                        funcdef.setlinenum(linenum)
-                        if options.skipprnorep and \
-                          funcdef.getaudience() == "Private" and \
-                          funcdef.getreplace() == "No":
-                            pass
-                        else:
-                            allfuncs.append(funcdef)
-                        funcdef = ShellFunction(filename)
-    except IOError, err:
-        print >> sys.stderr, "ERROR: Failed to read from file: %s. Aborting." % err.filename
-        sys.exit(1)
-
-    allfuncs = sorted(allfuncs)
+    allfuncs = process_input(options.infile, options.skipprnorep)
 
     if options.lint:
         for funcs in allfuncs:
@@ -407,20 +461,7 @@ def main(): # pylint: disable=too-many-statements, too-many-branches
                 print message
 
     if options.outfile is not None:
-        with open(options.outfile, "w") as outfile:
-            outfile.write(ASFLICENSE)
-            for line in toc(allfuncs):
-                outfile.write(line)
-            outfile.write("\n------\n\n")
-
-            header = []
-            for funcs in allfuncs:
-                if header != funcs.getinter():
-                    header = funcs.getinter()
-                    line = "## %s\n" % (funcs.headerbuild())
-                    outfile.write(line)
-                outfile.write(funcs.getdocpage())
-
+        write_output(options.outfile, allfuncs)
 
 if __name__ == "__main__":
     main()

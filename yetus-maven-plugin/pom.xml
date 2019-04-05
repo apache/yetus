@@ -48,6 +48,7 @@
         <groupId>org.apache.yetus</groupId>
         <artifactId>audience-annotations</artifactId>
         <version>${project.version}</version>
+        <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.maven.plugin-tools</groupId>
@@ -58,6 +59,12 @@
     <dependency>
         <groupId>org.apache.yetus</groupId>
         <artifactId>releasedocmaker</artifactId>
+        <version>${project.version}</version>
+        <classifier>jar-with-dependencies</classifier>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.yetus</groupId>
+        <artifactId>shelldocs</artifactId>
         <version>${project.version}</version>
         <classifier>jar-with-dependencies</classifier>
     </dependency>
