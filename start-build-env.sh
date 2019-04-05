@@ -18,6 +18,8 @@
 set -e               # exit on error
 ROOTDIR=$(cd -P -- "$(dirname -- "${BASH_SOURCE-$0}")" >/dev/null && pwd -P)
 
+YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-apache/yetus}
+
 # moving to the path of the Dockerfile reduces the context
 cd "${ROOTDIR}/precommit/src/main/shell/test-patch-docker"
 
@@ -26,14 +28,14 @@ if [[ "${BRANCH}" =~ HEAD ]]; then
   BRANCH=$(git branch | grep '\*' | awk '{print $NF}'  | sed -e s,rel/,,g -e s,\),,g )
 fi
 
-echo "Attempting a few pulls of apache/yetus and apache/yetus-base to save time"
+echo "Attempting a few pulls of ${YETUS_DOCKER_REPO} and ${YETUS_DOCKER_REPO}-base to save time"
 echo "Errors here will be ignored!"
-docker pull "apache/yetus-base:${BRANCH}" || docker pull "apache/yetus-base:master" || true
-docker pull "apache/yetus:${BRANCH}"  || docker pull "apache/yetus:master" || true
+docker pull "${YETUS_DOCKER_REPO}-base:${BRANCH}" || docker pull "${YETUS_DOCKER_REPO}-base:master" || true
+docker pull "${YETUS_DOCKER_REPO}:${BRANCH}"  || docker pull "${YETUS_DOCKER_REPO}:master" || true
 
 docker build \
-  --cache-from="apache/yetus-base:${BRANCH},apache/yetus-base:master,apache/yetus:${BRANCH},apache/yetus:master" \
-  -t "apache/yetus-build:${BRANCH}" .
+  --cache-from="${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:master,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:master" \
+  -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
 
 USER_NAME=${SUDO_USER:=$USER}
 USER_ID=$(id -u "${USER_NAME}")
@@ -67,11 +69,12 @@ fi
 
 cd "${ROOTDIR}/asf-site-src"
 docker build \
-  -t "apache/yetus-build-${USER_ID}:${BRANCH}" \
+  -t "${YETUS_DOCKER_REPO}-build-${USER_ID}:${BRANCH}" \
   --build-arg GROUP_ID="${GROUP_ID}" \
   --build-arg USER_ID="${USER_ID}" \
   --build-arg USER_NAME="${USER_NAME}" \
   --build-arg DOCKER_TAG="${BRANCH}" \
+  --build-arg DOCKER_REPO="${YETUS_DOCKER_REPO}" \
   .
 
 # now cd back
@@ -89,4 +92,4 @@ docker run --rm=true -i -t \
   -v "${HOME}/.gnupg:/home/${USER_NAME}/.gnupg" \
   -v "${HOME}/.ssh:/home/${USER_NAME}/.ssh" \
   -u "${USER_NAME}" \
-  "apache/yetus-build-${USER_ID}:${BRANCH}" "$@"
+  "${YETUS_DOCKER_REPO}-build-${USER_ID}:${BRANCH}" "$@"

@@ -15,7 +15,8 @@
 # limitations under the License.
 
 ARG DOCKER_TAG=master
-FROM apache/yetus-build:${DOCKER_TAG}
+ARG DOCKER_REPO=apache/yetus
+FROM ${DOCKER_REPO}-build:${DOCKER_TAG}
 
 WORKDIR /root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -68,3 +69,5 @@ RUN gem install bundler \
     tzinfo-data \
     rake:10.3.1 \
     nokogiri:1.8.5
+
+CMD ["/bin/bash"]
