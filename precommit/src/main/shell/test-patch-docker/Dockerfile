@@ -37,12 +37,15 @@ ENV DEBCONF_TERSE true
 ######
 # Install some basic Apache Yetus requirements
 # some git repos need ssh-client so do it too
+# Adding libffi-dev for all the programming languages
+# that take advantage of it.
 ######
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     apt-transport-https \
     ca-certificates \
     curl \
     git \
+    libffi-dev \
     locales \
     pkg-config \
     rsync \
@@ -210,13 +213,18 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 
 ####
 # Install shellcheck (shell script lint)
+# NOTE: A bunch of stuff is removed to shrink the size of the Docker image
+# Be very careful changing the code here, layer size may grow very large!
 ####
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y cabal-install \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-RUN cabal update
-RUN cabal install ShellCheck \
-    && cp -p /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck
+    && rm -rf /var/lib/apt/lists/* \
+    && cabal update \
+    && cabal install -j ShellCheck \
+    && cp -p /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck \
+    && apt remove -y ghc cabal-install \
+    && apt autoremove -y \
+    && rm -rf /root/.cabal
 
 ###
 # Install hadolint
