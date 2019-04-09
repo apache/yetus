@@ -892,7 +892,8 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
             print(linter.message())
             if linter.had_errors():
                 haderrors = True
-                shutil.rmtree(vstr)
+                if os.path.exists(vstr):
+                    shutil.rmtree(vstr)
                 continue
 
         reloutputs.write_all("\n\n")

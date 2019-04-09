@@ -20,6 +20,8 @@
 releasedocmaker
 ===============
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
 * [Purpose](#purpose)
 * [Requirements](#requirements)
 * [Basic Usage](#basic-usage)
@@ -31,6 +33,8 @@ releasedocmaker
 * [Lint Mode](#lint-mode)
 * [Index Mode](#index-mode)
 * [Release Version](#release-version)
+
+<!-- /MarkdownTOC -->
 
 # Purpose
 

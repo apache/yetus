@@ -178,8 +178,6 @@ This goal runs releasedocmaker without the need to download or build an Apache Y
           </execution>
         </plugin>
 
-
-
 The configuration options generally map 1:1 to the `releasedocmaker` executable's options.  Unless otherwise specified, defaults are set by the actual executable.
 
 | Option | Description | Default |
@@ -190,14 +188,15 @@ The configuration options generally map 1:1 to the `releasedocmaker` executable'
 | `incompatibleLabel` | --incompatiblelabel | |
 | `index` | boolean; --index | false  |
 | `license` | boolean; --license | false |
-| `lint` | boolean; --lint | false |
+| `lintFilters` | ArrayList; --lint | |
 | `outputDir` | --outputdir | `${project.build.directory}/generated-site/markdown` |
 | `projects` | ArrayList; --projects | `${project.name}` |
 | `projectTitle` | --projecttitle | |
 | `range` | boolean; --range | false |
+| `retries` | integer; --retries | |
 | `skipcredits` | boolean; --skipcredits | false |
-| `sortorder` | --sortorder | older |
-| `sorttype` | --sorttype | resolutiondate |
+| `sortorder` | --sortorder | |
+| `sorttype` | --sorttype | |
 | `useToday` | --usetoday | false |
 | `versions` | ArrayList; --versions | `${project.version}` |
 

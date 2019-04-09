@@ -15,7 +15,6 @@ package org.apache.yetus.maven.plugin.rdm;
 
 import java.io.File;
 import java.util.ArrayList;
-import org.apache.yetus.maven.plugin.utils.Utils;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -68,7 +67,7 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
   private Boolean fileversions;
 
   /**
-   * label for incompatible issues
+   * label for incompatible issues.
    */
   @Parameter
   private String incompatibleLabel;
@@ -88,8 +87,15 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
   /**
    * Run in --lint mode.
    */
+  @Deprecated
   @Parameter(defaultValue = "false")
   private Boolean lint;
+
+  /**
+   * lint filters.
+   */
+  @Parameter
+  private String[] lintFilters;
 
   /**
    * Location of output.
@@ -116,22 +122,29 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
   private Boolean range;
 
   /**
-   * Drop reporter/assignee
+   * Number of times to retry the HTTPS connection.
+   */
+  @Parameter
+  private Integer retries;
+
+  /**
+   * Drop reporter/assignee.
    */
   @Parameter(defaultValue = "false")
   private Boolean skipcredits;
 
   /**
-   * Set the sort order
+   * Set the sort order.
    */
-  @Parameter(defaultValue = "older")
+  @Parameter
   private String sortorder;
 
   /**
-   * Set the type order
+   * Set the type order.
    */
-  @Parameter(defaultValue = "resolutiondate")
+  @Parameter
   private String sorttype;
+
 
   /**
    * Use today.
@@ -159,9 +172,9 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
   public void execute() throws MojoExecutionException {
 
     buildArgs();
-    String [] args = argList.toArray(new String[0]);
+    String[] args = argList.toArray(new String[0]);
 
-    ReleaseDocMaker rdm=new ReleaseDocMaker();
+    ReleaseDocMaker rdm = new ReleaseDocMaker();
     rdm.main(args);
   }
 
@@ -171,7 +184,7 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
    */
   private void buildArgs() {
 
-    if (baseUrl != null ) {
+    if (baseUrl != null) {
       argList.add("--baseurl");
       argList.add(baseUrl);
     }
@@ -203,6 +216,12 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
 
     if (lint) {
       argList.add("--lint");
+      argList.add("all");
+    }
+
+    for (String f: lintFilters) {
+      argList.add("--lint");
+      argList.add(f);
     }
 
     argList.add("--outputdir");
@@ -220,6 +239,11 @@ public final class ReleaseDocMakerMojo extends AbstractMojo {
 
     if (range) {
       argList.add("--range");
+    }
+
+    if (retries != null) {
+      argList.add("--retries");
+      argList.add(retries.toString());
     }
 
     if (skipcredits) {
