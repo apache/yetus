@@ -172,7 +172,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
    && rm /usr/local/bin/pip
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 # hadolint ignore=DL3013
-RUN pip3 install -v  astroid==2.2.4 pylint==2.3.1 docker-compose
+RUN pip3 install -v astroid==2.2.4 pylint==2.3.1 docker-compose==1.24.0
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint3
 
 ######
@@ -204,8 +204,8 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     ruby-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN gem install rake
-RUN gem install rubocop
+RUN gem install rake -v 12.3.2
+RUN gem install rubocop -v 0.67.2
 RUN gem install bundler -v 1.17.3
 # set some reasonable defaults for ruby
 # user's can always override these as needed
