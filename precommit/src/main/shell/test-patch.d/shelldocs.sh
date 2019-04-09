@@ -25,6 +25,7 @@ if [[ -z ${SHELLDOCS} ]]; then
   for shelldocsexec in \
     "${BINDIR}/shelldocs" \
     "${BINDIR}/../shelldocs/shelldocs.py"\
+    "${BINDIR}/../shelldocs/src/main/python/shelldocs.py" \
     "${BASEDIR}/shelldocs/src/main/python/shelldocs.py"; do
     if [[ -f ${shelldocsexec} && -x ${shelldocsexec} ]]; then
       SHELLDOCS=${shelldocsexec}
