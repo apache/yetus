@@ -52,9 +52,13 @@ Intro
 Azure Pipelines
 ===============
 
+    NOTE: Azure Pipelines support is not stable and should be viewed as experimental, at best.
+
 TRIGGER: ${TF_BUILD}=True
 
 Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the source repository. It automatically configures `--patch-dir` to be `${BUILD_ARTIFACTSTAGINGDIRECTORY}/yetus`.  While the URL to the console is provided in the report, links are not provided due to the URLs to artifacts not being available at runtime.
+
+As of this writing, Azure Pipelines has moved to a custom moby build for the 'docker' executable.  As a result, `--docker` is not supported.
 
 Circle CI
 =========
