@@ -168,7 +168,8 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/*
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
-   && python3.7 get-pip.py
+   && python3.7 get-pip.py \
+   && rm /usr/local/bin/pip
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 # hadolint ignore=DL3013
 RUN pip3 install -v  astroid==2.2.4 pylint==2.3.1 docker-compose
