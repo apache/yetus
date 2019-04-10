@@ -129,7 +129,7 @@ function author_postcompile
 
   start_clock
 
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]] && [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
     globalignore=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
   else
     globalignore=("cat")
