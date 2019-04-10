@@ -15,7 +15,6 @@
 Apache Yetus Interface Taxonomy: Audience and Stability Classification
 ================================================================
 
-
 Motivation
 ----------
 

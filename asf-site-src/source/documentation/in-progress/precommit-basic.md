@@ -20,18 +20,31 @@
 test-patch
 ==========
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
 * [Purpose](#purpose)
 * [Pre-requisites](#pre-requisites)
+  * [Base Requirements](#base-requirements)
+  * [Optional Requirements](#optional-requirements)
 * [First Steps](#first-steps)
 * [Resetting the Repository](#resetting-the-repository)
 * [Enabling Features](#enabling-features)
 * [Output Directory](#output-directory)
 * [Build Tool](#build-tool)
 * [Providing Patch Files](#providing-patch-files)
-* [Project-Specific Capabilities](#project-specific-capabilities)
+  * [JIRA](#jira)
+  * [GITHUB](#github)
+  * [GITLAB](#gitlab)
+  * [Generic URLs](#generic-urls)
+* [Project-specific Capabilities](#project-specific-capabilities)
+  * [Direct Method](#direct-method)
+  * [Project Method](#project-method)
+* [Fork Bomb Protection](#fork-bomb-protection)
 * [MultiJDK](#multijdk)
 * [Docker](#docker)
 * [In Closing](#in-closing)
+
+<!-- /MarkdownTOC -->
 
 # Purpose
 

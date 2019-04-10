@@ -20,16 +20,20 @@
 test-patch Docker Support
 =========================
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
 * [The Basics](#the-basics)
 * [Docker Base Images](#docker-base-images)
-  * [Default Images](#default-image)
+  * [Default Image](#default-image)
   * [Using a Dockerfile](#using-a-dockerfile)
-  * [Pulling a Docker Tag](#pulling-a-docker-tag)
+  * [Pulling a Docker tag](#pulling-a-docker-tag)
+  * [Using a cache](#using-a-cache)
   * [Platforms](#platforms)
 * [Resource Controls](#resource-controls)
 * [Privileged Mode](#privileged-mode)
-* [Docker-in-Docker](#docker-in-docker)
+* [Docker in Docker](#docker-in-docker)
 
+<!-- /MarkdownTOC -->
 
 # The Basics
 

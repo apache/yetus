@@ -17,8 +17,32 @@
   under the License.
 -->
 
+
+
 Build Tool Support
 ===================
+
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Global Variables](#global-variables)
+* [Required Functions](#required-functions)
+* [Optional Functions](#optional-functions)
+* [Ant Specific](#ant-specific)
+  * [Command Arguments](#command-arguments)
+  * [Docker Mode](#docker-mode)
+* [autoconf Specific](#autoconf-specific)
+  * [Command Arguments](#command-arguments-1)
+* [CMAKE Specific](#cmake-specific)
+* [Gradle Specific](#gradle-specific)
+* [Make Specific](#make-specific)
+* [Maven Specific](#maven-specific)
+  * [Command Arguments](#command-arguments-2)
+  * [Per-instance Repositories](#per-instance-repositories)
+  * [Docker Mode](#docker-mode-1)
+  * [Test Profile](#test-profile)
+  * [Custom Maven Tests](#custom-maven-tests)
+
+<!-- /MarkdownTOC -->
 
 test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:
 
