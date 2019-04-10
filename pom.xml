@@ -62,20 +62,19 @@
     <java.min.version>1.8</java.min.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
-    <extra.enforcer.version>1.0-beta-9</extra.enforcer.version>
 
     <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-    <checkstyle.version>8.14</checkstyle.version>
+    <checkstyle.version>8.19</checkstyle.version>
     <commons.io.version>2.6</commons.io.version>
     <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
     <jdiff.version>1.0.9</jdiff.version>
     <jython-compile-maven-plugin.version>2.0</jython-compile-maven-plugin.version>
-    <jython-shaded.version>2.7.1</jython-shaded.version>
+    <jython-shaded.version>2.7.1.1</jython-shaded.version>
     <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
     <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
     <spotbugs-maven-plugin.version>3.1.11</spotbugs-maven-plugin.version>
 
-     <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
+    <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
 
   </properties>
 
@@ -166,13 +165,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>extra-enforcer-rules</artifactId>
-            <version>${extra.enforcer.version}</version>
-          </dependency>
-        </dependencies>
         <!-- version set by parent -->
         <executions>
           <execution>
