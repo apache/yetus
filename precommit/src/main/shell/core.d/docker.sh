@@ -425,7 +425,9 @@ function docker_untag_images
   yetus_comma_to_array images "${imagestr}"
 
   for i in "${images[@]}"; do
-    dockercmd rmi "${i}"
+    if dockercmd inspect -f '{{json .Size}}' "${i}" >/dev/null 2>&1;then
+      dockercmd rmi "${i}"
+    fi
   done
 }
 
@@ -458,7 +460,9 @@ function docker_image_maintenance_helper
     if [[ ${difftime} -gt ${DOCKER_IMAGE_PURGE} ]]; then
       echo "Attempting to remove docker image ${id}"
       docker_untag_images "${id}"
-      dockercmd rmi "${id}"
+      if dockercmd inspect -f '{{json .Size}}' "${id}" >/dev/null 2>&1;then
+        dockercmd rmi "${id}"
+      fi
     fi
   done
 }
