@@ -17,6 +17,17 @@
   under the License.
 -->
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Managing a Release](#managing-a-release)
+  * [Dependencies](#dependencies)
+  * [Setup](#setup)
+  * [Release Candidate\(s\)](#release-candidates)
+  * [Verification](#verification)
+  * [Cleanup](#cleanup)
+
+<!-- /MarkdownTOC -->
+
 # Managing a Release
 
 The Apache Yetus community encourages all committers to help on driving releases. To that end, this section seeks to outline the tools and process you'll use when managing a release. Note that these are our community norms; they do not supersede foundation policy should the two disagree.
@@ -321,9 +332,9 @@ As noted in the informational page [What We Sign](https://www.apache.org/info/ve
 
 1. You MUST make sure the provided hashes match the provided artifact.
 
-        $ gpg --print-mds apache-yetus-0.7.0-src.tar.gz >yetus-0.7.0-src.tar.gz.my_mds
+        $ gpg --print-mds apache-yetus-0.7.0-src.tar.gz >apache-yetus-0.7.0-src.tar.gz.my_mds
         $ diff apache-yetus-0.7.0-src.tar.gz.mds apache-yetus-0.7.0-src.tar.gz.my_mds
-        $ shasum -a 512 apache-yetus-0.7.0-src.tar.gz >yetus-0.7.0-src.tar.gz.my_sha512
+        $ shasum -a 512 apache-yetus-0.7.0-src.tar.gz >apache-yetus-0.7.0-src.tar.gz.my_sha512
         $ diff apache-yetus-0.7.0-src.tar.gz.sha512 apache-yetus-0.7.0-src.tar.gz.my_sha512
 
 1. You MUST make sure artifacts abide by the ASF Licensing Policy. You should read through [the ASF Licensing Policy](https://www.apache.org/legal/resolved), especially if your vote will be binding. As a quick guide:
@@ -336,15 +347,15 @@ As noted in the informational page [What We Sign](https://www.apache.org/info/ve
 
         $ mkdir apache-yetus-0.7.0-src_unpack
         $ tar -C apache-yetus-0.7.0-src_unpack -xzf apache-yetus-0.7.0-src.tar.gz
-        $ git clone --single-branch --depth=1 --branch 0.7.0-RC1 'https://git1-us-west.apache.org/repos/asf/yetus.git' apache-yetus-0.7.0-RC1-tag
-        $ diff -r apache-yetus-0.7.0-RC1-tag apache-yetus-0.7.0-src_unpack/yetus-0.7.0
+        $ git clone --single-branch --depth=1 --branch YETUS-585 'https://github.com/apache/yetus.git' apache-yetus-0.7.0-RC1-tag
+        $ diff -r apache-yetus-0.7.0-RC1-tag apache-yetus-0.7.0-src_unpack/yetus-project-0.7.0
         $ echo $?
         0
 1. You MUST make sure any non-source artifacts can be derived from the source artifact. Since the source artifact is the canonical representation of our release, any other artifacts we distribute must be just for the convenience of our downstream users. As such, one must be able to derive them from the source artifact. Currently, you can generate all of the artifacts we distribute for convenience using the same commands used to create the release artifacts.
 
         $ mkdir apache-yetus-0.7.0-src_unpack
         $ tar -C apache-yetus-0.7.0-src_unpack -xzf apache-yetus-0.7.0-src.tar.gz
-        $ cd apache-yetus-0.7.0-src_unpack/yetus-0.7.0
+        $ cd apache-yetus-0.7.0-src_unpack/yetus-project-0.7.0
         $ mvn clean install
 This will create a yetus-dist/target/ directory that contains the tarball binary distribution files.
 
