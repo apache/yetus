@@ -31,24 +31,19 @@ jobs:
 
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
+      - run: mkdir -p /tmp/yetus-out
+      - run: echo "bootstrap" > /tmp/yetus-out/bootstrap
+      - store_artifacts:
+          path: /tmp/yetus-out
       - run: >
              ~/repo/precommit/src/main/shell/test-patch.sh
              --plugins=all
              --patch-dir=/tmp/yetus-out
+             --html-report-file=/tmp/yetus-out/report.html
+             --console-report-file=/tmp/yetus-out/console.txt
+             --brief-report-file=/tmp/yetus-out/brief.txt
+             --bugcomments=briefreport,htmlout
              --tests-filter=checkstyle,javadoc,rubocop,test4tests
-
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: v1-dependencies-{{ checksum "pom.xml" }}
 
       - store_artifacts:
           path: /tmp/yetus-out

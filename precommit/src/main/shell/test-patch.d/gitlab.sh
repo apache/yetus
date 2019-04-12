@@ -401,6 +401,7 @@ function gitlab_finalreport
   declare i
   declare commentfile=${PATCH_DIR}/gitcommentfile.$$
   declare comment
+  declare url
 
   if [[ "${GITLAB_WRITE_ENABLED}" == "false" ]]; then
     return 0
@@ -468,10 +469,13 @@ function gitlab_finalreport
     echo "|----------:|:-------------|"
   } >> "${commentfile}"
 
+
+  url=$(get_artifact_url)
+
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
     comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              "${SED}" -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+              "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done

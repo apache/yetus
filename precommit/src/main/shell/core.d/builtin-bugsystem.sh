@@ -45,6 +45,7 @@ function console_finalreport
   declare seccoladj=0
   declare spcfx=${PATCH_DIR}/spcl.txt
   declare calctime
+  declare url
 
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
     exec 6>&1
@@ -153,15 +154,17 @@ function console_finalreport
   echo "============================================================================"
   i=0
 
+  if [[ "${CONSOLE_USE_BUILD_URL}" = true ]]; then
+    url=$(get_artifact_url)
+  fi
+
+  if [[ -z "${url}" ]]; then
+    url=${PATCH_DIR}
+  fi
+
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    if [[ "${CONSOLE_USE_BUILD_URL}" = true &&
-          -n "${BUILD_URL}" ]]; then
-      comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-                ${SED} -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
-    else
-      comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-                ${SED} -e "s,@@BASE@@,${PATCH_DIR},g")
-    fi
+    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
+              "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}"
     ((i=i+1))
   done

@@ -720,6 +720,22 @@ function activate_robots
   fi
 }
 
+## @description  Get the base URL of the artifacts
+## @audience     public
+## @stability    evolving
+## @replaceable  yes
+## @return       urlstring
+function get_artifact_url
+{
+  if [[ ${ROBOT} == true ]]; then
+    if declare -f "${ROBOTTYPE}"_artifact_url >/dev/null; then
+      "${ROBOTTYPE}"_artifact_url
+    fi
+  elif [[ -n "${BUILD_URL}" ]] && [[ -n "${BUILD_URL_ARTIFACTS}" ]]; then
+    echo "${BUILD_URL}${BUILD_URL_ARTIFACTS}"
+  fi
+}
+
 ## @description  attempt to guess what the build tool should be
 ## @audience     public
 ## @stability    evolving

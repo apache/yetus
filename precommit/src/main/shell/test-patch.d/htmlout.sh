@@ -33,6 +33,7 @@ function htmlout_parse_args
 {
   declare i
   declare fn
+  declare url
 
   for i in "$@"; do
     case ${i} in
@@ -224,6 +225,7 @@ function htmlout_finalreport
     echo "</tr>"
   } >> "${commentfile}"
 
+  url=$(get_artifact_url)
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
 
@@ -239,7 +241,7 @@ function htmlout_finalreport
     for j in ${TP_FOOTER_TABLE[${i}]}; do
       if [[ "${j}" =~ ^@@BASE@@ ]]; then
         t1=${j#@@BASE@@/}
-        t2=$(echo "${j}" | "${SED}" -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+        t2=$(echo "${j}" | "${SED}" -e "s,@@BASE@@,${url},g")
         if [[ -n "${BUILD_URL}" ]]; then
           t2="<a href=\"${t2}\">${t1}</a>"
         fi

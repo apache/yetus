@@ -169,3 +169,8 @@ function jenkins_finalreport
 {
   add_footer_table "Console output" "${BUILD_URL}${BUILD_URL_CONSOLE}"
 }
+
+function jenkins_artifact_url
+{
+  echo "${BUILD_URL}${BUILD_URL_ARTIFACTS}"
+}

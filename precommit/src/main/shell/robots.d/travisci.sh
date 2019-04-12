@@ -50,6 +50,7 @@ if [[ "${TRAVIS}" == true ]] &&
     TRAVIS \
     TRAVIS_BRANCH \
     TRAVIS_BUILD_ID \
+    TRAVIS_BUILD_WEB_URL \
     TRAVIS_PULL_REQUEST \
     TRAVIS_REPO_SLUG
 
@@ -75,6 +76,11 @@ function travisci_set_plugin_defaults
   GITHUB_REPO=${TRAVIS_REPO_SLUG}
 }
 
+function travisci_finalreport
+{
+  add_footer_table "Console output" "${TRAVIS_BUILD_WEB_URL}"
+}
+
 #function travisci_verify_patchdir
 #{
 #  declare commentfile=$1
@@ -83,9 +89,4 @@ function travisci_set_plugin_defaults
 #function travisci_unittest_footer
 #{
 #  declare statusjdk=$1
-#}
-
-#function travisci_finalreport
-#{
-#  declare foo
 #}

@@ -27,11 +27,10 @@ if [[ "${CIRCLECI}" = true ]] &&
     # needs to get rewritten first before this can be used
 
     BUILD_URL="https://circleci.com/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}"
-    BUILD_URL_CONSOLE='/'
-    CONSOLE_USE_BUILD_URL=false
+    BUILD_URL_CONSOLE=''
+    CONSOLE_USE_BUILD_URL=true
     ROBOT=true
     ROBOTTYPE=circleci
-
 
     yetus_comma_to_array CPR "${CIRCLE_PULL_REQUESTS}"
 
@@ -55,11 +54,34 @@ if [[ "${CIRCLECI}" = true ]] &&
       CIRCLE_PULL_REQUESTS \
       CIRCLE_PROJECT_USERNAME \
       CIRCLE_PROJECT_REPONAME \
-      CIRCLE_REPOSITORY_URL
+      CIRCLE_REPOSITORY_URL \
+      CIRCLE_TOKEN
 
     yetus_add_array_element EXEC_MODES Circle_CI
   fi
 fi
+
+function circleci_artifact_url
+{
+  declare apiurl
+  declare baseurl
+
+  if [[ -z "${CIRCLECI_ARTIFACTS}" ]]; then
+    apiurl="https://circleci.com/api/v1.1/project/github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/artifacts"
+
+    if "${CURL}" --silent --fail \
+            --output "${PATCH_DIR}/circleci.txt" \
+            --location \
+            "${apiurl}"; then
+      baseurl=$("${GREP}" url "${PATCH_DIR}/circleci.txt" | head -1 | cut -f2- -d:)
+      baseurl=${baseurl//\"/}
+      baseurl=${baseurl%/*}
+      rm "${PATCH_DIR}/circleci.txt" 2>/dev/null
+      CIRCLECI_ARTIFACTS=${baseurl}
+    fi
+  fi
+  echo "${CIRCLECI_ARTIFACTS}"
+}
 
 function circleci_set_plugin_defaults
 {
@@ -71,3 +93,16 @@ function circleci_set_plugin_defaults
     GITHUB_REPO=${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}
   fi
 }
+
+function circleci_finalreport
+{
+  add_footer_table "Console output" "${BUILD_URL}"
+}
+
+#function circleci_unittest_footer
+#{
+#  declare statusjdk=$1
+#  declare extra
+#
+#  add_footer_table "${statusjdk} Test Results" "${BUILD_URL}#tests/containers/0"
+#}

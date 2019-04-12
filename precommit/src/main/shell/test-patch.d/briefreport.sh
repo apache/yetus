@@ -218,6 +218,8 @@ function briefreport_finalreport
     version=$(cat "${BINDIR}/VERSION")
   fi
 
+  url=$(get_artifact_url)
+
   i=0
   until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
     if [[ "${TP_FOOTER_TABLE[${i}]}" =~ \@\@BASE\@\@ ]] \
@@ -242,10 +244,10 @@ function briefreport_finalreport
           # shellcheck disable=SC2016
           size=$(du -sh "${fn}" | "${AWK}" '{print $1}')
         fi
-        if [[ -n "${BUILD_URL}" ]]; then
+        if [[ -n "${url}" ]]; then
           comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
                     cut -f3 -d\| |
-                    "${SED}" -e "s,@@BASE@@,${BUILD_URL}${BUILD_URL_ARTIFACTS},g")
+                    "${SED}" -e "s,@@BASE@@,${url},g")
         fi
         {
           if [[ "${subs}" != "${vote}" ]]; then

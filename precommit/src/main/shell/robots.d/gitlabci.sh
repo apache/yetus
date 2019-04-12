@@ -51,3 +51,13 @@ function gitlabci_set_plugin_defaults
     # shellcheck disable=2034
     GITLAB_REPO=${CI_PROJECT_PATH}
 }
+
+function gitlabci_finalreport
+{
+  add_footer_table "Console output" "${BUILD_URL}"
+}
+
+function gitlabci_artifact_url
+{
+  echo "${BUILD_URL}${BUILD_URL_ARTIFACTS}"
+}
