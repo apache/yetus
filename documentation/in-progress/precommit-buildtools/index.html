@@ -122,6 +122,39 @@
 
 <h1 id="build-tool-support">Build Tool Support</h1>
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+<ul>
+<li><a href="#global-variables">Global Variables</a></li>
+<li><a href="#required-functions">Required Functions</a></li>
+<li><a href="#optional-functions">Optional Functions</a></li>
+<li><a href="#ant-specific">Ant Specific</a>
+
+<ul>
+<li><a href="#command-arguments">Command Arguments</a></li>
+<li><a href="#docker-mode">Docker Mode</a></li>
+</ul></li>
+<li><a href="#autoconf-specific">autoconf Specific</a>
+
+<ul>
+<li><a href="#command-arguments-1">Command Arguments</a></li>
+</ul></li>
+<li><a href="#cmake-specific">CMAKE Specific</a></li>
+<li><a href="#gradle-specific">Gradle Specific</a></li>
+<li><a href="#make-specific">Make Specific</a></li>
+<li><a href="#maven-specific">Maven Specific</a>
+
+<ul>
+<li><a href="#command-arguments-2">Command Arguments</a></li>
+<li><a href="#per-instance-repositories">Per-instance Repositories</a></li>
+<li><a href="#docker-mode-1">Docker Mode</a></li>
+<li><a href="#test-profile">Test Profile</a></li>
+<li><a href="#custom-maven-tests">Custom Maven Tests</a></li>
+</ul></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
 <p>test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:</p>
 <div class="highlight"><pre class="highlight shell"><code>add_build_tool &lt;pluginname&gt;
 </code></pre></div>

@@ -63,3 +63,15 @@ mvn site site:stage
 ```
 
 After executing one or more of the Apache Maven commands, artifacts will be in `yetus-dist/target/artifacts` or ready for a `mvn deploy`.
+
+## Container Quickstart
+
+The project makes available two convenience container images on https://hub.docker.com for both tagged releases and for the master branch.  It is highly recommended that casual users use a tagged release so as to not be surprised by incompatible changes that are still rolling through the master branch.
+
+### apache/yetus-base
+
+This image contains all of the tools that Apache Yetus supports. It is intended to be used when the Apache Yetus binaries are running outside of the container to speed up building the actual testing container.
+
+### apache/yetus
+
+This image contains all of apache/yetus-base plus a built and installed version of Apache Yetus.  The binaries are in `/usr/bin` and therefore part of the default path.  This image is ideal for CI systems that take a container image as the operating environment or for interactive use.

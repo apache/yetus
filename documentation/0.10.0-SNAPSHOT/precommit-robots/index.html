@@ -154,10 +154,13 @@
 </ul>
 
 <h1 id="azure-pipelines">Azure Pipelines</h1>
-
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: Azure Pipelines support is not stable and should be viewed as experimental, at best.
+</code></pre></div>
 <p>TRIGGER: ${TF_BUILD}=True</p>
 
 <p>Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the source repository. It automatically configures <code>--patch-dir</code> to be <code>${BUILD_ARTIFACTSTAGINGDIRECTORY}/yetus</code>.  While the URL to the console is provided in the report, links are not provided due to the URLs to artifacts not being available at runtime.</p>
+
+<p>As of this writing, Azure Pipelines has moved to a custom moby build for the &lsquo;docker&rsquo; executable.  As a result, <code>--docker</code> is not supported.</p>
 
 <h1 id="circle-ci">Circle CI</h1>
 

@@ -121,7 +121,7 @@
 
 <h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h2 id="release-0-10-0-snapshot-2019-04-01">Release 0.10.0-SNAPSHOT - 2019-04-01</h2>
+<h2 id="release-0-10-0-snapshot-2019-04-14">Release 0.10.0-SNAPSHOT - 2019-04-14</h2>
 
 <h3 id="important-issues">IMPORTANT ISSUES:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -169,6 +169,14 @@
 <td style="text-align: left">change findbugs to spotbugs</td>
 <td style="text-align: left">Major</td>
 <td style="text-align: left">build, Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-724">YETUS-724</a></td>
+<td style="text-align: left">github diff vs. patch</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
@@ -246,6 +254,22 @@
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-841">YETUS-841</a></td>
+<td style="text-align: left">Support python&rsquo;s requirements.txt prior to pylint</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-759">YETUS-759</a></td>
+<td style="text-align: left">shelldocs should be added to yetus-maven-plugin</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">ShellDocs, yetus-maven-plugin</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
 </tbody></table>
 <h3 id="improvements">IMPROVEMENTS:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -317,6 +341,54 @@
 <td style="text-align: left">Use real paths in docker container</td>
 <td style="text-align: left">Major</td>
 <td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-836">YETUS-836</a></td>
+<td style="text-align: left">Add a version field</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-842">YETUS-842</a></td>
+<td style="text-align: left">remove pylintrc</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-845">YETUS-845</a></td>
+<td style="text-align: left">shrink the docker image by fixing cabal</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">build, Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-846">YETUS-846</a></td>
+<td style="text-align: left">hard-set pip and gem installs</td>
+<td style="text-align: left">Minor</td>
+<td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-703">YETUS-703</a></td>
+<td style="text-align: left">clean up some of the table of contents</td>
+<td style="text-align: left">Minor</td>
+<td style="text-align: left">Precommit, website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-822">YETUS-822</a></td>
+<td style="text-align: left">readme should mention docker images</td>
+<td style="text-align: left">Minor</td>
+<td style="text-align: left">website and documentation</td>
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
@@ -450,6 +522,70 @@
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-823">YETUS-823</a></td>
+<td style="text-align: left">releasedocmaker-jar-with-dependencies is missing dependencies</td>
+<td style="text-align: left">Blocker</td>
+<td style="text-align: left">yetus-maven-plugin</td>
+<td style="text-align: left">stack</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-431">YETUS-431</a></td>
+<td style="text-align: left">shelldocs is undocumented</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">ShellDocs, website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-833">YETUS-833</a></td>
+<td style="text-align: left">start-build-env is failing</td>
+<td style="text-align: left">Minor</td>
+<td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-847">YETUS-847</a></td>
+<td style="text-align: left">/usr/local/bin/pip is python3.7</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-829">YETUS-829</a></td>
+<td style="text-align: left">Fix path(s) to shelldocs</td>
+<td style="text-align: left">Minor</td>
+<td style="text-align: left">build, Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-849">YETUS-849</a></td>
+<td style="text-align: left">Cut back on Azure Pipelines support</td>
+<td style="text-align: left">Minor</td>
+<td style="text-align: left">build, website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-760">YETUS-760</a></td>
+<td style="text-align: left">Update yetus-maven-plugin&rsquo;s releasedocmaker options</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Release Doc Maker, yetus-maven-plugin</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-820">YETUS-820</a></td>
+<td style="text-align: left">author throws grep error if excludes file is missing</td>
+<td style="text-align: left">Trivial</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
 </tbody></table>
 <h3 id="other">OTHER:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -489,6 +625,14 @@
 <td style="text-align: left">Upgrade python3 to 3.7</td>
 <td style="text-align: left">Major</td>
 <td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-838">YETUS-838</a></td>
+<td style="text-align: left">upgrade some maven dependencies</td>
+<td style="text-align: left">Trivial</td>
+<td style="text-align: left">build</td>
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>

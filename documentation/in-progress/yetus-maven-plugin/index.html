@@ -122,6 +122,8 @@
 
 <h1 id="yetus-maven-plug-in">Yetus Maven Plug-in</h1>
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
 <ul>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#file-utility-goals">File Utility Goals</a>
@@ -132,7 +134,10 @@
 <li><a href="#parallel-mkdirs">parallel-mkdirs</a></li>
 </ul></li>
 <li><a href="#releasedocmaker">releasedocmaker</a></li>
+<li><a href="#shelldocs">shelldocs</a></li>
 </ul>
+
+<!-- /MarkdownTOC -->
 
 <h1 id="introduction">Introduction</h1>
 
@@ -325,7 +330,7 @@
         &lt;id&gt;rdm&lt;/id&gt;
         &lt;phase&gt;pre-site&lt;/phase&gt;
         &lt;goals&gt;
-          &lt;goal&gt;releaseodcmaker&lt;/goal&gt;
+          &lt;goal&gt;releasedocmaker&lt;/goal&gt;
         &lt;/goals&gt;
         &lt;configuration&gt;
           &lt;projects&gt;
@@ -375,9 +380,9 @@
 <td>false</td>
 </tr>
 <tr>
-<td><code>lint</code></td>
-<td>boolean; &ndash;lint</td>
-<td>false</td>
+<td><code>lintFilters</code></td>
+<td>ArrayList; &ndash;lint</td>
+<td></td>
 </tr>
 <tr>
 <td><code>outputDir</code></td>
@@ -400,6 +405,11 @@
 <td>false</td>
 </tr>
 <tr>
+<td><code>retries</code></td>
+<td>integer; &ndash;retries</td>
+<td></td>
+</tr>
+<tr>
 <td><code>skipcredits</code></td>
 <td>boolean; &ndash;skipcredits</td>
 <td>false</td>
@@ -407,12 +417,12 @@
 <tr>
 <td><code>sortorder</code></td>
 <td>&ndash;sortorder</td>
-<td>older</td>
+<td></td>
 </tr>
 <tr>
 <td><code>sorttype</code></td>
 <td>&ndash;sorttype</td>
-<td>resolutiondate</td>
+<td></td>
 </tr>
 <tr>
 <td><code>useToday</code></td>
@@ -423,6 +433,49 @@
 <td><code>versions</code></td>
 <td>ArrayList; &ndash;versions</td>
 <td><code>${project.version}</code></td>
+</tr>
+</tbody></table>
+<h1 id="shelldocs">shelldocs</h1>
+
+<p>Similar to the <code>releasedocmaker</code> goal, the <code>shelldocs</code> goal runs the Apache Yetus <code>shelldocs</code> utility against a given set of input files or directories and generates a single output MultiMarkdown file:</p>
+<div class="highlight"><pre class="highlight plaintext"><code>  &lt;plugin&gt;
+    &lt;groupId&gt;org.apache.yetus&lt;/groupId&gt;
+    &lt;artifactId&gt;yetus-maven-plugin&lt;/artifactId&gt;
+    &lt;executions&gt;
+      &lt;execution&gt;
+        &lt;id&gt;shelldocs&lt;/id&gt;
+        &lt;phase&gt;pre-site&lt;/phase&gt;
+        &lt;goals&gt;
+          &lt;goal&gt;shelldocs&lt;/goal&gt;
+        &lt;/goals&gt;
+      &lt;/execution&gt;
+    &lt;/plugin&gt;
+</code></pre></div>
+<p>The configuration options generally map 1:1 to the <code>shelldocs</code> executable&rsquo;s options.  Unless otherwise specified, defaults are set by the actual executable.</p>
+<table class='table table-bordered table-striped'><thead><tr>
+<th>Option</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead><tbody><tr>
+<td><code>lint</code></td>
+<td>boolean; &ndash;lint</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>output</code></td>
+<td>&ndash;output</td>
+<td><code>${project.build.directory}/generated-site/markdown/${project.name}.md</code></td>
+</tr>
+<tr>
+<td><code>inputs</code></td>
+<td>ArrayList; &ndash;input &hellip;</td>
+<td>*sh files located in<code>${project.basedir}/src/main/shell</code></td>
+</tr>
+<tr>
+<td><code>skipprnorep</code></td>
+<td>&ndash;skipprnorep</td>
+<td>false</td>
 </tr>
 </tbody></table>
     </div>
