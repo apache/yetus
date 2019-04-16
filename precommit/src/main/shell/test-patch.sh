@@ -90,6 +90,8 @@ function setup_defaults
   # shellcheck disable=SC2034
   CHANGED_UNION_MODULES=""
 
+  CONTINUOUS_IMPROVEMENT=false
+
   PROC_LIMIT=1000
   REEXECED=false
   RESETREPO=false
@@ -676,6 +678,7 @@ function yetus_usage
   yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (one of ${BUILDTOOLS[*]})"
   yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: '${bugsys}')"
   yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
+  yetus_add_option "--continuous-improvement=<bool>" "If true, then do not exit with failure on branches (default: ${CONTINUOUS_IMPROVEMENT})"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
   yetus_add_option "--empty-patch" "Create a summary of the current source tree"
@@ -811,6 +814,9 @@ function parse_args
       ;;
       --contrib-guide=*)
         PATCH_NAMING_RULE=${i#*=}
+      ;;
+      --continuous-improvement=*)
+        CONTINUOUS_IMPROVEMENT=${i#*=}
       ;;
       --dirty-workspace)
         DIRTY_WORKSPACE=true
@@ -2279,7 +2285,11 @@ function cleanup_and_exit
     rm "${PATCH_DIR}/pidfile.txt"
   fi
 
-  # shellcheck disable=SC2086
+  if [[ "${BUILDMODE}" == 'full' ]] && [[ "${CONTINUOUS_IMPROVEMENT}" == true ]]; then
+    exit 0
+  fi
+
+  #shellcheck disable=SC2086
   exit ${result}
 }
 
