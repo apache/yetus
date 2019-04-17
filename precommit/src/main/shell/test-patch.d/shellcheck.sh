@@ -44,8 +44,8 @@ function shellcheck_filefilter
     add_test shellcheck
     yetus_add_array_element SHELLCHECK_FILTERFILES "${filename}"
   elif [[ ! ${filename} =~ \. ]]; then
-    # if it doesn't have an extension, then assume it is and
-    # we'll deal with it later
+    # if it doesn't have an extension then assume it is
+    # and the plugin will sort it out
     add_test shellcheck
     yetus_add_array_element SHELLCHECK_FILTERFILES "${filename}"
   fi
@@ -107,14 +107,14 @@ function shellcheck_criteria
 
   text=$(head -n 1 "${fn}")
 
-  # shell check requires either a bangpath or a shell check directive
-  # on the first line.  so check for a leading comment char
-  # and some sort of reference to 'sh'
-  if echo "${text}" | "${GREP}" -E -q "^#"; then
-    if echo "${text}" | "${GREP}" -q sh; then
-      yetus_add_array_element SHELLCHECK_CHECKFILES "${fn}"
-      yetus_debug "Shellcheck added: ${fn}"
-    fi
+  # shell check requires either a bangpath or a shellcheck directive
+  # on the first line.
+  if [[ "${text}" =~ ^\#! ]] && [[ "${text}" =~ sh ]]; then
+    yetus_add_array_element SHELLCHECK_CHECKFILES "${fn}"
+    yetus_debug "Shellcheck added: ${fn}"
+  elif [[ "${text}" =~ shellcheck ]]; then
+    yetus_add_array_element SHELLCHECK_CHECKFILES "${fn}"
+    yetus_debug "Shellcheck added: ${fn}"
   fi
 }
 
