@@ -19,6 +19,16 @@
 
 # Maintaining the Yetus Website
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Make changes in asf-site-src/source](#make-changes-in-asf-site-srcsource)
+* [Make changes to API Docs](#make-changes-to-api-docs)
+* [Generating the website](#generating-the-website)
+* [Live Development](#live-development)
+* [Publishing the Site](#publishing-the-site)
+
+<!-- /MarkdownTOC -->
+
 We use [Middleman](https://middlemanapp.com/) to generate the website content from markdown and other
 dynamic templates.If you're interested in digging into how our site makes use of Middleman, or if you run into a problem, you should start
 by reading [Middleman's excellent documentation](https://middlemanapp.com/basics/install/).
@@ -27,16 +37,18 @@ by reading [Middleman's excellent documentation](https://middlemanapp.com/basics
 
     NOTE: You MUST have run `mvn install` at least once prior to running `mvn site`.
 
-The following steps assume you have a working ruby 2.x environment setup:
+The following steps assume you have a working ruby 2.3+ environment setup:
 
 ```bash
 $ sudo gem install bundler
 $ cd asf-site-src
 $ bundle install
 ```
-and a working python 2.x environment for [releasedocmaker](../in-progress/releasedocmaker/).
+
+and a working Python 2.7 environment for [releasedocmaker](../in-progress/releasedocmaker/).
 
 ## Make changes in asf-site-src/source
+
 Make any changes in the source directory:
 
 ```bash
@@ -45,6 +57,7 @@ vi contribute.html.md
 ```
 
 ## Make changes to API Docs
+
 Optionally, you can update the generated API docs from other parts of the project. If they have been updated then the middleman build will pick up the changes.
 
 e.g. Precommit changes will be picked up by the Middleman build.
@@ -55,6 +68,7 @@ vi 01-common.sh
 ```
 
 ## Generating the website
+
 To generate the static website for Apache Yetus run the following command at the root directory:
 
 ```bash
@@ -69,6 +83,7 @@ open asf-site-src/target/site/index.html
 ```
 
 ## Live Development
+
 Live development of the site enables automatic reload when changes are saved.
 To enable, run the following commands and then open a browser and navigate to
 [http://localhost:4567](http://localhost:4567/)
@@ -79,6 +94,7 @@ bundle exec middleman
 ```
 
 ## Publishing the Site
+
 Commit the publish directory to the asf-site branch. Presuming we start in a directory that holds your normal Yetus check out:
 
 ```bash

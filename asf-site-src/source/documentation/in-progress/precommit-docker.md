@@ -17,8 +17,7 @@
   under the License.
 -->
 
-test-patch Docker Support
-=========================
+# test-patch Docker Support
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
