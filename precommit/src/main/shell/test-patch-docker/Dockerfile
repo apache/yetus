@@ -241,12 +241,10 @@ RUN curl -L -s -S \
 # Install npm and JSHint
 ###
 # hadolint ignore=DL3008,DL3016
-RUN apt-get -q update \
-    && apt-get -q install --no-install-recommends -y nodejs npm \
+RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
+    && apt-get -q install --no-install-recommends -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/bin/nodejs /usr/bin/node && \
-    npm install -g npm@latest && \
     npm install -g jshint
 
 ####
