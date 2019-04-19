@@ -442,3 +442,18 @@ function yetus_sort_and_unique_array
     set +f
   fi
 }
+
+## @description  Get the date in ctime format
+## @audience     public
+## @stability    stable
+## @return       ctime
+function yetus_get_ctime
+{
+  if [[ "${BASH_VERSINFO[0]}" -gt 4 ]] \
+     || [[ "${BASH_VERSINFO[0]}" -eq 4 && "${BASH_VERSINFO[1]}" -gt 1 ]]; then
+    # shellcheck disable=SC2183
+    printf "%(%s)T"
+  else
+    date +"%s"
+  fi
+}

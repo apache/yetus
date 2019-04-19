@@ -128,8 +128,7 @@ function clock_display
 ## @replaceable  no
 function start_clock
 {
-  yetus_debug "Start clock"
-  TIMER=$(date +"%s")
+  TIMER=$(yetus_get_ctime)
 }
 
 ## @description  Print the elapsed time in seconds since the start of the local timer
@@ -138,9 +137,8 @@ function start_clock
 ## @replaceable  no
 function stop_clock
 {
-  local -r stoptime=$(date +"%s")
+  local -r stoptime=$(yetus_get_ctime)
   local -r elapsed=$((stoptime-TIMER))
-  yetus_debug "Stop clock"
 
   echo ${elapsed}
 }
@@ -151,10 +149,8 @@ function stop_clock
 ## @replaceable  no
 function stop_global_clock
 {
-  local -r stoptime=$(date +"%s")
+  local -r stoptime=$(yetus_get_ctime)
   local -r elapsed=$((stoptime-GLOBALTIMER))
-  yetus_debug "Stop global clock"
-
   echo ${elapsed}
 }
 

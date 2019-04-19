@@ -357,7 +357,7 @@ function docker_container_maintenance
     tmptime=$(echo "${line}" | cut -f5 -d, | cut -f1 -d. )
     stoptime=$(dockerdate_to_ctime "${tmptime}")
     name=$(echo "${line}" | cut -f6 -d, )
-    curtime=$("${AWK}" 'BEGIN {srand(); print srand()}')
+    curtime=$(yetus_get_ctime)
     remove=false
 
     case ${status} in
@@ -454,7 +454,7 @@ function docker_image_maintenance_helper
   for id in "$@"; do
     tmptime=$(dockercmd image inspect --format '{{.Created}}' "${id}" | cut -f1 -d. )
     createtime=$(dockerdate_to_ctime "${tmptime}")
-    curtime=$(date "+%s")
+    curtime=$(yetus_get_ctime)
 
     ((difftime = curtime - createtime))
     if [[ ${difftime} -gt ${DOCKER_IMAGE_PURGE} ]]; then
