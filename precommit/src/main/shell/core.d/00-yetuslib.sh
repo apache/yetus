@@ -233,6 +233,27 @@ function yetus_comma_to_array
   IFS="${oldifs}"
 }
 
+## @description  Convert an array to a comma-delimited string
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        arrayname
+## @param        string
+function yetus_array_to_comma
+{
+  declare arrname=$1
+  declare element
+  declare str
+
+  declare arrref="${arrname}[@]"
+  declare array=("${!arrref}")
+
+  for element in "${array[@]}"; do
+    str="${str},${element}"
+  done
+  echo "${str:1}"
+}
+
 ## @description  Convert a file to an array.
 ## @description  Comments on the beginning of the line are stripped.
 ## @audience     public

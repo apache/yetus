@@ -26,7 +26,7 @@ function common_defaults
   BASEDIR=$(pwd)
   BUGSYSTEMS=()
   BUILDTOOL=""
-  BUILDTOOLS=()
+  BUILDTOOLS=('nobuild')
   #shellcheck disable=SC2034
   EXEC_MODES=()
   #shellcheck disable=SC2034

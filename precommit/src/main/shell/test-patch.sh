@@ -645,14 +645,17 @@ function yetus_usage
 {
   declare bugsys
   declare jdktlist
+  declare buildtools
 
   importplugins
 
-  bugsys="${BUGSYSTEMS[*]}"
-  bugsys=${bugsys// /,}
+  bugsys=$(yetus_array_to_comma BUGSYSTEMS )
+  jdktlist=$(yetus_array_to_comma JDK_TEST_LIST )
+  buildtools=$(yetus_array_to_comma BUILDTOOLS )
 
-  jdktlist="${JDK_TEST_LIST[*]}"
-  jdktlist=${jdktlist// /,}
+  bugsys=${bugsys:-"None: no plugins enabled"}
+  jdktlist=${jdktlist:-"None: no plugins enabled"}
+  buildtools=${buildtools:-"None: no plugins enabled"}
 
   if [[ "${BUILDMODE}" = patch ]]; then
     echo "${BINNAME} [OPTIONS] patch"
@@ -666,12 +669,12 @@ function yetus_usage
   echo "Options:"
   echo ""
   yetus_add_option "--archive-list=<list>" "Comma delimited list of pattern matching notations to copy to patch-dir"
-  yetus_add_option "--basedir=<dir>" "The directory to apply the patch to (default current directory)"
+  yetus_add_option "--basedir=<dir>" "The directory to apply the patch to (default: current directory)"
   yetus_add_option "--branch=<ref>" "Forcibly set the branch"
   yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
   yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
   # shellcheck disable=SC2153
-  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (one of ${BUILDTOOLS[*]})"
+  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (default: autodetect from '${buildtools}')"
   yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: '${bugsys}')"
   yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   yetus_add_option "--continuous-improvement=<bool>" "If true, then do not exit with failure on branches (default: ${CONTINUOUS_IMPROVEMENT})"
@@ -682,7 +685,7 @@ function yetus_usage
   yetus_add_option "--git-offline" "Do not fail if git cannot do certain remote operations"
   yetus_add_option "--git-shallow" "Repo does not know about other branches or tags"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
-  yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (defaults to bugcomments)"
+  yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (default: same as --bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
   yetus_add_option "--multijdkdirs=<paths>" "Comma delimited lists of JDK paths to use for multi-JDK tests"
   yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: '${jdktlist}')"
