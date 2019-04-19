@@ -42,8 +42,6 @@ public class ExcludePrivateAnnotationsJDiffDoclet {
   }
 
   public static boolean start(RootDoc root) {
-    System.out.println(
-        ExcludePrivateAnnotationsJDiffDoclet.class.getSimpleName());
     return JDiff.start(RootDocProcessor.process(root));
   }
 

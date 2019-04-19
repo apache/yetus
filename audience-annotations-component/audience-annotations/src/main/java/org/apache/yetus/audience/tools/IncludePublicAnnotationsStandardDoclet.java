@@ -45,8 +45,6 @@ public class IncludePublicAnnotationsStandardDoclet {
   }
 
   public static boolean start(RootDoc root) {
-    System.out.println(
-        IncludePublicAnnotationsStandardDoclet.class.getSimpleName());
     RootDocProcessor.treatUnannotatedClassesAsPrivate = true;
     return Standard.start(RootDocProcessor.process(root));
   }

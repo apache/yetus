@@ -41,8 +41,6 @@ public class ExcludePrivateAnnotationsStandardDoclet {
   }
 
   public static boolean start(RootDoc root) {
-    System.out.println(
-        ExcludePrivateAnnotationsStandardDoclet.class.getSimpleName());
     return Standard.start(RootDocProcessor.process(root));
   }
 
