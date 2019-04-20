@@ -116,7 +116,7 @@ function make_modules_worker
     ;;
     distclean)
       if [[ ${MAKE_GITCLEAN} = true ]];then
-        git clean -x -f -d
+        git_clean
       else
         modules_workers "${repostatus}" distclean clean
       fi

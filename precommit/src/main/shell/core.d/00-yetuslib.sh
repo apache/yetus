@@ -464,6 +464,38 @@ function yetus_sort_and_unique_array
   fi
 }
 
+## @description  find the deepest entry of a directory array
+## @description  NOTE: array and filename MUST be absolute paths
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @param        array
+## @param        fn
+## @return       dir if match
+function yetus_find_deepest_directory
+{
+  declare arrname=$1
+  declare arrref="${arrname}[@]"
+  declare array=("${!arrref}")
+  declare fn=$2
+
+  declare d
+  declare tvalsize
+  declare val
+  declare valsize
+
+  for d in "${array[@]}"; do
+    if yetus_relative_dir "${d}" "${fn}" >/dev/null; then
+      tvalsize=${d//[^/]/}
+      if [[ ${#tvalsize} -gt ${valsize} ]]; then
+        valsize=${#tvalsize}
+        val=${d}
+      fi
+    fi
+  done
+  echo "${val}"
+}
+
 ## @description  Get the date in ctime format
 ## @audience     public
 ## @stability    stable
@@ -472,8 +504,7 @@ function yetus_get_ctime
 {
   if [[ "${BASH_VERSINFO[0]}" -gt 4 ]] \
      || [[ "${BASH_VERSINFO[0]}" -eq 4 && "${BASH_VERSINFO[1]}" -gt 1 ]]; then
-    # shellcheck disable=SC2183
-    printf "%(%s)T"
+    printf "%(%s)T" -1
   else
     date +"%s"
   fi
