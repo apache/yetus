@@ -17,7 +17,7 @@
 # SHELLDOC-IGNORE
 
 WHITESPACE_EOL_IGNORE_LIST=
-WHITESPACE_TABS_IGNORE_LIST='.*Makefile.*','.*\.go'
+WHITESPACE_TABS_IGNORE_LIST='.*Makefile.*','.*\.go','.*go\.mod'
 
 add_test_type whitespace
 

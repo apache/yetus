@@ -108,17 +108,26 @@ Unit Test Formats:
 * [JUnit](http://junit.org/)
 * [TAP](https://testanything.org/)
 
+Compiler Support:
+
+* C/C++
+* Go
+* Java
+* Scala
+
 Language Support, Licensing, and more:
 
-* [Apache Creadur Rat](http://creadur.apache.org/rat/) entries in build system
+* [Apache Creadur Rat](http://creadur.apache.org/rat/) entries in build system or installed
+* [checkmake](https://github.com/mrtazz/checkmake) installed
 * [checkstyle](http://checkstyle.sourceforge.net/) entries in build system (ant and maven only)
 * [FindBugs](http://findbugs.sourceforge.net/) entries in build system and 3.x executables
   * NOTE: only one of FindBugs or SpotBugs may be used at a time.
-* [jshint](https://jshint.com) installed
 * [hadolint](https://github.com/hadolint/hadolint) installed
+* [jshint](https://jshint.com) installed
 * [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) installed
 * [Perl::Critic](http://perlcritic.com/) installed
 * [pylint](http://www.pylint.org/) installed
+* [revive](https://github.com/mgechev/revive) installed
 * [rubocop](http://batsov.com/rubocop/) installed
 * [shellcheck](https://github.com/koalaman/shellcheck) installed, preferably 0.3.6 or higher
 *[SpotBugs](https://spotbugs.github.io/)) entries in build system and 3.x executables

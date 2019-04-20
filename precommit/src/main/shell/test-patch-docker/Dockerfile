@@ -247,6 +247,18 @@ RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
     && rm -rf /var/lib/apt/lists/* && \
     npm install -g jshint@2.10.2 markdownlint-cli@0.15.0
 
+###
+# Install golang and supported helpers
+###
+# hadolint ignore=DL3008
+RUN add-apt-repository -y ppa:longsleep/golang-backports \
+    && apt-get -q update \
+    && apt-get -q install --no-install-recommends -y golang-go \
+    && go get -u github.com/mgechev/revive \
+    && go get -u github.com/mrtazz/checkmake \
+    && mv /root/go/bin/* /usr/local/bin \
+    && rm -rf /root/go
+
 ####
 # YETUS CUT HERE
 # Anthing after the above line is ignored by Yetus, so could
