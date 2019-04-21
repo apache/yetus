@@ -46,28 +46,6 @@
         <version>${project.version}</version>
         <executions>
           <execution>
-            <id>0.7.0</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>symlink</goal>
-            </goals>
-            <configuration>
-              <target>../../target/0.7.0</target>
-              <newLink>${basedir}/source/documentation/0.7.0</newLink>
-            </configuration>
-          </execution>
-          <execution>
-            <id>0.7.0.html.md</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>symlink</goal>
-            </goals>
-            <configuration>
-              <target>../../target/0.7.0.html.md</target>
-              <newLink>${basedir}/source/documentation/0.7.0.html.md</newLink>
-            </configuration>
-          </execution>
-          <execution>
             <id>0.8.0</id>
             <phase>pre-site</phase>
             <goals>
