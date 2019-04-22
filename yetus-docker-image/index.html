@@ -122,16 +122,28 @@
 
 <h1 id="convenience-docker-hub-images">Convenience Docker Hub Images</h1>
 
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+<ul>
+<li><a href="#file-access">File Access</a></li>
+<li><a href="#a-note-about-precommit">A Note About Precommit</a></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
 <p>While not official releases, the Apache Yetus project makes available two types of images on hub.docker.com:</p>
 
 <ul>
-<li><p>apache/yetus-base</p>
-
-<p>This image is the same as the &lsquo;built-in&rsquo; Dockerfile when <code>--docker</code> is used without <code>--dockerfile</code>  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in <code>precommit/src/main/shell/test-patch-docker/</code>.</p></li>
-<li><p>apache/yetus</p>
-
-<p>This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.</p></li>
+<li>apache/yetus-base</li>
 </ul>
+
+<p>This image is the same as the &lsquo;built-in&rsquo; Dockerfile when <code>--docker</code> is used without <code>--dockerfile</code>  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in <code>precommit/src/main/shell/test-patch-docker/</code>.</p>
+
+<ul>
+<li>apache/yetus</li>
+</ul>
+
+<p>This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.</p>
 
 <p>Both images should be suitable to be used as a building block or even directly if your build environment needs no other dependencies.  These images are especially useful for various CI systems that require a Docker image to be used.</p>
 
