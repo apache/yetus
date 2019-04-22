@@ -17,8 +17,7 @@
   under the License.
 -->
 
-test-patch
-==========
+# Basic Precommit
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
@@ -114,15 +113,16 @@ Language Support, Licensing, and more:
 * [Apache Creadur Rat](http://creadur.apache.org/rat/) entries in build system
 * [checkstyle](http://checkstyle.sourceforge.net/) entries in build system (ant and maven only)
 * [FindBugs](http://findbugs.sourceforge.net/) entries in build system and 3.x executables
-  - NOTE: only one of FindBugs or SpotBugs may be used at a time.
-* [SpotBugs](https://spotbugs.github.io/)) entries in build system and 3.x executables
-  - NOTE: only one of FindBugs or SpotBugs may be used at a time.
+  * NOTE: only one of FindBugs or SpotBugs may be used at a time.
 * [jshint](https://jshint.com) installed
 * [hadolint](https://github.com/hadolint/hadolint) installed
+* [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) installed
 * [Perl::Critic](http://perlcritic.com/) installed
 * [pylint](http://www.pylint.org/) installed
 * [rubocop](http://batsov.com/rubocop/) installed
 * [shellcheck](https://github.com/koalaman/shellcheck) installed, preferably 0.3.6 or higher
+*[SpotBugs](https://spotbugs.github.io/)) entries in build system and 3.x executables
+  * NOTE: only one of FindBugs or SpotBugs may be used at a time.
 * [yamllint](https://github.com/adrienverge/yamllint) installed
 
 # First Steps
@@ -162,7 +162,7 @@ $ test-patch --list-plugins
 
 You should see output similar to this:
 
-```
+```text
 BUILDTOOLS:
   ant autoconf cmake gradle make maven nobuild
 TESTTYPES:
@@ -321,7 +321,6 @@ $ test-patch --plugins=all https://gitlab.com/_a__w_/yetus/merge_requests/3.patc
 
 ... will process MR #3 on the \_a\_\_w\_/yetus repo.
 
-
 ## Generic URLs
 
 Luckily, `test-patch` supports ways to provide unified diffs via URLs.
@@ -366,7 +365,6 @@ $ test-patch --plugins=all --proclimit=10000
 
   NOTE: The actual implementation of this feature is dependent upon the version of Bash.  For bash v4 and higher (most operating systems), the fork bomb protection is generally only used for the build and QA tools.  This means Apache Yetus should continue to function. For earlier versions of bash (e.g., OS X), the limit is applied to all of test-patch. If the limit is hit, Apache Yetus will itself likely crash.
 
-
 # MultiJDK
 
 For many projects, it is useful to test Java code against multiple versions of JDKs at the same time.  In combination with the `java` plug-in, `test-patch` can do this with the `--multijdkdirs` option:
@@ -383,7 +381,7 @@ NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JA
 
 `test-patch` also has a built-in mode (i.e., no plug-in required) to utilize Docker:
 
-```bash
+```diff
 <<<<<<< HEAD
 $ test-patch (other options) --docker
 =======
@@ -392,7 +390,6 @@ $ test-patch --docker
 ```
 
 This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../precommit-docker) page and the [Apache Yetus Docker Hub Images](/yetus-docker-image) page for more information on the convenience Docker images.
-
 
 # In Closing
 

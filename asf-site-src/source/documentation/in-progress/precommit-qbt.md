@@ -17,13 +17,19 @@
   under the License.
 -->
 
-qbt
-===
+# qbt
 
-`qbt` is a command to execute test-patch without a patch.  It uses
-the same plug-ins and the same options as test-patch.  The only
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Reporting](#reporting)
+* [Archiving](#archiving)
+
+<!-- /MarkdownTOC -->
+
+`qbt` is a command to execute `test-patch` without a patch.  It uses
+the same plug-ins and the same options as `test-patch`.  The only
 difference is that no patch file, location, etc should be supplied.
-It is meant to be a way to easily get test-patch's output on your
+It is meant to be a way to easily get `test-patch`'s output on your
 current source tree.  It is suitable to be run as a regularly
 scheduled build as part of your overall development strategy.
 
@@ -34,7 +40,7 @@ When using an automation tool, it may be useful to use the
 file. This can then be used with systems like Jenkin's
 email-ext plug-in to send the output as an emailed report:
 
-```
+```text
 ${FILE,path="<report-file-path>"}
 ```
 
@@ -42,7 +48,7 @@ For something a bit more structured, there is also the `--html-report-file`
 option.  Using this output, again with Jenkins' email-ext plug-in, it is
 possible to build some very nice looking output that is easily customized:
 
-```
+```html
 <html>
 <head>
 <style>
@@ -63,12 +69,7 @@ ${FILE,path="<report-file-path>"}
 </body></html>
 ```
 
-If your mailing lists do not allow HTML-formatted email, then the `--brief-report-file`
-provides a solution.  This option creates a very plain, reduced content text file
-suitable for email.  It contains just the barebones information needed to get
-information on failures: what voted -1, what tests failed, what subsystems are long
-running (configurable with the `--brief-report-long` opton), and a list of any
-attached log files.
+If your mailing lists do not allow HTML-formatted email, then the `--brief-report-file` provides a solution.  This option creates a very plain, reduced content text file suitable for email.  It contains just the barebones information needed to get information on failures: what voted -1, what tests failed, what subsystems are long running (configurable with the `--brief-report-long` opton), and a list of any attached log files.
 
 NOTE: Be aware that ASF mailing lists do not allow HTML formatted email.
 

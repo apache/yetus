@@ -18,6 +18,8 @@
 -->
 
 # Community
+
+<!-- markdownlint-disable no-inline-html -->
 <div class="row-fluid">
   <div class="col-lg-6">
     <h3>Mailing Lists</h3>

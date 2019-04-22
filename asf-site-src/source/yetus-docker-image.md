@@ -17,25 +17,30 @@
   under the License.
 -->
 
-Convenience Docker Hub Images
-===========================
+# Convenience Docker Hub Images
+
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [File Access](#file-access)
+* [A Note About Precommit](#a-note-about-precommit)
+
+<!-- /MarkdownTOC -->
 
 While not official releases, the Apache Yetus project makes available two types of images on hub.docker.com:
 
-  * apache/yetus-base
+* apache/yetus-base
 
-    This image is the same as the 'built-in' Dockerfile when `--docker` is used without `--dockerfile`  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in `precommit/src/main/shell/test-patch-docker/`.
+  This image is the same as the 'built-in' Dockerfile when `--docker` is used without `--dockerfile`  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in `precommit/src/main/shell/test-patch-docker/`.
 
-  * apache/yetus
+* apache/yetus
 
-    This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.
+  This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.
 
 Both images should be suitable to be used as a building block or even directly if your build environment needs no other dependencies.  These images are especially useful for various CI systems that require a Docker image to be used.
 
 Images are tagged such that 'master' represents the last successful Docker image build of the master branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no 'latest' tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.
 
-File Access
-========
+# File Access
 
 All of the executables that Apache Yetus provides requires access to one or more directories.  These directories should be provided on the command line via the volume flags to docker run. For example, to run shelldocs against test-patch.sh:
 
@@ -64,6 +69,7 @@ docker run \
     --patch-dir=/patchdir \
     --project=yetus
 ```
+
 If your project needs additional dependencies, it is trivial to build off of the Apache Yetus image:
 
 ```Dockerfile
@@ -74,13 +80,13 @@ RUN apt-get -q update && apt-get -q install -y \
       valgrind \
       zlib1g-dev
 ```
- ```bash
+
+```bash
 docker build -t project/build:0.9.0 -f .
 ```
 
 This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of apache/yetus:0.9.0 since it has all of Apache Yetus and the additions needed by our project.
 
-A Note About Precommit
-================
+# A Note About Precommit
 
 test-patch and friends have direct support for Docker outside of the convenience images.  That information is covered in-depth in the[precommit-docker](../precommit-docker) section.

@@ -17,8 +17,7 @@
   under the License.
 -->
 
-Yetus Maven Plug-in
-===================
+# Yetus Maven Plug-in
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
@@ -46,6 +45,7 @@ As part of building Apache Yetus, we needed some portable functionality that we 
 
 Apache Yetus builds wrappers in `bin/` that point to executables in `lib/`.  This goal provides a way to do this generically, including providing the capability to put a license file in the wrapper.
 
+```xml
       <plugin>
         <groupId>org.apache.yetus</groupId>
         <artifactId>yetus-maven-plugin</artifactId>
@@ -63,6 +63,7 @@ Apache Yetus builds wrappers in `bin/` that point to executables in `lib/`.  Thi
           </execution>
         </executions>
       </plugin>
+```
 
 This example will take all the files located in `${project.build.directory}/dist/lib/shelldocs/` and create wrappers in `${project.build.directory}/dist/bin` with any extensions stripped off.  If the `${project.build.directory}/dist/lib/shelldocs/` contains the file `shelldocs.py`, then the `bin/shelldocs` wrapper will look like this:
 
@@ -94,6 +95,7 @@ If no license is wanted, then set `license` to the string `none`.
 
 Since Java 7, there has been a portable way to build symlinks.  Unfortunately, standard plug-ins like the `maven-antrun-plugin` have not been updated to include the symlink task. The `yetus-maven-plugin` now exposes this functionality via the `symlink` goal:
 
+```xml
       <plugin>
         <groupId>org.apache.yetus</groupId>
         <artifactId>yetus-maven-plugin</artifactId>
@@ -112,6 +114,7 @@ Since Java 7, there has been a portable way to build symlinks.  Unfortunately, s
             </configuration>
           </execution>
         </plugin>
+```
 
 Available configuration options:
 
@@ -127,6 +130,7 @@ Available configuration options:
 
 Maven surefire (as of at least 2.x and earlier versions) has calculations to determine the number of tests to run in parallel.  However, the result is not shared in a way that allows creating directory structures before execution.  For specific build flows, this is problematic.
 
+```xml
       <plugin>
         <groupId>org.apache.yetus</groupId>
         <artifactId>yetus-maven-plugin</artifactId>
@@ -142,6 +146,7 @@ Maven surefire (as of at least 2.x and earlier versions) has calculations to det
             </configuration>
           </execution>
         </plugin>
+```
 
 Available configuration options:
 
@@ -157,6 +162,7 @@ By default, `forkCount` is inherited from surefire and therefore follows the sam
 
 This goal runs releasedocmaker without the need to download or build an Apache Yetus tarball.  Instead, yetus-maven-plugin contains all the necessary components in a native maven way!
 
+```xml
       <plugin>
         <groupId>org.apache.yetus</groupId>
         <artifactId>yetus-maven-plugin</artifactId>
@@ -177,6 +183,7 @@ This goal runs releasedocmaker without the need to download or build an Apache Y
             </configuration>
           </execution>
         </plugin>
+```
 
 The configuration options generally map 1:1 to the `releasedocmaker` executable's options.  Unless otherwise specified, defaults are set by the actual executable.
 
@@ -204,6 +211,7 @@ The configuration options generally map 1:1 to the `releasedocmaker` executable'
 
 Similar to the `releasedocmaker` goal, the `shelldocs` goal runs the Apache Yetus `shelldocs` utility against a given set of input files or directories and generates a single output MultiMarkdown file:
 
+```xml
       <plugin>
         <groupId>org.apache.yetus</groupId>
         <artifactId>yetus-maven-plugin</artifactId>
@@ -216,8 +224,7 @@ Similar to the `releasedocmaker` goal, the `shelldocs` goal runs the Apache Yetu
             </goals>
           </execution>
         </plugin>
-
-
+```
 
 The configuration options generally map 1:1 to the `shelldocs` executable's options.  Unless otherwise specified, defaults are set by the actual executable.
 

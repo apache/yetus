@@ -17,6 +17,7 @@
   under the License.
 -->
 
+<!-- markdownlint-disable no-inline-html first-line-heading -->
 <div class="masthead">
   <div class="jumbotron">
           <h1>Apache Yetus</h1>

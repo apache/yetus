@@ -240,12 +240,12 @@ RUN curl -L -s -S \
 ###
 # Install npm and JSHint
 ###
-# hadolint ignore=DL3008,DL3016
+# hadolint ignore=DL3008
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
     && apt-get -q install --no-install-recommends -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* && \
-    npm install -g jshint
+    npm install -g jshint@2.10.2 markdownlint-cli@0.15.0
 
 ####
 # YETUS CUT HERE

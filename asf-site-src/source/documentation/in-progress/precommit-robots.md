@@ -17,9 +17,7 @@
   under the License.
 -->
 
-
-Robots: Continuous Integration Support
-======================================
+# Robots: Continuous Integration Support
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
@@ -35,22 +33,20 @@ Robots: Continuous Integration Support
 
 <!-- /MarkdownTOC -->
 
-Intro
-=====
+# Intro
 
 `test-patch` works hand-in-hand with various CI and other automated build systems.  `test-patch` will attempt to auto-determine if it is running under such a system and change its defaults to match known configuration parameters automatically. When robots are activated, there is generally some additional/changed behavior:
 
-  * display extra information in the footer
-  * change log entries from file names to URLs
-  * activate `--resetrepo` to keep the directory structure clean
-  * enable the running of unit tests and run them in parallel
-  * if possible, write comments to bug systems
-  * attempt to determine the build tool in use
-  * activate Docker maintenance when `--docker` is passed
-  * attempt to determine whether this is a full build (`qbt`) or testing a patch/merge request/pull request.
+* display extra information in the footer
+* change log entries from file names to URLs
+* activate `--resetrepo` to keep the directory structure clean
+* enable the running of unit tests and run them in parallel
+* if possible, write comments to bug systems
+* attempt to determine the build tool in use
+* activate Docker maintenance when `--docker` is passed
+* attempt to determine whether this is a full build (`qbt`) or testing a patch/merge request/pull request.
 
-Azure Pipelines
-===============
+# Azure Pipelines
 
     NOTE: Azure Pipelines support is not stable and should be viewed as experimental, at best.
 
@@ -60,8 +56,7 @@ Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the
 
 As of this writing, Azure Pipelines has moved to a custom moby build for the 'docker' executable.  As a result, `--docker` is not supported.
 
-Circle CI
-=========
+# Circle CI
 
 TRIGGER: ${CIRCLECI}=true
 
@@ -70,10 +65,11 @@ Circle CI support in `test-patch` is limited to github.com.
 To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `.circleci/config.yaml` file, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:
 
 ```yaml
+---
 jobs:
   build:
     docker:
-      - image: apache/yetus:0.9.0
+      - image: apache/yetus:0.10.0
 
     environment:
       JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
@@ -84,6 +80,7 @@ jobs:
 Artifacts need some special handling.  In order to get links, the storage of artifacts must be 'primed' prior to launching test-patch and then again to actually store the content. Additionally, the location needs to be handled set on the command line. In practice, this configuration looks similar to this:
 
 ```yaml
+---
 jobs:
   build:
     steps:
@@ -100,28 +97,29 @@ jobs:
           path: /tmp/yetus-out
 ```
 
-See also
-  * See also the source tree's `.circleci/config.yaml` for some tips and tricks.
+See also:
 
-Gitlab CI
-=========
+* Apache Yetus' source tree [.circleci/config.yaml](https://github.com/apache/yetus/blob/master/.circleci/config.yml) for some tips and tricks.
+
+# Gitlab CI
 
 TRIGGER: ${GITLAB_CI}=true
 
 Artifacts, patch logs, etc are configured to go to a yetus-out directory in the source tree after completion. Adding this stanza to your `.gitlab-ci.yml` file will upload and store those components for a week in Gitlab CI's artifact retrieval system:
 
 ```yaml
+---
   artifacts:
     expire_in: 1 week
     when: always
     paths:
       - yetus-out/
-
 ```
 
-To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `.gitlab-ci.yml` file, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:
+To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `.gitlab-ci.yml` file, substituting the tag for the version of Apache Yetus that should be used and replacing the `JAVA_HOME` with the appropriate version as bundled mentioned in the Dockerfile:
 
 ```yaml
+---
 job:
   image: apache/yetus:0.9.0
   allow_failure: true
@@ -131,20 +129,21 @@ job:
   ...
 ```
 
-See also
-  * See also the source tree's `.gitlab-ci.yml` for some tips and tricks.
+See also:
 
-Jenkins
-=======
+* Apache Yetus' source tree [.gitlab-ci.yml](https://github.com/apache/yetus/blob/master/.gitlab-ci.yml) for some tips and tricks.
+
+# Jenkins
 
 TRIGGER: ${JENKINS_URL}=(anything)  ,  ${EXECUTOR_NUMBER}=(anything)
 
-Jenkins is extremely open-ended and, given multiple executors, does not run workflows in isolation.  As a result, many more configuration options generally need to be configured as it is not safe or may be suprising to users for test-patch to autodetermine some settings.  By default, Jenkins will trigger a full build.
+Jenkins is extremely open-ended and, given multiple executors, does not run workflows in isolation.  As a result, many more configuration options generally need to be configured as it is not safe or may be surprising to users for test-patch to auto-determine some settings.  By default, Jenkins will trigger a full build.
 
 There is some support for a few well known environment variables:
-  * `${CHANGE_URL}` or `${ghprbPullLink}` will set the patch location as well as trigger some extra handling if 'github' or 'gitlab' appear in the string.
-  * `${GIT_URL}` will trigger the same extra handling if 'github' or 'gitlab' appear in the string.
-  * If `${ghprbPullId}` is set, then test-patch will configure itself for a Github-style PR.
+
+* `${CHANGE_URL}` or `${ghprbPullLink}` will set the patch location as well as trigger some extra handling if 'github' or 'gitlab' appear in the string.
+* `${GIT_URL}` will trigger the same extra handling if 'github' or 'gitlab' appear in the string.
+* If `${ghprbPullId}` is set, then test-patch will configure itself for a Github-style PR.
 
 To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `Jenkinsfile`, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:
 
@@ -165,7 +164,7 @@ pipeline {
 
 ```
 
- Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  `test-patch` will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  `pidfile.txt` contains the master `test-patch` process id and `cidfile.txt` contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:
+Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  `test-patch` will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  `pidfile.txt` contains the master `test-patch` process id and `cidfile.txt` contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:
 
  ```groovy
     post {
@@ -188,17 +187,15 @@ pipeline {
     }
  ```
 
+See also:
 
+* Apache Yetus' source tree [Jenkinsfile](https://github.com/apache/yetus/blob/master/Jenkinsfile) for some tips and tricks.
+* [precommit-admin](precommit-admin), for special utilities built for Jenkins.
+* [GitHub Branch Source Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin)
+* [GitHub Pull Request Builder Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin)
+* `https://{your local server}/env-vars.html/`
 
-See also
-  * See also the source tree's `Jenkinsfile` for some tips and tricks.
-  * [precommit-admin](precommit-admin), for special utilities built for Jenkins.
-  * [GitHub Branch Source Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin)
-  * [GitHub Pull Request Builder Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin)
-  * https://{your local server}/env-vars.html/
-
-Semaphore CI
-=========
+# Semaphore CI
 
     NOTE: Semaphore CI support is not stable and should be viewed as experimental, at best.
 
@@ -206,10 +203,14 @@ TRIGGER: ${CI}=true and ${SEMAPHORE}=true
 
 Semaphore CI requires that `checkout --use-cache` has been used prior to trigging test-patch. It is HIGHLY recommended to use a helper script checked into the repository to control precommit options to avoid problems with Semaphore CI's parsing of long lines in the YAML file.
 
- The GitHub repo and the Pull Request in use are automatically detected.  However, some personalities may override the auto-detected Github repository information.  It may be necessary to manually configure it in your `.semaphore.yml` file.
+The GitHub repo and the Pull Request in use are automatically detected.  However, some personalities may override the auto-detected Github repository information.  It may be necessary to manually configure it in your `semaphore.yml` file.
 
-Travis CI
-=========
+See also:
+
+* Apache Yetus' source tree [semaphore.yml](https://github.com/apache/yetus/blob/master/.semaphore/semaphore.yml) for some tips and tricks.
+* Apache Yetus' helper script [semaphore-build.sh](https://github.com/apache/yetus/blob/master/.semaphore/semaphore-build.sh)
+
+# Travis CI
 
 TRIGGER: ${TRAVIS}=true
 
@@ -219,16 +220,15 @@ If `${ARTIFACTS_PATH}` is configured, then `--patch-dir` is set to the first lis
 
 Personalities will override the auto-detected Github repository information.  It may be necessary to manually configure it in your `.travis.yml` file.
 
-As of this writing, it is not possible to make the Travis CI build environment use the Apache Yetus pre-built docker images without using ` docker run` in the before_install phase.  Therefore, using the image is the same as described in the [Apache Yetus Docker Hub Images](/yetus-docker-image) page.
+As of this writing, it is not possible to make the Travis CI build environment use the Apache Yetus pre-built docker images without using `docker run` in the before_install phase.  Therefore, using the image is the same as described in the [Apache Yetus Docker Hub Images](/yetus-docker-image) page.
 
-See also
-  * See also the source tree's `.travis.yml` for some tips and tricks.
+See also:
 
-Manual Configuration
-====================
+* Apache Yetus' source tree [.travis.yml](https://github.com/apache/yetus/blob/master/.travis.yml) for some tips and tricks.
+
+# Manual Configuration
 
 For automated systems that are not directly supported, `--robot` tells `test-patch` that this is an automated system.  This will trigger many of the above settings.
-
 
 The `--build-url` option is also useful when running in `--robot` mode so that emails and such
 have a location to look at the output artifacts:
@@ -245,8 +245,6 @@ $ test-patch --robot --instance=1
 
 If `--robot` is specified without an instance, a random number is generated and used.
 
-
-Sentinel Mode
-=============
+# Sentinel Mode
 
 If stuck Docker containers are a problem, a more aggressive robot may be enabled with the `--sentinel` option.  This option enables killing containers that have been running for over 24 hours as well.

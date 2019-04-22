@@ -17,9 +17,7 @@
   under the License.
 -->
 
-shelldocs
-===============
-
+# shelldocs
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
@@ -37,10 +35,9 @@ shelldocs
 
 <!-- /MarkdownTOC -->
 
-
 # Purpose
 
-Some projects have complex shell functions that act as APIs. `shelldocs` provides an annotation system similar to JavaDoc. It allows a developer to autogenerate MultiMarkdown documentation files as input to other processing systems.
+Some projects have complex shell functions that act as APIs. `shelldocs` provides an annotation system similar to JavaDoc. It allows a developer to auto-generate MultiMarkdown documentation files as input to other processing systems.
 
 # Requirements
 

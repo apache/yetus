@@ -17,8 +17,12 @@
   under the License.
 -->
 
-docker-cleanup
-==============
+# docker-cleanup
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Usage](#usage)
+
+<!-- /MarkdownTOC -->
 
 `docker-cleanup` is a command to perform precommit's Docker cleanup functionality outside of patch and build testing.
 
@@ -39,7 +43,6 @@ Deleted: sha256:1a96c79a0a9ab538c6c7765dc908eca3e689270b778d6ae2add558e89792a7d8
 ...
 
 ```
-
 
 `docker-cleanup` also supports the `--sentinel` mode to kill and remove stale running containers:
 

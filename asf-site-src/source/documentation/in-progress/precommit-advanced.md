@@ -17,13 +17,24 @@
   under the License.
 -->
 
-test-patch
-==========
+# Advanced Precommit
 
-* [Process Reaper](#test-reaper)
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [Process Reaper](#process-reaper)
 * [Plug-ins](#plug-ins)
+  * [Common Plug-in Functions](#common-plug-in-functions)
+  * [Plug-in Importation](#plug-in-importation)
+  * [Test Plug-ins](#test-plug-ins)
 * [Personalities](#personalities)
+  * [Configuring for Other Projects](#configuring-for-other-projects)
+  * [Global Definitions](#global-definitions)
+  * [Test Determination](#test-determination)
+  * [Module & Profile Determination](#module--profile-determination)
+  * [Enabling Plug-ins](#enabling-plug-ins)
 * [Important Variables](#important-variables)
+
+<!-- /MarkdownTOC -->
 
 # Process Reaper
 
@@ -58,32 +69,31 @@ Similarly, there are other functions that may be defined during the test-patch r
     HINT: It is recommended to make the pluginname relatively small, 10 characters at the most.  Otherwise, the ASCII output table may be skewed.
 
 * pluginname\_usage
-    - executed when the help message is displayed. This is used to display the plug-in specific options for the user.
+  * executed when the help message is displayed. This is used to display the plug-in specific options for the user.
 
 * pluginname\_parse\_args
-    - executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
+  * executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
 
 * pluginname\_initialize
-    - After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
+  * After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
 
 * pluginname\_docker\_support
-    - Perform any necessary setup to configure Docker support for the given plugin.  Typically this means adding parameters to the docker run command line via adding to the DOCKER\_EXTRAARGS array.
+  * Perform any necessary setup to configure Docker support for the given plugin.  Typically this means adding parameters to the docker run command line via adding to the DOCKER\_EXTRAARGS array.
 
 * pluginname\_precheck
-    - executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.
+  * executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.
 
 * pluginname\_patchfile
-    - executed prior to the patch being applied but after the git repository is setup. This step is intended to perform tests on the content of the patch itself.
+  * executed prior to the patch being applied but after the git repository is setup. This step is intended to perform tests on the content of the patch itself.
 
 * pluginname\_precompile
-    - executed prior to the compilation part of the lifecycle. This is useful for doing setup work required by the compilation process.
+  * executed prior to the compilation part of the lifecycle. This is useful for doing setup work required by the compilation process.
 
 * pluginname\_postcompile
-    - This step happens after the compile phase.
+  * This step happens after the compile phase.
 
 * pluginname\_rebuild
-    - Any non-unit tests that require the source to be rebuilt in a destructive way should be run here.
-
+  * Any non-unit tests that require the source to be rebuilt in a destructive way should be run here.
 
 ## Plug-in Importation
 
@@ -101,29 +111,27 @@ If the `--skip-system-plugins` flag is passed, then only core.d is imported.
 
 Plug-ins geared towards independent tests are registered via:
 
-
 ```bash
 add_test_type <pluginname>
 ```
 
-+ pluginname\_filefilter
-    - executed while determining which files trigger which tests.  This function should use `add_test pluginname` to add the plug-in to the test list.
+* pluginname\_filefilter
+  * executed while determining which files trigger which tests.  This function should use `add_test pluginname` to add the plug-in to the test list.
 
 * pluginname\_compile
-    - executed immediately after the actual compilation. This step is intended to be used to verify the results and add extra checking of the compile phase and it's stdout/stderr.
+  * executed immediately after the actual compilation. This step is intended to be used to verify the results and add extra checking of the compile phase and it's stdout/stderr.
 
 * pluginname\_tests
-    - executed after the unit tests have completed.
+  * executed after the unit tests have completed.
 
 * pluginname\_clean
-    - executed to allow the plugin to remove all files that have been generate by this plugin.
+  * executed to allow the plugin to remove all files that have been generate by this plugin.
 
 * pluginname\_logfilter
-    - This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function.
+  * This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function.
 
 * pluginname\_calcdiffs
-
-    - This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have "Missing period." as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool's output (e.g., checkstyle) to provide a more accurate way to determine differences.
+  * This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have "Missing period." as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool's output (e.g., checkstyle) to provide a more accurate way to determine differences.
 
   NOTE: If the plug-in has support for maven, the maven_add_install `pluginname` should be executed. See more information in Custom Maven Tests in the build tool documentation.
 

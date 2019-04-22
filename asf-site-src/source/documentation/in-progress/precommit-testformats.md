@@ -17,8 +17,15 @@
   under the License.
 -->
 
-Test Format Support
-==================
+# Test Format Support
+
+<!-- MarkdownTOC levels="1,2" autolink="true" -->
+
+* [pluginname\_process\_tests](#pluginnameprocesstests)
+* [pluginname\_finalize\_results](#pluginnamefinalizeresults)
+* [Example](#example)
+
+<!-- /MarkdownTOC -->
 
 test-patch has the ability to support multiple test formats. Test formats have some extra hooks to process the output of test tools and write the results to some tables. Every test format plug-in must have one line in order to be recognized:
 
@@ -28,12 +35,14 @@ add_test_format <pluginname>
 
 Test format plugins can provide following two methods, which will be called by test-patch if defined.
 
-* pluginname\_process\_tests
+## pluginname\_process\_tests
 
-    - Given a path to the log file and tested module name, parse that file and store the test result into global variables and/or files.
+Given a path to the log file and tested module name, parse that file and store the test result into global variables and/or files.
 
-* pluginname\_finalize\_results
+## pluginname\_finalize\_results
 
-    - Using the results stored by pluginname\_process\_tests, write them to the test result table and/or the footer table for reporting.
+Using the results stored by pluginname\_process\_tests, write them to the test result table and/or the footer table for reporting.
+
+# Example
 
 For an example of how to write a test-format plugin, you can look at [junit plugin](https://github.com/apache/yetus/blob/master/precommit/test-patch.d/junit.sh) bundled in Apache Yetus.

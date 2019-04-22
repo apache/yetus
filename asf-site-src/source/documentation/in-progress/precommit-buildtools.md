@@ -17,28 +17,38 @@
   under the License.
 -->
 
-
-
-Build Tool Support
-===================
+# Build Tool Support
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
 * [Global Variables](#global-variables)
+  * [BUILDTOOLCWD](#buildtoolcwd)
+  * [UNSUPPORTED\_TEST](#unsupported_test)
 * [Required Functions](#required-functions)
+  * [pluginname\_buildfile](#pluginname_buildfile)
+  * [pluginname\_executor](#pluginname_executor)
+  * [pluginname\_modules\_worker](#pluginnamemodulesworker)
+  * [pluginname\_builtin_personality\_modules](#pluginnamebuiltin_personalitymodules)
+  * [pluginname\_builtin_personality\_file\_tests](#pluginnamebuiltin_personality_filetests)
 * [Optional Functions](#optional-functions)
-* [Ant Specific](#ant-specific)
-  * [Command Arguments](#command-arguments)
-  * [Docker Mode](#docker-mode)
+  * [pluginname\_parse\_args](#pluginnameparseargs)
+  * [pluginname\_initialize](#pluginname_initialize)
+  * [pluginname\_reorder\_modules](#pluginnamereordermodules)
+  * [pluginname\_\(test\)\_logfilter](#pluginnametestlogfilter)
+  * [pluginname\_\(test\)_calcdiffs](#pluginnametestcalcdiffs)
+  * [pluginname\_docker\_support](#pluginnamedockersupport)
+* [Apache Ant Specific](#apache-ant-specific)
+  * [Ant Command Arguments](#ant-command-arguments)
+  * [Ant in Docker Mode](#ant-in-docker-mode)
 * [autoconf Specific](#autoconf-specific)
-  * [Command Arguments](#command-arguments-1)
+  * [autoconf Command Arguments](#autoconf-command-arguments)
 * [CMAKE Specific](#cmake-specific)
 * [Gradle Specific](#gradle-specific)
 * [Make Specific](#make-specific)
-* [Maven Specific](#maven-specific)
-  * [Command Arguments](#command-arguments-2)
+* [Apache Maven Specific](#apache-maven-specific)
+  * [Command Arguments](#command-arguments)
   * [Per-instance Repositories](#per-instance-repositories)
-  * [Docker Mode](#docker-mode-1)
+  * [Maven in Docker Mode](#maven-in-docker-mode)
   * [Test Profile](#test-profile)
   * [Custom Maven Tests](#custom-maven-tests)
 
@@ -52,87 +62,79 @@ add_build_tool <pluginname>
 
 # Global Variables
 
-* BUILDTOOLCWD
+## BUILDTOOLCWD
 
-    - This variable determines where the build tool's command (as returned by pluginname\_executor) should actually execute.  It should be one of three values:
+This variable determines where the build tool's command (as returned by pluginname\_executor) should actually execute.  It should be one of three values:
 
-    * basedir  - always execute at the root of the source tree
-    * module   - switch to the directory as given by the module being processed
-    * /(path)  - change to the directory as given by this absolute path. If the path does not exist, it will be created.
-
-  If /(path) is used, two special substitutions may be made:
-
+* basedir  - always execute at the root of the source tree
+* module   - (default) switch to the directory as given by the module being processed
+* /(path)  - change to the directory as given by this absolute path. This allows for custom directories to be created and used as necessary.  If the path does not exist, it will be created. If /(path) is used, two special substitutions may be made:
   * @@@BASEDIR@@@ will be replaced with the root of the source tree
   * @@@MODULEDIR@@@ will be replaced with the module name
 
-  This allows for custom directories to be created and used as necessary.
+## UNSUPPORTED\_TEST
 
-
-    The default is module.
-
-* UNSUPPORTED\_TEST
-
-    - If pluginname\_modules\_worker is given a test type that is not supported by the build system, set UNSUPPORTED\_TEST=true.  If it is supported, set UNSUPPORTED\_TEST=false.
+If pluginname\_modules\_worker is given a test type that is not supported by the build system, set UNSUPPORTED\_TEST=true.  If it is supported, set UNSUPPORTED\_TEST=false.
 
 For example, the gradle build tool does not have a standard way to execute checkstyle. So when checkstyle is requested, gradle\_modules\_worker sets UNSUPPORTED\_TEST to true and returns out of the routine.
 
 # Required Functions
 
-* pluginname\_buildfile
+## pluginname\_buildfile
 
-    - This should be an echo of the file that controls the build system.  This is used for module determination. If the build system wishes to disable module determination, it should echo with no args.
+This should be an echo of the file that controls the build system.  This is used for module determination. If the build system wishes to disable module determination, it should echo with no args.
 
-* pluginname\_executor
+## pluginname\_executor
 
-    - This should be an echo of how to run the build tool, any extra arguments, etc.
+This should be an echo of how to run the build tool, any extra arguments, etc.
 
-* pluginname\_modules\_worker
+## pluginname\_modules\_worker
 
-    - Input is the branch and the test being run.  This should call `modules_workers` with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then `modules_workers` should be called with 'test' appended onto its normal parameters.
+Input is the branch and the test being run.  This should call `modules_workers` with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then `modules_workers` should be called with 'test' appended onto its normal parameters.
 
-* pluginname\_builtin_personality\_modules
+## pluginname\_builtin_personality\_modules
 
-    - Default method to determine how to enqueue modules for processing.  Note that personalities may override this function. Requires two arguments: repo status and test desired. For example, in a maven build, values may be 'branch' and 'mvninstall'.
+Default method to determine how to enqueue modules for processing.  Note that personalities may override this function. Requires two arguments: repo status and test desired. For example, in a maven build, values may be 'branch' and 'mvninstall'.
 
-* pluginname\_builtin_personality\_file\_tests
+## pluginname\_builtin_personality\_file\_tests
 
-    - Default method to determine which tests to trigger.  Note that personalities may override this function. Requires a single argument: the file in which the tests exist.
+Default method to determine which tests to trigger.  Note that personalities may override this function. Requires a single argument: the file in which the tests exist.
 
 # Optional Functions
 
-* pluginname\_parse\_args
+## pluginname\_parse\_args
 
-    - executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
+Executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
 
-* pluginname\_initialize
+## pluginname\_initialize
 
-    - After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
+After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
 
-* pluginname\_reorder\_modules
+## pluginname\_reorder\_modules
 
-    - This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED\_MODULES[@] already contains all changed modules. It must be altered to have an effect.
+This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED\_MODULES[@] already contains all changed modules. It must be altered to have an effect.
 
-* pluginname\_(test)\_logfilter
+## pluginname\_(test)\_logfilter
 
-    - This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function. The test plug-in name should be in the (test) part of the function name.
+This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function. The test plug-in name should be in the (test) part of the function name.
 
-* pluginname\_(test)_calcdiffs
+## pluginname\_(test)_calcdiffs
 
-    - Some build tools (e.g., maven) use custom output for certain types of compilations (e.g., java).  This allows for custom log file difference calculation used to determine the before and after views.
+Some build tools (e.g., maven) use custom output for certain types of compilations (e.g., java).  This allows for custom log file difference calculation used to determine the before and after views.
 
-* pluginname\_docker\_support
+## pluginname\_docker\_support
 
-    - If this build tool requires extra settings on the `docker run` command line, this function should be defined and add those options into an array called `${DOCKER_EXTRAARGS[@]}`. This is particularly useful for things like mounting volumes for repository caches.
+ If this build tool requires extra settings on the `docker run` command line, this function should be defined and add those options into an array called `${DOCKER_EXTRAARGS[@]}`. This is particularly useful for things like mounting volumes for repository caches.
 
-       **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that `pluginname_initialize` be used to create the necessary directories prior to be used in the `docker run` command.
+    **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that `pluginname_initialize` be used to create the necessary directories prior to be used in the `docker run` command.
 
-# Ant Specific
+# Apache Ant Specific
 
-## Command Arguments
+## Ant Command Arguments
 
 test-patch always passes -noinput to Ant.  This forces ant to be non-interactive.
 
-## Docker Mode
+## Ant in Docker Mode
 
 In Docker mode, the `${HOME}/.ivy2` directory is shared amongst all invocations.
 
@@ -140,7 +142,7 @@ In Docker mode, the `${HOME}/.ivy2` directory is shared amongst all invocations.
 
 autoconf requires make to be enabled.  autoreconf is always used to rebuild the configure scripte.
 
-## Command Arguments
+## autoconf Command Arguments
 
 autoconf will always run configure with prefix set to a directory in the patch processing directory.  To configure other flags, set the AUTCONF_CONF_FLAGS environment variable.
 
@@ -158,13 +160,13 @@ In Docker mode, the `${HOME}/.gradle` directory is shared amongst all invocation
 
 No notes.
 
-# Maven Specific
+# Apache Maven Specific
 
 ## Command Arguments
 
 test-patch always passes --batch-mode to maven to force it into non-interactive mode.  Additionally, some tests will also force -fae in order to get all of messages/errors during that mode. Some tests are executed with -DskipTests.  Additional arguments should be handled via the personality.
 
-##  Per-instance Repositories
+## Per-instance Repositories
 
 Under many common configurations, maven (as of 3.3.3 and lower) may not properly handle being executed by multiple processes simultaneously, especially given that some tests require the `mvn install` command to be used.
 
@@ -174,7 +176,7 @@ By default, `test-patch` uses `${HOME}/yetus-m2` as the base directory to store 
 
 The location of the `settings.xml` may be changed via the `--mvn-settings` option.
 
-## Docker Mode
+## Maven in Docker Mode
 
 In Docker mode, `${HOME}/.m2` is shared amongst all invocations.  If `--mvn-custom-repos` is used, all of `--mvn-custom-repos-dir` is shared with all invocations.  The per-instance directory will be calculated and configured after Docker has launched.
 
