@@ -753,6 +753,7 @@ function yetus_usage
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
+  # shellcheck disable=SC2153
   for plugin in "${BUILDTOOLS[@]}" "${TESTTYPES[@]}" "${BUGSYSTEMS[@]}" "${TESTFORMATS[@]}"; do
     if declare -f "${plugin}_usage" >/dev/null 2>&1; then
       echo ""
