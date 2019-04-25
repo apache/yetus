@@ -112,7 +112,7 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metri
   puts "\tcleaning up output directories in #{output}"
   FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
   FileUtils.rm_rf("#{output}/#{version}", secure: true)
-  if version =~ /^0.[0-8]./
+  if version =~ /^0.[0-8]\./
     puts "\tcloning from tag."
     `(cd "#{output}" && \
       git clone --depth 1 --branch "rel/#{version}" --single-branch -- \
@@ -196,7 +196,7 @@ after_configuration do # rubocop:disable Metrics/BlockLength
     data.versions.releases.each do |release|
       build_release_docs('target', release)
       releasenotes('target', release)
-      if release =~ /^0.[0-8]./
+      if release =~ /^0.[0-8]\./
         # stitch the javadoc in place
         sitemap.register_resource_list_manipulator(
           "#{release}_javadocs".to_sym,
