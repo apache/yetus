@@ -90,6 +90,28 @@
             </configuration>
           </execution>
           <execution>
+            <id>0.10.0</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.10.0</target>
+              <newLink>${basedir}/source/documentation/0.10.0</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.10.0.html.md</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.10.0.html.md</target>
+              <newLink>${basedir}/source/documentation/0.10.0.html.md</newLink>
+            </configuration>
+          </execution>
+          <execution>
             <!-- we create a symlink of current version->in-progress.  This will cause
                  middle man to generate two copies of the output. -->
             <id>in-progress</id>
