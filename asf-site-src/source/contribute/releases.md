@@ -651,8 +651,8 @@ Once a release candidate obtains majority approval from the PMC, there are sever
         Meg Smith
         Apache Yetus PMC
     If you'd like feedback on the draft, feel free to post it for review on your release issue.
-1. Send announcement emails. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should send the announcement email. The email should come from your apache.org email address and at a minimum should go to the dev@yetus.apache.org and announce@apache.org lists. For details see [the ASF Release Policy section How Should Releases Be Announced?](https://www.apache.org/dev/release.html#release-announcements). Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.
-1. Send tweet. Once the message to the ASF-wide announce list has made it to the public archive, you should draft a tweet with a link to the announcement. You should use the ASF link shortener and a descriptive name. For example, the 0.7.0 release could use
+1. Send announcement emails. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should send the announcement email. The email should come from your apache.org email address and at a minimum should go to the dev@yetus.apache.org list. For details see [the ASF Release Policy section How Should Releases Be Announced?](https://www.apache.org/dev/release.html#release-announcements). Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.
+1. Send tweet. Once the message to dev@yetus.apache.org has made it to the public archive, you should draft a tweet with a link to the announcement. You should use the ASF link shortener and a descriptive name. For example, the 0.7.0 release could use
 
         Apache Yetus 0.7.0 has been released:
 
