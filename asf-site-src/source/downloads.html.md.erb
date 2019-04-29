@@ -49,10 +49,23 @@ third-party repositories (e.g. Maven Central) and [Docker Hub](../yetus-docker-i
 <%   end
    end %>
 
+## OS X Homebrew/Linuxbrew
+
 The latest version of Apache Yetus is also available via Homebrew on Mac OS X:
-```shell
+
+```bash
 brew tap apache/yetus https://github.com/apache/yetus
 brew install yetus
 ```
 
 This will install many of the dependencies needed for the precommit functionality as well.
+
+## Helper Script
+
+To aid in downloading Apache Yetus for continuous integration systems, local build environments, etc, we provide a simple script that may be checked into your local repo [here](https://github.com/apache/yetus/yetus-dl.sh). It takes two parameters:
+
+```bash
+$ yetus-dl.sh <location> <version>
+```
+
+By default, location is `/tmp/yetus` and the version is the latest version. Compatibility is not guaranteed between 'latest' versions.  Additionally, only the last three released versions will be available via this method.

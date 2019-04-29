@@ -571,6 +571,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
    $ cd asf-site-src
    $ # Add the release to the releases data file
    $ vim data/versions.yml
+   $ vim data/htaccess.yml
    $ vim pom.xml
    $ # add the two stanzas
    $ git add -p
@@ -589,6 +590,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 
 1. You should then post this patch for review. Once you've gotten feedback, it's fine to push the patch to the ASF source repo immediately so long as the updated website is not published.
 1. Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in [Maintaining the Yetus Website](../website).
+1. Verify that https://yetus.apache.org/latest.tgz and https://yetus.apache.org/latest.tgz.asc download the newly released version.
 1. Remove old releases from the distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintenance for an earlier minor or major release line, you should delete those versions from the distribution area.
 1. Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
         Subject: [ANNOUNCE] Apache Yetus 0.7.0 release

@@ -44,6 +44,9 @@ activate :directory_indexes
 activate :syntax
 activate :livereload
 
+# disable layout
+page '.htaccess.apache', :layout => false # rubocop:disable Style/HashSyntax
+
 # classes needed to publish our api docs
 class CopyInPlaceResource < ::Middleman::Sitemap::Resource
   def initialize(sitemap, dest, src)
@@ -218,4 +221,8 @@ after_configuration do # rubocop:disable Metrics/BlockLength
       end
     end
   end
+end
+
+after_build do
+  File.rename 'target/site/.htaccess.apache', 'target/site/.htaccess'
 end
