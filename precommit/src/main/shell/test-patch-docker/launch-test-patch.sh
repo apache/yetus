@@ -54,10 +54,6 @@ PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
 OVERWRITEARGS+=("--patch-dir=${PATCH_DIR}")
 OVERWRITEARGS+=("--user-plugins=${PATCH_DIR}/precommit/user-plugins")
 
-if [[ -f "${PATCH_DIR}/precommit/excluded.txt" ]]; then
-  OVERWRITEARGS+=("--excludes=${PATCH_DIR}/precommit/excluded.txt")
-fi
-
 if [[ -f "${PATCH_DIR}/precommit/unit_test_filter_file.txt" ]]; then
   OVERWRITEARGS+=("--unit-test-filter-file=${PATCH_DIR}/precommit/unit_test_filter_file.txt")
 fi

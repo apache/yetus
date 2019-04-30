@@ -483,7 +483,7 @@ function compute_gitdiff
   "${GIT}" add --all --intent-to-add
   while read -r line; do
     if [[ ${line} =~ ^\+\+\+ ]]; then
-      file="./"$(echo "${line}" | cut -f2- -d/)
+      file=$(echo "${line}" | cut -f2- -d/)
       continue
     elif [[ ${line} =~ ^@@ ]]; then
       startline=$(echo "${line}" | cut -f3 -d' ' | cut -f1 -d, | tr -d + )
@@ -531,8 +531,6 @@ function compute_gitdiff
 
   if [[ -s "${GITDIFFLINES}" ]]; then
     compute_unidiff
-  else
-    touch "${GITUNIDIFFLINES}"
   fi
 
   popd >/dev/null || return 1
@@ -558,33 +556,37 @@ function compute_unidiff
   # out the 'extra' lines, grabbing the adds with
   # the line number in the diff file along the way,
   # finally rewriting the line so that it is in
-  # './filename:diff line:content' format
+  # 'filename:diff line:content' format
 
   for fn in "${CHANGED_FILES[@]}"; do
-    filen=${fn##./}
-
     if [[ -f "${filen}" ]]; then
       "${GIT}" diff "${filen}" \
         | tail -n +6 \
         | "${GREP}" -n '^+' \
         | "${GREP}" -vE '^[0-9]*:\+\+\+' \
         | "${SED}" -e 's,^\([0-9]*:\)\+,\1,g' \
-          -e "s,^,./${filen}:,g" \
+          -e "s,^,${filen}:,g" \
               >>  "${tmpfile}"
     fi
   done
 
-  # at this point, tmpfile should be in the same format
-  # as gitdiffcontent, just with different line numbers.
-  # let's do a merge (using gitdifflines because it's easier)
+  # if every file that got changed was excluded, there
+  # is no data to calculate.
 
-  # ./filename:real number:diff number
-  # shellcheck disable=SC2016
-  paste -d: "${GITDIFFLINES}" "${tmpfile}" \
-    | "${AWK}" -F: '{print $1":"$2":"$5":"$6}' \
-    >> "${GITUNIDIFFLINES}"
+  if [[ -s "${tmpfile}" ]]; then
 
-  rm "${tmpfile}"
+    # at this point, tmpfile should be in the same format
+    # as gitdiffcontent, just with different line numbers.
+    # let's do a merge (using gitdifflines because it's easier)
+
+    # filename:real number:diff number
+    # shellcheck disable=SC2016
+    paste -d: "${GITDIFFLINES}" "${tmpfile}" \
+      | "${AWK}" -F: '{print $1":"$2":"$5":"$6}' \
+      >> "${GITUNIDIFFLINES}"
+
+    rm "${tmpfile}"
+  fi
 }
 
 
@@ -822,7 +824,7 @@ function parse_args
         DIRTY_WORKSPACE=true
       ;;
       --excludes=*)
-        EXCLUDE_PATHS_FILE=$(yetus_abs "${i#*=}")
+        EXCLUDE_PATHS_FILE="${i#*=}"
       ;;
       --instance=*)
         INSTANCE=${i#*=}
@@ -945,15 +947,6 @@ function parse_args
     yetus_add_array_element EXEC_MODES Robot
   fi
 
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
-    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-      EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
-    else
-      yetus_error "ERROR: Excluded paths file (${EXCLUDE_PATHS_FILE}}) does not exist!"
-      cleanup_and_exit 1
-    fi
-  fi
-
   if [[ -n $UNIT_TEST_FILTER_FILE ]]; then
     if [[ -f $UNIT_TEST_FILTER_FILE ]]; then
       UNIT_TEST_FILTER_FILE=$(yetus_abs "${UNIT_TEST_FILTER_FILE}")
@@ -1003,6 +996,19 @@ function parse_args
   fi
   PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
   COPROC_LOGFILE="${PATCH_DIR}/coprocessors.txt"
+
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+      EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
+    elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE}" ]]; then
+      EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE}")
+    elif [[ -f "${PATCH_DIR}/precommit/excluded.txt" ]]; then
+       EXCLUDE_PATHS_FILE="${PATCH_DIR}/precommit/excluded.txt"
+    else
+      yetus_error "ERROR: Excluded paths file (${EXCLUDE_PATHS_FILE}}) does not exist!"
+      cleanup_and_exit 1
+    fi
+  fi
 
   # we need absolute dir for ${CONSOLE_REPORT_FILE}
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
@@ -2141,6 +2147,10 @@ function bugsystem_linecomments_writer
   declare idxline
   declare uniline
 
+  if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
+    return
+  fi
+
   if [[ -z "${fn}" ]]; then
     return
   fi
@@ -2171,7 +2181,7 @@ function bugsystem_linecomments_trigger
   declare plugin
 
   if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
-    return
+    return 0
   fi
 
   if [[ ! -f "${PATCH_DIR}/linecomments-in.txt" ]]; then
@@ -3189,6 +3199,8 @@ if [[ "${BUILDMODE}" = patch ]]; then
   distclean
 
   apply_patch_file
+
+  exclude_paths_from_changed_files
 
   compute_gitdiff
 

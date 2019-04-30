@@ -90,10 +90,15 @@ function exclude_paths_from_changed_files
   declare strip
   declare -a a
 
+  EXCLUDE_PATHS=()
+
   if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
     yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
+  else
+    return
   fi
 
+  a=()
   for f in "${CHANGED_FILES[@]}"; do
     strip=false
     for p in "${EXCLUDE_PATHS[@]}"; do
