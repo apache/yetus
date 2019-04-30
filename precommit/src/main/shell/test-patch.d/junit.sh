@@ -16,6 +16,7 @@
 
 # SHELLDOC-IGNORE
 
+add_bugsystem junit
 add_test_format junit
 
 JUNIT_TEST_TIMEOUTS=""
@@ -28,6 +29,7 @@ function junit_usage
 {
   yetus_add_option "--junit-test-output=<path>" "Directory to search for the test output TEST-*.xml files, relative to the module directory (default:'${JUNIT_TEST_OUTPUT_DIR}')"
   yetus_add_option "--junit-test-prefix=<prefix to trim>" "Prefix of test names to be be removed. Used to shorten test names by removing common package name. (default:'${JUNIT_TEST_PREFIX}')"
+  yetus_add_option "--junit-results-xml=<path>" "Filename to generate a Junit report"
 }
 
 function junit_parse_args
@@ -41,6 +43,9 @@ function junit_parse_args
       ;;
       --junit-test-prefix=*)
         JUNIT_TEST_PREFIX=${i#*=}
+      ;;
+      --junit-results-xml=*)
+        JUNIT_RESULTS_XML=${i#*=}
       ;;
     esac
   done
@@ -92,3 +97,114 @@ function junit_finalize_results
     JUNIT_TEST_TIMEOUTS=""
   fi
 }
+
+## @description  Only print selected information to a report file
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+## @return       0 on success
+## @return       1 on failure
+function junit_finalreport
+{
+  declare result=$1
+  shift
+  declare i=0
+  declare failures
+  declare ourstring
+  declare vote
+  declare subs
+  declare ela
+  declare footsub
+  declare footcomment
+
+  if [[ -z "${JUNIT_RESULTS_XML}" ]]; then
+    return
+  fi
+
+  big_console_header "Writing JUnit results to ${JUNIT_RESULTS_XML}"
+
+  url=$(get_artifact_url)
+
+cat << EOF > "${JUNIT_RESULTS_XML}"
+<testsuites>
+    <testsuite tests="1" failures="'${result}'" time="1" name="Apache Yetus">
+EOF
+
+  i=0
+  until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
+    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    vote=$(echo "${ourstring}" | cut -f2 -d\|)
+    subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+    ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    msg=$(echo "${ourstring}" | cut -f5 -d\|)
+
+    subs=${subs// }
+
+    if [[ "${subs}"  == "${oldsubs}" ]]; then
+      ((counter=counter+1))
+    else
+      oldsubs=${subs}
+      ((counter=0))
+    fi
+
+    if [[ "${vote}" = "H" ]]; then
+       ((i=i+1))
+       continue
+     fi
+
+    if [[ ${vote// } = -1 ]]; then
+      failures=1
+    else
+      failures=0
+    fi
+
+    {
+      printf "<testcase id=\"%s\" classname=\"%s\" name=\"%s\" failures=\"%s\" tests=\"1\" time=\"%s\">" \
+        "${subs}.${counter}" \
+        "${subs}" \
+        "${subs}" \
+        "${failures}" \
+        "${ela}"
+      if [[ "${failures}" == 1 ]]; then
+        msg="${msg//&/&amp;}"
+        msg="${msg//</&lt;}"
+        msg="${msg//>/&gt;}"
+        msg="${msg//\"/&quot;}"
+        msg="${msg//\'/&apos;}"
+        printf "<failure message=\"%s\">" "${msg}"
+        j=0
+        until [[ $j -eq ${#TP_FOOTER_TABLE[@]} ]]; do
+          if [[ "${TP_FOOTER_TABLE[${j}]}" =~ \@\@BASE\@\@ ]]; then
+            footsub=$(echo "${TP_FOOTER_TABLE[${j}]}" | cut -f2 -d\|)
+            footcomment=$(echo "${TP_FOOTER_TABLE[${j}]}" |
+                        cut -f3 -d\| |
+                        "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
+            if [[ -n "${url}" ]]; then
+              footcomment=$(echo "${TP_FOOTER_TABLE[${j}]}" |
+                        cut -f3 -d\| |
+                        "${SED}" -e "s,@@BASE@@,${url},g")
+            fi
+            if [[ "${footsub// }" == "${subs}" ]]; then
+              footcomment="${footcomment//&/&amp;}"
+              footcomment="${footcomment//</&lt;}"
+              footcomment="${footcomment//>/&gt;}"
+              footcomment="${footcomment//\"/&quot;}"
+              footcomment="${footcomment//\'/&apos;}"
+              echo "${footcomment}"
+            fi
+          fi
+          ((j=j+1))
+        done
+        echo "</failure>"
+      fi
+      echo "</testcase>"
+    } >> "${JUNIT_RESULTS_XML}"
+
+    ((i=i+1))
+  done
+
+  echo "</testsuite>" >> "${JUNIT_RESULTS_XML}"
+  echo "</testsuites>" >> "${JUNIT_RESULTS_XML}"
+}
+
