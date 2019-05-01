@@ -1107,6 +1107,12 @@ function git_checkout
 
   git_requires_creds
 
+  if [[ ${ROBOT} == true ]]; then
+    if declare -f "${ROBOTTYPE}"_pre_git_checkout >/dev/null; then
+      "${ROBOTTYPE}"_pre_git_checkout
+    fi
+  fi
+
   cd "${BASEDIR}" || cleanup_and_exit 1
   if [[ ! -e .git ]]; then
     yetus_error "ERROR: ${BASEDIR} is not a git repo."
