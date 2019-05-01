@@ -39,7 +39,9 @@ if [[ "${CIRCLECI}" = true ]] &&
       USER_PARAMS+=("--empty-patch")
       PATCH_BRANCH="${CIRCLE_BRANCH}"
       pushd "${BASEDIR}" >/dev/null || exit 1
-      "${GIT}" branch --set-upstream-to=origin/"${CIRCLE_BRANCH}" "${CIRCLE_BRANCH}"
+      echo "Attempting to reset Circle CI's understanding of ${CIRCLE_BRANCH}"
+      "${GIT}" branch --set-upstream-to=origin/"${CIRCLE_BRANCH}" "${CIRCLE_BRANCH}" || true
+      "${GIT}" branch -f  "${CIRCLE_BRANCH}" origin/"${CIRCLE_BRANCH}" || true
       popd >/dev/null || exit 1
     else
       PATCH_OR_ISSUE="${CIRCLE_PULL_REQUEST}"
@@ -97,6 +99,15 @@ function circleci_set_plugin_defaults
 function circleci_finalreport
 {
   add_footer_table "Console output" "${BUILD_URL}"
+}
+
+function circleci_pre_git_checkout
+{
+  pushd "${BASEDIR}" >/dev/null || exit 1
+  echo "Attempting to reset Circle CI's understanding of ${PATCH_BRANCH_DEFAULT}"
+  "${GIT}" branch --set-upstream-to=origin/"${PATCH_BRANCH_DEFAULT}" "${PATCH_BRANCH_DEFAULT}" || true
+  "${GIT}" branch -f "${PATCH_BRANCH_DEFAULT}" origin/"${PATCH_BRANCH_DEFAULT}" || true
+  popd >/dev/null || exit 1
 }
 
 #function circleci_unittest_footer
