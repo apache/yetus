@@ -3010,8 +3010,6 @@ function patch_setup_work
 
   # from here on out, we'll be in ${BASEDIR} for cwd
   # plugins need to pushd/popd if they change.
-  git_checkout
-
   determine_issue
 
   if ! dryrun_both_files; then
