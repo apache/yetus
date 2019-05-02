@@ -42,8 +42,18 @@ jobs:
              --html-report-file=/tmp/yetus-out/report.html
              --console-report-file=/tmp/yetus-out/console.txt
              --brief-report-file=/tmp/yetus-out/brief.txt
-             --bugcomments=briefreport,htmlout
+             --bugcomments=briefreport,htmlout,junit
              --tests-filter=checkstyle,javadoc,rubocop,test4tests
+             --junit-results-xml=/tmp/yetus-out/results.xml
+
+      - store_test_results:
+          path: /tmp/yetus-out
 
       - store_artifacts:
           path: /tmp/yetus-out
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build
