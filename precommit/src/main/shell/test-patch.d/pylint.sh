@@ -22,7 +22,6 @@ PYLINT_TIMER=0
 
 PYLINT=${PYLINT:-$(command -v pylint 2>/dev/null)}
 # backward compatibility, do not use
-PYLINT_OPTIONS=${PYLINT_OPTIONS:-}
 PYLINT_PIP_CMD=$(command -v pip 2>/dev/null)
 PYLINT_REQUIREMENTS=false
 PYLINT_PIP_USER=true
@@ -44,10 +43,6 @@ function pylint_parse_args
     case ${i} in
     --pylint=*)
       PYLINT=${i#*=}
-    ;;
-    --pylint-options=*)
-      # backward compatibility
-      PYLINT_OPTIONS=${i#*=}
     ;;
     --pylint-pip-cmd=*)
       PYLINT_PIP_CMD=${i#*=}
@@ -132,10 +127,6 @@ function pylint_executor
       export PYTHONPATH="${PYTHONPATH:+${PYTHONPATH}:}${i}"
     done
   fi
-
-  # backward compatibility
-  # shellcheck disable=SC2206
-  pylintopts=(${PYLINT_OPTIONS})
 
   if [[ -n "${PYLINT_RCFILE}" ]] && [[ -f "${PYLINT_RCFILE}" ]]; then
     pylintopts+=('--rcfile='"${PYLINT_RCFILE}")

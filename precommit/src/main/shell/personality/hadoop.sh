@@ -35,8 +35,6 @@ function personality_globals
   JIRA_ISSUE_RE='^(HADOOP|YARN|MAPREDUCE|HDFS|HDDS|SUBMARINE)-[0-9]+$'
   #shellcheck disable=SC2034
   GITHUB_REPO_DEFAULT="apache/hadoop"
-  #shellcheck disable=SC2034
-  PYLINT_OPTIONS="--indent-string='  '"
 
   HADOOP_HOMEBREW_DIR=${HADOOP_HOMEBREW_DIR:-$(brew --prefix 2>/dev/null)}
   if [[ -z "${HADOOP_HOMEBREW_DIR}" ]]; then

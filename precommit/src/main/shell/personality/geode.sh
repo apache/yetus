@@ -31,7 +31,4 @@ function personality_globals
   GITHUB_REPO_DEFAULT="apache/incubator-geode"
   #shellcheck disable=SC2034
   BUILDTOOL=gradle
-#   PYLINT_OPTIONS="--indent-string='  '"
-
-#   HADOOP_MODULES=""
 }
