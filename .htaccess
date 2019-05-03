@@ -17,4 +17,6 @@
 #  under the License.
 
 Redirect 307 /latest.tgz https://www.apache.org/dyn/closer.cgi?action=download&filename=yetus/0.10.0/apache-yetus-0.10.0-bin.tar.gz
+
 Redirect 307 /latest.tgz.asc https://www.apache.org/dist/yetus/0.10.0/apache-yetus-0.10.0-bin.tar.gz.asc
+

@@ -660,6 +660,7 @@ Committed revision 1772.
 <div class="highlight"><pre class="highlight shell"><code>   <span class="nv">$ </span><span class="nb">cd </span>asf-site-src
    <span class="nv">$ </span><span class="c"># Add the release to the releases data file</span>
    <span class="nv">$ </span>vim data/versions.yml
+   <span class="nv">$ </span>vim data/htaccess.yml
    <span class="nv">$ </span>vim pom.xml
    <span class="nv">$ </span><span class="c"># add the two stanzas</span>
    <span class="nv">$ </span>git add <span class="nt">-p</span>
@@ -677,6 +678,7 @@ Committed revision 1772.
 <ol>
 <li>You should then post this patch for review. Once you&rsquo;ve gotten feedback, it&rsquo;s fine to push the patch to the ASF source repo immediately so long as the updated website is not published.</li>
 <li>Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in <a href="../website">Maintaining the Yetus Website</a>.</li>
+<li>Verify that <a href="https://yetus.apache.org/latest.tgz">https://yetus.apache.org/latest.tgz</a> and <a href="https://yetus.apache.org/latest.tgz.asc">https://yetus.apache.org/latest.tgz.asc</a> download the newly released version.</li>
 <li>Remove old releases from the distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintenance for an earlier minor or major release line, you should delete those versions from the distribution area.</li>
 <li><p>Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
     Subject: [ANNOUNCE] Apache Yetus 0.7.0 release</p>
@@ -737,8 +739,8 @@ Meg Smith
 Apache Yetus PMC
 </code></pre></div>
 <p>If you&rsquo;d like feedback on the draft, feel free to post it for review on your release issue.</p></li>
-<li><p>Send announcement emails. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should send the announcement email. The email should come from your apache.org email address and at a minimum should go to the <a href="mailto:dev@yetus.apache.org">dev@yetus.apache.org</a> and <a href="mailto:announce@apache.org">announce@apache.org</a> lists. For details see <a href="https://www.apache.org/dev/release.html#release-announcements">the ASF Release Policy section How Should Releases Be Announced?</a>. Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.</p></li>
-<li><p>Send tweet. Once the message to the ASF-wide announce list has made it to the public archive, you should draft a tweet with a link to the announcement. You should use the ASF link shortener and a descriptive name. For example, the 0.7.0 release could use</p>
+<li><p>Send announcement emails. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should send the announcement email. The email should come from your apache.org email address and at a minimum should go to the <a href="mailto:dev@yetus.apache.org">dev@yetus.apache.org</a> list. For details see <a href="https://www.apache.org/dev/release.html#release-announcements">the ASF Release Policy section How Should Releases Be Announced?</a>. Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.</p></li>
+<li><p>Send tweet. Once the message to <a href="mailto:dev@yetus.apache.org">dev@yetus.apache.org</a> has made it to the public archive, you should draft a tweet with a link to the announcement. You should use the ASF link shortener and a descriptive name. For example, the 0.7.0 release could use</p>
 <div class="highlight"><pre class="highlight plaintext"><code>Apache Yetus 0.7.0 has been released:
 
 https://s.apache.org/yetus-0.7.0-announce
