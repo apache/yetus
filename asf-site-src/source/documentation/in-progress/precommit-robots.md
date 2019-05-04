@@ -24,6 +24,7 @@
 * [Intro](#intro)
 * [Azure Pipelines](#azure-pipelines)
 * [Circle CI](#circle-ci)
+* [Cirrus CI](#cirrus-ci)
 * [Gitlab CI](#gitlab-ci)
 * [Jenkins](#jenkins)
 * [Semaphore CI](#semaphore-ci)
@@ -100,6 +101,39 @@ jobs:
 See also:
 
 * Apache Yetus' source tree [.circleci/config.yaml](https://github.com/apache/yetus/blob/master/.circleci/config.yml) for some tips and tricks.
+
+# Cirrus CI
+
+TRIGGER: ${CIRRUS_CI}=true
+
+`--patch-dir` will be configured to be `/tmp/yetus-out` and will be moved to the `yetus-out` directory in the source tree after completion. Adding this stanza to your `.cirrus.yml` file will upload and store those components for a week in Gitlab CI's artifact retrieval system:
+
+```yaml
+---
+  always:
+    junit_artifacts:
+      path: "yetus-out/junit.xml"
+      format: junit
+    other_artifacts:
+      path: "yetus-out/**"
+```
+
+To use the `--patch-dir` for additional output, use the `/tmp/yetus-out` path. For example: `--html-report-file=/tmp/yetus-out/report.html`.
+
+To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the `.cirrus.yml` file, substituting the tag for the version of Apache Yetus that should be used and replacing the `JAVA_HOME` with the appropriate version as bundled mentioned in the Dockerfile:
+
+```yaml
+---
+yetus_task:
+  container:
+    image: apache/yetus:0.10.0
+
+  ...
+```
+
+See also:
+
+* Apache Yetus' source tree [.cirrus.yml](https://github.com/apache/yetus/blob/master/.cirrus.yml) for some tips and tricks.
 
 # Gitlab CI
 
