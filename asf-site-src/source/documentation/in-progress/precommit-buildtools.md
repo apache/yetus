@@ -170,7 +170,7 @@ test-patch always passes --batch-mode to maven to force it into non-interactive 
 
 Under many common configurations, maven (as of 3.3.3 and lower) may not properly handle being executed by multiple processes simultaneously, especially given that some tests require the `mvn install` command to be used.
 
-To assist, `test-patch` supports a `--mvn-custom-repo` option to set the `-Dmaven.repo.local` value to a per-instance repository directory keyed to the project and branch being used for the test.  If the `--jenkins` flag is also passed, the instance will be tied to the Jenkins `${EXECUTOR_NUMBER}` value.  Otherwise, the instance value will be randomly generated via `${RANDOM}`.  If the repository has not been used in 30 days, it will be automatically deleted when any test run for that project (regardless of branch!).
+To assist, `test-patch` supports a `--mvn-custom-repos` option to set the `-Dmaven.repo.local` value to a per-instance repository directory keyed to the project and branch being used for the test.  If the `--jenkins` flag is also passed, the instance will be tied to the Jenkins `${EXECUTOR_NUMBER}` value.  Otherwise, the instance value will be randomly generated via `${RANDOM}`.  If the repository has not been used in 30 days, it will be automatically deleted when any test run for that project (regardless of branch!).
 
 By default, `test-patch` uses `${HOME}/yetus-m2` as the base directory to store these custom maven repositories.  That location may be changed via the `--mvn-custom-repos-dir` option.
 
