@@ -16,46 +16,52 @@
 
 # SHELLDOC-IGNORE
 
-if [[ "${TRAVIS}" == true ]] &&
+if [[ "${CIRRUS_CI}" == true ]] &&
   declare -f compile_cycle >/dev/null; then
   # shellcheck disable=SC2034
   ROBOT=true
+  # shellcheck disable=SC2034
+  PATCH_BRANCH_DEFAULT=${CIRRUS_DEFAULT_BRANCH}
+  # shellcheck disable=SC2034
+  INSTANCE=${CIRRUS_BUILD_ID}
+  # shellcheck disable=SC2034
+  ROBOTTYPE=cirrusci
+  PATCH_DIR=/tmp/yetus-out
+  # shellcheck disable=SC2034
+  RELOCATE_PATCH_DIR=true
+
 
   # shellcheck disable=SC2034
-  if [[ -n "${ARTIFACTS_PATH}" ]]; then
-    PATCH_DIR=${ARTIFACTS_PATH%%:*}
-  fi
-
-  # shellcheck disable=SC2034
-  INSTANCE=${TRAVIS_BUILD_ID}
-  # shellcheck disable=SC2034
-  ROBOTTYPE=travisci
-
-  # shellcheck disable=SC2034
-  if [[ "${TRAVIS_PULL_REQUEST}" == false ]]; then
-    BUILDMODE=full
-    PATCH_BRANCH=${TRAVIS_BRANCH}
-  else
+  if [[ "${CIRRUS_PR}" == false ]]; then
     # shellcheck disable=SC2034
     BUILDMODE='patch'
     # shellcheck disable=SC2034
-    PATCH_OR_ISSUE=GH:${TRAVIS_PULL_REQUEST}
-    USER_PARAMS+=("GH:${TRAVIS_PULL_REQUEST}")
+    PATCH_OR_ISSUE=GH:${CIRRUS_PR}
+    USER_PARAMS+=("GH:${CIRRUS_PR}")
+  else
+    BUILDMODE=full
+    PATCH_BRANCH=${CIRRUS_BRANCH}
   fi
 
   # shellcheck disable=SC2034
-  GITHUB_REPO=${TRAVIS_REPO_SLUG}
+  GITHUB_REPO=${CIRRUS_REPO_FULL_NAME}
 
   add_docker_env \
-    TRAVIS \
-    TRAVIS_BRANCH \
-    TRAVIS_BUILD_ID \
-    TRAVIS_BUILD_WEB_URL \
-    TRAVIS_PULL_REQUEST \
-    TRAVIS_REPO_SLUG
+    CI \
+    CIRRUS_CI \
+    CIRRUS_DEFAULT_BRANCH \
+    CIRRUS_BUILD_ID \
+    CIRRUS_PR \
+    CIRRUS_BRANCH \
+    CIRRUS_REPO_FULL_NAME \
+    CIRRUS_TASK_ID \
+    CIRRUS_BUILD_ID
 
   # shellcheck disable=SC2034
-  BUILD_URL_CONSOLE=console
+  BUILD_URL="https://cirrus-ci.com/task/${CIRRUS_TASK_ID}"
+
+  # shellcheck disable=SC2034
+  BUILD_URL_CONSOLE=""
   # shellcheck disable=SC2034
   CONSOLE_USE_BUILD_URL=true
 
@@ -67,26 +73,26 @@ if [[ "${TRAVIS}" == true ]] &&
     popd >/dev/null || exit 1
   fi
 
-  yetus_add_array_element EXEC_MODES TravisCI
+  yetus_add_array_element EXEC_MODES CirrusCI
 fi
 
-function travisci_set_plugin_defaults
+function cirrusci_set_plugin_defaults
 {
   # shellcheck disable=SC2034
-  GITHUB_REPO=${TRAVIS_REPO_SLUG}
+  GITHUB_REPO=${CIRRUS_REPO_FULL_NAME}
+  # shellcheck disable=SC2034
+  JUNIT_RESULTS_XML="${PATCH_DIR}/junit.xml"
 }
 
-function travisci_finalreport
+function cirrusci_finalreport
 {
-  add_footer_table "Console output" "${TRAVIS_BUILD_WEB_URL}"
+  add_footer_table "Console output" "${BUILD_URL}"
 }
 
-#function travisci_verify_patchdir
-#{
-#  declare commentfile=$1
-#}
+function cirrusci_artifact_url
+{
+  declare dir
 
-#function travisci_unittest_footer
-#{
-#  declare statusjdk=$1
-#}
+  dir=${PATCH_DIR##*/}
+  echo "https://api.cirrus-ci.com/v1/artifact/task/${CIRRUS_TASK_ID}/other/${dir}"
+}
