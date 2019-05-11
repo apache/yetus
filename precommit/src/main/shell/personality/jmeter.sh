@@ -52,6 +52,7 @@ function jmeter_parse_args
   for i in "$@"; do
     case ${i} in
       --jmeter-download-jars=*)
+        delete_parameter "${i}"
         JMETER_DOWNLOAD_JARS=${i#*=}
       ;;
     esac

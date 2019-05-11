@@ -31,6 +31,7 @@ function common_defaults
   EXEC_MODES=()
   #shellcheck disable=SC2034
   EXCLUDE_PATHS=()
+  IGNORE_UNKNOWN_OPTIONS=false
   ROBOTTYPE=""
   LOAD_SYSTEM_PLUGINS=true
   #shellcheck disable=SC2034
@@ -60,6 +61,7 @@ function common_defaults
   ROBOT=false
   #shellcheck disable=SC2034
   SENTINEL=false
+
   #shellcheck disable=SC2034
   TESTTYPES=()
   TESTFORMATS=()
@@ -116,92 +118,122 @@ function common_args
   for i in "$@"; do
     case ${i} in
       --awk-cmd=*)
+        delete_parameter "${i}"
         AWK=${i#*=}
       ;;
       --basedir=*)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         BASEDIR=${i#*=}
       ;;
       --branch=*)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         PATCH_BRANCH=${i#*=}
       ;;
       --branch-default=*)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         PATCH_BRANCH_DEFAULT=${i#*=}
       ;;
       --curl-cmd=*)
+        delete_parameter "${i}"
         CURL=${i#*=}
       ;;
       --debug)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         YETUS_SHELL_SCRIPT_DEBUG=true
       ;;
       --diff-cmd=*)
+        delete_parameter "${i}"
         DIFF=${i#*=}
       ;;
       --file-cmd=*)
+        delete_parameter "${i}"
         FILE=${i#*=}
       ;;
       --git-cmd=*)
+        delete_parameter "${i}"
         GIT=${i#*=}
       ;;
       --git-offline)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         GIT_OFFLINE=true
       ;;
       --git-shallow)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         GIT_SHALLOW=true
       ;;
       --grep-cmd=*)
+        delete_parameter "${i}"
         GREP=${i#*=}
       ;;
+      --ignore-unknown-options=*)
+        delete_parameter "${i}"
+        #shellcheck disable=SC2034
+        IGNORE_UNKNOWN_OPTIONS=${i#*=}
+      ;;
       --help|-help|-h|help|--h|--\?|-\?|\?)
+        delete_parameter "${i}"
         showhelp=true
       ;;
       --list-plugins)
+        delete_parameter "${i}"
         list_plugins
         exit 0
       ;;
       --offline)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         OFFLINE=true
         #shellcheck disable=SC2034
         GIT_OFFLINE=true
       ;;
       --patch-cmd=*)
+        delete_parameter "${i}"
         PATCH=${i#*=}
       ;;
       --patch-dir=*)
+        delete_parameter "${i}"
         PATCH_DIR=${i#*=}
       ;;
       --plugins=*)
+        delete_parameter "${i}"
         ENABLED_PLUGINS=${i#*=}
         ENABLED_PLUGINS=${ENABLED_PLUGINS//,/ }
       ;;
       --project=*)
+        delete_parameter "${i}"
         PROJECT_NAME=${i#*=}
       ;;
       --rsync-cmd=*)
+        delete_parameter "${i}"
         RSYNC=${i#*=}
       ;;
       --skip-system-plugins)
+        delete_parameter "${i}"
         LOAD_SYSTEM_PLUGINS=false
       ;;
       --sed-cmd=*)
+        delete_parameter "${i}"
         SED=${i#*=}
       ;;
       --stat-cmd=*)
+        delete_parameter "${i}"
         # This is used by Docker-in-Docker mode presently, but if other
         # things end up needing it later, it's better to just put it here
         #shellcheck disable=SC2034
         STAT=${i#*=}
       ;;
       --user-plugins=*)
+        delete_parameter "${i}"
         USER_PLUGIN_DIR=${i#*=}
       ;;
       --version)
+        delete_parameter "${i}"
         showversion=true
       ;;
       *)
@@ -809,4 +841,20 @@ function generate_stack
     ((frame++));
   done
   exit 1
+}
+
+## @description  remove entries from paramater tracker
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @param        parameter
+function delete_parameter
+{
+  declare i=$1
+
+  if [[ "${i}" =~ = ]]; then
+    i=${i%=*}
+  fi
+
+  yetus_del_array_element PARAMETER_TRACKER "${i}"
 }

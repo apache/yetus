@@ -36,6 +36,7 @@ function author_parse_args
   for i in "$@"; do
     case ${i} in
       --author-ignore-list=*)
+        delete_parameter "${i}"
         yetus_comma_to_array AUTHOR_IGNORE_LIST "${i#*=}"
       ;;
     esac

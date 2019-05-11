@@ -28,6 +28,7 @@ function tap_parse_args
   for i in "$@"; do
     case ${i} in
       --tap-log-dir=*)
+        delete_parameter "${i}"
         TAP_LOG_DIR=${i#=*}
       ;;
     esac

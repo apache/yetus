@@ -134,10 +134,12 @@ function parse_args
   for i in "$@"; do
     case ${i} in
       --robot)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         ROBOT=true
       ;;
       --sentinel)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         ROBOT=true
         # shellcheck disable=SC2034
@@ -161,6 +163,7 @@ function yetus_usage
   echo "${BINNAME} [OPTIONS]"
 
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
+  yetus_add_option "--ignore-unknown-options=<bool>" "Continue despite unknown options (default: ${IGNORE_UNKNOWN_OPTIONS})"
   yetus_add_option "--robot" "Assume this is an automated run"
   yetus_add_option "--sentinel" "A very aggressive robot (auto: --robot)"
   docker_usage
@@ -188,7 +191,24 @@ function big_console_header
   printf '\n\n'
 }
 
+## @description setup the parameter tracker for param errors
+## @audience    private
+## @stability   evolving
+function setup_parameter_tracker
+{
+  declare i
+
+  for i in "${USER_PARAMS[@]}"; do
+    if [[ "${i}" =~ ^-- ]]; then
+      i=${i%=*}
+      PARAMETER_TRACKER+=("${i}")
+    fi
+  done
+}
+
 trap "cleanup_and_exit 1" HUP INT QUIT TERM
+
+setup_parameter_tracker
 
 import_core
 
@@ -199,6 +219,13 @@ parse_args "$@"
 import_and_clean
 
 parse_args_plugins "$@"
+
+if [[ "${#PARAMETER_TRACKER}" -gt 0 ]]; then
+  yetus_error "ERROR: Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+  if [[ "${IGNORE_UNKNOWN_OPTIONS}" == false ]]; then
+    cleanup_and_exit 1
+  fi
+fi
 
 docker_initialize
 plugins_initialize

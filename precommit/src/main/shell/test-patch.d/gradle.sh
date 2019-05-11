@@ -34,9 +34,11 @@ function gradle_parse_args
   for i in "$@"; do
     case ${i} in
       --gradle-cmd=*)
+        delete_parameter "${i}"
         GRADLE=${i#*=}
       ;;
       --gradlew-cmd=*)
+        delete_parameter "${i}"
         GRADLEW=${i#*=}
       ;;
     esac

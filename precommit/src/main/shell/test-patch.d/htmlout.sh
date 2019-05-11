@@ -38,6 +38,7 @@ function htmlout_parse_args
   for i in "$@"; do
     case ${i} in
       --html-report-file=*)
+        delete_parameter "${i}"
         fn=${i#*=}
       ;;
     esac

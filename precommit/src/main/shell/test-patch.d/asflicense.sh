@@ -31,9 +31,11 @@ function asflicense_parse_args
   for i in "$@"; do
     case ${i} in
       --asflicense-rat-excludes=*)
+        delete_parameter "${i}"
         ASFLICENSE_RAT_EXCLUDES=${i#*=}
       ;;
       --asflicense-rat-jar=*)
+        delete_parameter "${i}"
         ASFLICENSE_RAT_JAR=${i#*=}
       ;;
     esac

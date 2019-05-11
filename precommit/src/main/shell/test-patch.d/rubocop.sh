@@ -35,9 +35,11 @@ function rubocop_parse_args
   for i in "$@"; do
     case ${i} in
     --rubocop=*)
+      delete_parameter "${i}"
       RUBOCOP=${i#*=}
     ;;
     --rubocop-config=*)
+      delete_parameter "${i}"
       RUBOCOP_CONFIG=${i#*=}
     ;;
     esac

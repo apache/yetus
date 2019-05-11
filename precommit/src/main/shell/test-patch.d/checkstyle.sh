@@ -58,6 +58,7 @@ function checkstyle_parse_args
   for i in "$@"; do
     case ${i} in
     --checkstyle-goal=*)
+      delete_parameter "${i}"
       CHECKSTYLE_GOAL=${i#*=}
         case ${CHECKSTYLE_GOAL} in
         check)

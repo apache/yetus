@@ -56,12 +56,15 @@ function reaper_parse_args
   for i in "$@"; do
     case ${i} in
       --reapermode=*)
+        delete_parameter "${i}"
         REAPER_MODE=${i#*=}
       ;;
       --reaperdockeronly=*)
+        delete_parameter "${i}"
         REAPER_DOCKER_ONLY=${i#*=}
       ;;
       --reapernames=*)
+        delete_parameter "${i}"
         yetus_comma_to_array REAPER_NAMES "${i#*=}"
       ;;
     esac

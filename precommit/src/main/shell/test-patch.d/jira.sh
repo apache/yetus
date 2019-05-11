@@ -60,18 +60,23 @@ function jira_parse_args
   for i in "$@"; do
     case ${i} in
       --jira-base-url=*)
+        delete_parameter "${i}"
         JIRA_URL=${i#*=}
       ;;
       --jira-issue-re=*)
+        delete_parameter "${i}"
         JIRA_ISSUE_RE=${i#*=}
       ;;
       --jira-password=*)
+        delete_parameter "${i}"
         JIRA_PASSWD=${i#*=}
       ;;
       --jira-status-re=*)
+        delete_parameter "${i}"
         JIRA_STATUS_RE=${i#*=}
       ;;
       --jira-user=*)
+        delete_parameter "${i}"
         JIRA_USER=${i#*=}
       ;;
     esac

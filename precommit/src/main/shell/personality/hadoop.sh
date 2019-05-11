@@ -49,12 +49,15 @@ function personality_parse_args
   for i in "$@"; do
     case ${i} in
       --hadoop-isal-prefix=*)
+        delete_parameter "${i}"
         ISAL_HOME=${i#*=}
       ;;
       --hadoop-openssl-prefix=*)
+        delete_parameter "${i}"
         OPENSSL_HOME=${i#*=}
       ;;
       --hadoop-snappy-prefix=*)
+        delete_parameter "${i}"
         SNAPPY_HOME=${i#*=}
       ;;
     esac

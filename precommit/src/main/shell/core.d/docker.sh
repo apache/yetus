@@ -90,47 +90,61 @@ function docker_parse_args
   for i in "$@"; do
     case ${i} in
       --docker)
+        delete_parameter "${i}"
         DOCKERSUPPORT=true
       ;;
       --docker-bash-debug=*)
+        delete_parameter "${i}"
         YETUS_DOCKER_BASH_DEBUG=${i#*=}
         add_docker_env YETUS_DOCKER_BASH_DEBUG
       ;;
       --docker-cache-from=*)
+        delete_parameter "${i}"
         DOCKER_CACHE_FROM=${i#*=}
       ;;
       --dockercmd=*)
+        delete_parameter "${i}"
         #shellcheck disable=SC2034
         DOCKERCMD=${i#*=}
       ;;
       --dockerdelrep)
+        delete_parameter "${i}"
         DOCKER_DESTRUCTIVE=false
       ;;
       --dockerfile=*)
+        delete_parameter "${i}"
         DOCKERFILE=${i#*=}
       ;;
       --dockerind=*)
+        delete_parameter "${i}"
         DOCKER_IN_DOCKER=${i#*=}
       ;;
       --dockermemlimit=*)
+        delete_parameter "${i}"
         DOCKER_MEMORY=${i#*=}
       ;;
       --dockermode)
+        delete_parameter "${i}"
         DOCKERMODE=true
       ;;
       --docker-platform=*)
+        delete_parameter "${i}"
         DOCKER_PLATFORM=${i#*=}
       ;;
       --dockerprivd=*)
+        delete_parameter "${i}"
         DOCKER_ENABLE_PRIVILEGED=${i#*=}
       ;;
       --docker-socket=*)
+        delete_parameter "${i}"
         DOCKER_SOCKET=${i#*=}
       ;;
       --docker-tag=*)
+        delete_parameter "${i}"
         DOCKER_TAG=${i#*=}
       ;;
       --docker-work-dir=*)
+        delete_parameter "${i}"
         DOCKER_TAG=${i#*=}
       ;;
     esac

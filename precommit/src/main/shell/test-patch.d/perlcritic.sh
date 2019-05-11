@@ -34,6 +34,7 @@ function perlcritic_parse_args
   for i in "$@"; do
     case ${i} in
     --perlcritic=*)
+      delete_parameter "${i}"
       PERLCRITIC=${i#*=}
     ;;
     esac

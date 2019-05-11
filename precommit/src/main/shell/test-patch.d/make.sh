@@ -58,12 +58,15 @@ function make_parse_args
   for i in "$@"; do
     case ${i} in
       --make-cmd=*)
+        delete_parameter "${i}"
         MAKE=${i#*=}
       ;;
       --make-file=*)
+        delete_parameter "${i}"
         MAKEFILE=${i#*=}
       ;;
       --make-use-git-clean)
+        delete_parameter "${i}"
         MAKE_GITCLEAN=true
       ;;
     esac

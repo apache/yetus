@@ -42,12 +42,15 @@ function cmake_parse_args
   for i in "$@"; do
     case ${i} in
       --cmake-build-dir=*)
+        delete_parameter "${i}"
         CMAKE_BUILD_DIR=${i#*=}
       ;;
       --cmake-cmd=*)
+        delete_parameter "${i}"
         CMAKE=${i#*=}
       ;;
       --cmake-root-build=*)
+        delete_parameter "${i}"
         CMAKE_ROOT_BUILD=${i#*=}
       ;;
     esac

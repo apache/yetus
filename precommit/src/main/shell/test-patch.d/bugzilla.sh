@@ -34,6 +34,7 @@ function bugzilla_parse_args
   for i in "$@"; do
     case ${i} in
       --bugzilla-base-url=*)
+        delete_parameter "${i}"
         BUGZILLA_BASE_URL=${i#*=}
       ;;
     esac
