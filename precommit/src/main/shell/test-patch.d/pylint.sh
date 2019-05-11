@@ -128,6 +128,8 @@ function pylint_executor
     done
   fi
 
+  pylintopts=()
+
   if [[ -n "${PYLINT_RCFILE}" ]] && [[ -f "${PYLINT_RCFILE}" ]]; then
     pylintopts+=('--rcfile='"${PYLINT_RCFILE}")
   fi
