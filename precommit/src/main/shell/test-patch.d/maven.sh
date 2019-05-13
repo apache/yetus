@@ -93,18 +93,23 @@ function maven_parse_args
   for i in "$@"; do
     case ${i} in
       --mvn-cmd=*)
+        delete_parameter "${i}"
         MAVEN=${i#*=}
       ;;
       --mvn-custom-repos)
+        delete_parameter "${i}"
         MAVEN_CUSTOM_REPOS=true
       ;;
       --mvn-custom-repos-dir=*)
+        delete_parameter "${i}"
         MAVEN_CUSTOM_REPOS_DIR=${i#*=}
       ;;
       --mvn-deps-order=*)
+        delete_parameter "${i}"
         MAVEN_DEPENDENCY_ORDER=${i#*=}
       ;;
       --mvn-settings=*)
+        delete_parameter "${i}"
         MAVEN_SETTINGS=${i#*=}
         if [[ -f ${MAVEN_SETTINGS} ]]; then
           MAVEN_ARGS=("${MAVEN_ARGS[@]}" "--settings=${MAVEN_SETTINGS}")

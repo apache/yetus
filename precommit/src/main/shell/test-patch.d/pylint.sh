@@ -42,18 +42,23 @@ function pylint_parse_args
   for i in "$@"; do
     case ${i} in
     --pylint=*)
+      delete_parameter "${i}"
       PYLINT=${i#*=}
     ;;
     --pylint-pip-cmd=*)
+      delete_parameter "${i}"
       PYLINT_PIP_CMD=${i#*=}
     ;;
     --pylint-rcfile=*)
+      delete_parameter "${i}"
       PYLINT_RCFILE=${i#*=}
     ;;
     --pylint-requirements=*)
+      delete_parameter "${i}"
       PYLINT_REQUIREMENTS=${i#*=}
     ;;
     --pylint-use-user=*)
+      delete_parameter "${i}"
       PYLINT_PIP_USER=${i#*=}
     ;;
     esac

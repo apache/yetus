@@ -43,6 +43,7 @@ function unitveto_parse_args
   for i in "$@"; do
     case ${i} in
       --unitveto-re=*)
+        delete_parameter "${i}"
         UNITVETO_RE=${i#*=}
       ;;
     esac

@@ -69,18 +69,23 @@ function github_parse_args
   for i in "$@"; do
     case ${i} in
       --github-api-url=*)
+        delete_parameter "${i}"
         GITHUB_API_URL=${i#*=}
       ;;
       --github-base-url=*)
+        delete_parameter "${i}"
         GITHUB_BASE_URL=${i#*=}
       ;;
       --github-repo=*)
+        delete_parameter "${i}"
         GITHUB_REPO=${i#*=}
       ;;
       --github-password=*)
+        delete_parameter "${i}"
         GITHUB_PASSWD=${i#*=}
       ;;
       --github-user=*)
+        delete_parameter "${i}"
         GITHUB_USER=${i#*=}
       ;;
     esac

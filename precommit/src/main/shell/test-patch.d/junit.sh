@@ -39,12 +39,15 @@ function junit_parse_args
   for i in "$@"; do
     case ${i} in
       --junit-test-output=*)
+        delete_parameter "${i}"
         JUNIT_TEST_OUTPUT_DIR=${i#*=}
       ;;
       --junit-test-prefix=*)
+        delete_parameter "${i}"
         JUNIT_TEST_PREFIX=${i#*=}
       ;;
       --junit-results-xml=*)
+        delete_parameter "${i}"
         JUNIT_RESULTS_XML=${i#*=}
       ;;
     esac

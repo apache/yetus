@@ -48,6 +48,7 @@ function shelldocs_parse_args
   for i in "$@"; do
     case ${i} in
     --shelldocs=*)
+      delete_parameter "${i}"
       SHELLDOCS=${i#*=}
     ;;
     esac

@@ -42,9 +42,11 @@ function whitespace_parse_args
   for i in "$@"; do
     case ${i} in
       --whitespace-eol-ignore-list=*)
+        delete_parameter "${i}"
         WHITESPACE_EOL_IGNORE_LIST="${i#*=}"
       ;;
       --whitespace-tabs-ignore-list=*)
+        delete_parameter "${i}"
         WHITESPACE_TABS_IGNORE_LIST="${i#*=}"
       ;;
     esac

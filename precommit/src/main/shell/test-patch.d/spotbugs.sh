@@ -56,9 +56,11 @@ function spotbugs_parse_args
   for i in "$@"; do
     case ${i} in
     --spotbugs-home=*)
+      delete_parameter "${i}"
       SPOTBUGS_HOME=${i#*=}
     ;;
     --spotbugs-strict-precheck)
+      delete_parameter "${i}"
       SPOTBUGS_WARNINGS_FAIL_PRECHECK=true
     ;;
     esac

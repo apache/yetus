@@ -29,6 +29,7 @@ BINNAME=${this##*/}
 BINNAME=${BINNAME%.sh}
 STARTINGDIR=$(pwd)
 USER_PARAMS=("$@")
+
 #shellcheck disable=SC2034
 QATESTMODE=false
 
@@ -686,6 +687,7 @@ function yetus_usage
   yetus_add_option "--excludes=<file>" "File of regexs to keep project files out of the set of changes passed to plugins."
   yetus_add_option "--git-offline" "Do not fail if git cannot do certain remote operations"
   yetus_add_option "--git-shallow" "Repo does not know about other branches or tags"
+  yetus_add_option "--ignore-unknown-options=<bool>" "Continue despite unknown options (default: ${IGNORE_UNKNOWN_OPTIONS})"
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (default: same as --bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
@@ -783,59 +785,76 @@ function parse_args
   for i in "$@"; do
     case ${i} in
       --archive-list=*)
+        delete_parameter "${i}"
         yetus_comma_to_array ARCHIVE_LIST "${i#*=}"
         yetus_debug "Set to archive: ${ARCHIVE_LIST[*]}"
       ;;
       --bugcomments=*)
+        delete_parameter "${i}"
         BUGCOMMENTS=${i#*=}
         BUGCOMMENTS=${BUGCOMMENTS//,/ }
       ;;
       --build-native=*)
+        delete_parameter "${i}"
         BUILD_NATIVE=${i#*=}
       ;;
       --build-tool=*)
+        delete_parameter "${i}"
         BUILDTOOL=${i#*=}
       ;;
       --build-url=*)
+        delete_parameter "${i}"
         BUILD_URL=${i#*=}
       ;;
       --build-url-artifacts=*)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         BUILD_URL_ARTIFACTS=${i#*=}
       ;;
       --build-url-console=*)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         BUILD_URL_CONSOLE=${i#*=}
       ;;
       --console-report-file=*)
+        delete_parameter "${i}"
         CONSOLE_REPORT_FILE=${i#*=}
       ;;
       --console-urls)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         CONSOLE_USE_BUILD_URL=true
       ;;
       --contrib-guide=*)
+        delete_parameter "${i}"
         PATCH_NAMING_RULE=${i#*=}
       ;;
       --continuous-improvement=*)
+        delete_parameter "${i}"
         CONTINUOUS_IMPROVEMENT=${i#*=}
       ;;
       --dirty-workspace)
+        delete_parameter "${i}"
         DIRTY_WORKSPACE=true
       ;;
       --excludes=*)
+        delete_parameter "${i}"
         EXCLUDE_PATHS_FILE="${i#*=}"
       ;;
       --instance=*)
+        delete_parameter "${i}"
         INSTANCE=${i#*=}
       ;;
       --empty-patch)
+        delete_parameter "${i}"
         BUILDMODE=full
       ;;
       --java-home=*)
+        delete_parameter "${i}"
         JAVA_HOME=${i#*=}
       ;;
       --linecomments=*)
+        delete_parameter "${i}"
         BUGLINECOMMENTS=${i#*=}
         BUGLINECOMMENTS=${BUGLINECOMMENTS//,/ }
         if [[ -z "${BUGLINECOMMENTS}" ]]; then
@@ -843,76 +862,97 @@ function parse_args
         fi
       ;;
       --modulelist=*)
+        delete_parameter "${i}"
         yetus_comma_to_array USER_MODULE_LIST "${i#*=}"
         yetus_debug "Manually forcing modules ${USER_MODULE_LIST[*]}"
       ;;
       --multijdkdirs=*)
+        delete_parameter "${i}"
         yetus_comma_to_array JDK_DIR_LIST "${i#*=}"
         yetus_debug "Multi-JDK mode activated with ${JDK_DIR_LIST[*]}"
         yetus_add_array_element EXEC_MODES MultiJDK
       ;;
       --multijdktests=*)
+        delete_parameter "${i}"
         yetus_comma_to_array JDK_TEST_LIST "${i#*=}"
         yetus_debug "MultiJDK test list=${JDK_TEST_LIST[*]}"
       ;;
       --mv-patch-dir)
+        delete_parameter "${i}"
         RELOCATE_PATCH_DIR=true;
       ;;
       --personality=*)
+        delete_parameter "${i}"
         PERSONALITY=${i#*=}
       ;;
       --proclimit=*)
+        delete_parameter "${i}"
         PROC_LIMIT=${i#*=}
       ;;
       --reexec)
+        delete_parameter "${i}"
         REEXECED=true
       ;;
       --resetrepo)
+        delete_parameter "${i}"
         RESETREPO=true
       ;;
       --robot)
+        delete_parameter "${i}"
         ROBOT=true
       ;;
       --run-tests)
+        delete_parameter "${i}"
         RUN_TESTS=true
       ;;
       --sentinel)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         SENTINEL=true
         yetus_add_array_element EXEC_MODES Sentinel
       ;;
       --skip-dirs=*)
+        delete_parameter "${i}"
         MODULE_SKIPDIRS=${i#*=}
         MODULE_SKIPDIRS=${MODULE_SKIPDIRS//,/ }
         yetus_debug "Setting skipdirs to ${MODULE_SKIPDIRS}"
       ;;
       --summarize=*)
+        delete_parameter "${i}"
         ALLOWSUMMARIES=${i#*=}
       ;;
       --test-parallel=*)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         TEST_PARALLEL=${i#*=}
       ;;
       --test-threads=*)
+        delete_parameter "${i}"
         # shellcheck disable=SC2034
         TEST_THREADS=${i#*=}
       ;;
       --unit-test-filter-file=*)
+        delete_parameter "${i}"
         UNIT_TEST_FILTER_FILE=${i#*=}
       ;;
       --tests-filter=*)
+        delete_parameter "${i}"
         yetus_comma_to_array VOTE_FILTER "${i#*=}"
       ;;
       --tpglobaltimer=*)
+        delete_parameter "${i}"
         GLOBALTIMER=${i#*=}
       ;;
       --tpinstance=*)
+        delete_parameter "${i}"
         INSTANCE=${i#*=}
       ;;
       --tpperson=*)
+        delete_parameter "${i}"
         REEXECPERSONALITY=${i#*=}
       ;;
       --tpreexectimer=*)
+        delete_parameter "${i}"
         REEXECLAUNCHTIMER=${i#*=}
       ;;
       --*)
@@ -3059,7 +3099,6 @@ function initialize
     BUGCOMMENTS="${BUGCOMMENTS} console"
   fi
 
-
   if [[ "${BUGLINECOMMENTS}" == " " ]]; then
     BUGLINECOMMENTS=""
   else
@@ -3107,6 +3146,17 @@ function initialize
 
   check_reexec
 
+  if [[ "${#PARAMETER_TRACKER}" -gt 0 ]]; then
+    yetus_error "ERROR: Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+    if [[ "${IGNORE_UNKNOWN_OPTIONS}" == true ]]; then
+      add_vote_table "-0" yetus "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+    else
+      add_vote_table -1 yetus "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+      bugsystem_finalreport 1
+      cleanup_and_exit 1
+    fi
+  fi
+
   determine_needed_tests
 
   prepopulate_footer
@@ -3153,9 +3203,28 @@ function import_core
   done
 }
 
+## @description setup the parameter tracker for param errors
+## @audience    private
+## @stability   evolving
+function setup_parameter_tracker
+{
+  declare i
+
+  for i in "${USER_PARAMS[@]}"; do
+    if [[ "${i}" =~ ^-- ]]; then
+      i=${i%=*}
+      PARAMETER_TRACKER+=("${i}")
+    fi
+  done
+}
+
 ###############################################################################
 ###############################################################################
 ###############################################################################
+
+# robots will change USER_PARAMS so must
+# do this before importing other code
+setup_parameter_tracker
 
 import_core
 

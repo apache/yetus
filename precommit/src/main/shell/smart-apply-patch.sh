@@ -120,6 +120,7 @@ function yetus_usage
   yetus_add_option "--committer" "Apply patches like a boss."
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dry-run" "Check for patch viability without applying"
+  yetus_add_option "--ignore-unknown-options=<bool>" "Continue despite unknown options (default: ${IGNORE_UNKNOWN_OPTIONS})"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
   yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
   yetus_add_option "--offline" "Avoid connecting to the Internet"
@@ -193,27 +194,35 @@ function parse_args
   for i in "$@"; do
     case ${i} in
       --build-tool=*)
+        delete_parameter "${i}"
         BUILDTOOL=${i#*=}
       ;;
       --committer)
+        delete_parameter "${i}"
         COMMITMODE=true
       ;;
       --gpg-sign)
+        delete_parameter "${i}"
         GPGSIGN=true
       ;;
       --dry-run)
+        delete_parameter "${i}"
         PATCH_DRYRUNMODE=true
       ;;
       --changedfilesreport=*)
+        delete_parameter "${i}"
         FILEREPORT=${i#*=}
       ;;
       --changedmodulesreport=*)
+        delete_parameter "${i}"
         MODULEREPORT=${i#*=}
       ;;
       --changedunionreport=*)
+        delete_parameter "${i}"
         UNIONREPORT=${i#*=}
       ;;
       --report-only)
+        delete_parameter "${i}"
         REPORTONLY=true
       ;;
       --*)
@@ -383,7 +392,26 @@ function import_core
   done
 }
 
+## @description setup the parameter tracker for param errors
+## @audience    private
+## @stability   evolving
+function setup_parameter_tracker
+{
+  declare i
+
+  for i in "${USER_PARAMS[@]}"; do
+    if [[ "${i}" =~ ^-- ]]; then
+      i=${i%=*}
+      PARAMETER_TRACKER+=("${i}")
+    fi
+  done
+}
+
 trap "cleanup_and_exit 1" HUP INT QUIT TERM
+
+# robots will change USER_PARAMS so must
+# do this before importing other code
+setup_parameter_tracker
 
 import_core
 
@@ -399,6 +427,13 @@ TESTTYPES=()
 TESTFORMATS=()
 
 parse_args_plugins "$@"
+
+if [[ "${#PARAMETER_TRACKER}" -gt 0 ]]; then
+  yetus_error "ERROR: Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+  if [[ "${IGNORE_UNKNOWN_OPTIONS}" == false ]]; then
+    cleanup_and_exit 1
+  fi
+fi
 
 plugins_initialize
 

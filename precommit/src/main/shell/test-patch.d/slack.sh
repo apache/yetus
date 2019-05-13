@@ -36,6 +36,7 @@ function slack_parse_args
   for i in "$@"; do
     case ${i} in
       --slack-webhook-url=*)
+        delete_parameter "${i}"
         SLACK_WEBHOOK_URL=${i#*=}
       ;;
     esac

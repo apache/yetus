@@ -36,6 +36,7 @@ function autoconf_parse_args
   for i in "$@"; do
     case ${i} in
       --autoconf-configure-flags=*)
+        delete_parameter "${i}"
         AUTOCONF_CONF_FLAGS=${i#*=}
       ;;
     esac

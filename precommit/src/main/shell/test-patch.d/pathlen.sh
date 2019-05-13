@@ -39,6 +39,7 @@ function pathlen_parse_args
   for i in "$@"; do
     case ${i} in
       --pathlen-size=*)
+        delete_parameter "${i}"
         PATHLEN_SIZE="${i#*=}"
       ;;
     esac

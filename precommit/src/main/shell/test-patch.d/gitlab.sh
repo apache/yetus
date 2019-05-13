@@ -55,15 +55,19 @@ function gitlab_parse_args
   for i in "$@"; do
     case ${i} in
       --gitlab-disable-write)
+        delete_parameter "${i}"
         GITLAB_WRITE_ENABLED=false
       ;;
       --gitlab-token=*)
+        delete_parameter "${i}"
         GITLAB_TOKEN=${i#*=}
       ;;
       --gitlab-repo=*)
+        delete_parameter "${i}"
         GITLAB_REPO=${i#*=}
       ;;
       --gitlab-url=*)
+        delete_parameter "${i}"
         GITLAB_BASE_URL=${i#*=}
       ;;
     esac

@@ -44,9 +44,11 @@ function briefreport_parse_args
   for i in "$@"; do
     case ${i} in
       --brief-report-file=*)
+        delete_parameter "${i}"
         fn=${i#*=}
       ;;
       --brief-report-long=*)
+        delete_parameter "${i}"
         BRIEFOUT_LONGRUNNING=${i#*=}
       ;;
     esac

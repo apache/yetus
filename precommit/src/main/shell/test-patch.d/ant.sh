@@ -39,6 +39,7 @@ function ant_parse_args
   for i in "$@"; do
     case ${i} in
       --ant-cmd=*)
+        delete_parameter "${i}"
         ANT=${i#*=}
       ;;
     esac

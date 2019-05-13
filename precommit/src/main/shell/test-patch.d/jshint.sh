@@ -38,6 +38,7 @@ function jshint_parse_args
   for i in "$@"; do
     case ${i} in
       --jshint-cmd=*)
+        delete_parameter "${i}"
         JSHINT=${i#*=}
       ;;
     esac
