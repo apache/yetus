@@ -557,9 +557,11 @@ function findbugs_parse_args
   for i in "$@"; do
     case ${i} in
     --findbugs-home=*)
+      delete_parameter "${i}"
       SPOTBUGS_HOME=${i#*=}
     ;;
     --findbugs-strict-precheck)
+      delete_parameter "${i}"
       SPOTBUGS_WARNINGS_FAIL_PRECHECK=true
     ;;
     esac
