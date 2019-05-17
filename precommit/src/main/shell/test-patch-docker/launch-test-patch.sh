@@ -63,7 +63,7 @@ fi
 # system.  So we need to rescue it and then tell
 # test-patch where to find it.
 if [[ "${PATCH_SYSTEM}" = generic ]]; then
-  cp -p "${PATCH_DIR}/patch" "${DOCKER_WORK_DIR}/extras/patch"
+  cp -p "${PATCH_DIR}/input.patch" "${DOCKER_WORK_DIR}/extras/patch"
   OVERWRITEARGS+=("${DOCKER_WORK_DIR}/extras/patch")
 fi
 
