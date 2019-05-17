@@ -25,6 +25,7 @@ fi
 MAVEN_CUSTOM_REPOS=false
 MAVEN_CUSTOM_REPOS_DIR="@@@WORKSPACE@@@/yetus-m2"
 MAVEN_DEPENDENCY_ORDER=true
+MAVEN_FOUND_ROOT_POM=false
 
 add_test_type mvnsite
 add_build_tool maven
@@ -269,6 +270,9 @@ function maven_filefilter
   if [[ ${filename} =~ pom\.xml$ ]]; then
     yetus_debug "tests/compile: ${filename}"
     add_test compile
+    if [[ "${filename}" =~ ^pom\.xml$ ]]; then
+      MAVEN_FOUND_ROOT_POM=true
+    fi
   fi
 }
 
@@ -474,7 +478,7 @@ function maven_builtin_personality_modules
   if [[ ${repostatus} == branch
         && ${testtype} == mvninstall ]] ||
      [[ "${BUILDMODE}" = full ]];then
-    personality_enqueue_module "${CHANGED_UNION_MODULES}"
+    personality_enqueue_module .
     return
   fi
 
@@ -610,7 +614,7 @@ function maven_precompile
 {
   declare repostatus=$1
   declare result=0
-  declare need=false
+  declare need=${2:-false}
 
   if [[ ${BUILDTOOL} != maven ]]; then
     return 0
@@ -625,11 +629,11 @@ function maven_precompile
     fi
   done
 
-  if [[ "${need}" = false ]]; then
+  if [[ "${need}" == false ]]; then
     return 0
   fi
 
-  if [[ "${repostatus}" = branch ]]; then
+  if [[ "${repostatus}" == branch ]]; then
     big_console_header "maven install: ${PATCH_BRANCH}"
   else
     big_console_header "maven install: ${BUILDMODE}"
@@ -690,8 +694,32 @@ function maven_reorder_module_process
     fi
   done
 
-  fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
-  pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null || return 1
+  if [[ "${BUILDMODE}" == patch ]] && [[ "${MAVEN_FOUND_ROOT_POM}" == true ]]; then
+
+    echo ""
+    echo "Testing root pom.xml file for version change"
+    echo ""
+    fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
+    pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null || return 1
+
+    # shellcheck disable=SC2046
+    echo_and_redirect \
+      "${PATCH_DIR}/maven-${repostatus}-version-${fn}.txt" \
+      $("${BUILDTOOL}_executor") \
+        "-fae" \
+        "org.apache.maven.plugins:maven-help-plugin:evaluate" \
+        '-Dexpression=project.version' \
+        "-Doutput=${PATCH_DIR}/maven-${repostatus}-version.txt"
+
+    projectversion=$(cat "${PATCH_DIR}/maven-${repostatus}-version.txt")
+
+    if [[ -z "${MAVEN_DETECTED_PROJECT_VERSION}" ]]; then
+      MAVEN_DETECTED_PROJECT_VERSION=${projectversion}
+    elif [[ "${MAVEN_DETECTED_PROJECT_VERSION}" != "${projectversion}" ]]; then
+      echo "Patch changes root pom.xml project.version: forcing an extra mvn install on the patched branch"
+      maven_precompile branch true
+    fi
+  fi
 
   # get the module directory list in the correct order based on maven dependencies
   # shellcheck disable=SC2046
