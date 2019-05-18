@@ -45,7 +45,7 @@ Some projects have complex shell functions that act as APIs. `shelldocs` provide
 
 # Function Annotations
 
-`shelldocs` works by doing simple parsing of shell scripts.  As such, it looks for code that matches this pattern:
+`shelldocs` works by doing simple parsing of shell scripts.  As such, it looks for code that matches these patterns:
 
 ```bash
 ## @annotation
@@ -54,7 +54,41 @@ function functioname() {
 }
 ```
 
-This is Korn shell syntax that other shell languages (such as bash) will correctly interpret as a function.
+```bash
+## @annotation
+function functioname () {
+  ...
+}
+```
+
+```bash
+## @annotation
+function functioname {
+  ...
+}
+```
+
+```bash
+## @annotation
+function functioname
+{
+  ...
+}
+```
+
+```bash
+## @annotation
+functioname() {
+  ...
+}
+```
+
+```bash
+## @annotation
+functioname () {
+  ...
+}
+```
 
 Note that the comment has two hash ('#') marks.  The content of the comment is key.  This is what `shelldocs` will turn into documentation.  The following annotations are supported:
 

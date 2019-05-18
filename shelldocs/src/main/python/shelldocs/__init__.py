@@ -46,6 +46,8 @@ ASFLICENSE = '''
 -->
 '''
 
+FUNCTIONRE = re.compile(r"^(\w+) *\(\) *{")
+
 
 def docstrip(key, dstr):
     '''remove extra spaces from shelldoc phrase'''
@@ -122,8 +124,11 @@ class ShellFunction(object): # pylint: disable=too-many-public-methods, too-many
 
     def setname(self, text):
         '''set the name of the function'''
-        definition = text.split()
-        self.name = definition[1]
+        if FUNCTIONRE.match(text):
+            definition = FUNCTIONRE.match(text).groups()[0]
+        else:
+            definition = text.split()[1]
+        self.name = definition.replace("(", "").replace(")", "")
 
     def getname(self):
         '''get the name of the function'''
@@ -331,7 +336,7 @@ def process_file(filename, skipprnorep):
                     funcdef.addparam(line)
                 elif line.startswith('## @return'):
                     funcdef.addreturn(line)
-                elif line.startswith('function'):
+                elif line.startswith('function') or FUNCTIONRE.match(line):
                     funcdef.setname(line)
                     funcdef.setlinenum(linenum)
                     if skipprnorep and \
