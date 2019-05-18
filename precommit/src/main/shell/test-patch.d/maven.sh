@@ -694,17 +694,16 @@ function maven_reorder_module_process
     fi
   done
 
+  pushd "${BASEDIR}" >/dev/null || return 1
   if [[ "${BUILDMODE}" == patch ]] && [[ "${MAVEN_FOUND_ROOT_POM}" == true ]]; then
 
     echo ""
     echo "Testing root pom.xml file for version change"
     echo ""
-    fn=$(module_file_fragment "${CHANGED_UNION_MODULES}")
-    pushd "${BASEDIR}/${CHANGED_UNION_MODULES}" >/dev/null || return 1
 
     # shellcheck disable=SC2046
     echo_and_redirect \
-      "${PATCH_DIR}/maven-${repostatus}-version-${fn}.txt" \
+      "${PATCH_DIR}/maven-${repostatus}-version-log.txt" \
       $("${BUILDTOOL}_executor") \
         "-fae" \
         "org.apache.maven.plugins:maven-help-plugin:evaluate" \
