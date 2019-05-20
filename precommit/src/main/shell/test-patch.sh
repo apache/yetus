@@ -1136,6 +1136,45 @@ function git_requires_creds
   return 0
 }
 
+## @description  git clean the repository
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @return       0 on success
+function git_clean
+{
+  declare exemptdir
+
+  if [[ ${RESETREPO} == "true" ]]; then
+    # if PATCH_DIR is in BASEDIR, then we don't want
+    # git wiping it out.
+    exemptdir=$(yetus_relative_dir "${BASEDIR}" "${PATCH_DIR}")
+    if [[ $? == 1 ]]; then
+      "${GIT}" clean -xdf
+    else
+      # we do, however, want it emptied of all _files_.
+      # we need to leave _directories_ in case we are in
+      # re-exec mode (which places a directory full of stuff in it)
+      yetus_debug "Exempting ${exemptdir} from clean"
+      "${GIT}" clean -xdf -e "${exemptdir}"
+    fi
+  fi
+}
+
+## @description  Forcibly reset the tree back to it's original state
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @return       0 on success
+function git_checkout_force
+{
+  declare exemptdir
+
+  if [[ ${RESETREPO} == "true" ]]; then
+    git_clean && "${GIT}" checkout --force "${PATCH_BRANCH}"
+  fi
+}
+
 ## @description  git checkout the appropriate branch to test.  Additionally, this calls
 ## @description  'determine_branch' based upon the context provided
 ## @description  in ${PATCH_DIR} and in git after checkout.
@@ -1177,26 +1216,19 @@ function git_checkout
       cleanup_and_exit 1
     fi
 
+    if ! git_clean; then
+      yetus_error "ERROR: git clean is failing"
+      cleanup_and_exit 1
+    fi
+
     # if PATCH_DIR is in BASEDIR, then we don't want
     # git wiping it out.
-    exemptdir=$(yetus_relative_dir "${BASEDIR}" "${PATCH_DIR}")
-    if [[ $? == 1 ]]; then
-      "${GIT}" clean -xdf
-      status=$?
-
-    else
-      # we do, however, want it emptied of all _files_.
-      # we need to leave _directories_ in case we are in
+    if yetus_relative_dir "${BASEDIR}" "${PATCH_DIR}" >/dev/null; then
+      # we need to empty out PATCH_DIR, but
+      # leave _directories_ in case we are in
       # re-exec mode (which places a directory full of stuff in it)
       yetus_debug "Exempting ${exemptdir} from clean"
       rm "${PATCH_DIR}/*" 2>/dev/null
-      "${GIT}" clean -xdf -e "${exemptdir}"
-      status=$?
-    fi
-
-    if [[ ${status} != 0 ]]; then
-      yetus_error "ERROR: git clean is failing"
-      cleanup_and_exit 1
     fi
 
     if [[ "${GIT_SHALLOW}" == false ]]; then
@@ -1244,7 +1276,7 @@ function git_checkout
         fi
       fi
 
-      if ! "${GIT}" clean -df; then
+      if ! git_clean; then
         yetus_error "ERROR: git clean is failing"
         cleanup_and_exit 1
       fi
@@ -2971,7 +3003,7 @@ function distclean
 
   for plugin in "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
     if declare -f "${plugin}_clean" >/dev/null 2>&1; then
-      yetus_debug "Running ${plugin}_distclean"
+      yetus_debug "Running ${plugin}_clean"
       if ! "${plugin}_clean"; then
         ((result = result+1))
       fi
