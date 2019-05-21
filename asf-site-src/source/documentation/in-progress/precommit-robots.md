@@ -268,7 +268,7 @@ The `--build-url` option is also useful when running in `--robot` mode so that e
 have a location to look at the output artifacts:
 
 ```bash
-$ test-patch --robot --build-url=http://server.example.name:80/${buildnumber}/
+$ test-patch --robot --build-url=https://server.example.name:80/${buildnumber}/
 ```
 
 Some plug-ins such as Maven have special handling if there are multiple executions of `test-patch` happening at once.  It is very common when using automation systems to have multiple runs on the same host. In order to assist these plug-ins, an instance identifier may be provided:

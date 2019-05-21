@@ -2,8 +2,8 @@
 <?xml-stylesheet type="text/xsl"?>
 <rdf:RDF xml:lang="en"
          xmlns="http://usefulinc.com/ns/doap#"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:asfext="http://projects.apache.org/ns/asfext#"
+         xmlns:rdf="https://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:asfext="https://projects.apache.org/ns/asfext#"
          xmlns:foaf="http://xmlns.com/foaf/0.1/">
 <!--
     Licensed to the Apache Software Foundation (ASF) under one or more
@@ -23,7 +23,7 @@
 -->
   <Project rdf:about="https://yetus.apache.org">
     <created>2015-09-16</created>
-    <license rdf:resource="http://spdx.org/licenses/Apache-2.0" />
+    <license rdf:resource="https://spdx.org/licenses/Apache-2.0" />
     <name>Apache Yetus</name>
     <homepage rdf:resource="https://yetus.apache.org/" />
     <asfext:pmc rdf:resource="https://yetus.apache.org/" />
@@ -31,13 +31,13 @@
     <description>A collection of libraries and tools that enable contribution and release processes for software projects.</description>
     <bug-database rdf:resource="https://issues.apache.org/jira/browse/yetus" />
     <mailing-list rdf:resource="https://yetus.apache.org/mailinglists/" />
-    <download-page rdf:resource="http://yetus.apache.org/downloads/" />
+    <download-page rdf:resource="https://yetus.apache.org/downloads/" />
     <programming-language>Bash</programming-language>
     <programming-language>Java</programming-language>
     <programming-language>Python</programming-language>
-    <category rdf:resource="http://projects.apache.org/category/build-management" />
-    <category rdf:resource="http://projects.apache.org/category/library" />
-    <category rdf:resource="http://projects.apache.org/category/testing" />
+    <category rdf:resource="https://projects.apache.org/category/build-management" />
+    <category rdf:resource="https://projects.apache.org/category/library" />
+    <category rdf:resource="https://projects.apache.org/category/testing" />
     <repository>
       <GitRepository>
         <location rdf:resource="https://github.com/apache/yetus.git"/>

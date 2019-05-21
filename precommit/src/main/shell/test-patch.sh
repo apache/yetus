@@ -501,7 +501,7 @@ function compute_gitdiff
       # it isn't obvious, but on MOST platforms under MOST use cases,
       # this is faster than using sed, and definitely faster than using
       # awk.
-      # http://unix.stackexchange.com/questions/47407/cat-line-x-to-line-y-on-a-huge-file
+      # https://unix.stackexchange.com/questions/47407/cat-line-x-to-line-y-on-a-huge-file
       # has a good discussion w/benchmarks
       #
       # note that if tail is still sending data through the pipe, but head gets enough
@@ -2325,7 +2325,7 @@ function bugsystem_finalreport
     add_footer_table "versions" "${VERSION_DATA[@]}"
   fi
 
-  add_footer_table "Powered by" "Apache Yetus ${VERSION} http://yetus.apache.org"
+  add_footer_table "Powered by" "Apache Yetus ${VERSION} https://yetus.apache.org"
 
   bugsystem_linecomments_trigger
 

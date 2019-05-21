@@ -25,15 +25,15 @@
     <h3>Mailing Lists</h3>
     <p><strong>Developers</strong> - Development related discussion.</p>
 
-    <p><a href="mailto:dev-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:dev-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-dev/">Archive</a></p>
+    <p><a href="mailto:dev-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:dev-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="https://mail-archives.apache.org/mod_mbox/yetus-dev/">Archive</a></p>
 
     <p><strong>Commits</strong> - Commit notification source repository.</p>
 
-                <p><a href="mailto:commits-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:commits-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-commits/">Archive</a></p>
+                <p><a href="mailto:commits-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:commits-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="https://mail-archives.apache.org/mod_mbox/yetus-commits/">Archive</a></p>
 
                 <p><strong>Notifications</strong> - JIRA issue notifications</p>
 
-                <p><a href="mailto:notifications-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:notifications-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="http://mail-archives.apache.org/mod_mbox/yetus-notifications/">Archive</a></p>
+                <p><a href="mailto:notifications-subscribe@yetus.apache.org">Subscribe</a> | <a href="mailto:notifications-unsubscribe@yetus.apache.org">Unsubscribe</a> | <a href="https://mail-archives.apache.org/mod_mbox/yetus-notifications/">Archive</a></p>
 
   </div>
 </div>

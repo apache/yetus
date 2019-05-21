@@ -267,7 +267,7 @@ function briefreport_finalreport
 
   {
    echo ""
-   echo "Powered by" "Apache Yetus ${version}   http://yetus.apache.org"
+   echo "Powered by" "Apache Yetus ${version}   https://yetus.apache.org"
    echo ""
   } >> "${BRIEFOUT_REPORTFILE}"
 

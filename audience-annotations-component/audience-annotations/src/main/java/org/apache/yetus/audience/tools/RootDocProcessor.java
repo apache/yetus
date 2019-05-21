@@ -45,7 +45,8 @@ import org.apache.yetus.audience.InterfaceStability;
  * Process the {@link RootDoc} by substituting with (nested) proxy objects that
  * exclude elements with Private or LimitedPrivate annotations.
  * <p>
- * Based on code from http://www.sixlegs.com/blog/java/exclude-javadoc-tag.html.
+ * Based on code from
+ * https://web.archive.org/web/20171114155534/http://sixlegs.com/blog/java/exclude-javadoc-tag.html.
  */
 class RootDocProcessor {
 

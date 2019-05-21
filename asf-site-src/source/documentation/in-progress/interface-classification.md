@@ -44,7 +44,7 @@ The interface taxonomy classification provided by Apache Yetus annotations is fo
 # Interface Classification
 
 Yetus provides the following interface classification, derived from the
-[OpenSolaris taxonomy](http://web.archive.org/web/20061013114610/http://opensolaris.org/os/community/arc/policies/interface-taxonomy/)
+[OpenSolaris taxonomy](https://web.archive.org/web/20061013114610/http://opensolaris.org/os/community/arc/policies/interface-taxonomy/)
 and, to some extent, from taxonomy used inside Yahoo.
 Interfaces have two main attributes: Audience and Stability
 

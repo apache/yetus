@@ -26,7 +26,7 @@ import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.yetus.audience.InterfaceStability;
 
 /**
- * A <a href="http://java.sun.com/javase/6/docs/jdk/api/javadoc/doclet/">Doclet</a>
+ * A <a href="https://java.sun.com/javase/6/docs/jdk/api/javadoc/doclet/">Doclet</a>
  * for excluding elements that are annotated with
  * {@link org.apache.yetus.audience.InterfaceAudience.Private} or
  * {@link org.apache.yetus.audience.InterfaceAudience.LimitedPrivate}.
