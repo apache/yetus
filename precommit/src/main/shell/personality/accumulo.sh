@@ -31,7 +31,7 @@ function personality_globals
   #shellcheck disable=SC2034
   GITHUB_REPO_DEFAULT="apache/accumulo"
   #shellcheck disable=SC2034
-  PATCH_NAMING_RULE="http://accumulo.apache.org/git.html#contributors"
+  PATCH_NAMING_RULE="https://accumulo.apache.org/git.html#contributors"
   # We want to invoke the 'check' goal, not the default 'checkstyle'. We define
   # our own checkstyle rules which isn't possible via 'checkstyle' configuration
   #shellcheck disable=SC2034

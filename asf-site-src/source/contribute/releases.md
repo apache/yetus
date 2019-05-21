@@ -243,7 +243,7 @@ Depending on how candidate evaluation goes, you may end up performing these step
    ```
 
 1. Examine staged maven build. Go to the [ASF repository](https://repository.apache.org/) and log in with your asf LDAP credentials. Look for the staging repository with a name that includes "yetus". Clicking on it will give you a link to an "Open" repository. You can examine the structure in the Nexus API while you're logged in. If it looks essentially correct, "Close" the repository. Refreshing and clicking on the repository will give you a link in the Summary tab that other folks can use to interact with the repository.
-1. Create a short link that should point to some online timezone conversion utility that will point to when the vote will end. ASF votes often use timeanddate.com's Event Time Announcer: <http://www.timeanddate.com/worldclock/fixedform.html>.
+1. Create a short link that should point to some online timezone conversion utility that will point to when the vote will end. ASF votes often use timeanddate.com's Event Time Announcer: <https://www.timeanddate.com/worldclock/fixedform.html>.
 1. Call a vote on the release candidate. At this point, you have everything you need to call a vote. Your vote thread must contain "[VOTE]" in the subject line, a link to the candidate staging area you created, a source repository commit hash, and voting rules. It should also contain hashes for the artifacts. Here is an example draft for 0.7.0-RC1, update it as appropriate for your release:
 
         Subject: [VOTE] Apache Yetus 0.7.0-RC1

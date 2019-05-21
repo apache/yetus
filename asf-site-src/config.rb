@@ -147,7 +147,7 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metri
     `(cd  #{output} \
       && mkdir -p build-#{version} \
       && curl --fail --location --output site-#{version}.tar.gz \
-        http://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
+        https://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
       && tar -C build-#{version} \
          --strip-components 3 -xzpf site-#{version}.tar.gz \
         apache-yetus-#{version}-site/documentation/in-progress/ \

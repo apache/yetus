@@ -26,7 +26,7 @@ function personality_globals
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^KAFKA-[0-9]+$'
   #shellcheck disable=SC2034
-  PATCH_NAMING_RULE="http://kafka.apache.org/contributing.html"
+  PATCH_NAMING_RULE="https://kafka.apache.org/contributing.html"
   # shellcheck disable=SC2034
   BUILDTOOL=gradle
   #shellcheck disable=SC2034
