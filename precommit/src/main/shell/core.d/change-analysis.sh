@@ -278,5 +278,4 @@ function find_changed_modules
     "${BUILDTOOL}_reorder_modules" "${repostatus}"
   fi
   popd >/dev/null || return 1
-
 }
