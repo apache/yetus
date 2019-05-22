@@ -27,7 +27,7 @@ Test
 
 # Description
 
-NOTE: Go support is experimental.  Additionally, this plug-in only supports Go using Go modules.
+NOTE: This plug-in only supports Go using Go modules.
 
 Provides support for
 [golangci-lint](https://github.com/golangci/golangci-lint).  This
