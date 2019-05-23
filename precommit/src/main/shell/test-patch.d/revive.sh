@@ -77,7 +77,7 @@ function revive_exec
 
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.go$ && -f ${i} ]]; then
-      "${REVIVE}" "${args[@]}" "${i}" | sort -t : -k1,1 -k2,2n -k3,3n >> "${PATCH_DIR}/${repostatus}-revive-result.txt"
+      "${REVIVE}" "${args[@]}" "${i}" 2>&1 | sort -t : -k1,1 -k2,2n -k3,3n -k 4 >> "${PATCH_DIR}/${repostatus}-revive-result.txt"
     fi
   done
 
