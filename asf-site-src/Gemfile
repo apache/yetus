@@ -13,26 +13,26 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+
+# rubocop:disable Style/HashSyntax, Style/SymbolArray
+
 # If you do not have OpenSSL installed, update
-# the following line to use "http://" instead
+# the following line to use 'http://' instead
 source 'https://rubygems.org'
 
-gem "middleman", "~>3.4.0"
+gem 'middleman', '~> 4.2'
 
 # Live-reloading plugin
-gem "middleman-livereload"
+gem 'middleman-livereload'
 
 gem 'middleman-syntax', github: 'middleman/middleman-syntax'
 
 # For faster file watcher updates on Windows:
-gem "wdm", "~> 0.1.0", :platforms => [:mswin, :mingw]
+gem 'wdm', '~> 0.1.0', :platforms => [:mswin, :mingw]
 
 # Windows does not come with time zone data
-gem "tzinfo-data", platforms: [:mswin, :mingw, :jruby]
-
-gem 'redcarpet', github: 'vmg/redcarpet'
-
-gem 'rake', '10.3.1'
+gem 'tzinfo-data', platforms: [:mswin, :mingw, :jruby]
 
 gem 'therubyracer'
+
+# rubocop:enable Style/HashSyntax, Style/SymbolArray

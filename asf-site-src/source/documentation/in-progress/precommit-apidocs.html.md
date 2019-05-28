@@ -16,12 +16,13 @@
   specific language governing permissions and limitations
   under the License.
 -->
-Precommit API Docs
-==================
+
+# Precommit API Docs
+
 
 Following gives the downstream consumable API for precommit components.
 
-* <%= link_to "Core Functions", "core" %>, common to both smart-apply-patch and test-patch.
-* <%= link_to "Smart Apply Patch", "smart-apply-patch" %>
-* <%= link_to "Test Patch", "test-patch" %>, available to all plugins.
-* <%= link_to "Precommit Plugins", "plugins" %>
+* [Core Functions](core/), common to both smart-apply-patch and test-patch.
+* [Smart Apply Patch](smart-apply-patch/) available to all plugins when running under smart-apply-patch.
+* [Test Patch](test-patch/), available to all plugins when running under test-patch.
+* [Precommit Plugins](plugins/) APIs available when they are also enabled.
