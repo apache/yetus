@@ -65,7 +65,7 @@
                     <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
@@ -81,15 +81,15 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
                             </li>
-                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
                             </li>
-                            <li><a href="http://www.apache.org/security/">Security</a>
+                            <li><a href="https://www.apache.org/security/">Security</a>
                             </li>
                         </ul>
                     </li>
@@ -294,7 +294,7 @@
 
 <p>Under many common configurations, maven (as of 3.3.3 and lower) may not properly handle being executed by multiple processes simultaneously, especially given that some tests require the <code>mvn install</code> command to be used.</p>
 
-<p>To assist, <code>test-patch</code> supports a <code>--mvn-custom-repo</code> option to set the <code>-Dmaven.repo.local</code> value to a per-instance repository directory keyed to the project and branch being used for the test.  If the <code>--jenkins</code> flag is also passed, the instance will be tied to the Jenkins <code>${EXECUTOR_NUMBER}</code> value.  Otherwise, the instance value will be randomly generated via <code>${RANDOM}</code>.  If the repository has not been used in 30 days, it will be automatically deleted when any test run for that project (regardless of branch!).</p>
+<p>To assist, <code>test-patch</code> supports a <code>--mvn-custom-repos</code> option to set the <code>-Dmaven.repo.local</code> value to a per-instance repository directory keyed to the project and branch being used for the test.  If the <code>--jenkins</code> flag is also passed, the instance will be tied to the Jenkins <code>${EXECUTOR_NUMBER}</code> value.  Otherwise, the instance value will be randomly generated via <code>${RANDOM}</code>.  If the repository has not been used in 30 days, it will be automatically deleted when any test run for that project (regardless of branch!).</p>
 
 <p>By default, <code>test-patch</code> uses <code>${HOME}/yetus-m2</code> as the base directory to store these custom maven repositories.  That location may be changed via the <code>--mvn-custom-repos-dir</code> option.</p>
 
@@ -321,7 +321,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

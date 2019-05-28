@@ -65,7 +65,7 @@
                     <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
@@ -81,15 +81,15 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
                             </li>
-                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
                             </li>
-                            <li><a href="http://www.apache.org/security/">Security</a>
+                            <li><a href="https://www.apache.org/security/">Security</a>
                             </li>
                         </ul>
                     </li>
@@ -128,6 +128,7 @@
 <li><a href="#intro">Intro</a></li>
 <li><a href="#azure-pipelines">Azure Pipelines</a></li>
 <li><a href="#circle-ci">Circle CI</a></li>
+<li><a href="#cirrus-ci">Cirrus CI</a></li>
 <li><a href="#gitlab-ci">Gitlab CI</a></li>
 <li><a href="#jenkins">Jenkins</a></li>
 <li><a href="#semaphore-ci">Semaphore CI</a></li>
@@ -201,6 +202,35 @@
 
 <ul>
 <li>Apache Yetus&rsquo; source tree <a href="https://github.com/apache/yetus/blob/master/.circleci/config.yml">.circleci/config.yaml</a> for some tips and tricks.</li>
+</ul>
+
+<h1 id="cirrus-ci">Cirrus CI</h1>
+
+<p>TRIGGER: ${CIRRUS_CI}=true</p>
+
+<p><code>--patch-dir</code> will be configured to be <code>/tmp/yetus-out</code> and will be moved to the <code>yetus-out</code> directory in the source tree after completion. Adding this stanza to your <code>.cirrus.yml</code> file will upload and store those components for a week in Gitlab CI&rsquo;s artifact retrieval system:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="nn">---</span>
+  <span class="na">always</span><span class="pi">:</span>
+    <span class="na">junit_artifacts</span><span class="pi">:</span>
+      <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">yetus-out/junit.xml"</span>
+      <span class="na">format</span><span class="pi">:</span> <span class="s">junit</span>
+    <span class="na">other_artifacts</span><span class="pi">:</span>
+      <span class="na">path</span><span class="pi">:</span> <span class="s2">"</span><span class="s">yetus-out/**"</span>
+</code></pre></div>
+<p>To use the <code>--patch-dir</code> for additional output, use the <code>/tmp/yetus-out</code> path. For example: <code>--html-report-file=/tmp/yetus-out/report.html</code>.</p>
+
+<p>To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the <code>.cirrus.yml</code> file, substituting the tag for the version of Apache Yetus that should be used and replacing the <code>JAVA_HOME</code> with the appropriate version as bundled mentioned in the Dockerfile:</p>
+<div class="highlight"><pre class="highlight yaml"><code><span class="nn">---</span>
+<span class="na">yetus_task</span><span class="pi">:</span>
+  <span class="na">container</span><span class="pi">:</span>
+    <span class="na">image</span><span class="pi">:</span> <span class="s">apache/yetus:0.10.0</span>
+
+  <span class="s">...</span>
+</code></pre></div>
+<p>See also:</p>
+
+<ul>
+<li>Apache Yetus&rsquo; source tree <a href="https://github.com/apache/yetus/blob/master/.cirrus.yml">.cirrus.yml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="gitlab-ci">Gitlab CI</h1>
@@ -331,7 +361,7 @@
 
 <p>The <code>--build-url</code> option is also useful when running in <code>--robot</code> mode so that emails and such
 have a location to look at the output artifacts:</p>
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--robot</span> <span class="nt">--build-url</span><span class="o">=</span>http://server.example.name:80/<span class="k">${</span><span class="nv">buildnumber</span><span class="k">}</span>/
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--robot</span> <span class="nt">--build-url</span><span class="o">=</span>https://server.example.name:80/<span class="k">${</span><span class="nv">buildnumber</span><span class="k">}</span>/
 </code></pre></div>
 <p>Some plug-ins such as Maven have special handling if there are multiple executions of <code>test-patch</code> happening at once.  It is very common when using automation systems to have multiple runs on the same host. In order to assist these plug-ins, an instance identifier may be provided:</p>
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--robot</span> <span class="nt">--instance</span><span class="o">=</span>1
@@ -349,7 +379,7 @@ have a location to look at the output artifacts:</p>
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

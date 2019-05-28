@@ -65,7 +65,7 @@
                     <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
@@ -81,15 +81,15 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
                             </li>
-                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
                             </li>
-                            <li><a href="http://www.apache.org/security/">Security</a>
+                            <li><a href="https://www.apache.org/security/">Security</a>
                             </li>
                         </ul>
                     </li>
@@ -133,6 +133,54 @@
 
 <p>Developers:  The content of several files and internal structures have changed such that a leading &lsquo;./&rsquo; on filenames will no longer be present.  The root module will remain identified as &lsquo;.&rsquo;, however.</p>
 
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-870">YETUS-870</a> | <em>Trivial</em> | <strong>remove support for PYLINT_OPTIONS</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>The &ndash;pylint-options and PYLINT_OPTIONS environment variable have been removed.  Personalities and command lines that still use that feature must switch to using a .pylintrc file instead.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-873">YETUS-873</a> | <em>Major</em> | <strong>Error on unprocessed options/parameters</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>Users:</p>
+
+<p>precommit&rsquo;s commands (docker-cleanup, qbt, smart-apply-patch, test-patch) will now exit with an error if they are given a double-dashed option that is unknown.  Using <code>--ignore-unknown-options=true</code> option will return to the previous behavior.  Non double-dashed parameters continue to be considered the patch location.</p>
+
+<p>This option will be removed in a future release.</p>
+
+<p>Developers:</p>
+
+<p>This patch adds the <code>delete_parameter</code> routine.  It should be called to remove an option from the variable that is being used to track which parameters have been processed.  The internals of this tracking are still very much in flux and may change in the future.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-858">YETUS-858</a> | <em>Major</em> | <strong>Add support for golang</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>Go support should be considered highly experimental.  Some features are only available if Go module support has been turned on and actively in use.  Be aware that due to go.mod being updated as part of the build, the repository will be cleaned and git checkout&rsquo;d again between runs if <code>--resetrepo</code> or its equivalent has been turned on.  Running without destructive git operations may result in skewed results.</p>
+
+<hr>
+
+<ul>
+<li><a href="https://issues.apache.org/jira/browse/YETUS-885">YETUS-885</a> | <em>Major</em> | <strong>Support more function formats in shelldocs</strong></li>
+</ul>
+
+<!-- markdown -->
+
+<p>shelldocs now a much larger variety of shell function definition formats.</p>
+
     </div>
       <div class="container">
     <hr>
@@ -140,7 +188,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

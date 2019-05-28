@@ -65,7 +65,7 @@
                     <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
                         </li>
-                        <li role="presentation"><a role="menuitem" tabindex="-1" href="http://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
                         </li>
                         <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
                         </li>
@@ -81,15 +81,15 @@
                     <li class="dropdown">
                         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
                         <ul class="dropdown-menu" role="menu">
-                            <li><a href="http://www.apache.org">Apache Homepage</a>
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
                             </li>
-                            <li><a href="http://www.apache.org/licenses/">Apache License</a>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
                             </li>
-                            <li><a href="http://www.apache.org/foundation/thanks.html">Thanks</a>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
                             </li>
-                            <li><a href="http://www.apache.org/security/">Security</a>
+                            <li><a href="https://www.apache.org/security/">Security</a>
                             </li>
                         </ul>
                     </li>
@@ -121,7 +121,7 @@
 
 <h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h2 id="release-0-11-0-snapshot-2019-05-03">Release 0.11.0-SNAPSHOT - 2019-05-03</h2>
+<h2 id="release-0-11-0-snapshot-2019-05-28">Release 0.11.0-SNAPSHOT - 2019-05-28</h2>
 
 <h3 id="important-issues">IMPORTANT ISSUES:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -136,6 +136,22 @@
 <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-868">YETUS-868</a></td>
 <td style="text-align: left">Patch modifying the excludes file should force a re-read</td>
 <td style="text-align: left">Critical</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-870">YETUS-870</a></td>
+<td style="text-align: left">remove support for PYLINT_OPTIONS</td>
+<td style="text-align: left">Trivial</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-873">YETUS-873</a></td>
+<td style="text-align: left">Error on unprocessed options/parameters</td>
+<td style="text-align: left">Major</td>
 <td style="text-align: left">Precommit</td>
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
@@ -174,6 +190,22 @@
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-874">YETUS-874</a></td>
+<td style="text-align: left">Add support for Cirrus CI from Cirrus Labs</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-858">YETUS-858</a></td>
+<td style="text-align: left">Add support for golang</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
 </tbody></table>
 <h3 id="improvements">IMPROVEMENTS:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -205,6 +237,30 @@
 <td style="text-align: left">Add a simple yetus binary tarball download script</td>
 <td style="text-align: left">Major</td>
 <td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-885">YETUS-885</a></td>
+<td style="text-align: left">Support more function formats in shelldocs</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">ShellDocs</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-888">YETUS-888</a></td>
+<td style="text-align: left">update various web components</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">build, Precommit, website and documentation</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-890">YETUS-890</a></td>
+<td style="text-align: left">revive plugin is leaking data</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
@@ -250,6 +306,70 @@
 <td style="text-align: left">Allen Wittenauer</td>
 <td style="text-align: left">Allen Wittenauer</td>
 </tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-869">YETUS-869</a></td>
+<td style="text-align: left">git_checkout is called twice</td>
+<td style="text-align: left">Trivial</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-877">YETUS-877</a></td>
+<td style="text-align: left">Typo in mvn-custom-repos parameter</td>
+<td style="text-align: left">Trivial</td>
+<td style="text-align: left">website and documentation</td>
+<td style="text-align: left">Peter Somogyi</td>
+<td style="text-align: left">Peter Somogyi</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-879">YETUS-879</a></td>
+<td style="text-align: left">pylint needs to have args flushed prior to execution</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-881">YETUS-881</a></td>
+<td style="text-align: left">findbugs bw-compat support needs delete_parameter() calls</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-882">YETUS-882</a></td>
+<td style="text-align: left">command line patch files do not work in docker mode</td>
+<td style="text-align: left">Blocker</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-860">YETUS-860</a></td>
+<td style="text-align: left">mvn dependency order needs special handling for version change</td>
+<td style="text-align: left">Critical</td>
+<td style="text-align: left">build</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-886">YETUS-886</a></td>
+<td style="text-align: left">maven_reorder_module_process is eating the directory stack</td>
+<td style="text-align: left">Major</td>
+<td style="text-align: left">Precommit</td>
+<td style="text-align: left">Allen Wittenauer</td>
+<td style="text-align: left">Allen Wittenauer</td>
+</tr>
+<tr>
+<td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-891">YETUS-891</a></td>
+<td style="text-align: left">Incorrect link to yetus-dl.sh</td>
+<td style="text-align: left">Trivial</td>
+<td style="text-align: left">website and documentation</td>
+<td style="text-align: left">Peter Somogyi</td>
+<td style="text-align: left">Peter Somogyi</td>
+</tr>
 </tbody></table>
 <h3 id="other">OTHER:</h3>
 <table class='table table-bordered table-striped'><thead><tr>
@@ -276,7 +396,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="http://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="http://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 
