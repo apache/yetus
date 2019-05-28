@@ -53,6 +53,8 @@ NUM_RETRIES = 5
 # label to be used to mark an issue as Incompatible change.
 BACKWARD_INCOMPATIBLE_LABEL = 'backward-incompatible'
 
+EXTENSION = '.md'
+
 ASF_LICENSE = '''
 <!---
 # Licensed to the Apache Software Foundation (ASF) under one
@@ -77,7 +79,7 @@ def buildindex(title, asf_license):
     """Write an index file for later conversion using mvn site"""
     versions = glob("[0-9]*.[0-9]*")
     versions.sort(key=LooseVersion, reverse=True)
-    with open("index.md", "w") as indexfile:
+    with open("index" + EXTENSION, "w") as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
         for version in versions:
@@ -92,15 +94,15 @@ def buildreadme(title, asf_license):
     """Write an index file for Github using README.md"""
     versions = glob("[0-9]*.[0-9]*")
     versions.sort(key=LooseVersion, reverse=True)
-    with open("README.md", "w") as indexfile:
+    with open("README." + EXTENSION, "w") as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
         for version in versions:
             indexfile.write("* %s v%s\n" % (title, version))
             for k in ("Changelog", "Release Notes"):
-                indexfile.write("    * [%s](%s/%s.%s.md)\n" %
+                indexfile.write("    * [%s](%s/%s.%s%s)\n" %
                                 (k, version, k.upper().replace(" ", ""),
-                                 version))
+                                 version, EXTENSION))
 
 
 class GetVersions(object): # pylint: disable=too-few-public-methods
@@ -569,6 +571,11 @@ def parse_args(): # pylint: disable=too-many-branches
                       action="store_true",
                       default=False,
                       help="Create empty files when no issues")
+    parser.add_option("--extension",
+                      dest="extension",
+                      default=EXTENSION,
+                      type="string",
+                      help="Set the file extension of created Markdown files")
     parser.add_option("--fileversions",
                       dest="versionfiles",
                       action="store_true",
@@ -716,6 +723,7 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
     global SORTTYPE #pylint: disable=global-statement
     global SORTORDER #pylint: disable=global-statement
     global NUM_RETRIES #pylint: disable=global-statement
+    global EXTENSION #pylint: disable=global-statement
 
     options = parse_args()
 
@@ -740,6 +748,8 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
     if options.incompatible_label is not None:
         BACKWARD_INCOMPATIBLE_LABEL = options.incompatible_label
 
+    if options.extension is not None:
+        EXTENSION = options.extension
 
     projects = options.projects
 
@@ -782,49 +792,57 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
             os.mkdir(vstr)
 
         if options.versionfiles and options.versiondirs:
-            reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s.md",
-                                 "%(ver)s/RELEASENOTES.%(key)s.%(ver)s.md", [],
+            reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s%(ext)s",
+                                 "%(ver)s/RELEASENOTES.%(key)s.%(ver)s%(ext)s", [],
                                  {"ver": version,
                                   "date": reldate,
-                                  "title": title})
-            choutputs = Outputs("%(ver)s/CHANGELOG.%(ver)s.md",
-                                "%(ver)s/CHANGELOG.%(key)s.%(ver)s.md", [],
+                                  "title": title,
+                                  "ext": EXTENSION})
+            choutputs = Outputs("%(ver)s/CHANGELOG.%(ver)s%(ext)s",
+                                "%(ver)s/CHANGELOG.%(key)s.%(ver)s%(ext)s", [],
                                 {"ver": version,
                                  "date": reldate,
-                                 "title": title})
+                                 "title": title,
+                                 "ext": EXTENSION})
         elif options.versiondirs:
-            reloutputs = Outputs("%(ver)s/RELEASENOTES.md",
-                                 "%(ver)s/RELEASENOTES.%(key)s.md", [],
+            reloutputs = Outputs("%(ver)s/RELEASENOTES%(ext)s",
+                                 "%(ver)s/RELEASENOTES.%(key)s%(ext)s", [],
                                  {"ver": version,
                                   "date": reldate,
-                                  "title": title})
-            choutputs = Outputs("%(ver)s/CHANGELOG.md",
-                                "%(ver)s/CHANGELOG.%(key)s.md", [],
+                                  "title": title,
+                                  "ext": EXTENSION})
+            choutputs = Outputs("%(ver)s/CHANGELOG%(ext)s",
+                                "%(ver)s/CHANGELOG.%(key)s%(ext)s", [],
                                 {"ver": version,
                                  "date": reldate,
-                                 "title": title})
+                                 "title": title,
+                                 "ext": EXTENSION})
         elif options.versionfiles:
-            reloutputs = Outputs("RELEASENOTES.%(ver)s.md",
-                                 "RELEASENOTES.%(key)s.%(ver)s.md", [],
+            reloutputs = Outputs("RELEASENOTES.%(ver)s%(ext)s",
+                                 "RELEASENOTES.%(key)s.%(ver)s%(ext)s", [],
                                  {"ver": version,
                                   "date": reldate,
-                                  "title": title})
-            choutputs = Outputs("CHANGELOG.%(ver)s.md",
-                                "CHANGELOG.%(key)s.%(ver)s.md", [],
+                                  "title": title,
+                                  "ext": EXTENSION})
+            choutputs = Outputs("CHANGELOG.%(ver)s%(ext)s",
+                                "CHANGELOG.%(key)s.%(ver)s%(ext)s", [],
                                 {"ver": version,
                                  "date": reldate,
-                                 "title": title})
+                                 "title": title,
+                                 "ext": EXTENSION})
         else:
-            reloutputs = Outputs("RELEASENOTES.md",
-                                 "RELEASENOTES.%(key)s.md", [],
+            reloutputs = Outputs("RELEASENOTES%(ext)s",
+                                 "RELEASENOTES.%(key)s%(ext)s", [],
                                  {"ver": version,
                                   "date": reldate,
-                                  "title": title})
-            choutputs = Outputs("CHANGELOG.md",
-                                "CHANGELOG.%(key)s.md", [],
+                                  "title": title,
+                                  "ext": EXTENSION})
+            choutputs = Outputs("CHANGELOG%(ext)s",
+                                "CHANGELOG.%(key)s%(ext)s", [],
                                 {"ver": version,
                                  "date": reldate,
-                                 "title": title})
+                                 "title": title,
+                                 "ext": EXTENSION})
 
         if options.license is True:
             reloutputs.write_all(ASF_LICENSE)
