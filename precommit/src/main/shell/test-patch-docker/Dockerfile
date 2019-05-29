@@ -259,6 +259,7 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 RUN go get -u github.com/mgechev/revive \
     && go get -u github.com/mrtazz/checkmake \
     && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.16.0) \
+    && (GO111MODULE=on go get github.com/uber/prototool/cmd/prototool@6a473a4f1d86e7c8ff6a844d7dc4f7c3f6207a3f) \
     && mv /root/go/bin/* /usr/local/bin \
     && rm -rf /root/go
 

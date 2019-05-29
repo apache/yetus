@@ -128,6 +128,7 @@ Language Support, Licensing, and more:
 * [jshint](https://jshint.com) installed
 * [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) installed
 * [Perl::Critic](https://perlcritic.com/) installed
+* [prototool](https://github.com/uber/prototool) installed
 * [pylint](https://www.pylint.org/) installed
 * [revive](https://github.com/mgechev/revive) installed
 * [rubocop](https://batsov.com/rubocop/) installed
