@@ -19,8 +19,8 @@ PRECOMMITDIR=precommit/src/main/shell
 
 "${PRECOMMITDIR}/test-patch.sh" \
   --plugins=all \
-  --maven-custom-repos \
-  --maven-custom-repos-dir=/tmp/yetus-m2 \
+  --mvn-custom-repos \
+  --mvn-custom-repos-dir=/tmp/yetus-m2 \
   --patch-dir=/tmp/yetus-out \
   --tests-filter=checkstyle,javadoc,rubocop,test4tests \
   --docker \

@@ -27,7 +27,5 @@ blocks:
       jobs:
         - name: "Precommit"
           commands:
-            - checkout --use-cache
-            - cache restore yetus-m2
+            - checkout
             - .semaphore/semaphore-build.sh
-            - cache store yetus-m2 /tmp/yetus-m2
