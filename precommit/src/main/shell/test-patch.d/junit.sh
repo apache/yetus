@@ -29,7 +29,7 @@ function junit_usage
 {
   yetus_add_option "--junit-test-output=<path>" "Directory to search for the test output TEST-*.xml files, relative to the module directory (default:'${JUNIT_TEST_OUTPUT_DIR}')"
   yetus_add_option "--junit-test-prefix=<prefix to trim>" "Prefix of test names to be be removed. Used to shorten test names by removing common package name. (default:'${JUNIT_TEST_PREFIX}')"
-  yetus_add_option "--junit-results-xml=<path>" "Filename to generate a Junit report"
+  yetus_add_option "--junit-report-xml=<file>" "Filename to use when generating a JUnit-style report (default: ${JUNIT_REPORT_XML}"
 }
 
 function junit_parse_args
@@ -46,9 +46,9 @@ function junit_parse_args
         delete_parameter "${i}"
         JUNIT_TEST_PREFIX=${i#*=}
       ;;
-      --junit-results-xml=*)
+      --junit-report-xml=*)
         delete_parameter "${i}"
-        JUNIT_RESULTS_XML=${i#*=}
+        JUNIT_REPORT_XML=${i#*=}
       ;;
     esac
   done
@@ -62,6 +62,10 @@ function junit_process_tests
   declare result=0
   declare module_test_timeouts
   declare module_failed_tests
+
+  if [[ -z "${JUNIT_TEST_OUTPUT_DIR}" ]]; then
+    return 0
+  fi
 
   # shellcheck disable=SC2016
   module_test_timeouts=$("${AWK}" '/^Running / { array[$NF] = 1 } /^Tests run: .* in / { delete array[$NF] } END { for (x in array) { print x } }' "${buildlogfile}")
@@ -121,15 +125,15 @@ function junit_finalreport
   declare footsub
   declare footcomment
 
-  if [[ -z "${JUNIT_RESULTS_XML}" ]]; then
+  if [[ -z "${JUNIT_REPORT_XML}" ]]; then
     return
   fi
 
-  big_console_header "Writing JUnit results to ${JUNIT_RESULTS_XML}"
+  big_console_header "Writing JUnit-style results to ${JUNIT_REPORT_XML}"
 
   url=$(get_artifact_url)
 
-cat << EOF > "${JUNIT_RESULTS_XML}"
+cat << EOF > "${JUNIT_REPORT_XML}"
 <testsuites>
     <testsuite tests="1" failures="'${result}'" time="1" name="Apache Yetus">
 EOF
@@ -151,7 +155,7 @@ EOF
       ((counter=0))
     fi
 
-    if [[ "${vote}" = "H" ]]; then
+    if [[ -z "${vote// }" || "${vote}" = "H" ]]; then
        ((i=i+1))
        continue
      fi
@@ -202,12 +206,11 @@ EOF
         echo "</failure>"
       fi
       echo "</testcase>"
-    } >> "${JUNIT_RESULTS_XML}"
+    } >> "${JUNIT_REPORT_XML}"
 
     ((i=i+1))
   done
 
-  echo "</testsuite>" >> "${JUNIT_RESULTS_XML}"
-  echo "</testsuites>" >> "${JUNIT_RESULTS_XML}"
+  echo "</testsuite>" >> "${JUNIT_REPORT_XML}"
+  echo "</testsuites>" >> "${JUNIT_REPORT_XML}"
 }
-
