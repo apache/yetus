@@ -381,119 +381,119 @@ If you've gone through all of the ASF required checks, you'll already have made 
 
 1. Test Precommit. The smart-apply-patch and test-patch scripts don't get flexed as a part of the above candidate verification. If you have a downstream project you regularly use, it should suffice to attempt local verification of a contribution. If that project happens to be an ASF project with an example personality, this should be as simple as finding an issue in patch-available status.
 
-   ```bash
-   $ cd path/to/my/repo/for/hbase
-   $ /some/path/to/the/unpacked/candidate/bin/test-patch --project=hbase HBASE-1772
-   ...SNIP...
-   -1 overall
+      ```bash
+       $ cd path/to/my/repo/for/hbase
+       $ /some/path/to/the/unpacked/candidate/bin/test-patch --project=hbase HBASE-1772
+       ...SNIP...
+       -1 overall
 
-   | Vote |       Subsystem |  Runtime   | Comment
-   ============================================================================
-   |   0  |         reexec  |  0m 0s     | Docker mode activated.
-   |  +1  |      hbaseanti  |  0m 0s     | Patch does not have any anti-patterns.
-   |  +1  |        @\author  |  0m 0s     | The patch does not contain any @\author
-   |      |                 |            | tags.
-   |  +1  |     test4tests  |  0m 0s     | The patch appears to include 2 new or
-   |      |                 |            | modified test files.
-   |  +1  |     mvninstall  |  4m 41s    | master passed
-   |  +1  |        compile  |  1m 4s     | master passed with JDK v1.8.0_72
-   |  +1  |        compile  |  0m 57s    | master passed with JDK v1.7.0_95
-   |  +1  |     checkstyle  |  0m 36s    | master passed
-   |  +1  |     mvneclipse  |  0m 35s    | master passed
-   |  -1  |       findbugs  |  1m 6s     | hbase-client in master has 19 extant
-   |      |                 |            | Findbugs warnings.
-   |  -1  |       findbugs  |  2m 8s     | hbase-server in master has 84 extant
-   |      |                 |            | Findbugs warnings.
-   |  -1  |        javadoc  |  0m 23s    | hbase-client in master failed with JDK
-   |      |                 |            | v1.8.0_72.
-   |  -1  |        javadoc  |  0m 34s    | hbase-server in master failed with JDK
-   |      |                 |            | v1.8.0_72.
-   |  +1  |        javadoc  |  0m 57s    | master passed with JDK v1.7.0_95
-   |  +1  |     mvninstall  |  1m 3s     | the patch passed
-   |  +1  |        compile  |  0m 59s    | the patch passed with JDK v1.8.0_72
-   |  +1  |          javac  |  0m 59s    | the patch passed
-   |  +1  |        compile  |  0m 59s    | the patch passed with JDK v1.7.0_95
-   |  +1  |          javac  |  0m 59s    | the patch passed
-   |  +1  |     checkstyle  |  0m 32s    | the patch passed
-   |  +1  |     mvneclipse  |  0m 28s    | the patch passed
-   |  +1  |     whitespace  |  0m 0s     | Patch has no whitespace issues.
-   |  +1  |    hadoopcheck  |  4m 28s    | Patch does not cause any errors with
-   |      |                 |            | Hadoop 2.4.1 2.5.2 2.6.0.
-   |  +1  |       findbugs  |  3m 37s    | the patch passed
-   |  -1  |        javadoc  |  0m 24s    | hbase-client in the patch failed with
-   |      |                 |            | JDK v1.8.0_72.
-   |  -1  |        javadoc  |  0m 36s    | hbase-server in the patch failed with
-   |      |                 |            | JDK v1.8.0_72.
-   |  +1  |        javadoc  |  1m 2s     | the patch passed with JDK v1.7.0_95
-   |  +1  |           unit  |  1m 23s    | hbase-client in the patch passed with
-   |      |                 |            | JDK v1.8.0_72.
-   |  -1  |           unit  |  67m 12s   | hbase-server in the patch failed with
-   |      |                 |            | JDK v1.8.0_72.
-   |  +1  |           unit  |  1m 28s    | hbase-client in the patch passed with
-   |      |                 |            | JDK v1.7.0_95.
-   |  -1  |           unit  |  66m 16s   | hbase-server in the patch failed with
-   |      |                 |            | JDK v1.7.0_95.
-   |  +1  |     asflicense  |  0m 30s    | Patch does not generate ASF License
-   |      |                 |            | warnings.
-   |      |                 |  177m 13s  |
-
-
-                               Reason | Tests
-    JDK v1.8.0_72 Failed junit tests  |  hadoop.hbase.client.TestMultiParallel
-    JDK v1.7.0_95 Failed junit tests  |  hadoop.hbase.client.TestMultiParallel
+       | Vote |       Subsystem |  Runtime   | Comment
+       ============================================================================
+       |   0  |         reexec  |  0m 0s     | Docker mode activated.
+       |  +1  |      hbaseanti  |  0m 0s     | Patch does not have any anti-patterns.
+       |  +1  |        @\author  |  0m 0s     | The patch does not contain any @\author
+       |      |                 |            | tags.
+       |  +1  |     test4tests  |  0m 0s     | The patch appears to include 2 new or
+       |      |                 |            | modified test files.
+       |  +1  |     mvninstall  |  4m 41s    | master passed
+       |  +1  |        compile  |  1m 4s     | master passed with JDK v1.8.0_72
+       |  +1  |        compile  |  0m 57s    | master passed with JDK v1.7.0_95
+       |  +1  |     checkstyle  |  0m 36s    | master passed
+       |  +1  |     mvneclipse  |  0m 35s    | master passed
+       |  -1  |       findbugs  |  1m 6s     | hbase-client in master has 19 extant
+       |      |                 |            | Findbugs warnings.
+       |  -1  |       findbugs  |  2m 8s     | hbase-server in master has 84 extant
+       |      |                 |            | Findbugs warnings.
+       |  -1  |        javadoc  |  0m 23s    | hbase-client in master failed with JDK
+       |      |                 |            | v1.8.0_72.
+       |  -1  |        javadoc  |  0m 34s    | hbase-server in master failed with JDK
+       |      |                 |            | v1.8.0_72.
+       |  +1  |        javadoc  |  0m 57s    | master passed with JDK v1.7.0_95
+       |  +1  |     mvninstall  |  1m 3s     | the patch passed
+       |  +1  |        compile  |  0m 59s    | the patch passed with JDK v1.8.0_72
+       |  +1  |          javac  |  0m 59s    | the patch passed
+       |  +1  |        compile  |  0m 59s    | the patch passed with JDK v1.7.0_95
+       |  +1  |          javac  |  0m 59s    | the patch passed
+       |  +1  |     checkstyle  |  0m 32s    | the patch passed
+       |  +1  |     mvneclipse  |  0m 28s    | the patch passed
+       |  +1  |     whitespace  |  0m 0s     | Patch has no whitespace issues.
+       |  +1  |    hadoopcheck  |  4m 28s    | Patch does not cause any errors with
+       |      |                 |            | Hadoop 2.4.1 2.5.2 2.6.0.
+       |  +1  |       findbugs  |  3m 37s    | the patch passed
+       |  -1  |        javadoc  |  0m 24s    | hbase-client in the patch failed with
+       |      |                 |            | JDK v1.8.0_72.
+       |  -1  |        javadoc  |  0m 36s    | hbase-server in the patch failed with
+       |      |                 |            | JDK v1.8.0_72.
+       |  +1  |        javadoc  |  1m 2s     | the patch passed with JDK v1.7.0_95
+       |  +1  |           unit  |  1m 23s    | hbase-client in the patch passed with
+       |      |                 |            | JDK v1.8.0_72.
+       |  -1  |           unit  |  67m 12s   | hbase-server in the patch failed with
+       |      |                 |            | JDK v1.8.0_72.
+       |  +1  |           unit  |  1m 28s    | hbase-client in the patch passed with
+       |      |                 |            | JDK v1.7.0_95.
+       |  -1  |           unit  |  66m 16s   | hbase-server in the patch failed with
+       |      |                 |            | JDK v1.7.0_95.
+       |  +1  |     asflicense  |  0m 30s    | Patch does not generate ASF License
+       |      |                 |            | warnings.
+       |      |                 |  177m 13s  |
 
 
-   || Subsystem || Report/Notes ||
-   ============================================================================
-   | Docker | Client=1.9.1 Server=1.9.1 Image:yetus/hbase:date2016-02-11 |
-   | JIRA Patch URL | https://issues.apache.org/jira/secure/attachment/12787466/HBASE-1772.patch |
-   | JIRA Issue | HBASE-15198 |
-   | Optional Tests |  asflicense  javac  javadoc  unit  findbugs  hadoopcheck  hbaseanti  checkstyle  compile  |
-   | uname | Linux 67e02eb9aeea 3.13.0-36-lowlatency #63-Ubuntu SMP PREEMPT Wed Sep 3 21:56:12 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux |
-   | Build tool | maven |
-   | Personality | /testptch/patchprocess/precommit/personality/hbase.sh |
-   | git revision | master / 81a6fff |
-   | findbugs | v2.0.1 |
-   | findbugs | /testptch/patchprocess/branch-findbugs-hbase-client-warnings.html |
-   | findbugs | /testptch/patchprocess/branch-findbugs-hbase-server-warnings.html |
-   | javadoc | /testptch/patchprocess/branch-javadoc-hbase-client-jdk1.8.0_72.txt |
-   | javadoc | /testptch/patchprocess/branch-javadoc-hbase-server-jdk1.8.0_72.txt |
-   | javadoc | /testptch/patchprocess/patch-javadoc-hbase-client-jdk1.8.0_72.txt |
-   | javadoc | /testptch/patchprocess/patch-javadoc-hbase-server-jdk1.8.0_72.txt |
-   | unit | /testptch/patchprocess/patch-unit-hbase-server-jdk1.8.0_72.txt |
-   | unit | /testptch/patchprocess/patch-unit-hbase-server-jdk1.7.0_95.txt |
-   | unit test logs |  /testptch/patchprocess/patch-unit-hbase-server-jdk1.8.0_72.txt /testptch/patchprocess/patch-unit-hbase-server-jdk1.7.0_95.txt |
-   | modules | C: hbase-client hbase-server U: . |
-   | Powered by | Apache Yetus 0.7.0   http://yetus.apache.org |
-   ```
+                                   Reason | Tests
+        JDK v1.8.0_72 Failed junit tests  |  hadoop.hbase.client.TestMultiParallel
+        JDK v1.7.0_95 Failed junit tests  |  hadoop.hbase.client.TestMultiParallel
+
+
+       || Subsystem || Report/Notes ||
+       ============================================================================
+       | Docker | Client=1.9.1 Server=1.9.1 Image:yetus/hbase:date2016-02-11 |
+       | JIRA Patch URL | https://issues.apache.org/jira/secure/attachment/12787466/HBASE-1772.patch |
+       | JIRA Issue | HBASE-15198 |
+       | Optional Tests |  asflicense  javac  javadoc  unit  findbugs  hadoopcheck  hbaseanti  checkstyle  compile  |
+       | uname | Linux 67e02eb9aeea 3.13.0-36-lowlatency #63-Ubuntu SMP PREEMPT Wed Sep 3 21:56:12 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux |
+       | Build tool | maven |
+       | Personality | /testptch/patchprocess/precommit/personality/hbase.sh |
+       | git revision | master / 81a6fff |
+       | findbugs | v2.0.1 |
+       | findbugs | /testptch/patchprocess/branch-findbugs-hbase-client-warnings.html |
+       | findbugs | /testptch/patchprocess/branch-findbugs-hbase-server-warnings.html |
+       | javadoc | /testptch/patchprocess/branch-javadoc-hbase-client-jdk1.8.0_72.txt |
+       | javadoc | /testptch/patchprocess/branch-javadoc-hbase-server-jdk1.8.0_72.txt |
+       | javadoc | /testptch/patchprocess/patch-javadoc-hbase-client-jdk1.8.0_72.txt |
+       | javadoc | /testptch/patchprocess/patch-javadoc-hbase-server-jdk1.8.0_72.txt |
+       | unit | /testptch/patchprocess/patch-unit-hbase-server-jdk1.8.0_72.txt |
+       | unit | /testptch/patchprocess/patch-unit-hbase-server-jdk1.7.0_95.txt |
+       | unit test logs |  /testptch/patchprocess/patch-unit-hbase-server-jdk1.8.0_72.txt /testptch/patchprocess/patch-unit-hbase-server-jdk1.7.0_95.txt |
+       | modules | C: hbase-client hbase-server U: . |
+       | Powered by | Apache Yetus 0.7.0   http://yetus.apache.org |
+      ```
 
 1. Test Audience Annotations. If you have a downstream project that relies on the audience annotations project, you should be able to install the jars locally and test with the updated version.
 
-   ```bash
-   $ mkdir apache-yetus-0.7.0-src_unpack
-   $ tar -C apache-yetus-0.7.0-src_unpack -xzf apache-yetus-0.7.0-src.tar.gz
-   $ cd apache-yetus-0.7.0-src_unpack/yetus-0.7.0
-   $ mvn --batch-mode install
-   ...SNIP...
-   [INFO] ------------------------------------------------------------------------
-   [INFO] BUILD SUCCESS
-   [INFO] ------------------------------------------------------------------------
-   [INFO] Total time: 3.539 s
-   [INFO] Finished at: 2016-02-13T02:12:39-06:00
-   [INFO] Final Memory: 14M/160M
-   [INFO] ------------------------------------------------------------------------
-   $ cd path/to/your/project
-   $ vim pom.xml # edit version to be e.g. 0.7.0
-   $ mvn verify
-   ...SNIP...
-   [INFO] ------------------------------------------------------------------------
-   [INFO] BUILD SUCCESS
-   [INFO] ------------------------------------------------------------------------
-   [INFO] Total time: 7.539 m
-   [INFO] Finished at: 2016-02-13T02:13:39-06:00
-   [INFO] Final Memory: 14M/160M
-   [INFO] ------------------------------------------------------------------------
-   ```
+    ```bash
+    $ mkdir apache-yetus-0.7.0-src_unpack
+    $ tar -C apache-yetus-0.7.0-src_unpack -xzf apache-yetus-0.7.0-src.tar.gz
+    $ cd apache-yetus-0.7.0-src_unpack/yetus-0.7.0
+    $ mvn --batch-mode install
+    ...SNIP...
+    [INFO] ------------------------------------------------------------------------
+    [INFO] BUILD SUCCESS
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Total time: 3.539 s
+    [INFO] Finished at: 2016-02-13T02:12:39-06:00
+    [INFO] Final Memory: 14M/160M
+    [INFO] ------------------------------------------------------------------------
+    $ cd path/to/your/project
+    $ vim pom.xml # edit version to be e.g. 0.7.0
+    $ mvn verify
+    ...SNIP...
+    [INFO] ------------------------------------------------------------------------
+    [INFO] BUILD SUCCESS
+    [INFO] ------------------------------------------------------------------------
+    [INFO] Total time: 7.539 m
+    [INFO] Finished at: 2016-02-13T02:13:39-06:00
+    [INFO] Final Memory: 14M/160M
+    [INFO] ------------------------------------------------------------------------
+    ```
 
 ## Cleanup
 

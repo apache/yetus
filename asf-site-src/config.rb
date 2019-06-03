@@ -15,19 +15,22 @@
 # limitations under the License.
 #
 
-set :markdown_engine, :redcarpet
+set :markdown_engine, :kramdown
+# rubocop:disable Layout/AlignHash
 set(
   :markdown,
+  input:                        'GFM',
   layout_engine:                :erb,
   with_toc_data:                true,
-  smartypants:                  true,
   fenced_code_blocks:           true,
   no_intra_emphasis:            true,
   tables:                       true,
   autolink:                     true,
   quote:                        true,
-  lax_spacing:                  true
+  lax_spacing:                  true,
+  relative_links:               true
 )
+# rubocop:enable Layout/AlignHash
 
 set :build_dir, 'target/site'
 
@@ -44,8 +47,11 @@ activate :directory_indexes
 activate :syntax
 activate :livereload
 
-# disable layout
-page '.htaccess.apache', :layout => false # rubocop:disable Style/HashSyntax
+# Per-page layout changes
+page '/*.xml', layout: false
+page '/*.json', layout: false
+page '/*.txt', layout: false
+page '.htaccess.apache', layout: false
 
 # classes needed to publish our api docs
 class CopyInPlaceResource < ::Middleman::Sitemap::Resource
@@ -85,9 +91,11 @@ def shelldocs(output, docs = [])
          FileUtils.uptodate?(output, [SHELLDOCS])
     inputs = docs.map { |entry| "--input=#{entry}" }
     `#{SHELLDOCS} --skipprnorep --output #{output} #{inputs.join ' '}`
-    unless $CHILD_STATUS.exitstatus == 0
-      abort("shelldocs failed to generate docs for '#{docs}'")
-    end
+    errmsg = $stderr
+    return if $CHILD_STATUS.exitstatus.zero?
+
+    puts(errmsg)
+    abort("shelldocs failed to generate docs for '#{docs}'")
   end
 end
 
@@ -99,12 +107,13 @@ def releasenotes(output, version)
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
                                        --dirversions --empty \
+                                       --extension=.html.md \
                                        --usetoday --license --lint=all)`
   errmsg = $stderr
-  unless $CHILD_STATUS.exitstatus == 0
-    puts(errmsg)
-    abort("releasedocmaker failed to generate release notes for #{version}.")
-  end
+  return if $CHILD_STATUS.exitstatus.zero?
+
+  puts(errmsg)
+  abort("releasedocmaker failed to generate release notes for #{version}.")
 end
 
 GITREPO = 'https://github.com/apache/yetus.git'.freeze
@@ -157,24 +166,26 @@ end
 
 def precommit_shelldocs(apidocs_dir, source_dir)
   # core API
-  shelldocs("#{apidocs_dir}/core.md", Dir.glob("#{source_dir}/core.d/*.sh"))
+  shelldocs("#{apidocs_dir}/core.html.md", Dir.glob("#{source_dir}/core.d/*.sh"))
   # smart-apply-patch API
-  shelldocs("#{apidocs_dir}/smart-apply-patch.md", ["#{source_dir}/smart-apply-patch.sh"])
+  shelldocs("#{apidocs_dir}/smart-apply-patch.html.md", ["#{source_dir}/smart-apply-patch.sh"])
   # primary API
-  shelldocs("#{apidocs_dir}/test-patch.md", ["#{source_dir}/test-patch.sh"])
+  shelldocs("#{apidocs_dir}/test-patch.html.md", ["#{source_dir}/test-patch.sh"])
   # plugins API
-  shelldocs("#{apidocs_dir}/plugins.md", Dir.glob("#{source_dir}/test-patch.d/*.sh"))
+  shelldocs("#{apidocs_dir}/plugins.html.md", Dir.glob("#{source_dir}/test-patch.d/*.sh"))
 end
 
 # Add in apidocs rendered by other parts of the repo
 after_configuration do # rubocop:disable Metrics/BlockLength
+  # Since `after_configuration` runs twice in middleman 4,
+  # we will build twice if we don't skip the config run
+  next if app.config[:mode] == :config
+
   # This allows us to set the style for tables.
-  ::Middleman::Renderers::MiddlemanRedcarpetHTML.class_eval do
-    def table(header, body)
-      '<table class=\'table table-bordered table-striped\'>' \
-        "<thead>#{header}</thead>" \
-        "<tbody>#{body}</tbody>" \
-      '</table>'
+  ::Middleman::Renderers::MiddlemanKramdownHTML.class_eval do
+    def convert_table(el, indent) # rubocop:disable Naming/UncommunicativeMethodParamName
+      el.attr['class'] = 'table table-bordered table-striped'
+      super
     end
   end
 
@@ -184,7 +195,8 @@ after_configuration do # rubocop:disable Metrics/BlockLength
     ApiDocs.new(
       sitemap,
       'documentation/in-progress/javadocs',
-      '../target/site/documentation/in-progress/javadocs'
+      File.expand_path('../target/site/documentation/in-progress/javadocs',
+                       File.dirname(__FILE__))
     )
   )
 
@@ -195,8 +207,8 @@ after_configuration do # rubocop:disable Metrics/BlockLength
   # instead of symlinks
   FileUtils.mkdir_p 'target/in-progress/precommit-apidocs/'
   precommit_shelldocs('target/in-progress/precommit-apidocs/', '../precommit/src/main/shell')
-  unless data.versions.releases.nil?
-    data.versions.releases.each do |release|
+  unless app.data.versions.releases.nil?
+    app.data.versions.releases.each do |release|
       build_release_docs('target', release)
       releasenotes('target', release)
       if release =~ /^0.[0-8]\./
@@ -206,7 +218,8 @@ after_configuration do # rubocop:disable Metrics/BlockLength
           ApiDocs.new(
             sitemap,
             "documentation/#{release}/audience-annotations-apidocs",
-            "target/build-#{release}/audience-annotations-component/target/site/apidocs"
+            File.expand_path("target/build-#{release}/audience-annotations-component/target/site/apidocs", # rubocop:disable Metrics/LineLength
+                             File.dirname(__FILE__))
           )
         )
       else
@@ -215,7 +228,8 @@ after_configuration do # rubocop:disable Metrics/BlockLength
           ApiDocs.new(
             sitemap,
             "documentation/#{release}",
-            "target/build-#{release}"
+            File.expand_path("target/build-#{release}",
+                             File.dirname(__FILE__))
           )
         )
       end
