@@ -24,8 +24,8 @@ CHECKMAKE=${CHECKMAKE:-$(command -v checkmake 2>/dev/null)}
 
 function checkmake_usage
 {
-  yetus_add_option "--checkmake=<path>" "path to checkmake executable"
-  yetus_add_option "--checkmake-config=<path>" "relative path to checkmake config in source tree [default: none]"
+  yetus_add_option "--checkmake=<file>" "path to checkmake executable"
+  yetus_add_option "--checkmake-config=<file>" "relative path to checkmake config in source tree [default: none]"
 }
 
 function checkmake_parse_args

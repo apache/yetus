@@ -26,8 +26,8 @@ CMAKE_ROOT_BUILD=true
 ## @replaceable  no
 function cmake_usage
 {
-  yetus_add_option "--cmake-build-dir=<cmd>" "build directory off of each module to use (default: ${CMAKE_BUILD_DIR})"
-  yetus_add_option "--cmake-cmd=<cmd>" "The 'cmake' command to use (default 'cmake')"
+  yetus_add_option "--cmake-build-dir=<dir>" "build directory off of each module to use (default: ${CMAKE_BUILD_DIR})"
+  yetus_add_option "--cmake-cmd=<file>" "The 'cmake' command to use (default 'cmake')"
   yetus_add_option "--cmake-root-build=<bool>" "Only build off of root, don't use modules (default: ${CMAKE_ROOT_BUILD})"
 }
 

@@ -19,10 +19,10 @@
 
 # Test Format Support
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
-* [pluginname\_process\_tests](#pluginnameprocesstests)
-* [pluginname\_finalize\_results](#pluginnamefinalizeresults)
+* [pluginname\_process\_tests](#pluginname_process_tests)
+* [pluginname\_finalize\_results](#pluginname_finalize_results)
 * [Example](#example)
 
 <!-- /MarkdownTOC -->

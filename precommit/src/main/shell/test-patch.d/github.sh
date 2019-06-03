@@ -133,7 +133,7 @@ function github_jira_bridge
 
 ## @description given a URL, break it up into github plugin globals
 ## @description this will *override* any personality or yetus defaults
-## @description WARNING: Called from the Jenkins support system!
+## @description WARNING: Called from various robots!
 ## @param url
 function github_breakup_url
 {

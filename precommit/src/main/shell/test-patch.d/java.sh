@@ -204,7 +204,7 @@ function javac_logfilter
   declare output=$2
 
   #shellcheck disable=SC2016,SC2046
-  ${GREP} "^.*.java:[0-9]*:" "${input}" > "${output}"
+  "${GREP}" "^.*.java:[0-9]*:" "${input}" > "${output}"
 }
 
 ## @description  Helper for generic_logfilter
@@ -217,5 +217,5 @@ function javadoc_logfilter
   declare output=$2
 
   #shellcheck disable=SC2016,SC2046
-  ${GREP} "^.*.java:[0-9]*:" "${input}" > "${output}"
+  "${GREP}" "^.*.java:[0-9]*:" "${input}" > "${output}"
 }

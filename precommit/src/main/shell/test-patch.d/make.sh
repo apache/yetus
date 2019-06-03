@@ -25,7 +25,7 @@ MAKEFILE=Makefile
 ## @replaceable  no
 function make_usage
 {
-  yetus_add_option "--make-cmd=<cmd>" "The 'make' command to use (default: '${MAKE}')"
+  yetus_add_option "--make-cmd=<file>" "The 'make' command to use (default: '${MAKE}')"
   yetus_add_option "--make-file=<filename>" "The name of the file the make cmd should work on (default: '${MAKEFILE}')"
   yetus_add_option "--make-use-git-clean" "Instead of 'make clean' use 'git clean' to reset the source checkout"
 }

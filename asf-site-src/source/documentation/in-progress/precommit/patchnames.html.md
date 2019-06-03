@@ -19,7 +19,7 @@
 
 # Patch File Naming
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [JIRA](#jira)
 * [Github](#github)

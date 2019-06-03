@@ -19,7 +19,7 @@
 
 # Advanced Precommit
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [Process Reaper](#process-reaper)
 * [Plug-ins](#plug-ins)
@@ -71,13 +71,13 @@ Similarly, there are other functions that may be defined during the test-patch r
 * pluginname\_usage
   * executed when the help message is displayed. This is used to display the plug-in specific options for the user.
 
-* [pluginname\_parse\_args](../precommit-buildtools#pluginname_parse_args)
+* [pluginname\_parse\_args](../buildtools#pluginname_parse_args)
   * executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
 
-* [pluginname\_initialize](../precommit-buildtools#pluginname_initialize)
+* [pluginname\_initialize](../buildtools#pluginname_initialize)
   * After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
 
-* [pluginname\_docker\_support](../precommit-buildtools#pluginname_docker_support)
+* [pluginname\_docker\_support](../buildtools#pluginname_docker_support)
   * Perform any necessary setup to configure Docker support for the given plugin.  Typically this means adding parameters to the docker run command line via adding to the DOCKER\_EXTRAARGS array.
 
 * pluginname\_precheck
@@ -130,10 +130,10 @@ add_test_type <pluginname>
 * pluginname\_clean
   * executed to allow the plugin to remove all files that have been generate by this plugin.
 
-* [pluginname\_\(test\)\_logfilter](../precommit-buildtools/#pluginname_test_logfilter)
+* [pluginname\_\(test\)\_logfilter](../buildtools/#pluginname_test_logfilter)
   * This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function.
 
-* [pluginname\_\(test\)\_calcdiffs](../precommit-buildtools/#pluginname_test_calcdiffs)
+* [pluginname\_\(test\)\_calcdiffs](../buildtools/#pluginname_test_calcdiffs)
   * This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have "Missing period." as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool's output (e.g., checkstyle) to provide a more accurate way to determine differences.
 
   NOTE: If the plug-in has support for maven, the maven_add_install `pluginname` should be executed. See more information in Custom Maven Tests in the build tool documentation.
@@ -196,7 +196,7 @@ The `add_test` function is used to activate the standard tests.  Additional plug
 
 ## Module & Profile Determination
 
-Once the tests are determined, it is now time to pick which [modules](../precommit-glossary#genericoutside-definitions) should get used.  That's the job of the `personality_modules` function.
+Once the tests are determined, it is now time to pick which [modules](../glossary#genericoutside-definitions) should get used.  That's the job of the `personality_modules` function.
 
 ```bash
 function personality_modules
@@ -223,7 +223,7 @@ The first is `clear_personality_queue`. This removes the previous test's configu
 
 The second is `personality_enqueue_module`.  This function takes two parameters.  The first parameter is the name of the module to add to this test's queue.  The second parameter is an option list of additional flags to pass to Maven when processing it. `personality_enqueue_module` may be called as many times as necessary for your project.
 
-    NOTE: A module name of . signifies the root of the repository.
+  NOTE: A module name of . signifies the root of the repository.
 
 For example, let's say your project uses a special configuration to skip unit tests (-DskipTests).  Running unit tests during a javadoc build isn't very useful and wastes a lot of time. We can write a simple personality check to disable the unit tests:
 
@@ -257,7 +257,7 @@ This list is used if the user does not provide a list of plug-ins.
 
 There are a handful of extremely important system variables that make life easier for personality and plug-in writers.  Other variables may be provided by individual plug-ins.  Check their development documentation for more information.
 
-* BUILD\_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For [robots](../precommit-robots), this is always true.
+* BUILD\_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For [robots](../robots), this is always true.
 
 * BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz\_ARGS to pass on to the build tool command line. (e.g., MAVEN\_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.
 
@@ -265,7 +265,7 @@ There are a handful of extremely important system variables that make life easie
 
 * CHANGED\_MODULES[@] is an array of all modules that house all of the CHANGED\_FILES[@].  Be aware that the root of the source tree is reported as '.'.
 
-* [DOCKER\_EXTRAARGS\[@\]](../precommit-buildtools#pluginname_docker_support) is an array of command line arguments to apply to the `docker run` command.
+* [DOCKER\_EXTRAARGS\[@\]](../buildtools#pluginname_docker_support) is an array of command line arguments to apply to the `docker run` command.
 
 * GITHUB\_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.
 
@@ -279,4 +279,4 @@ There are a handful of extremely important system variables that make life easie
 
 * PATCH\_NAMING\_RULE should be a URL that points to a project's on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project's personality.
 
-* TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel. For [robots](../precommit-robots), this is always true.
+* TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel. For [robots](../robots), this is always true.

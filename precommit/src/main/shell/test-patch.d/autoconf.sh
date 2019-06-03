@@ -22,7 +22,7 @@ add_build_tool autoconf
 ## @replaceable  no
 function autoconf_usage
 {
-  yetus_add_option "--autoconf-configure-flags=<cmd>" "Extra, non-'--prefix' 'configure' flags to use"
+  yetus_add_option "--autoconf-configure-flags=<file>" "Extra, non-'--prefix' 'configure' flags to use"
 }
 
 ## @description  autoconf argument parser

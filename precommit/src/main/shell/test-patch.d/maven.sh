@@ -78,9 +78,9 @@ function maven_ws_replace
 function maven_usage
 {
   maven_ws_replace
-  yetus_add_option "--mvn-cmd=<cmd>" "The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
+  yetus_add_option "--mvn-cmd=<file>" "The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
   yetus_add_option "--mvn-custom-repos" "Use per-project maven repos"
-  yetus_add_option "--mvn-custom-repos-dir=dir" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
+  yetus_add_option "--mvn-custom-repos-dir=<dir>" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
   yetus_add_option "--mvn-deps-order=<bool>" "Disable maven's auto-dependency module ordering (Default: '${MAVEN_DEPENDENCY_ORDER}')"
   yetus_add_option "--mvn-javadoc-goals=<list>" "The comma-separated javadoc goals (Default: 'javadoc:javadoc')"
   yetus_add_option "--mvn-only-changed-tests=<bool>" "If only Java test files are changed, just test them (Default: '${MAVEN_ONLY_CHANGED_TESTS}')"

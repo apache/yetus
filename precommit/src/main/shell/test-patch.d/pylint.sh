@@ -28,9 +28,9 @@ PYLINT_PIP_USER=true
 
 function pylint_usage
 {
-  yetus_add_option "--pylint=<path>" "path to pylint executable (default: ${PYLINT})"
+  yetus_add_option "--pylint=<file>" "Filename of the pylint executable (default: ${PYLINT})"
   yetus_add_option "--pylint-pip-cmd=<file>" "Command to use for pip when installing requirements.txt (default: ${PYLINT_PIP_CMD})"
-  yetus_add_option "--pylint-rcfile=<path>" "pylint configuration file"
+  yetus_add_option "--pylint-rcfile=<file>" "pylint configuration file"
   yetus_add_option "--pylint-requirements=<bool>" "pip install requirements.txt (default: ${PYLINT_REQUIREMENTS})"
   yetus_add_option "--pylint-use-user=<bool>" "Use --user for the requirements.txt (default: ${PYLINT_PIP_USER})"
 }

@@ -14,7 +14,7 @@
 
 # Apache Yetus Interface Taxonomy: Audience and Stability Classification
 
-<!-- MarkdownTOC levels="1,2,3" autolink="true" -->
+<!-- MarkdownTOC levels="1,2,3" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [Motivation](#motivation)
 * [Interface Classification](#interface-classification)

@@ -19,7 +19,7 @@
 
 # Build Tool Support
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [Global Variables](#global-variables)
   * [BUILDTOOLCWD](#buildtoolcwd)
@@ -27,16 +27,16 @@
 * [Required Functions](#required-functions)
   * [pluginname\_buildfile](#pluginname_buildfile)
   * [pluginname\_executor](#pluginname_executor)
-  * [pluginname\_modules\_worker](#pluginnamemodulesworker)
-  * [pluginname\_builtin_personality\_modules](#pluginnamebuiltin_personalitymodules)
-  * [pluginname\_builtin_personality\_file\_tests](#pluginnamebuiltin_personality_filetests)
+  * [pluginname\_modules\_worker](#pluginname_modules_worker)
+  * [pluginname\_builtin_personality\_modules](#pluginname_builtin_personality_modules)
+  * [pluginname\_builtin_personality\_file\_tests](#pluginname_builtin_personality_file_tests)
 * [Optional Functions](#optional-functions)
-  * [pluginname\_parse\_args](#pluginnameparseargs)
+  * [pluginname\_parse\_args](#pluginname_parse_args)
   * [pluginname\_initialize](#pluginname_initialize)
-  * [pluginname\_reorder\_modules](#pluginnamereordermodules)
+  * [pluginname\_reorder\_modules](#pluginname_reorder_modules)
   * [pluginname\_\(test\)\_logfilter](#pluginname_test_logfilter)
   * [pluginname\_\(test\)\_calcdiffs](#pluginname_test_calcdiffs)
-  * [pluginname\_docker\_support](#pluginnamedockersupport)
+  * [pluginname\_docker\_support](#pluginname_docker_support)
 * [Apache Ant Specific](#apache-ant-specific)
   * [Ant Command Arguments](#ant-command-arguments)
   * [Ant in Docker Mode](#ant-in-docker-mode)
@@ -54,7 +54,7 @@
 
 <!-- /MarkdownTOC -->
 
-test-patch has the ability to support multiple build tools and [personalities](../precommit-advanced/#personalities).  Build tool and personality plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:
+test-patch has the ability to support multiple build tools and [personalities](../advanced/#personalities).  Build tool and personality plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:
 
 ```bash
 add_build_tool <pluginname>
@@ -120,7 +120,7 @@ This functions allows the plugin to (re-)order the modules (e.g. based on the ou
 
 This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function. The test plug-in name should be in the (test) part of the function name.
 
-## pluginname\_(test)_calcdiffs
+## pluginname\_(test)\_calcdiffs
 
 Some build tools (e.g., maven) use custom output for certain types of compilations (e.g., java).  This allows for custom log file difference calculation used to determine the before and after views.
 
@@ -129,9 +129,9 @@ Some build tools (e.g., maven) use custom output for certain types of compilatio
 To affect the various `docker` command lines, one can use helper functions:
 
 * Affecting `docker build` command line:
-  * [`add_docker_build_arg`](../precommit-apidocs/core/#add_docker_build_arg)
+  * [`add_docker_build_arg`](../apidocs/core/#add_docker_build_arg)
 * Affecting `docker run` command line:
-  * [`add_docker_env`](../precommit-apidocs/core/#add_docker_env)
+  * [`add_docker_env`](../apidocs/core/#add_docker_env)
 
 If the build tool requires extra settings on the `docker run` command line (more than environment variables) those options should be added into an array called `${DOCKER_EXTRAARGS[@]}`. This is particularly useful for things like mounting volumes for repository caches.
 

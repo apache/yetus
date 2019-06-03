@@ -19,18 +19,7 @@
 
 # Yetus Precommit
 
-The Yetus Precommit Patch Tester allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.
-
-* Take a quick look at [our glossary of terms](precommit-glossary) to ensure you are familiar with the ASF and Maven jargon we'll use as terminology specific to this project.
-* For an overview of Yetus' philosophy on testing contributions and how evaluation is performed, see our [overview](precommit-architecture).
-* To get started on your project, including an explanation of what we'll expect in a runtime environment and what optional utilities we'll leverage, read through the [basic usage guide](precommit-basic).
-* Customize how precommit interacts with your project by choosing amongst [build systems](precommit-buildtools), [bug systems](precommit-bugsystems) and [test formats](precommit-testformats).
-* Empower the test environment using [Docker](precommit-docker).
-* If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you'll need to use our [advanced usage guide](precommit-advanced).
-
-For a complete guide to the Precommit API, see [the generated API documentation](precommit-apidocs/).
-
-For help with CI tools and automation, see our documentation about [robots](precommit-robots).
+The [Yetus Precommit build, patch, and CI suite](precommit) allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.
 
 # Yetus Release Doc Maker
 
