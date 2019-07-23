@@ -36,6 +36,7 @@ GITHUB_REPO=""
 GITHUB_PASSWD=""
 GITHUB_USER=""
 GITHUB_ISSUE=""
+WITH_EMOJI=false
 
 # private globals...
 GITHUB_BRIDGED=false
@@ -58,6 +59,7 @@ function github_usage
   yetus_add_option "--github-password=<pw>" "Github password (or OAuth token)"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
+  yetus_add_option "--github-with-emoji" "Whether to use emoji when comment on github [default: ${WITH_EMOJI}]"
 }
 
 function github_parse_args
@@ -87,6 +89,10 @@ function github_parse_args
       --github-user=*)
         delete_parameter "${i}"
         GITHUB_USER=${i#*=}
+      ;;
+      --github-with-emoji)
+        delete_parameter "${i}"
+        WITH_EMOJI=true
       ;;
     esac
   done
@@ -585,7 +591,7 @@ function github_finalreport
   big_console_header "Adding comment to Github"
 
   if [[ ${result} == 0 ]]; then
-    echo ":confetti_ball: **+1 overall**" >> "${commentfile}"
+    echo ":+1: **+1 overall**" >> "${commentfile}"
   else
     echo ":broken_heart: **-1 overall**" >> "${commentfile}"
   fi
@@ -599,8 +605,13 @@ function github_finalreport
 
   {
     printf '\n\n'
-    echo "| Vote | Subsystem | Runtime | Comment |"
-    echo "|:----:|----------:|--------:|:--------|"
+    if [[ ${WITH_EMOJI} == true ]]; then
+      echo "| Emoji | Vote | Subsystem | Runtime | Comment |"
+      echo "|:----:|:----:|----------:|--------:|:--------|"
+    else
+      echo "| Vote | Subsystem | Runtime | Comment |"
+      echo "|:----:|----------:|--------:|:--------|"
+    fi
   } >> "${commentfile}"
 
   i=0
@@ -609,10 +620,26 @@ function github_finalreport
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
 
-    if [[ "${vote}" = "H" ]]; then
-      echo "||| _${comment}_ |" >> "${commentfile}"
+    if [[ ${WITH_EMOJI} == true ]]; then
+      if [[ "${vote}" = "H" ]]; then
+        echo "|||| _${comment}_ |" >> "${commentfile}"
+      elif [[ "${vote}" = "-1" ]]; then
+        echo "| :broken_heart: ${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      elif [[ "${vote}" = "+1" ]]; then
+        echo "| :+1: ${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      elif [[ "${vote}" = "-0" ]]; then
+        echo "| :worried: ${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      elif [[ "${vote}" = "+0" ]]; then
+        echo "| :relaxed: ${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      else
+        echo "| :confused: ${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      fi
     else
-      echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      if [[ "${vote}" = "H" ]]; then
+        echo "||| _${comment}_ |" >> "${commentfile}"
+      else
+        echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      fi
     fi
     ((i=i+1))
   done
