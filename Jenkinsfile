@@ -134,6 +134,9 @@ pipeline {
                 YETUS_ARGS+=(--github-password="${GITHUB_PASSWORD}")
                 YETUS_ARGS+=(--github-user=${GITHUB_USER})
 
+                # use emoji as vote result on GitHub
+                YETUS_ARGS+=(--github-use-emoji-vote)
+
                 # enable writing back to ASF JIRA
                 YETUS_ARGS+=(--jira-issue-re='^YETUS-[0-9]*$')
                 YETUS_ARGS+=(--jira-password="${JIRA_PASSWORD}")

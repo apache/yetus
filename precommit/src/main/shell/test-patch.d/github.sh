@@ -36,6 +36,7 @@ GITHUB_REPO=""
 GITHUB_PASSWD=""
 GITHUB_USER=""
 GITHUB_ISSUE=""
+GITHUB_USE_EMOJI_VOTE=false
 
 # private globals...
 GITHUB_BRIDGED=false
@@ -58,6 +59,7 @@ function github_usage
   yetus_add_option "--github-password=<pw>" "Github password (or OAuth token)"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
+  yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
 }
 
 function github_parse_args
@@ -87,6 +89,10 @@ function github_parse_args
       --github-user=*)
         delete_parameter "${i}"
         GITHUB_USER=${i#*=}
+      ;;
+      --github-use-emoji-vote)
+        delete_parameter "${i}"
+        GITHUB_USE_EMOJI_VOTE=true
       ;;
     esac
   done
@@ -607,12 +613,48 @@ function github_finalreport
   until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
+    subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+    ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    calctime=$(clock_display "${ela}")
     comment=$(echo "${ourstring}"  | cut -f5 -d\|)
+
 
     if [[ "${vote}" = "H" ]]; then
       echo "||| _${comment}_ |" >> "${commentfile}"
     else
-      echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
+        emoji=""
+        case ${vote} in
+          1|"+1")
+            emoji=":green_heart:"
+          ;;
+          -1)
+            emoji=":broken_heart:"
+          ;;
+          0)
+            emoji=":blue_heart:"
+          ;;
+          -0)
+            emoji=":yellow_heart:"
+          ;;
+          H)
+            # this never gets called (see above) but this is here so others know the color is taken
+            emoji=""
+          ;;
+          *)
+            # usually this should not happen but let's keep the old vote result if it happens
+            emoji=${vote}
+          ;;
+        esac
+        printf '| %s | %s | %s | %s |\n' \
+        "${emoji}" \
+        "${subs}" \
+        "${calctime}" \
+        "${comment}" \
+        >> "${commentfile}"
+      else
+        echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
+      fi
     fi
     ((i=i+1))
   done
