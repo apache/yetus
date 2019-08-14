@@ -43,9 +43,11 @@ function golangcilint_parse_args
     case ${i} in
       --golangcilint=*)
         GOLANGCI_LINT=${i#*=}
+        delete_parameter "${i}"
       ;;
       --golangcilint-config=*)
         GOLANGCI_CONFIG=${i#*=}
+        delete_parameter "${i}"
       ;;
     esac
   done

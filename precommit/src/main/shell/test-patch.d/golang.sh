@@ -42,6 +42,7 @@ function golang_parse_args
     case ${i} in
       --golang-go=*)
         GOEXE=${i#*=}
+        delete_parameter "${i}"
       ;;
     esac
   done
