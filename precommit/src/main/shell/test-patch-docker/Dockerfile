@@ -44,6 +44,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     apt-transport-https \
     ca-certificates \
     curl \
+    dirmngr \
     git \
     libffi-dev \
     locales \
@@ -217,13 +218,15 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 # NOTE: A bunch of stuff is removed to shrink the size of the Docker image
 # Be very careful changing the code here, layer size may grow very large!
 ####
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y cabal-install \
+RUN add-apt-repository -y ppa:hvr/ghc
+RUN apt-get -q update \
+    && apt-get -q install --no-install-recommends -y cabal-install-3.0 ghc-8.6.5 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && cabal update \
-    && cabal install -j ShellCheck \
+    && PATH=/opt/ghc/bin:${PATH} cabal update \
+    && PATH=/opt/ghc/bin:${PATH} cabal install -j ShellCheck \
     && cp -p /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck \
-    && apt remove -y ghc cabal-install \
+    && apt remove -y cabal-install-3.0 ghc-8.6.5 \
     && apt autoremove -y \
     && rm -rf /root/.cabal
 
