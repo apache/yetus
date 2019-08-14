@@ -44,7 +44,7 @@ jobs:
              --brief-report-file=/tmp/yetus-out/brief.txt
              --bugcomments=briefreport,htmlout,junit
              --tests-filter=checkstyle,javadoc,rubocop,test4tests
-             --junit-results-xml=/tmp/yetus-out/results.xml
+             --junit-report-xml=/tmp/yetus-out/junit-report.xml
 
       - store_test_results:
           path: /tmp/yetus-out

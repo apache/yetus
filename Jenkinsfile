@@ -128,7 +128,7 @@ pipeline {
                 YETUS_ARGS+=("--brief-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/brief.txt")
                 YETUS_ARGS+=("--console-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/console.txt")
                 YETUS_ARGS+=("--html-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/report.html")
-                YETUS_ARGS+=("--junit-results-xml=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/results.xml")
+                YETUS_ARGS+=("--junit-report-xml=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/junit-report.xml")
 
                 # enable writing back to Github
                 YETUS_ARGS+=(--github-password="${GITHUB_PASSWORD}")
@@ -204,7 +204,7 @@ pipeline {
       script {
         // Publish JUnit results
         try {
-            junit "${env.YETUS_RELATIVE_PATCHDIR}/results.xml"
+            junit "${env.YETUS_RELATIVE_PATCHDIR}/junit-report.xml"
         } catch(e) {
             echo 'junit processing: ' + e.toString()
         }
