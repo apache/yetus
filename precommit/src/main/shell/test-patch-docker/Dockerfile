@@ -226,7 +226,7 @@ RUN apt-get -q update \
     && PATH=/opt/ghc/bin:${PATH} cabal update \
     && PATH=/opt/ghc/bin:${PATH} cabal install -j ShellCheck \
     && cp -p /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck \
-    && apt remove -y ghc cabal-install ghc-8.6.5 \
+    && apt remove -y cabal-install-3.0 ghc-8.6.5 \
     && apt autoremove -y \
     && rm -rf /root/.cabal
 
