@@ -29,7 +29,7 @@ buretoolbox-job:
       --brief-report-file=/tmp/yetus-out/brief.txt
       --bugcomments=briefreport,htmlout,gitlab,junit
       --tests-filter=checkstyle,javadoc,rubocop,test4tests
-      --junit-results-xml=/tmp/yetus-out/results.xml
+      --junit-report-xml=/tmp/yetus-out/junit-report.xml
 
   artifacts:
     expire_in: 1 week
@@ -37,4 +37,4 @@ buretoolbox-job:
     paths:
       - yetus-out/
     reports:
-      junit: yetus-out/results.xml
+      junit: yetus-out/junit-report.xml
