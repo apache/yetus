@@ -36,9 +36,11 @@ function revive_parse_args
     case ${i} in
       --revive=*)
         REVIVE=${i#*=}
+        delete_parameter "${i}"
       ;;
       --revive-config=*)
         REVIVE_CONFIG=${i#*=}
+        delete_parameter "${i}"
       ;;
     esac
   done
