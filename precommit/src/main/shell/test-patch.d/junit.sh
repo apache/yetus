@@ -48,10 +48,19 @@ function junit_parse_args
       ;;
       --junit-report-xml=*)
         delete_parameter "${i}"
-        JUNIT_REPORT_XML=${i#*=}
+        fn=${i#*=}
       ;;
     esac
   done
+
+  if [[ -n "${fn}" ]]; then
+    if : > "${fn}"; then
+      JUNIT_REPORT_XML_ORIG="${fn}"
+      JUNIT_REPORT_XML=$(yetus_abs "${JUNIT_REPORT_XML_ORIG}")
+    else
+      yetus_error "WARNING: cannot create JUnit XML report file ${fn}. Ignoring."
+    fi
+  fi
 }
 
 function junit_process_tests
@@ -102,6 +111,18 @@ function junit_finalize_results
     # shellcheck disable=SC2086
     populate_test_table "${jdk}Timed out junit tests" ${JUNIT_TEST_TIMEOUTS}
     JUNIT_TEST_TIMEOUTS=""
+  fi
+}
+
+## @description  Give access to the junit report file in docker mode
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function junit_docker_support
+{
+  if [[ -n ${JUNIT_REPORT_XML} ]]; then
+    DOCKER_EXTRAARGS+=("-v" "${JUNIT_REPORT_XML}:${DOCKER_WORK_DIR}/junit.xml")
+    USER_PARAMS+=("--junit-report-xml=${DOCKER_WORK_DIR}/junit.xml")
   fi
 }
 
