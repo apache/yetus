@@ -1,0 +1,145 @@
+
+<!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<h1 id="apache-yetus--0110-release-notes">Apache Yetus  0.11.0 Release Notes</h1>
+
+<p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-868">YETUS-868</a></td>
+          <td><em>Critical</em></td>
+          <td><strong>Patch modifying the excludes file should force a re-read</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Developers:  The content of several files and internal structures have changed such that a leading './' on filenames will no longer be present.  The root module will remain identified as '.', however.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-870">YETUS-870</a></td>
+          <td><em>Trivial</em></td>
+          <td><strong>remove support for PYLINT_OPTIONS</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>The –pylint-options and PYLINT_OPTIONS environment variable have been removed.  Personalities and command lines that still use that feature must switch to using a .pylintrc file instead.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-873">YETUS-873</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Error on unprocessed options/parameters</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Users:</p>
+
+<p>precommit's commands (docker-cleanup, qbt, smart-apply-patch, test-patch) will now exit with an error if they are given a double-dashed option that is unknown.  Using <code>--ignore-unknown-options=true</code> option will return to the previous behavior.  Non double-dashed parameters continue to be considered the patch location.</p>
+
+<p>This option will be removed in a future release.</p>
+
+<p>Developers:</p>
+
+<p>This patch adds the <code>delete_parameter</code> routine.  It should be called to remove an option from the variable that is being used to track which parameters have been processed.  The internals of this tracking are still very much in flux and may change in the future.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-858">YETUS-858</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Add support for golang</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Go support should be considered highly experimental.  Some features are only available if Go module support has been turned on and actively in use.  Be aware that due to go.mod being updated as part of the build, the repository will be cleaned and git checkout'd again between runs if <code>--resetrepo</code> or its equivalent has been turned on.  Running without destructive git operations may result in skewed results.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-885">YETUS-885</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Support more function formats in shelldocs</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>shelldocs now a much larger variety of shell function definition formats.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-896">YETUS-896</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Add an emoji column to the github vote table</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>GitHub users can now pass <code>--github-use-emoji-vote</code> and the vote table will use emoji hearts to indicate +1/0/-0/-1 rather than text.</p>
+
