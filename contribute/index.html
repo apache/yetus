@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -127,19 +128,19 @@
 <p>We use git as our version control system. To streamline the process of giving proper credit to the contributors when committing patches, we encourage contributors to submit patches generated using git format-patch. This has many benefits:</p>
 
 <ul>
-<li>Committers can&rsquo;t forget to attribute proper credit to the contributor</li>
-<li>The contributors name and email address shows up in git log</li>
-<li>When viewing Yetus&rsquo;s source code on <a href="https://github.com/apache/yetus">https://github.com/apache/yetus</a>, the commits from the contributor are linked to their github.com account if it&rsquo;s linked to the same email address they used when generating the git format-patch</li>
+  <li>Committers can't forget to attribute proper credit to the contributor</li>
+  <li>The contributors name and email address shows up in git log</li>
+  <li>When viewing Yetus's source code on <a href="https://github.com/apache/yetus">https://github.com/apache/yetus</a>, the commits from the contributor are linked to their github.com account if it's linked to the same email address they used when generating the git format-patch</li>
 </ul>
 
-<p>Long story short, it makes both the contributors&rsquo; and committers&rsquo; lives easier, so please generate your patches using git format-patch.</p>
+<p>Long story short, it makes both the contributors' and committers' lives easier, so please generate your patches using git format-patch.</p>
 
 <p>Here are some instructions on how to generate patches:</p>
 
 <ul>
-<li>Ensure that you have all of your change as 1 commit which has the correct commit message - something like <code>YETUS-1. Update shellcheck plug-in to support bats files</code></li>
-<li>Then run a command like: <code>git format-patch HEAD^..HEAD --stdout &gt; YETUS-1.00.patch</code></li>
-<li>Upload the YETUS-1.00.patch file to the aforementioned JIRA</li>
+  <li>Ensure that you have all of your change as 1 commit which has the correct commit message - something like <code>YETUS-1. Update shellcheck plug-in to support bats files</code></li>
+  <li>Then run a command like: <code>git format-patch HEAD^..HEAD --stdout &gt; YETUS-1.00.patch</code></li>
+  <li>Upload the YETUS-1.00.patch file to the aforementioned JIRA</li>
 </ul>
 
 <p>The naming of the patch should be in (JIRA).(patch number).patch or, if it needs to apply to a specific branch, (JIRA).(branch name).(patch number).patch format. For example, YETUS-9.00.patch, YETUS-500.02.patch, or YETUS-23.cmake.11.patch. This way, if you need to upload another version of the patch, you should keep the file name the same and JIRA will sort them according to date/time if multiple files have the same name. This feature is also useful to traceback the history of a patch and roll-back to an earlier version if needed.</p>
@@ -149,12 +150,13 @@
 <p>Below are guides meant to give you help accomplishing specific tasks for the project:</p>
 
 <ul>
-<li><a href="website">Maintaining the Yetus Website</a> - walks through how to view the website locally, update various static and generated pages, and render the html for publishing.</li>
-<li><a href="releases">Working with Release Candiates</a> - covers managing the release process, validating proposed release candidates, and publishing project approved artifacts.</li>
+  <li><a href="website">Maintaining the Yetus Website</a> - walks through how to view the website locally, update various static and generated pages, and render the html for publishing.</li>
+  <li><a href="releases">Working with Release Candiates</a> - covers managing the release process, validating proposed release candidates, and publishing project approved artifacts.</li>
 </ul>
 
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

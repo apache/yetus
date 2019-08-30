@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,8 +126,8 @@
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
 <ul>
-<li><a href="#jira">JIRA</a></li>
-<li><a href="#github">Github</a></li>
+  <li><a href="#jira">JIRA</a></li>
+  <li><a href="#github">Github</a></li>
 </ul>
 
 <!-- /MarkdownTOC -->
@@ -135,32 +136,33 @@
 
 <h2 id="jira">JIRA</h2>
 
-<p>If JIRA support is configured, attach the patch to the given ISSUE and
-click &lsquo;Submit Patch&rsquo;.  The patch file should be named one of:</p>
+<p>If JIRA support is configured, attach the patch to the given ISSUE and<br />
+click 'Submit Patch'.  The patch file should be named one of:</p>
 
 <ul>
-<li>ISSUE.patch</li>
-<li>ISSUE.###.patch</li>
-<li>ISSUE.branch.###.patch</li>
-<li>ISSUE-branch-###.patch</li>
-<li>ISSUE.###.branch.patch</li>
-<li>ISSUE-branch.###.patch</li>
+  <li>ISSUE.patch</li>
+  <li>ISSUE.###.patch</li>
+  <li>ISSUE.branch.###.patch</li>
+  <li>ISSUE-branch-###.patch</li>
+  <li>ISSUE.###.branch.patch</li>
+  <li>ISSUE-branch.###.patch</li>
 </ul>
 
 <p>The meaning of the subpart are the following:</p>
 
 <ul>
-<li>ISSUE: JIRA key (e.g. YETUS-1)</li>
-<li>branch: either the name of a branch or a git hash prefixed with <strong>git</strong> (e.g. branch-2.8 or git8e55427b35)</li>
-<li>###: revision of the patch (e.g. 00 or 01)</li>
+  <li>ISSUE: JIRA key (e.g. YETUS-1)</li>
+  <li>branch: either the name of a branch or a git hash prefixed with <strong>git</strong> (e.g. branch-2.8 or git8e55427b35)</li>
+  <li>###: revision of the patch (e.g. 00 or 01)</li>
 </ul>
 
 <h2 id="github">Github</h2>
 
-<p>If Github support is also configured, a comment that contains a link to a Pull Request&rsquo;s patch file (e.g., <a href="https://github.com/user/repo/pull/1.patch">https://github.com/user/repo/pull/1.patch</a>) will pull the patch from the given Github PR.</p>
+<p>If Github support is also configured, a comment that contains a link to a Pull Request's patch file (e.g., <a href="https://github.com/user/repo/pull/1.patch">https://github.com/user/repo/pull/1.patch</a>) will pull the patch from the given Github PR.</p>
 
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

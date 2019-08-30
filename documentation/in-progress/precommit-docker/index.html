@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,19 +126,19 @@
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
 <ul>
-<li><a href="#the-basics">The Basics</a></li>
-<li><a href="#docker-base-images">Docker Base Images</a>
-
-<ul>
-<li><a href="#default-image">Default Image</a></li>
-<li><a href="#using-a-dockerfile">Using a Dockerfile</a></li>
-<li><a href="#pulling-a-docker-tag">Pulling a Docker tag</a></li>
-<li><a href="#using-a-cache">Using a cache</a></li>
-<li><a href="#platforms">Platforms</a></li>
-</ul></li>
-<li><a href="#resource-controls">Resource Controls</a></li>
-<li><a href="#privileged-mode">Privileged Mode</a></li>
-<li><a href="#docker-in-docker">Docker in Docker</a></li>
+  <li><a href="#the-basics">The Basics</a></li>
+  <li><a href="#docker-base-images">Docker Base Images</a>
+    <ul>
+      <li><a href="#default-image">Default Image</a></li>
+      <li><a href="#using-a-dockerfile">Using a Dockerfile</a></li>
+      <li><a href="#pulling-a-docker-tag">Pulling a Docker tag</a></li>
+      <li><a href="#using-a-cache">Using a cache</a></li>
+      <li><a href="#platforms">Platforms</a></li>
+    </ul>
+  </li>
+  <li><a href="#resource-controls">Resource Controls</a></li>
+  <li><a href="#privileged-mode">Privileged Mode</a></li>
+  <li><a href="#docker-in-docker">Docker in Docker</a></li>
 </ul>
 
 <!-- /MarkdownTOC -->
@@ -146,7 +147,7 @@
 
 <p>By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a Linux container by using the <code>--docker</code> parameter.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a CI instance.</p>
 
-<p>Each run will spawn two Docker images, one that contains some sort of base image and one specific to each run.  The base image is described further in this text.  The run-specific image is a small one that passes parameters and settings that are dedicated to that run, with <q>tp-</q> as part of the Docker image tag.  It should be removed automatically after the run upon test-patch completion.</p>
+<p>Each run will spawn two Docker images, one that contains some sort of base image and one specific to each run.  The base image is described further in this text.  The run-specific image is a small one that passes parameters and settings that are dedicated to that run, with "tp-" as part of the Docker image tag.  It should be removed automatically after the run upon test-patch completion.</p>
 
 <h1 id="docker-base-images">Docker Base Images</h1>
 
@@ -156,13 +157,13 @@
 
 <h2 id="using-a-dockerfile">Using a Dockerfile</h2>
 
-<p>The <code>--dockerfile</code> parameter allows one to provide a custom Dockerfile instead. The Dockerfile should contain all of the necessary binaries and tooling needed to build and test.  test-patch will process this file up until the text <q>YETUS CUT HERE</q>.  Be aware that will always fail the build if the Dockerfile itself fails the build.  This makes it ideal to use to test any tools Dockerfile that is also used for development.</p>
+<p>The <code>--dockerfile</code> parameter allows one to provide a custom Dockerfile instead. The Dockerfile should contain all of the necessary binaries and tooling needed to build and test.  test-patch will process this file up until the text "YETUS CUT HERE".  Be aware that will always fail the build if the Dockerfile itself fails the build.  This makes it ideal to use to test any tools Dockerfile that is also used for development.</p>
 
-<p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in <code>--robot</code> mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a <q>safe</q> mode that prevents deletions via the <code>--dockerdelrep</code> option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.</p>
+<p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in <code>--robot</code> mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a "safe" mode that prevents deletions via the <code>--dockerdelrep</code> option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.</p>
 
 <h3 id="copy-and-add-in-dockerfiles">COPY and ADD in Dockerfiles</h3>
 
-<p>In order to use both &lsquo;YETUS CUT HERE&rsquo; and a Dockerfile that uses COPY and ADD directives, the Docker API must be version 18 or higher.  If the API version is 17 or lower, the Dockerfile will be copied to a temporary directory to be processed, thus removing the Docker build context in the process.</p>
+<p>In order to use both 'YETUS CUT HERE' and a Dockerfile that uses COPY and ADD directives, the Docker API must be version 18 or higher.  If the API version is 17 or lower, the Dockerfile will be copied to a temporary directory to be processed, thus removing the Docker build context in the process.</p>
 
 <h2 id="pulling-a-docker-tag">Pulling a Docker tag</h2>
 
@@ -178,21 +179,23 @@
 
 <h1 id="resource-controls">Resource Controls</h1>
 
-<p>Docker&rsquo;s <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container&rsquo;s memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details. Apache Yetus also sets the <code>--oom-score-adj</code> to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
+<p>Docker's <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container's memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details. Apache Yetus also sets the <code>--oom-score-adj</code> to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
 
 <p>Additionally, if bash v4 and Linux is in use, a separate process is launched to keep a rolling count of the maximum number of threads (not processes!) in use at one time. This number will be reported at the end of the test-patch run.  Depending upon the build, languages, features enabled, etc, this number may be helpful in determining what the value of <code>--proclimit</code></p>
 
 <h1 id="privileged-mode">Privileged Mode</h1>
 
-<p>In some cases, the work being preformed inside the Docker container requires extra permissions.  Using the <code>--docker-privd</code> option enables Docker&rsquo;s extended privileges to the container.</p>
+<p>In some cases, the work being preformed inside the Docker container requires extra permissions.  Using the <code>--docker-privd</code> option enables Docker's extended privileges to the container.</p>
 
 <h1 id="docker-in-docker">Docker in Docker</h1>
 
-<p>With the usage of the <code>--dockerind</code> flag, test-patch will mount the <code>/var/run/docker.sock</code> UNIX socket into the container to enable Docker-in-Docker mode.  Additionally, the <code>--docker-socket</code> option will let one set the socket to mount in situations where that isn&rsquo;t the location of the socket, such as a dockerd proxy providing authentication.</p>
+<p>With the usage of the <code>--dockerind</code> flag, test-patch will mount the <code>/var/run/docker.sock</code> UNIX socket into the container to enable Docker-in-Docker mode.  Additionally, the <code>--docker-socket</code> option will let one set the socket to mount in situations where that isn't the location of the socket, such as a dockerd proxy providing authentication.</p>
+
 <div class="highlight"><pre class="highlight plaintext"><code>NOTE: Using --dockerind requires the availability of the `stat` command that supports either -c '%g' (GNU form) or -f '%g' (BSD form).
 </code></pre></div>
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

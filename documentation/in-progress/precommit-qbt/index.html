@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,30 +126,32 @@
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
 <ul>
-<li><a href="#reporting">Reporting</a></li>
-<li><a href="#archiving">Archiving</a></li>
+  <li><a href="#reporting">Reporting</a></li>
+  <li><a href="#archiving">Archiving</a></li>
 </ul>
 
 <!-- /MarkdownTOC -->
 
-<p><code>qbt</code> is a command to execute <code>test-patch</code> without a patch.  It uses
-the same plug-ins and the same options as <code>test-patch</code>.  The only
-difference is that no patch file, location, etc should be supplied.
-It is meant to be a way to easily get <code>test-patch</code>&lsquo;s output on your
-current source tree.  It is suitable to be run as a regularly
+<p><code>qbt</code> is a command to execute <code>test-patch</code> without a patch.  It uses<br />
+the same plug-ins and the same options as <code>test-patch</code>.  The only<br />
+difference is that no patch file, location, etc should be supplied.<br />
+It is meant to be a way to easily get <code>test-patch</code>'s output on your<br />
+current source tree.  It is suitable to be run as a regularly<br />
 scheduled build as part of your overall development strategy.</p>
 
 <h1 id="reporting">Reporting</h1>
 
-<p>When using an automation tool, it may be useful to use the
-<code>--console-report-file</code> option to send the summary email to a
-file. This can then be used with systems like Jenkin&rsquo;s
+<p>When using an automation tool, it may be useful to use the<br />
+<code>--console-report-file</code> option to send the summary email to a<br />
+file. This can then be used with systems like Jenkin's<br />
 email-ext plug-in to send the output as an emailed report:</p>
+
 <div class="highlight"><pre class="highlight plaintext"><code>${FILE,path="&lt;report-file-path&gt;"}
 </code></pre></div>
-<p>For something a bit more structured, there is also the <code>--html-report-file</code>
-option.  Using this output, again with Jenkins&rsquo; email-ext plug-in, it is
+<p>For something a bit more structured, there is also the <code>--html-report-file</code><br />
+option.  Using this output, again with Jenkins' email-ext plug-in, it is<br />
 possible to build some very nice looking output that is easily customized:</p>
+
 <div class="highlight"><pre class="highlight html"><code><span class="nt">&lt;html&gt;</span>
 <span class="nt">&lt;head&gt;</span>
 <span class="nt">&lt;style&gt;</span>
@@ -174,17 +177,18 @@ ${FILE,path="<span class="nt">&lt;report-file-path&gt;</span>"}
 
 <h1 id="archiving">Archiving</h1>
 
-<p>It may be useful to save off certain files while qbt is running for more
-post-processing by another utility.  If the <code>rsync</code> command is available,
+<p>It may be useful to save off certain files while qbt is running for more<br />
+post-processing by another utility.  If the <code>rsync</code> command is available,<br />
 then the archiving functionality may be used.</p>
 
-<p>The <code>--archive-list</code> option takes a comma separated list of <code>find -name</code>
-patterns and copies them to the patch directory&rsquo;s archiver subdirectory.
-It will preserve the directory structure of the source tree so that
+<p>The <code>--archive-list</code> option takes a comma separated list of <code>find -name</code><br />
+patterns and copies them to the patch directory's archiver subdirectory.<br />
+It will preserve the directory structure of the source tree so that<br />
 multiple matching file names will be preserved.</p>
 
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

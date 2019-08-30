@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -101,7 +102,8 @@
 </div>
 
       <div class="container">
-        <!---
+        
+<!---
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -118,92 +120,108 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 -->
-
 <ul>
-<li>Public/Stable/Not Replaceable
-
-<ul>
-<li><a href="#setup_defaults">setup_defaults</a></li>
-<li><a href="#yetus_usage">yetus_usage</a></li>
-</ul></li>
+  <li>Public/Stable/Not Replaceable
+    <ul>
+      <li><a href="#setup_defaults">setup_defaults</a></li>
+      <li><a href="#yetus_usage">yetus_usage</a></li>
+    </ul>
+  </li>
 </ul>
 
-<hr>
+<hr />
 
-<h2 id="public-stable-not-replaceable">Public/Stable/Not Replaceable</h2>
-
+<h2 id="publicstablenot-replaceable">Public/Stable/Not Replaceable</h2>
 <h3 id="setup_defaults"><code>setup_defaults</code></h3>
 
 <ul>
-<li>Synopsis</li>
+  <li>Synopsis</li>
 </ul>
+
 <div class="highlight"><pre class="highlight plaintext"><code>setup_defaults
 </code></pre></div>
 <ul>
-<li>Description</li>
+  <li>Description</li>
 </ul>
 
 <p>Setup the default global variables</p>
 
 <ul>
-<li>Returns</li>
+  <li>Returns</li>
 </ul>
 
 <p>Nothing</p>
-<table class='table table-bordered table-striped'><thead><tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody><tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Public</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Stable</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">No</td>
-</tr>
-</tbody></table>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Stable</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
 <h3 id="yetus_usage"><code>yetus_usage</code></h3>
 
 <ul>
-<li>Synopsis</li>
+  <li>Synopsis</li>
 </ul>
+
 <div class="highlight"><pre class="highlight plaintext"><code>yetus_usage
 </code></pre></div>
 <ul>
-<li>Description</li>
+  <li>Description</li>
 </ul>
 
 <p>Print the usage information</p>
 
 <ul>
-<li>Returns</li>
+  <li>Returns</li>
 </ul>
 
 <p>Nothing</p>
-<table class='table table-bordered table-striped'><thead><tr>
-<th style="text-align: left">Classification</th>
-<th style="text-align: left">Level</th>
-</tr>
-</thead><tbody><tr>
-<td style="text-align: left">Audience</td>
-<td style="text-align: left">Public</td>
-</tr>
-<tr>
-<td style="text-align: left">Stability</td>
-<td style="text-align: left">Stable</td>
-</tr>
-<tr>
-<td style="text-align: left">Replaceable</td>
-<td style="text-align: left">No</td>
-</tr>
-</tbody></table>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Stable</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

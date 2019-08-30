@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,8 +126,8 @@
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
 <ul>
-<li><a href="#file-access">File Access</a></li>
-<li><a href="#a-note-about-precommit">A Note About Precommit</a></li>
+  <li><a href="#file-access">File Access</a></li>
+  <li><a href="#a-note-about-precommit">A Note About Precommit</a></li>
 </ul>
 
 <!-- /MarkdownTOC -->
@@ -134,24 +135,26 @@
 <p>While not official releases, the Apache Yetus project makes available two types of images on hub.docker.com:</p>
 
 <ul>
-<li>apache/yetus-base</li>
+  <li>
+    <p>apache/yetus-base</p>
+
+    <p>This image is the same as the 'built-in' Dockerfile when <code>--docker</code> is used without <code>--dockerfile</code>  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in <code>precommit/src/main/shell/test-patch-docker/</code>.</p>
+  </li>
+  <li>
+    <p>apache/yetus</p>
+
+    <p>This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.</p>
+  </li>
 </ul>
-
-<p>This image is the same as the &lsquo;built-in&rsquo; Dockerfile when <code>--docker</code> is used without <code>--dockerfile</code>  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in <code>precommit/src/main/shell/test-patch-docker/</code>.</p>
-
-<ul>
-<li>apache/yetus</li>
-</ul>
-
-<p>This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.</p>
 
 <p>Both images should be suitable to be used as a building block or even directly if your build environment needs no other dependencies.  These images are especially useful for various CI systems that require a Docker image to be used.</p>
 
-<p>Images are tagged such that &lsquo;master&rsquo; represents the last successful Docker image build of the master branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no &lsquo;latest&rsquo; tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.</p>
+<p>Images are tagged such that 'master' represents the last successful Docker image build of the master branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no 'latest' tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.</p>
 
 <h1 id="file-access">File Access</h1>
 
 <p>All of the executables that Apache Yetus provides requires access to one or more directories.  These directories should be provided on the command line via the volume flags to docker run. For example, to run shelldocs against test-patch.sh:</p>
+
 <div class="highlight"><pre class="highlight shell"><code>docker run <span class="se">\</span>
   <span class="nt">--rm</span> <span class="se">\</span>
   <span class="nt">-v</span> /tmp/out:/output <span class="se">\</span>
@@ -161,7 +164,8 @@
 </code></pre></div>
 <p>In this example, we mount two volumes: one for input (marked read-only), one for output.  After execution, shelldocs has processed test-patch.sh and generated a test-patch.md file in /tmp/out on our local machine.</p>
 
-<p>Precommit also works, assuming that Apache Yetus image has all of your project&rsquo;s dependencies.  For example:</p>
+<p>Precommit also works, assuming that Apache Yetus image has all of your project's dependencies.  For example:</p>
+
 <div class="highlight"><pre class="highlight shell"><code>docker run <span class="se">\</span>
   <span class="nt">--rm</span> <span class="se">\</span>
   <span class="nt">-v</span> /tmp/patchdir:/patchdir <span class="se">\</span>
@@ -174,13 +178,15 @@
     <span class="nt">--project</span><span class="o">=</span>yetus
 </code></pre></div>
 <p>If your project needs additional dependencies, it is trivial to build off of the Apache Yetus image:</p>
+
 <div class="highlight"><pre class="highlight plaintext"><code>FROM apache/yetus:0.9.0
 RUN apt-get -q update &amp;&amp; apt-get -q install -y \
       clang \
       libssl-dev \
       valgrind \
       zlib1g-dev
-</code></pre></div><div class="highlight"><pre class="highlight shell"><code>docker build <span class="nt">-t</span> project/build:0.9.0 <span class="nt">-f</span> <span class="nb">.</span>
+</code></pre></div>
+<div class="highlight"><pre class="highlight shell"><code>docker build <span class="nt">-t</span> project/build:0.9.0 <span class="nt">-f</span> <span class="nb">.</span>
 </code></pre></div>
 <p>This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of apache/yetus:0.9.0 since it has all of Apache Yetus and the additions needed by our project.</p>
 
@@ -189,7 +195,8 @@ RUN apt-get -q update &amp;&amp; apt-get -q install -y \
 <p>test-patch and friends have direct support for Docker outside of the convenience images.  That information is covered in-depth in the<a href="../precommit-docker">precommit-docker</a> section.</p>
 
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

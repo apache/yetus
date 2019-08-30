@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,76 +126,77 @@
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
 <ul>
-<li><a href="#global-variables">Global Variables</a>
-
-<ul>
-<li><a href="#buildtoolcwd">BUILDTOOLCWD</a></li>
-<li><a href="#unsupported_test">UNSUPPORTED_TEST</a></li>
-</ul></li>
-<li><a href="#required-functions">Required Functions</a>
-
-<ul>
-<li><a href="#pluginname_buildfile">pluginname_buildfile</a></li>
-<li><a href="#pluginname_executor">pluginname_executor</a></li>
-<li><a href="#pluginnamemodulesworker">pluginname_modules_worker</a></li>
-<li><a href="#pluginnamebuiltin_personalitymodules">pluginname_builtin_personality_modules</a></li>
-<li><a href="#pluginnamebuiltin_personality_filetests">pluginname_builtin_personality_file_tests</a></li>
-</ul></li>
-<li><a href="#optional-functions">Optional Functions</a>
-
-<ul>
-<li><a href="#pluginnameparseargs">pluginname_parse_args</a></li>
-<li><a href="#pluginname_initialize">pluginname_initialize</a></li>
-<li><a href="#pluginnamereordermodules">pluginname_reorder_modules</a></li>
-<li><a href="#pluginnametestlogfilter">pluginname_(test)_logfilter</a></li>
-<li><a href="#pluginnametestcalcdiffs">pluginname_(test)_calcdiffs</a></li>
-<li><a href="#pluginnamedockersupport">pluginname_docker_support</a></li>
-</ul></li>
-<li><a href="#apache-ant-specific">Apache Ant Specific</a>
-
-<ul>
-<li><a href="#ant-command-arguments">Ant Command Arguments</a></li>
-<li><a href="#ant-in-docker-mode">Ant in Docker Mode</a></li>
-</ul></li>
-<li><a href="#autoconf-specific">autoconf Specific</a>
-
-<ul>
-<li><a href="#autoconf-command-arguments">autoconf Command Arguments</a></li>
-</ul></li>
-<li><a href="#cmake-specific">CMAKE Specific</a></li>
-<li><a href="#gradle-specific">Gradle Specific</a></li>
-<li><a href="#make-specific">Make Specific</a></li>
-<li><a href="#apache-maven-specific">Apache Maven Specific</a>
-
-<ul>
-<li><a href="#command-arguments">Command Arguments</a></li>
-<li><a href="#per-instance-repositories">Per-instance Repositories</a></li>
-<li><a href="#maven-in-docker-mode">Maven in Docker Mode</a></li>
-<li><a href="#test-profile">Test Profile</a></li>
-<li><a href="#custom-maven-tests">Custom Maven Tests</a></li>
-</ul></li>
+  <li><a href="#global-variables">Global Variables</a>
+    <ul>
+      <li><a href="#buildtoolcwd">BUILDTOOLCWD</a></li>
+      <li><a href="#unsupported_test">UNSUPPORTED_TEST</a></li>
+    </ul>
+  </li>
+  <li><a href="#required-functions">Required Functions</a>
+    <ul>
+      <li><a href="#pluginname_buildfile">pluginname_buildfile</a></li>
+      <li><a href="#pluginname_executor">pluginname_executor</a></li>
+      <li><a href="#pluginnamemodulesworker">pluginname_modules_worker</a></li>
+      <li><a href="#pluginnamebuiltin_personalitymodules">pluginname_builtin_personality_modules</a></li>
+      <li><a href="#pluginnamebuiltin_personality_filetests">pluginname_builtin_personality_file_tests</a></li>
+    </ul>
+  </li>
+  <li><a href="#optional-functions">Optional Functions</a>
+    <ul>
+      <li><a href="#pluginnameparseargs">pluginname_parse_args</a></li>
+      <li><a href="#pluginname_initialize">pluginname_initialize</a></li>
+      <li><a href="#pluginnamereordermodules">pluginname_reorder_modules</a></li>
+      <li><a href="#pluginnametestlogfilter">pluginname_(test)_logfilter</a></li>
+      <li><a href="#pluginnametestcalcdiffs">pluginname_(test)_calcdiffs</a></li>
+      <li><a href="#pluginnamedockersupport">pluginname_docker_support</a></li>
+    </ul>
+  </li>
+  <li><a href="#apache-ant-specific">Apache Ant Specific</a>
+    <ul>
+      <li><a href="#ant-command-arguments">Ant Command Arguments</a></li>
+      <li><a href="#ant-in-docker-mode">Ant in Docker Mode</a></li>
+    </ul>
+  </li>
+  <li><a href="#autoconf-specific">autoconf Specific</a>
+    <ul>
+      <li><a href="#autoconf-command-arguments">autoconf Command Arguments</a></li>
+    </ul>
+  </li>
+  <li><a href="#cmake-specific">CMAKE Specific</a></li>
+  <li><a href="#gradle-specific">Gradle Specific</a></li>
+  <li><a href="#make-specific">Make Specific</a></li>
+  <li><a href="#apache-maven-specific">Apache Maven Specific</a>
+    <ul>
+      <li><a href="#command-arguments">Command Arguments</a></li>
+      <li><a href="#per-instance-repositories">Per-instance Repositories</a></li>
+      <li><a href="#maven-in-docker-mode">Maven in Docker Mode</a></li>
+      <li><a href="#test-profile">Test Profile</a></li>
+      <li><a href="#custom-maven-tests">Custom Maven Tests</a></li>
+    </ul>
+  </li>
 </ul>
 
 <!-- /MarkdownTOC -->
 
 <p>test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:</p>
+
 <div class="highlight"><pre class="highlight shell"><code>add_build_tool &lt;pluginname&gt;
 </code></pre></div>
 <h1 id="global-variables">Global Variables</h1>
 
 <h2 id="buildtoolcwd">BUILDTOOLCWD</h2>
 
-<p>This variable determines where the build tool&rsquo;s command (as returned by pluginname_executor) should actually execute.  It should be one of three values:</p>
+<p>This variable determines where the build tool's command (as returned by pluginname_executor) should actually execute.  It should be one of three values:</p>
 
 <ul>
-<li>basedir  - always execute at the root of the source tree</li>
-<li>module   - (default) switch to the directory as given by the module being processed</li>
-<li>/(path)  - change to the directory as given by this absolute path. This allows for custom directories to be created and used as necessary.  If the path does not exist, it will be created. If /(path) is used, two special substitutions may be made:
-
-<ul>
-<li>@@@BASEDIR@@@ will be replaced with the root of the source tree</li>
-<li>@@@MODULEDIR@@@ will be replaced with the module name</li>
-</ul></li>
+  <li>basedir  - always execute at the root of the source tree</li>
+  <li>module   - (default) switch to the directory as given by the module being processed</li>
+  <li>/(path)  - change to the directory as given by this absolute path. This allows for custom directories to be created and used as necessary.  If the path does not exist, it will be created. If /(path) is used, two special substitutions may be made:
+    <ul>
+      <li>@@@BASEDIR@@@ will be replaced with the root of the source tree</li>
+      <li>@@@MODULEDIR@@@ will be replaced with the module name</li>
+    </ul>
+  </li>
 </ul>
 
 <h2 id="unsupported_test">UNSUPPORTED_TEST</h2>
@@ -215,11 +217,11 @@
 
 <h2 id="pluginname_modules_worker">pluginname_modules_worker</h2>
 
-<p>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use &lsquo;test&rsquo; to trigger &lsquo;unit&rsquo; tests, then <code>modules_workers</code> should be called with &lsquo;test&rsquo; appended onto its normal parameters.</p>
+<p>Input is the branch and the test being run.  This should call <code>modules_workers</code> with the generic parts to run that test on the build system.  For example, if it is convention to use 'test' to trigger 'unit' tests, then <code>modules_workers</code> should be called with 'test' appended onto its normal parameters.</p>
 
 <h2 id="pluginname_builtin_personality_modules">pluginname_builtin_personality_modules</h2>
 
-<p>Default method to determine how to enqueue modules for processing.  Note that personalities may override this function. Requires two arguments: repo status and test desired. For example, in a maven build, values may be &lsquo;branch&rsquo; and &lsquo;mvninstall&rsquo;.</p>
+<p>Default method to determine how to enqueue modules for processing.  Note that personalities may override this function. Requires two arguments: repo status and test desired. For example, in a maven build, values may be 'branch' and 'mvninstall'.</p>
 
 <h2 id="pluginname_builtin_personality_file_tests">pluginname_builtin_personality_file_tests</h2>
 
@@ -239,17 +241,18 @@
 
 <p>This functions allows the plugin to (re-)order the modules (e.g. based on the output of the maven dependency plugin). When called CHANGED_MODULES[@] already contains all changed modules. It must be altered to have an effect.</p>
 
-<h2 id="pluginname_-test-_logfilter">pluginname_(test)_logfilter</h2>
+<h2 id="pluginname_test_logfilter">pluginname_(test)_logfilter</h2>
 
 <p>This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the <code>calcdiffs</code> function. The test plug-in name should be in the (test) part of the function name.</p>
 
-<h2 id="pluginname_-test-_calcdiffs">pluginname_(test)_calcdiffs</h2>
+<h2 id="pluginname_test_calcdiffs">pluginname_(test)_calcdiffs</h2>
 
 <p>Some build tools (e.g., maven) use custom output for certain types of compilations (e.g., java).  This allows for custom log file difference calculation used to determine the before and after views.</p>
 
 <h2 id="pluginname_docker_support">pluginname_docker_support</h2>
 
 <p>If this build tool requires extra settings on the <code>docker run</code> command line, this function should be defined and add those options into an array called <code>${DOCKER_EXTRAARGS[@]}</code>. This is particularly useful for things like mounting volumes for repository caches.</p>
+
 <div class="highlight"><pre class="highlight plaintext"><code>**WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that `pluginname_initialize` be used to create the necessary directories prior to be used in the `docker run` command.
 </code></pre></div>
 <h1 id="apache-ant-specific">Apache Ant Specific</h1>
@@ -272,7 +275,7 @@
 
 <h1 id="cmake-specific">CMAKE Specific</h1>
 
-<p>By default, cmake will create a &lsquo;build&rsquo; directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.</p>
+<p>By default, cmake will create a 'build' directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.</p>
 
 <h1 id="gradle-specific">Gradle Specific</h1>
 
@@ -288,7 +291,7 @@
 
 <h2 id="command-arguments">Command Arguments</h2>
 
-<p>test-patch always passes &ndash;batch-mode to maven to force it into non-interactive mode.  Additionally, some tests will also force -fae in order to get all of messages/errors during that mode. Some tests are executed with -DskipTests.  Additional arguments should be handled via the personality.</p>
+<p>test-patch always passes –batch-mode to maven to force it into non-interactive mode.  Additionally, some tests will also force -fae in order to get all of messages/errors during that mode. Some tests are executed with -DskipTests.  Additional arguments should be handled via the personality.</p>
 
 <h2 id="per-instance-repositories">Per-instance Repositories</h2>
 
@@ -315,7 +318,8 @@
 <p>Maven will trigger add a maven install test when the <code>maven_add_install</code> function has been used and the related tests are requierd. Plug-ins that need to run maven before MUST call it as part of their respective initialize functions, otherwise maven may fail unexpectedly.  All Apache Yetus provided plug-ins that require maven will trigger the maven install functionality.</p>
 
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">

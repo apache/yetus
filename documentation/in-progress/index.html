@@ -25,16 +25,17 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="/assets/css/bootstrap.css" rel="stylesheet">
-        <link href="/assets/css/bootstrap-theme.css" rel="stylesheet">
-                    <link href="/assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="/assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../assets/js/bootstrap.js"></script>
   </head>
     <body>
-      <div class="navbar navbar-inverse navbar-static-top" role="navigation">
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -44,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="/assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -53,9 +54,9 @@
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
                     <ul class="dropdown-menu" role="menu">
-                      <li><a href="/documentation/0.8.0/">Docs for v0.8.0</a></li>
                       <li><a href="/documentation/0.9.0/">Docs for v0.9.0</a></li>
                       <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.0/">Docs for v0.11.0</a></li>
                       <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
                       </li>
                     </ul>
@@ -125,12 +126,12 @@
 <p>The Yetus Precommit Patch Tester allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.</p>
 
 <ul>
-<li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we&rsquo;ll use as terminology specific to this project.</li>
-<li>For an overview of Yetus&rsquo; philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
-<li>To get started on your project, including an explanation of what we&rsquo;ll expect in a runtime environment and what optional utilities we&rsquo;ll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
-<li>Customize how precommit interacts with your project by choosing amongst <a href="precommit-buildtools">build systems</a>, <a href="precommit-bugsystems">bug systems</a> and <a href="precommit-testformats">test formats</a>.</li>
-<li>Empower the test environment using <a href="precommit-docker">Docker</a>.</li>
-<li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you&rsquo;ll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
+  <li>Take a quick look at <a href="precommit-glossary">our glossary of terms</a> to ensure you are familiar with the ASF and Maven jargon we'll use as terminology specific to this project.</li>
+  <li>For an overview of Yetus' philosophy on testing contributions and how evaluation is performed, see our <a href="precommit-architecture">overview</a>.</li>
+  <li>To get started on your project, including an explanation of what we'll expect in a runtime environment and what optional utilities we'll leverage, read through the <a href="precommit-basic">basic usage guide</a>.</li>
+  <li>Customize how precommit interacts with your project by choosing amongst <a href="precommit-buildtools">build systems</a>, <a href="precommit-bugsystems">bug systems</a> and <a href="precommit-testformats">test formats</a>.</li>
+  <li>Empower the test environment using <a href="precommit-docker">Docker</a>.</li>
+  <li>If your project has advanced requirements such as module relationships not expressed in Maven, special profiles, or a need on os-specific prerequisites not managed by Maven then you'll need to use our <a href="precommit-advanced">advanced usage guide</a>.</li>
 </ul>
 
 <p>For a complete guide to the Precommit API, see <a href="precommit-apidocs/">the generated API documentation</a>.</p>
@@ -139,7 +140,7 @@
 
 <h1 id="yetus-release-doc-maker">Yetus Release Doc Maker</h1>
 
-<p>The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
+<p>The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that<br />
 documenation <a href="releasedocmaker">here</a>. See also the <a href="#yetus-maven-plugin">yetus-maven-plugin</a> for Apache Maven-specific information.</p>
 
 <h1 id="yetus-shelldocs">Yetus Shelldocs</h1>
@@ -156,13 +157,14 @@ documenation <a href="releasedocmaker">here</a>. See also the <a href="#yetus-ma
 
 <h1 id="javadocs-yetus-audience-annotations-and-more">Javadocs: Yetus Audience Annotations and more</h1>
 
-<p>Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.
+<p>Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.<br />
 You can refer the user documentation <a href="interface-classification">here</a>.</p>
 
 <p>All javadocs (including audience annotations) are located <a href="javadocs/">here</a>.</p>
 
     </div>
-      <div class="container">
+      
+<div class="container">
     <hr>
     <footer class="footer">
         <div class="row-fluid">
