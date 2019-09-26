@@ -626,16 +626,16 @@ function github_finalreport
         emoji=""
         case ${vote} in
           1|"+1")
-            emoji=":green_heart:"
+            emoji="+1 :green_heart:"
           ;;
           -1)
-            emoji=":broken_heart:"
+            emoji="-1 :x:"
           ;;
           0)
-            emoji=":blue_heart:"
+            emoji="+0 :ok:"
           ;;
           -0)
-            emoji=":yellow_heart:"
+            emoji="-0 :warning:"
           ;;
           H)
             # this never gets called (see above) but this is here so others know the color is taken
