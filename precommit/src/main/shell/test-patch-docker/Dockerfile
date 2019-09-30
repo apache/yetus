@@ -261,10 +261,10 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
     && rm -rf /var/lib/apt/lists/*
 RUN go get -u github.com/mgechev/revive \
     && go get -u github.com/mrtazz/checkmake \
-    && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.16.0) \
-    && (GO111MODULE=on go get github.com/uber/prototool/cmd/prototool@6a473a4f1d86e7c8ff6a844d7dc4f7c3f6207a3f) \
+    && (GO111MODULE=on go get github.com/uber/prototool/cmd/prototool@7df3b957ffe3d09dc57fe4e1eb96694614db8c7a) \
+    && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.19.1) \
     && mv /root/go/bin/* /usr/local/bin \
-    && rm -rf /root/go
+    && rm -rf /root/go /root/.cache/go-build
 
 ####
 # YETUS CUT HERE
