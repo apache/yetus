@@ -27,6 +27,7 @@ function make_usage
 {
   yetus_add_option "--make-cmd=<cmd>" "The 'make' command to use (default: '${MAKE}')"
   yetus_add_option "--make-file=<filename>" "The name of the file the make cmd should work on (default: '${MAKEFILE}')"
+  yetus_add_option "--make-use-git-clean" "Instead of 'make clean' use 'git clean' to reset the source checkout"
 }
 
 ## @description  precheck make
@@ -122,7 +123,7 @@ function make_modules_worker
       fi
     ;;
     unit)
-      modules_workers "${repostatus}" test test
+      modules_workers "${repostatus}" unit test
     ;;
     *)
       # shellcheck disable=SC2034
