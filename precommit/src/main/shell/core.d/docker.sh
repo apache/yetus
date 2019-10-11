@@ -31,6 +31,7 @@ DOCKER_SOCKET_GID=-1
 DOCKER_WORK_DIR="/precommit"
 
 declare -a DOCKER_EXTRAARGS
+declare -a DOCKER_EXTRABUILDARGS
 declare -a DOCKER_VERSION
 
 DOCKER_EXTRAENVS+=("JAVA_HOME")
@@ -569,6 +570,23 @@ function docker_version
   echo "${val}"
 }
 
+## @description  Queue Docker build-args to add to the docker build
+## @audience     public
+## @stability    stable
+## @replaceable  yes
+## @param        envname
+## @param        value
+function add_docker_build_arg
+{
+  declare key="$1"
+  declare value="$2"
+  if [[ -z "${value}" ]]; then
+    DOCKER_EXTRABUILDARGS+=("--build-arg" "${key}")
+  else
+    DOCKER_EXTRABUILDARGS+=("--build-arg" "${key}=${value}")
+  fi
+}
+
 ## @description  Queue env vars to add to the docker env
 ## @audience     public
 ## @stability    stable
@@ -702,6 +720,7 @@ function docker_run_image
           --label org.apache.yetus=\"\" \
           --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
           --tag "${baseimagename}" \
+          "${DOCKER_EXTRABUILDARGS[@]}" \
           -f "${buildfile}" \
           "${dockerdir}"; then
       popd >/dev/null || return 1
@@ -744,6 +763,7 @@ function docker_run_image
     --build-arg USER_NAME="${USER_NAME}" \
     --build-arg DOCKER_SOCKET_GID="${DOCKER_SOCKET_GID}" \
     --build-arg DOCKER_WORK_DIR="${DOCKER_WORK_DIR}" \
+    "${DOCKER_EXTRABUILDARGS[@]}" \
     --label org.apache.yetus=\"\" \
     --label org.apache.yetus.testpatch.patch="tp-${DOCKER_ID}" \
     --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
