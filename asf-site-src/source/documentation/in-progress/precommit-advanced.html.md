@@ -71,13 +71,13 @@ Similarly, there are other functions that may be defined during the test-patch r
 * pluginname\_usage
   * executed when the help message is displayed. This is used to display the plug-in specific options for the user.
 
-* pluginname\_parse\_args
+* [pluginname\_parse\_args](../precommit-buildtools#pluginname_parse_args)
   * executed prior to any other above functions except for pluginname\_usage. This is useful for parsing the arguments passed from the user and setting up the execution environment.
 
-* pluginname\_initialize
+* [pluginname\_initialize](../precommit-buildtools#pluginname_initialize)
   * After argument parsing and prior to any other work, the initialize step allows a plug-in to do any precursor work, set internal defaults, etc.
 
-* pluginname\_docker\_support
+* [pluginname\_docker\_support](../precommit-buildtools#pluginname_docker_support)
   * Perform any necessary setup to configure Docker support for the given plugin.  Typically this means adding parameters to the docker run command line via adding to the DOCKER\_EXTRAARGS array.
 
 * pluginname\_precheck
@@ -130,10 +130,10 @@ add_test_type <pluginname>
 * pluginname\_clean
   * executed to allow the plugin to remove all files that have been generate by this plugin.
 
-* pluginname\_logfilter
+* [pluginname\_\(test\)\_logfilter](../precommit-buildtools/#pluginname_test_logfilter)
   * This functions should filter all lines relevant to this test from the logfile. It is called in preparation for the `calcdiffs` function.
 
-* pluginname\_calcdiffs
+* [pluginname\_\(test\)\_calcdiffs](../precommit-buildtools/#pluginname_test_calcdiffs)
   * This allows for custom log file difference calculation used to determine the before and after views.  The default is to use the last column of a colon delimited line of output and perform a diff.  If the plug-in does not provide enough context, this may result in error skew. For example, if three lines in a row have "Missing period." as the error, test-patch will not be able to determine exactly which line caused the error.  Plug-ins that have this issue will want to use this or potentially modify the normal tool's output (e.g., checkstyle) to provide a more accurate way to determine differences.
 
   NOTE: If the plug-in has support for maven, the maven_add_install `pluginname` should be executed. See more information in Custom Maven Tests in the build tool documentation.
@@ -265,7 +265,7 @@ There are a handful of extremely important system variables that make life easie
 
 * CHANGED\_MODULES[@] is an array of all modules that house all of the CHANGED\_FILES[@].  Be aware that the root of the source tree is reported as '.'.
 
-* DOCKER\_EXTRAARGS[@] is an array of command line arguments to apply to the `docker run` command.
+* [DOCKER\_EXTRAARGS\[@\]](../precommit-buildtools#pluginname_docker_support) is an array of command line arguments to apply to the `docker run` command.
 
 * GITHUB\_REPO is to help test-patch when talking to Github.  If test-patch is given just a number on the command line, it will default to using this repo to determine the pull request.
 

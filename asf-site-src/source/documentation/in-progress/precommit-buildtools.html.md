@@ -34,8 +34,8 @@
   * [pluginname\_parse\_args](#pluginnameparseargs)
   * [pluginname\_initialize](#pluginname_initialize)
   * [pluginname\_reorder\_modules](#pluginnamereordermodules)
-  * [pluginname\_\(test\)\_logfilter](#pluginnametestlogfilter)
-  * [pluginname\_\(test\)_calcdiffs](#pluginnametestcalcdiffs)
+  * [pluginname\_\(test\)\_logfilter](#pluginname_test_logfilter)
+  * [pluginname\_\(test\)\_calcdiffs](#pluginname_test_calcdiffs)
   * [pluginname\_docker\_support](#pluginnamedockersupport)
 * [Apache Ant Specific](#apache-ant-specific)
   * [Ant Command Arguments](#ant-command-arguments)
@@ -54,7 +54,7 @@
 
 <!-- /MarkdownTOC -->
 
-test-patch has the ability to support multiple build tools.  Build tool plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:
+test-patch has the ability to support multiple build tools and [personalities](../precommit-advanced/#personalities).  Build tool and personality plug-ins have some extra hooks to do source and object maintenance at key points. Every build tool plug-in must have one line in order to be recognized:
 
 ```bash
 add_build_tool <pluginname>
@@ -79,6 +79,8 @@ If pluginname\_modules\_worker is given a test type that is not supported by the
 For example, the gradle build tool does not have a standard way to execute checkstyle. So when checkstyle is requested, gradle\_modules\_worker sets UNSUPPORTED\_TEST to true and returns out of the routine.
 
 # Required Functions
+
+Note: In a personality, `pluginname` can be arbitrary.
 
 ## pluginname\_buildfile
 
@@ -124,9 +126,15 @@ Some build tools (e.g., maven) use custom output for certain types of compilatio
 
 ## pluginname\_docker\_support
 
- If this build tool requires extra settings on the `docker run` command line, this function should be defined and add those options into an array called `${DOCKER_EXTRAARGS[@]}`. This is particularly useful for things like mounting volumes for repository caches.
+To affect the various `docker` command lines, one can use helper functions:
+* Affecting `docker build` command line:
+  * [`add_docker_build_arg`](../precommit-apidocs/core/#add_docker_build_arg)
+* Affecting `docker run` command line:
+  * [`add_docker_env`](../precommit-apidocs/core/#add_docker_env)
 
-    **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that `pluginname_initialize` be used to create the necessary directories prior to be used in the `docker run` command.
+If the build tool requires extra settings on the `docker run` command line (more than environment variables) those options should be added into an array called `${DOCKER_EXTRAARGS[@]}`. This is particularly useful for things like mounting volumes for repository caches.
+
+    **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that [`pluginname_initialize`](#pluginname\_initialize) be used to create the necessary directories prior to use in the `docker run` command.
 
 # Apache Ant Specific
 

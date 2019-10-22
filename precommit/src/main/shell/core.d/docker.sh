@@ -576,7 +576,7 @@ function docker_version
 ## @stability    stable
 ## @replaceable  yes
 ## @param        envname
-## @param        value
+## @param        [value]
 function add_docker_build_arg
 {
   declare key="$1"
