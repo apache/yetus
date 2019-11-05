@@ -90,25 +90,25 @@
             </configuration>
           </execution>
           <execution>
-            <id>0.11.0</id>
+            <id>0.11.1</id>
             <phase>pre-site</phase>
             <goals>
               <goal>symlink</goal>
             </goals>
             <configuration>
-              <target>../../target/0.11.0</target>
-              <newLink>${basedir}/source/documentation/0.11.0</newLink>
+              <target>../../target/0.11.1</target>
+              <newLink>${basedir}/source/documentation/0.11.1</newLink>
             </configuration>
           </execution>
           <execution>
-            <id>0.11.0.html.md</id>
+            <id>0.11.1.html.md</id>
             <phase>pre-site</phase>
             <goals>
               <goal>symlink</goal>
             </goals>
             <configuration>
-              <target>../../target/0.11.0.html.md</target>
-              <newLink>${basedir}/source/documentation/0.11.0.html.md</newLink>
+              <target>../../target/0.11.1.html.md</target>
+              <newLink>${basedir}/source/documentation/0.11.1.html.md</newLink>
             </configuration>
           </execution>
           <execution>
