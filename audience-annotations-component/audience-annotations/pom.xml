@@ -52,17 +52,6 @@
     </profile>
   </profiles>
 
-  <dependencies>
-    <dependency>
-      <!-- Version and location set in project pom -->
-      <groupId>jdk.tools</groupId>
-      <artifactId>jdk.tools</artifactId>
-      <scope>system</scope>
-      <!-- Mark as optional so that it isn't taken transitively -->
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
 
