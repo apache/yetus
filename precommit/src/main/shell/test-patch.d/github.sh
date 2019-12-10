@@ -57,7 +57,7 @@ function github_usage
   yetus_add_option "--github-api-url=<url>" "The URL of the API for github (default: '${GITHUB_API_URL}')"
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
 # Do not extract GITHUB_PASSWD environment variable
-  yetus_add_option "--github-password=<pw>" "Github password (or OAuth token) (default: 'GITHUB_PASSWD')"
+  yetus_add_option "--github-password=<pw>" "Github password (or OAuth token) (default: 'GITHUB_PASSWD' environment variable)"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
   yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
