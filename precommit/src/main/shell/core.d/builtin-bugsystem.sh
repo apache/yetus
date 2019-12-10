@@ -124,7 +124,9 @@ function console_finalreport
     ${SED} -e '1d' "${commentfile1}"  > "${commentfile2}"
 
     if [[ "${vote}" = "H" ]]; then
+      echo "+---------------------------------------------------------------------------"
       printf '|      | %*s |            |%-s\n' ${seccoladj} " " "${normaltop}"
+      echo "+---------------------------------------------------------------------------"
     else
       printf '| %4s | %*s | %-10s |%-s\n' "${vote}" ${seccoladj} \
         "${subs}" "${calctime}" "${normaltop}"
