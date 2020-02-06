@@ -14,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-declare -a MAVEN_ARGS
+# Accept a value of MAVEN_ARGS from the calling context
+# shellcheck disable=SC2206
+declare -a MAVEN_ARGS=(${MAVEN_ARGS:-})
 
 if [[ -z "${MAVEN_HOME:-}" ]]; then
   MAVEN=mvn
