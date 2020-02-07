@@ -358,7 +358,7 @@ ASF policies require that binding votes on releases be cast only after verifying
    ```bash
    $ mkdir apache-yetus-0.7.0-src_unpack
    $ tar -C apache-yetus-0.7.0-src_unpack -xzf apache-yetus-0.7.0-src.tar.gz
-   $ git clone --single-branch --depth=1 --branch YETUS-585 `https://github.com/apache/yetus.git` apache-yetus-0.7.0-RC1-tag
+   $ git clone --single-branch --depth=1 --branch YETUS-585 'https://github.com/apache/yetus.git' apache-yetus-0.7.0-RC1-tag
    $ diff -r apache-yetus-0.7.0-RC1-tag apache-yetus-0.7.0-src_unpack/yetus-project-0.7.0
    $ echo $?
    0
