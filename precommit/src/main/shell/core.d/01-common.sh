@@ -858,3 +858,37 @@ function delete_parameter
 
   yetus_del_array_element PARAMETER_TRACKER "${i}"
 }
+
+## @description  unescape common HTML entities
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @param        parameter
+function unescape_html
+{
+  declare str=$1
+
+  str="${str//&amp;/&}"
+  str="${str//&quot;/\"}"
+  str="${str//&lt;/<}"
+  str="${str//&gt;/>}"
+  str="${str//&apos;/\'}"
+  echo "${str}"
+}
+
+## @description  escape common HTML entities
+## @audience     public
+## @stability    stable
+## @replaceable  no
+## @param        parameter
+function escape_html
+{
+  declare str=$1
+
+  str="${str//&/&amp;}"
+  str="${str//\"/&quot;}"
+  str="${str//</&lt;}"
+  str="${str//>/&gt;}"
+  str="${str//\'/&apos;}"
+  echo "${str}"
+}

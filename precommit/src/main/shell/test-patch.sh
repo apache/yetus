@@ -3220,6 +3220,32 @@ function prechecks
   done
 }
 
+## @description perform prechecks
+## @audience private
+## @stability evolving
+## @return   exits on failure
+function postcleanups
+{
+  declare plugin
+  declare result=0
+
+  for plugin in ${BUILDTOOL} "${NEEDED_TESTS[@]}" "${TESTFORMATS[@]}"; do
+    verify_patchdir_still_exists
+
+    if declare -f "${plugin}_postcleanup" >/dev/null 2>&1; then
+
+      yetus_debug "Running ${plugin}_postcleanup"
+      "${plugin}_postcleanup"
+
+      (( result = result + $? ))
+      if [[ ${result} != 0 ]] ; then
+        bugsystem_finalreport 1
+        cleanup_and_exit 1
+      fi
+    fi
+  done
+}
+
 ## @description import core library routines
 ## @audience private
 ## @stability evolving
@@ -3318,6 +3344,8 @@ add_vote_table H "Other Tests"
 runtests
 
 stop_coprocessors
+
+postcleanups
 
 finish_vote_table
 
