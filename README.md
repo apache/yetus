@@ -38,7 +38,7 @@ Audience Annotations allows projects to use Java Annotations to delineate public
 * [Shelldocs](shelldocs/)
 Shelldocs processes comments on Bash functions for annotations similar to Javadoc. It also includes built-in audience scoping functionality similar to the doclet from Audience Annotations.
 
-* [Release Doc Maker](release-doc-maker/)
+* [Release Doc Maker](releasedocmaker/)
 Release Doc Maker analyzes Jira and Git information to produce Markdown formatted release notes.
 
 * [yetus-maven-plugin](yetus-maven-plugin/)
