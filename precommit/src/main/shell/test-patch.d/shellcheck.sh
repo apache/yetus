@@ -99,11 +99,21 @@ function shellcheck_criteria
 {
   declare fn=$1
   declare text
+  declare excludepath
 
   if [[ ! -f "${fn}" ]]; then
     yetus_debug "Shellcheck rejected (not exist): ${fn}"
     return
   fi
+
+  # EXLUDE_PATHS should already be initialized by now, since
+  # we're in _precheck by the time this gets called
+
+  for excludepath in "${EXCLUDE_PATHS[@]}"; do
+    if [[  "${fn}" =~ ${excludepath} ]]; then
+      return
+    fi
+  done
 
   text=$(head -n 1 "${fn}")
 
