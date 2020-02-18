@@ -34,6 +34,14 @@ function checkstyle_filefilter
       add_test checkstyle
     fi
   fi
+
+  if [[ ${BUILDTOOL} == gradle ]]; then
+    if [[ ${filename} =~ \.java$
+       || ${filename} =~ config/checkstyle/checkstyle.xml
+       || ${filename} =~ config/checkstyle/suppressions.xml ]]; then
+      add_test checkstyle
+    fi
+  fi
 }
 
 ## @description  usage help for checkstyle
@@ -149,11 +157,14 @@ function checkstyle_runner
   declare logfile
   declare modulesuffix
   declare cmd
+  declare line
+  declare newline
   declare logline
   declare text
   declare linenum
   declare codeline
   declare cmdresult
+  declare -a filelist
 
   # first, let's clear out any previous run information
   modules_reset
@@ -167,7 +178,7 @@ function checkstyle_runner
     fn=$(module_file_fragment "${MODULE[${i}]}")
     modulesuffix=$(basename "${MODULE[${i}]}")
     output="${PATCH_DIR}/${repostatus}-checkstyle-${fn}.txt"
-    logfile="${PATCH_DIR}/maven-${repostatus}-checkstyle-${fn}.txt"
+    logfile="${PATCH_DIR}/buildtool-${repostatus}-checkstyle-${fn}.txt"
 
     buildtool_cwd "${i}"
 
@@ -186,6 +197,11 @@ function checkstyle_runner
           ${CHECKSTYLE_OPTIONS} \
           ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}} -Ptest-patch"
       ;;
+      gradle)
+        cmd="${GRADLEW} ${GRADLEW_ARGS[*]} \
+           checkstyleMain checkstyleTest \
+          ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}}"
+      ;;
       *)
         UNSUPPORTED_TEST=true
         return 0
@@ -202,10 +218,50 @@ function checkstyle_runner
     echo_and_redirect "${logfile}" ${cmd}
     cmdresult=$?
 
-    "${SED}" -e 's,^\[ERROR\] ,,g' -e 's,^\[WARN\] ,,g' "${logfile}" \
-      | ${GREP} ^/ \
-      | ${SED} -e "s,${BASEDIR},.,g" \
-      > "${tmp}"
+    case ${BUILDTOOL} in
+      ant)
+        "${SED}" -e 's,^\[ERROR\] ,,g' -e 's,^\[WARN\] ,,g' "${logfile}" \
+          | "${GREP}" ^/ \
+          | "${SED}" -e "s,${BASEDIR},.,g" \
+          > "${tmp}"
+        ;;
+      maven)
+        "${SED}" -e 's,^\[ERROR\] ,,g' -e 's,^\[WARN\] ,,g' "${logfile}" \
+          | "${GREP}" ^/ \
+          | "${SED}" -e "s,${BASEDIR},.,g" \
+          > "${tmp}"
+          ;;
+      gradle)
+         # find -path isn't quite everywhere yet...
+
+          while read -r line; do
+              if [[ ${line} =~ build/reports/checkstyle ]]; then
+                filelist+=("${line}")
+              fi
+          done < <(find "${BASEDIR}" -name 'main.xml' -o -name 'test.xml')
+
+          touch "${tmp}"
+
+          if [[ ${#filelist[@]} -gt 0 ]]; then
+            # convert xml to maven-like output
+            while read -r line; do
+              if [[ $line =~ ^\<file ]]; then
+                fn=$(echo "$line" | "${SED}" -E 's,^.+name="([^"]+)".+$,\1,' | "${SED}" -e "s,${BASEDIR},.,g")
+              elif [[ $line =~ ^\<error ]]; then
+                if [[ $line =~ column ]]; then
+                  newline=$(echo "$line" | "${SED}" -E 's,^.+line="([0-9]+)".*column="([0-9]+)".*severity="([a-z]+)".*message="([^"]+)".+$,__FN__:\1\:\2:\4,')
+                else
+                  newline=$(echo "$line" | "${SED}" -E 's,^.+line="([0-9]+)".*severity="([a-z]+)".*message="([^"]+)".+$,__FN__:\1:\3,')
+                fi
+
+                newline=$(unescape_html "${newline}")
+                newline=$(echo "$newline" | "${SED}" -e "s,__FN__,$fn,")
+                echo "$newline" >> "${tmp}"
+              fi
+            done < <(cat "${filelist[@]}")
+          fi
+          ;;
+    esac
 
     if [[ "${modulesuffix}" == . ]]; then
       modulesuffix=root

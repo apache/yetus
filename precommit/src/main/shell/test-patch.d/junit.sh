@@ -195,11 +195,7 @@ EOF
         "${failures}" \
         "${ela}"
       if [[ "${failures}" == 1 ]]; then
-        msg="${msg//&/&amp;}"
-        msg="${msg//</&lt;}"
-        msg="${msg//>/&gt;}"
-        msg="${msg//\"/&quot;}"
-        msg="${msg//\'/&apos;}"
+        msg=$(escape_html "${msg}")
         printf "<failure message=\"%s\">" "${msg}"
         j=0
         until [[ $j -eq ${#TP_FOOTER_TABLE[@]} ]]; do
@@ -214,11 +210,7 @@ EOF
                         "${SED}" -e "s,@@BASE@@,${url},g")
             fi
             if [[ "${footsub// }" == "${subs}" ]]; then
-              footcomment="${footcomment//&/&amp;}"
-              footcomment="${footcomment//</&lt;}"
-              footcomment="${footcomment//>/&gt;}"
-              footcomment="${footcomment//\"/&quot;}"
-              footcomment="${footcomment//\'/&apos;}"
+              footcomment=$(escape_html "${footcomment}")
               echo "${footcomment}"
             fi
           fi

@@ -83,6 +83,9 @@ Similarly, there are other functions that may be defined during the test-patch r
 * pluginname\_precheck
   * executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.
 
+* pluginname\_postcleanup
+  * executed on test-patch shutdown.
+
 * pluginname\_patchfile
   * executed prior to the patch being applied but after the git repository is setup. This step is intended to perform tests on the content of the patch itself.
 

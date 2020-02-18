@@ -19,69 +19,48 @@
 
 add_build_tool gradle
 
-declare -a GRADLE_ARGS=()
-
-function gradle_usage
-{
-  yetus_add_option "--gradle-cmd=<cmd>" "The 'gradle' command to use (default 'gradle')"
-  yetus_add_option "--gradlew-cmd=<cmd>" "The 'gradlew' command to use (default 'basedir/gradlew')"
-}
+declare -a GRADLEW_ARGS=()
 
 function gradle_parse_args
 {
-  local i
-
-  for i in "$@"; do
-    case ${i} in
-      --gradle-cmd=*)
-        delete_parameter "${i}"
-        GRADLE=${i#*=}
-      ;;
-      --gradlew-cmd=*)
-        delete_parameter "${i}"
-        GRADLEW=${i#*=}
-      ;;
-    esac
-  done
-
-  # if we requested offline, pass that to mvn
+  # if we requested offline, pass that to gradle
   if [[ ${OFFLINE} == "true" ]]; then
-    GRADLE_ARGS=("${GRADLE_ARGS[@]}" --offline)
+    GRADLEW_ARGS+=("--offline")
   fi
 
-  GRADLE=${GRADLE:-gradle}
   GRADLEW=${GRADLEW:-"${BASEDIR}/gradlew"}
 }
 
 function gradle_precheck
 {
   declare gradle_version
-  if ! verify_command gradle "${GRADLE}"; then
-    add_vote_table -1 gradle "ERROR: gradle is not available."
-    return 1
+
+  pushd "${BASEDIR}" >/dev/null || return 1
+  if ! verify_command gradle "${GRADLEW}"; then
+      add_vote_table -1 gradle "ERROR: gradlew is not available."
+      popd >/dev/null || return 1
+      return 1
   fi
+
   # finally let folks know what version they'll be dealing with.
-  gradle_version=$("${GRADLE}" --version 2>/dev/null | grep Gradle 2>/dev/null)
+  gradle_version=$("${GRADLEW}" --version 2>/dev/null | grep ^Gradle 2>/dev/null)
+  popd >/dev/null || return 1
+
   add_version_data gradle "${gradle_version##* }"
   return 0
 }
 
-function gradle_initialize
+function gradle_postcleanup
 {
-  if [[ "${BUILDTOOL}" = gradle ]]; then
-    # shellcheck disable=SC2034
-    BUILDTOOLCWD=basedir
-  fi
 
-  # we need to do this before docker kicks in
-  if [[ -e "${HOME}/.gradle"
-     && ! -d "${HOME}/.gradle" ]]; then
-    yetus_error "ERROR: ${HOME}/.gradle is not a directory."
-    return 1
-  elif [[ ! -e "${HOME}/.gradle" ]]; then
-    yetus_debug "Creating ${HOME}/.gradle"
-    mkdir -p "${HOME}/.gradle"
-  fi
+  pushd "${BASEDIR}" >/dev/null || return 1
+  # shellcheck disable=SC2046
+  echo_and_redirect \
+      "${PATCH_DIR}/gradle-postcleanup-log.txt" \
+      $("${BUILDTOOL}_executor") \
+      --stop
+  popd >/dev/null || return 1
+  return 0
 }
 
 function gradle_filefilter
@@ -90,8 +69,7 @@ function gradle_filefilter
 
   if [[ ${filename} =~ build\.gradle$
      || ${filename} =~ gradlew$
-     || ${filename} =~ gradle\.properties$
-     || ${filename} =~ wrapper\.gradle$ ]]; then
+     || ${filename} =~ gradle\.properties$ ]]; then
     yetus_debug "tests/compile: ${filename}"
     add_test compile
   fi
@@ -104,44 +82,7 @@ function gradle_buildfile
 
 function gradle_executor
 {
-  echo "${GRADLEW}" "${GRADLE_ARGS[@]}"
-}
-
-## @description  Bootstrap gradle
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-## @return       0 on success
-## @return       1 on failure
-function gradle_precompile
-{
-  declare repostatus=$1
-  declare result=0
-
-  if [[ ${BUILDTOOL} != gradle ]]; then
-    return 0
-  fi
-
-  if [[ "${repostatus}" = branch ]]; then
-    # shellcheck disable=SC2153
-    big_console_header "gradle boostrap: ${PATCH_BRANCH}"
-  else
-    big_console_header "gradle bootstrap: ${BUILDMODE}"
-  fi
-
-  personality_modules "${repostatus}" gradleboot
-
-  pushd "${BASEDIR}" >/dev/null || return 1
-  echo_and_redirect "${PATCH_DIR}/${repostatus}-gradle-bootstrap.txt" gradle -b bootstrap.gradle
-  popd >/dev/null || return 1
-
-  modules_workers "${repostatus}" gradleboot
-  result=$?
-  modules_messages "${repostatus}" gradleboot true
-  if [[ ${result} != 0 ]]; then
-    return 1
-  fi
-  return 0
+  echo "${GRADLEW}" "${GRADLEW_ARGS[@]}"
 }
 
 ## @description  Helper for generic_logfilter
@@ -289,9 +230,4 @@ function gradle_builtin_personality_file_tests
     add_test spotbugs
     add_test findbugs
   fi
-}
-
-function gradle_docker_support
-{
-  DOCKER_EXTRAARGS+=("-v" "${HOME}/.gradle:/home/${USER_NAME}/.gradle")
 }
