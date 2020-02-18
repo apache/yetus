@@ -19,13 +19,13 @@
 
 add_build_tool gradle
 
-declare -a GRADLE_ARGS=()
+declare -a GRADLEW_ARGS=()
 
 function gradle_parse_args
 {
-  # if we requested offline, pass that to mvn
+  # if we requested offline, pass that to gradle
   if [[ ${OFFLINE} == "true" ]]; then
-    GRADLE_ARGS=("${GRADLE_ARGS[@]}" --offline)
+    GRADLEW_ARGS+=("--offline")
   fi
 
   GRADLEW=${GRADLEW:-"${BASEDIR}/gradlew"}
@@ -82,7 +82,7 @@ function gradle_buildfile
 
 function gradle_executor
 {
-  echo "${GRADLEW}" "${GRADLE_ARGS[@]}"
+  echo "${GRADLEW}" "${GRADLEW_ARGS[@]}"
 }
 
 ## @description  Helper for generic_logfilter

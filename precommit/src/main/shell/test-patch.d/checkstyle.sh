@@ -198,7 +198,7 @@ function checkstyle_runner
           ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}} -Ptest-patch"
       ;;
       gradle)
-        cmd="${GRADLEW} ${GRADLE_ARGS[*]} \
+        cmd="${GRADLEW} ${GRADLEW_ARGS[*]} \
            checkstyleMain checkstyleTest \
           ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}}"
       ;;
