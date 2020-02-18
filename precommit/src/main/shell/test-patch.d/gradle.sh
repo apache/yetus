@@ -21,11 +21,6 @@ add_build_tool gradle
 
 declare -a GRADLE_ARGS=()
 
-function gradle_usage
-{
-  yetus_add_option "--gradlew-cmd=<cmd>" "The 'gradlew' command to use (default 'basedir/gradlew')"
-}
-
 function gradle_parse_args
 {
   # if we requested offline, pass that to mvn
@@ -46,9 +41,11 @@ function gradle_precheck
       popd >/dev/null || return 1
       return 1
   fi
-  popd >/dev/null || return 1
+
   # finally let folks know what version they'll be dealing with.
   gradle_version=$("${GRADLEW}" --version 2>/dev/null | grep ^Gradle 2>/dev/null)
+  popd >/dev/null || return 1
+
   add_version_data gradle "${gradle_version##* }"
   return 0
 }
