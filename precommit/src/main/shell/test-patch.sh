@@ -239,16 +239,24 @@ function add_vote_table
   fi
 }
 
-## @description  Report the JVM version of the given directory
+## @description  Report the JVM vendor and version of the given directory
 ## @stability    stable
 ## @audience     private
 ## @replaceable  yes
 ## @param        directory
-## @return       version
+## @return       vendor and version string
 function report_jvm_version
 {
-  #shellcheck disable=SC2016
-  "${1}/bin/java" -version 2>&1 | head -1 | "${AWK}" '{print $NF}' | tr -d \"
+  local properties
+  local vendor
+  local version
+
+  properties="$("${1}/bin/java" -XshowSettings:properties -version 2>&1)"
+  #shellcheck disable=SC2016 # shellcheck cannot see through "${AWK}"
+  vendor="$(echo "${properties}" | "${GREP}" java.vendor | head -1 | "${AWK}" 'BEGIN {FS = " = "} ; {print $NF}')"
+  #shellcheck disable=SC2016 # shellcheck cannot see through "${AWK}"
+  version="$(echo "${properties}" | "${GREP}" java.runtime.version | head -1 | "${AWK}" 'BEGIN {FS = " = "} ; {print $NF}')"
+  echo "${vendor}-${version}"
 }
 
 ## @description  Verify if a given test is multijdk
@@ -1869,7 +1877,7 @@ function module_status
       MODULE_STATUS_LOG[${index}]="${log}"
     fi
     if [[ -n $1 ]]; then
-      MODULE_STATUS_JDK[${index}]=" with JDK v${jdk}"
+      MODULE_STATUS_JDK[${index}]=" with JDK ${jdk}"
       MODULE_STATUS_MSG[${index}]="${*}"
     fi
   else
@@ -1917,7 +1925,7 @@ function modules_workers
 
   if verify_multijdk_test "${testtype}"; then
     jdk=$(report_jvm_version "${JAVA_HOME}")
-    statusjdk=" with JDK v${jdk}"
+    statusjdk=" with JDK ${jdk}"
     jdk="-jdk${jdk}"
     jdk=${jdk// /}
     yetus_debug "Starting MultiJDK mode${statusjdk} on ${testtype}"
@@ -2107,7 +2115,7 @@ function check_unittests
     if [[ ${multijdkmode} == true ]]; then
       JAVA_HOME=${jdkindex}
       jdk=$(report_jvm_version "${JAVA_HOME}")
-      statusjdk="JDK v${jdk} "
+      statusjdk="JDK ${jdk} "
       jdk="-jdk${jdk}"
       jdk=${jdk// /}
     fi
@@ -2667,7 +2675,7 @@ function generic_postlog_compare
 
   if [[ ${multijdk} == true ]]; then
     jdk=$(report_jvm_version "${JAVA_HOME}")
-    statusjdk=" with JDK v${jdk}"
+    statusjdk=" with JDK ${jdk}"
     jdk="-jdk${jdk}"
     jdk=${jdk// /}
   fi
