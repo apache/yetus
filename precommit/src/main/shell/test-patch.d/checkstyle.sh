@@ -155,6 +155,7 @@ function checkstyle_runner
   declare savestop
   declare output
   declare logfile
+  declare logfilename
   declare modulesuffix
   declare cmd
   declare line
@@ -267,10 +268,11 @@ function checkstyle_runner
       modulesuffix=root
     fi
 
+    logfilename=$(basename "${logfile}")
     if [[ ${cmdresult} == 0 ]]; then
-      module_status ${i} +1 "${logfile}" "${BUILDMODEMSG} passed checkstyle in ${modulesuffix}"
+      module_status ${i} +1 "${logfilename}" "${BUILDMODEMSG} passed checkstyle in ${modulesuffix}"
     else
-      module_status ${i} -1 "${logfile}" "${BUILDMODEMSG} fails to run checkstyle in ${modulesuffix}"
+      module_status ${i} -1 "${logfilename}" "${BUILDMODEMSG} fails to run checkstyle in ${modulesuffix}"
       ((result = result + 1))
     fi
 
