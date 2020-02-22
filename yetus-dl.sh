@@ -17,13 +17,15 @@
 
 EXTRACTDIR="${1:-/tmp/yetus}"
 VERSION=${2:-latest}
-KEYSURL="https://www.apache.org/dist/yetus/KEYS"
+KEYSURL="https://www.apache.org/dist/yetus"
 if [ "${VERSION}" != "latest" ]; then
   BASEURL="https://www.apache.org/dyn/closer.cgi?action=download&filename=yetus/${VERSION}"
   YETUSTGZ="apache-yetus-${VERSION}-bin.tar.gz"
+  ASCURL="${KEYSURL}/${VERSION}/${YETUSTGZ}.asc"
 else
-  BASEURL="https://yetus.apache.org"
   YETUSTGZ="latest.tgz"
+  BASEURL="https://yetus.apache.org"
+  ASCURL="${BASEURL}/${YETUSTGZ}.asc"
 fi
 
 if [ ! -d "${EXTRACTDIR}" ]; then
@@ -33,12 +35,12 @@ if [ ! -d "${EXTRACTDIR}" ]; then
   fi
 fi
 
-if ! curl -f -s -L -o "${EXTRACTDIR}/KEYS" "${KEYSURL}"; then
+if ! curl -f -s -L -o "${EXTRACTDIR}/KEYS" "${KEYSURL}/KEYS"; then
   echo "ERROR: yetus-dl: unable to fetch ${KEYSURL}"
   exit 1
 fi
 
-if ! curl -f -s -L -o "${EXTRACTDIR}/${YETUSTGZ}.asc" "${BASEURL}/${YETUSTGZ}.asc"; then
+if ! curl -f -s -L -o "${EXTRACTDIR}/${YETUSTGZ}.asc" "${ASCURL}"; then
   echo "ERROR: yetus-dl: unable to fetch ${BASEURL}/${YETUSTGZ}.asc"
   exit 1
 fi
