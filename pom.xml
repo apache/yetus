@@ -64,13 +64,13 @@
     <maven.compiler.target>1.8</maven.compiler.target>
 
     <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
-    <checkstyle.version>8.19</checkstyle.version>
+    <checkstyle.version>8.29</checkstyle.version>
     <commons.io.version>2.6</commons.io.version>
     <exec-maven-plugin.version>1.6.0</exec-maven-plugin.version>
     <jdiff.version>1.0.9</jdiff.version>
     <jython-compile-maven-plugin.version>2.0</jython-compile-maven-plugin.version>
     <jython-shaded.version>2.7.1.1</jython-shaded.version>
-    <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
+    <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
     <maven-project-info-reports-plugin.version>3.0.0</maven-project-info-reports-plugin.version>
     <spotbugs-maven-plugin.version>3.1.11</spotbugs-maven-plugin.version>
 
@@ -109,6 +109,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${maven-checkstyle-plugin.version}</version>
           <dependencies>
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
