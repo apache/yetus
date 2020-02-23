@@ -414,22 +414,33 @@ function github_locate_sha_patch
   number=$("${GREP}" number "${PATCH_DIR}/github-search.json" | \
            head -1 | \
            "${AWK}" '{print $NF}')
-  number=${number//\s/}
+  number=${number//\s}
   number=${number%,}
 
   # Semaphore CI doesn't tell us if the sha is a PR or not, so...
-  if [[ -z "${number}" ]] && [[ "${ROBOTTYPE}" = semaphoreci ]]; then
+  if [[ -z "${number}" ]]; then
+     if [[ "${ROBOTTYPE}" = semaphoreci ]]; then
 
-    echo "This appears to be a full build on Semaphore CI. Switching modes."
+      echo "This appears to be a full build on Semaphore CI. Switching modes."
 
-    PATCH_BRANCH=${SEMAPHORE_GIT_BRANCH}
+      PATCH_BRANCH=${SEMAPHORE_GIT_BRANCH}
 
-    # shellcheck disable=SC2034
-    PATCH_OR_ISSUE=""
-    # shellcheck disable=SC2034
-    BUILDMODE=full
-    set_buildmode
-    return 0
+      # shellcheck disable=SC2034
+      PATCH_OR_ISSUE=""
+      # shellcheck disable=SC2034
+      BUILDMODE=full
+      add_docker_env BUILDMODE
+      set_buildmode
+      return 0
+    else
+      # shellcheck disable=SC2034
+      PATCH_OR_ISSUE=""
+      # shellcheck disable=SC2034
+      BUILDMODE=full
+      add_docker_env BUILDMODE
+      set_buildmode
+      return 0
+    fi
   fi
 
   github_locate_pr_patch "GH:${number}" "${patchout}" "${diffout}"

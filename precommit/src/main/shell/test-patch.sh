@@ -972,6 +972,7 @@ function parse_args
 
   if [[ -z "${PATCH_OR_ISSUE}"
        && "${BUILDMODE}" = patch ]]; then
+    yetus_error "ERROR: No patch given."
     yetus_usage
     exit 1
   fi

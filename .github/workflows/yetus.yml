@@ -1,0 +1,51 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+---
+name: Apache Yetus
+
+on: [push, pull_request]  # yamllint disable-line rule:truthy
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: src
+      - name: test-patch
+        run: >-
+          "${GITHUB_WORKSPACE}/src/precommit/src/main/shell/test-patch.sh"
+          --basedir="${GITHUB_WORKSPACE}/src"
+          --patch-dir="${GITHUB_WORKSPACE}/out"
+          --docker
+          --project=yetus
+          --brief-report-file="${GITHUB_WORKSPACE}/out/brief.txt"
+          --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
+          --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
+          --junit-report-xml="${GITHUB_WORKSPACE}/out/junit-report.xml"
+          --linecomments=''
+          --proclimit=2000
+          --archive-list="checkstyle-errors.xml,spotbugsXml.xml"
+          --plugins=all
+          --tests-filter=checkstyle,javadoc,rubocop,test4tests
+          --docker-cache-from=apache/yetus-base:master
+      - name: Artifact output
+        uses: actions/upload-artifact@v1
+        with:
+          name: apacheyetuspatchdir
+          path: out

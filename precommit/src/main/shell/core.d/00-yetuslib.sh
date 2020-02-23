@@ -180,7 +180,7 @@ function yetus_generic_columnprinter
   if [[ -n "${COLUMNS}" ]]; then
     numcols=${COLUMNS}
   else
-    numcols=$(tput cols) 2>/dev/null
+    numcols=$(tput cols 2>/dev/null)
   fi
 
   if [[ -z "${numcols}"
