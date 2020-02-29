@@ -146,7 +146,7 @@ function docker_parse_args
       ;;
       --docker-work-dir=*)
         delete_parameter "${i}"
-        DOCKER_TAG=${i#*=}
+        DOCKER_WORK_DIR=${i#*=}
       ;;
     esac
   done
@@ -196,8 +196,9 @@ function docker_initialize
 
   dockvers=$(docker_version Client)
   IFS='.' read -r -a DOCKER_VERSION <<< "${dockvers}"
-  if [[ "${DOCKER_VERSION[0]}" -lt 17 ]]; then
-    add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} < 17.0)."
+  if [[ "${DOCKER_VERSION[0]}" -lt 1 ]] || \
+     [[ "${DOCKER_VERSION[0]}" -lt 2 && "${DOCKER_VERSION[1]}" -lt 27 ]]; then
+    add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} <  API v 1.27.0)."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -247,7 +248,7 @@ function docker_fileverify
         dockplat=('--platform' "${DOCKER_PLATFORM}")
       fi
 
-      echo "No --dockerfile or --dockertag provided. Attempting to pull apache/yetus:${VERSION}."
+      echo "No --dockerfile or --docker-tag provided. Attempting to pull apache/yetus:${VERSION}."
 
       if dockercmd pull "${dockplat[@]}" "apache/yetus:${VERSION}"; then
         echo "Pull succeeded; will build with pulled image."
@@ -559,7 +560,7 @@ function docker_version
   declare ret
 
   # new version command
-  val=$(dockercmd version --format "{{.${vertype}.Version}}" 2>/dev/null)
+  val=$(dockercmd version --format "{{.${vertype}.APIVersion}}" 2>/dev/null)
   ret=$?
 
   if [[ ${ret} != 0 ]];then
@@ -676,20 +677,23 @@ function docker_run_image
     lines=$("${AWK}" '/YETUS CUT HERE/ {print FNR; exit}' "${DOCKERFILE}")
 
     buildfile="${PATCH_DIR}/Dockerfile"
-    if [[ "${DOCKER_VERSION[0]}" -lt 18 ]] && [[ ${lines} -gt 0 ]]; then
+    if [[ ${lines} -gt 0 ]]; then
+      if [[ "${DOCKER_VERSION[0]}" -lt 1 ]] || \
+       [[ "${DOCKER_VERSION[0]}" -lt 2 && "${DOCKER_VERSION[1]}" -lt 38 ]]; then
 
-      # versions less than 18 don't support having the
-      # Dockerfile outside of the build context. Let's fall back to
-      # pre-YETUS-723 behavior and put the re-written Dockerfile
-      # outside of the source tree rather than go through a lot of
-      # machinations.  This means COPY, ADD, etc do not work, but
-      # whatever
+        # versions less than 18 don't support having the
+        # Dockerfile outside of the build context. Let's fall back to
+        # pre-YETUS-723 behavior and put the re-written Dockerfile
+        # outside of the source tree rather than go through a lot of
+        # machinations.  This means COPY, ADD, etc do not work, but
+        # whatever
 
-      popd >/dev/null || return 1
-      buildfile="${PATCH_DIR}/test-patch-docker/Dockerfile"
-      dockerdir="${PATCH_DIR}/test-patch-docker"
-      mkdir -p "${dockerdir}"
-      pushd "${PATCH_DIR}/test-patch-docker" >/dev/null || return 1
+        popd >/dev/null || return 1
+        buildfile="${PATCH_DIR}/test-patch-docker/Dockerfile"
+        dockerdir="${PATCH_DIR}/test-patch-docker"
+        mkdir -p "${dockerdir}"
+        pushd "${PATCH_DIR}/test-patch-docker" >/dev/null || return 1
+      fi
     fi
 
     (
@@ -700,10 +704,13 @@ function docker_run_image
       fi
     ) > "${buildfile}"
 
-    if [[ "${DOCKER_VERSION[0]}" -lt 18 ]] && [[ ${lines} -gt 0 ]]; then
-      # Need to put our re-constructed Dockerfile in a place
-      # where it can be referenced in the output post-run
-      cp -p "${buildfile}" "${PATCH_DIR}/Dockerfile"
+    if [[ ${lines} -gt 0 ]]; then
+      if [[ "${DOCKER_VERSION[0]}" -lt 1 ]] || \
+       [[ "${DOCKER_VERSION[0]}" -lt 2 && "${DOCKER_VERSION[1]}" -lt 38 ]]; then
+        # Need to put our re-constructed Dockerfile in a place
+        # where it can be referenced in the output post-run
+        cp -p "${buildfile}" "${PATCH_DIR}/Dockerfile"
+      fi
     fi
 
     if [[ -n "${DOCKER_CACHE_FROM}" ]]; then
@@ -799,7 +806,7 @@ function docker_run_image
   client=$(docker_version Client)
   server=$(docker_version Server)
 
-  dockerversion="Client=${client} Server=${server}"
+  dockerversion="ClientAPI=${client} ServerAPI=${server}"
 
   # make the kernel prefer to kill us if we run out of RAM
   DOCKER_EXTRAARGS+=("--oom-score-adj" "500")

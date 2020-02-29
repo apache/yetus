@@ -97,7 +97,7 @@ Build Tools:
 Automation and Isolation:
 
 * [Circle CI](https://www.circleci.com)
-* [Docker](https://www.docker.com) version 1.7.0+
+* [Docker](https://www.docker.com) Minimum: 17.0+ (moby Client API 1.27.0+) - Recommended: 18.0+ (moby Client API 1.38.0+)
 * [Gitlab CI](https://www.gitlab.com)
 * [Jenkins](https://www.jenkins-ci.org)
 * [Travis CI](https://www.travis-ci.com)

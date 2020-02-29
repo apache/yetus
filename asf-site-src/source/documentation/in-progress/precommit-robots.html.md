@@ -55,8 +55,6 @@ TRIGGER: ${TF_BUILD}=True
 
 Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the source repository. It automatically configures `--patch-dir` to be `${BUILD_ARTIFACTSTAGINGDIRECTORY}/yetus`.  While the URL to the console is provided in the report, links are not provided due to the URLs to artifacts not being available at runtime.
 
-As of this writing, Azure Pipelines has moved to a custom moby build for the 'docker' executable.  As a result, `--docker` is not supported.
-
 # Circle CI
 
 TRIGGER: ${CIRCLECI}=true
@@ -134,6 +132,18 @@ yetus_task:
 See also:
 
 * Apache Yetus' source tree [.cirrus.yml](https://github.com/apache/yetus/blob/master/.cirrus.yml) for some tips and tricks.
+
+# GitHub Actions
+
+    NOTE: GitHub Actions support is not stable and should be viewed as experimental, at best.
+
+TRIGGER: ${GITHUB_ACTIONS}=True
+
+GitHub Actions support has only been tested on the ubuntu-latest image. It automatically configures `--patch-dir` to be `${GITHUB_WORKSAPCE}/yetus` if not previously set.
+
+See also:
+
+* Apache Yetus' source tree [yetus.yaml](https://github.com/apache/yetus/blob/master/.github/workflows/yetus.yml) for some tips and tricks.
 
 # Gitlab CI
 
