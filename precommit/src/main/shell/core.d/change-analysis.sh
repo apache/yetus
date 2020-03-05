@@ -66,11 +66,14 @@ function find_changed_files
       # get a list of all of the files that have been changed,
       # except for /dev/null (which would be present for new files).
       # Additionally, remove any a/ b/ patterns at the front of the patch filenames.
+      # see also similar code in change-analysis
       # shellcheck disable=SC2016
       while read -r line; do
-        CHANGED_FILES=("${CHANGED_FILES[@]}" "${line}")
+        if [[ -n "${line}" ]]; then
+          CHANGED_FILES=("${CHANGED_FILES[@]}" "${line}")
+        fi
       done < <(
-        "${AWK}" 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"){print s}}
+        "${AWK}" 'function p(s){sub("^[ab]/","",s); if(s!~"^/dev/null"&&s!~"^[[:blank:]]*$"){print s}}
         /^diff --git /   { p($3); p($4) }
         /^(\+\+\+|---) / { p($2) }' "${INPUT_APPLIED_FILE}" | sort -u)
       ;;

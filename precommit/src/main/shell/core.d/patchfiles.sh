@@ -205,8 +205,9 @@ function patchfile_verify_zero
   declare filename
 
   # don't return /dev/null
+  # see also similar code in change-analysis
   # shellcheck disable=SC2016
-  changed_files1=$("${AWK}" 'function p(s){if(s!~"^/dev/null"){print s}}
+  changed_files1=$("${AWK}" 'function p(s){if(s!~"^/dev/null"&&s!~"^[[:blank:]]*$"){print s}}
     /^diff --git /   { p($3); p($4) }
     /^(\+\+\+|---) / { p($2) }' "${INPUT_PATCH_FILE}" | sort -u)
 
