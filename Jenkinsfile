@@ -54,7 +54,7 @@ pipeline {
     stage ('precommit-run') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'apache-yetus-at-github.com',
-                         passwordVariable: 'GITHUB_PASSWORD',
+                         passwordVariable: 'GITHUB_TOKEN',
                          usernameVariable: 'GITHUB_USER')]) {
           withCredentials([usernamePassword(credentialsId: 'yetusqa-at-asf-jira',
                            passwordVariable: 'JIRA_PASSWORD',
@@ -131,8 +131,7 @@ pipeline {
                 YETUS_ARGS+=("--junit-report-xml=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/junit-report.xml")
 
                 # enable writing back to Github
-                YETUS_ARGS+=(--github-password="${GITHUB_PASSWORD}")
-                YETUS_ARGS+=(--github-user=${GITHUB_USER})
+                YETUS_ARGS+=(--github-token="${GITHUB_TOKEN}")
 
                 # use emoji as vote result on GitHub
                 YETUS_ARGS+=(--github-use-emoji-vote)
