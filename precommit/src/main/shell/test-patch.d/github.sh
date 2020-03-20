@@ -90,6 +90,7 @@ function github_parse_args
         GITHUB_PASSWD=${i#*=}
       ;;
       --github-token=*)
+        delete_parameter "${i}"
         GITHUB_TOKEN=${i#*=}
       ;;
       --github-user=*)
