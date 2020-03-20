@@ -34,6 +34,7 @@ jobs:
           --patch-dir="${GITHUB_WORKSPACE}/out"
           --docker
           --project=yetus
+          --pylint=pylint2
           --brief-report-file="${GITHUB_WORKSPACE}/out/brief.txt"
           --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
           --html-report-file="${GITHUB_WORKSPACE}/out/report.html"

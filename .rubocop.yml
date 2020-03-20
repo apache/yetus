@@ -13,7 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 ---
-Metrics/LineLength:
+Layout/LineLength:
   Max: 100
 Metrics/MethodLength:
   Max: 30
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true

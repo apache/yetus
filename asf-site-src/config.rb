@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
@@ -16,7 +18,7 @@
 #
 
 set :markdown_engine, :kramdown
-# rubocop:disable Layout/AlignHash
+# rubocop:disable Layout/HashAlignment
 set(
   :markdown,
   input:                        'GFM',
@@ -30,7 +32,7 @@ set(
   lax_spacing:                  true,
   relative_links:               true
 )
-# rubocop:enable Layout/AlignHash
+# rubocop:enable Layout/HashAlignment
 
 set :build_dir, 'target/site'
 
@@ -116,7 +118,7 @@ def releasenotes(output, version)
   abort("releasedocmaker failed to generate release notes for #{version}.")
 end
 
-GITREPO = 'https://github.com/apache/yetus.git'.freeze
+GITREPO = 'https://github.com/apache/yetus.git'
 
 def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   # TODO: get the version date from jira and do an up to date check instead of building each time.
@@ -147,9 +149,9 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metri
       "#{output}/build-#{version}/precommit"
     )
     puts "\tgenerating javadocs"
-    `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Metrics/LineLength
+    `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Layout/LineLength
     unless $CHILD_STATUS.exitstatus.zero?
-      puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log" # rubocop:disable Metrics/LineLength
+      puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log" # rubocop:disable Layout/LineLength
     end
   else
     puts "Downloading and extracting #{version} from ASF archives"
@@ -183,7 +185,7 @@ after_configuration do # rubocop:disable Metrics/BlockLength
 
   # This allows us to set the style for tables.
   ::Middleman::Renderers::MiddlemanKramdownHTML.class_eval do
-    def convert_table(el, indent) # rubocop:disable Naming/UncommunicativeMethodParamName
+    def convert_table(el, indent) # rubocop:disable Naming/MethodParameterName
       el.attr['class'] = 'table table-bordered table-striped'
       super
     end
@@ -207,32 +209,33 @@ after_configuration do # rubocop:disable Metrics/BlockLength
   # instead of symlinks
   FileUtils.mkdir_p 'target/in-progress/precommit-apidocs/'
   precommit_shelldocs('target/in-progress/precommit-apidocs/', '../precommit/src/main/shell')
-  unless app.data.versions.releases.nil?
-    app.data.versions.releases.each do |release|
-      build_release_docs('target', release)
-      releasenotes('target', release)
-      if release =~ /^0.[0-8]\./
-        # stitch the javadoc in place
-        sitemap.register_resource_list_manipulator(
-          "#{release}_javadocs".to_sym,
-          ApiDocs.new(
-            sitemap,
-            "documentation/#{release}/audience-annotations-apidocs",
-            File.expand_path("target/build-#{release}/audience-annotations-component/target/site/apidocs", # rubocop:disable Metrics/LineLength
-                             File.dirname(__FILE__))
-          )
+  # stitch the javadoc in place
+  app.data.versions.releases&.each do |release|
+    build_release_docs('target', release)
+    releasenotes('target', release)
+    if release =~ /^0.[0-8]\./
+      # stitch the javadoc in place
+      # rubocop:disable Layout/LineLength
+      sitemap.register_resource_list_manipulator(
+        "#{release}_javadocs".to_sym,
+        ApiDocs.new(
+          sitemap,
+          "documentation/#{release}/audience-annotations-apidocs",
+          File.expand_path("target/build-#{release}/audience-annotations-component/target/site/apidocs", # rubocop:disable Layout/LineLength
+                           File.dirname(__FILE__))
         )
-      else
-        sitemap.register_resource_list_manipulator(
-          "#{release}_javadocs".to_sym,
-          ApiDocs.new(
-            sitemap,
-            "documentation/#{release}",
-            File.expand_path("target/build-#{release}",
-                             File.dirname(__FILE__))
-          )
+      )
+      # rubocop:enable Layout/LineLength
+    else
+      sitemap.register_resource_list_manipulator(
+        "#{release}_javadocs".to_sym,
+        ApiDocs.new(
+          sitemap,
+          "documentation/#{release}",
+          File.expand_path("target/build-#{release}",
+                           File.dirname(__FILE__))
         )
-      end
+      )
     end
   end
 end

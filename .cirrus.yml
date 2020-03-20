@@ -21,6 +21,7 @@ yetus_task:
   test_script: >
              ${CIRRUS_WORKING_DIR}/precommit/src/main/shell/test-patch.sh
              --plugins=all
+             --pylint=pylint2
              --basedir="${CIRRUS_WORKING_DIR}"
              --html-report-file=/tmp/yetus-out/report.html
              --console-report-file=/tmp/yetus-out/console.txt
