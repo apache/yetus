@@ -16,6 +16,7 @@
   specific language governing permissions and limitations
   under the License.
 -->
+<!-- markdownlint-disable no-bare-urls -->
 
 # Managing a Release
 

@@ -60,6 +60,7 @@ ENV GEM_HOME ${BUNDLE_PATH}
 
 # pre-install most of the middleman stack to save time
 # on re-launches
+# hadolint ignore=DL3028
 RUN gem install bundler \
     middleman:'~>3.4.0' \
     middleman-livereload \

@@ -17,3 +17,4 @@
 default: true
 line-length: false
 commands-show-output: false
+code-block-style: false

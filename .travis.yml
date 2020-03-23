@@ -31,6 +31,7 @@ script:
     --docker
     --patch-dir=/tmp/yetus-out
     --plugins=all
+    --pylint=pylint2
     --docker-cache-from=apache/yetus:master
     --html-report-file=/tmp/yetus-out/report.html
     --console-report-file=/tmp/yetus-out/console.txt

@@ -52,6 +52,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     rsync \
     software-properties-common \
     ssh-client \
+    xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -128,19 +129,23 @@ ENV FINDBUGS_HOME /usr
 #####
 # Install SpotBugs
 #####
-RUN curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.tgz -o spotbugs.tgz \
-    && curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/3.1.12/spotbugs-3.1.12.tgz.sha1 -o spotbugs.tgz.sha1 \
+RUN curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.0.1/spotbugs-4.0.1.tgz -o spotbugs.tgz \
+    && curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.0.1/spotbugs-4.0.1.tgz.sha1 -o spotbugs.tgz.sha1 \
     && echo -n "  spotbugs.tgz" >> spotbugs.tgz.sha1 \
     && shasum -c spotbugs.tgz.sha1 \
     && mkdir -p /opt/spotbugs \
-    && tar -C /opt/spotbugs --strip-components 1  -xpf spotbugs.tgz \
-    && rm spotbugs.tgz spotbugs.tgz.sha1
+    && tar -C /opt/spotbugs --strip-components 1 -xpf spotbugs.tgz \
+    && rm spotbugs.tgz spotbugs.tgz.sha1 \
+    && chmod a+rx /opt/spotbugs/bin/*
 ENV SPOTBUGS_HOME /opt/spotbugs
 
 ####
 # Install GNU C/C++
 ####
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y g++ gcc libc-dev \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
+        g++ \
+        gcc \
+        libc-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -154,7 +159,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y maven \
 ######
 # Install perl
 ######
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y perl libperl-critic-perl \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
+        perl \
+        libperl-critic-perl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -164,8 +171,8 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y perl libp
 RUN add-apt-repository -y ppa:deadsnakes/ppa
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
-   python3.7 \
-   python3.7-dev \
+        python3.7 \
+        python3.7-dev \
    && apt-get clean \
    && rm -rf /var/lib/apt/lists/*
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
@@ -173,28 +180,38 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
    && rm /usr/local/bin/pip
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 # hadolint ignore=DL3013
-RUN pip3 install -v astroid==2.2.4 pylint==2.3.1 docker-compose==1.24.0
+RUN pip3 install -v \
+        astroid==2.3.3 \
+        docker-compose==1.25.4 \
+        pylint==2.4.4 \
+        yamllint==1.20.0 \
+    && rm -rf /root/.cache
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint3
 
 ######
 # Install python, pylint2, and yamllint
 ######
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y python \
-    python2.7 \
-    python-pip \
-    python-pkg-resources \
-    python-setuptools \
-    python-wheel \
-    python-dev \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
+        python \
+        python2.7 \
+        python-pip \
+        python-pkg-resources \
+        python-setuptools \
+        python-wheel \
+        python-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN pip2 install -v astroid==1.6.5 pylint==1.9.2 python-dateutil==2.7.3 yamllint==1.12.1
+RUN pip2 install -v \
+        astroid==1.6.5 \
+        pylint==1.9.2 \
+        python-dateutil==2.7.3 \
+    && rm -rf /root/.cache
 RUN mv /usr/local/bin/pylint /usr/local/bin/pylint2
 
 #####
-# backward compatibility
+# all of the world's python2 code stopped working, right?
 #####
-RUN ln -s /usr/local/bin/pylint2 /usr/local/bin/pylint
+RUN ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint
 
 ####
 # Install ruby and associated bits
@@ -205,9 +222,10 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     ruby-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-RUN gem install rake -v 12.3.2
-RUN gem install rubocop -v 0.67.2
-RUN gem install bundler -v 1.17.3
+RUN gem install rake -v 13.0.1 \
+    && gem install rubocop -v 0.80.1 \
+    && gem install bundler -v 2.1.4 \
+    && rm -rf /root/.gem
 # set some reasonable defaults for ruby
 # user's can always override these as needed
 ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
@@ -215,40 +233,36 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 
 ####
 # Install shellcheck (shell script lint)
-# NOTE: A bunch of stuff is removed to shrink the size of the Docker image
-# Be very careful changing the code here, layer size may grow very large!
 ####
-RUN add-apt-repository -y ppa:hvr/ghc
-RUN apt-get -q update \
-    && apt-get -q install --no-install-recommends -y cabal-install-3.0 ghc-8.6.5 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && PATH=/opt/ghc/bin:${PATH} cabal update \
-    && PATH=/opt/ghc/bin:${PATH} cabal install -j ShellCheck \
-    && cp -p /root/.cabal/bin/shellcheck /usr/local/bin/shellcheck \
-    && apt remove -y cabal-install-3.0 ghc-8.6.5 \
-    && apt autoremove -y \
-    && rm -rf /root/.cabal
+RUN curl -L -s -S \
+   https://github.com/koalaman/shellcheck/releases/download/v0.7.0/shellcheck-v0.7.0.linux.x86_64.tar.xz \
+   | tar --strip-components 1 --wildcards -xJf - '*/shellcheck' \
+   && chmod a+rx shellcheck \
+   && mv shellcheck /bin/shellcheck \
+   && shasum -a 512 /bin/shellcheck \
+   | awk '$1!="ccc6ffa932ab6f98dd2e14bd6175282af8f2131d5f07fe85a55a0f0058a45a55e7284b31f0c94ebb5738a80370c405094a9b0f01c342888ef2945882b18b655d" {exit(1)}'
+
 
 ###
 # Install hadolint
 ####
 RUN curl -L -s -S \
-   https://github.com/hadolint/hadolint/releases/download/v1.16.2/hadolint-Linux-x86_64 \
+   https://github.com/hadolint/hadolint/releases/download/v1.17.5/hadolint-Linux-x86_64 \
    -o /bin/hadolint && \
    chmod a+rx /bin/hadolint && \
    shasum -a 512 /bin/hadolint | \
-   awk '$1!="7044f2f5a8a9f2a52d9921f34a5cca5fee6a26c1de052f5348d832624976eb760195c65d79a69454f3056359e23b382353977340a7a1ca5c7805b164690c0485" {exit(1)}'
+   awk '$1!="550b861641866685292417c02a290853592ea5ad9845d40a6d9bfab6ecfc1b03c24a41c3a44d27154abb4fff373d80972784a148dbc191f8455de706ae331845" {exit(1)}'
 
 ###
 # Install npm and JSHint
 ###
 # hadolint ignore=DL3008
-RUN curl -sL https://deb.nodesource.com/setup_11.x | bash - \
+RUN curl -sL https://deb.nodesource.com/setup_12.x | bash - \
     && apt-get -q install --no-install-recommends -y nodejs \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* && \
-    npm install -g jshint@2.10.2 markdownlint-cli@0.15.0
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g jshint@2.11.0 markdownlint-cli@0.22.0 \
+    && rm -rf /root/.npm
 
 ###
 # Install golang and supported helpers
@@ -261,8 +275,8 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
     && rm -rf /var/lib/apt/lists/*
 RUN go get -u github.com/mgechev/revive \
     && go get -u github.com/mrtazz/checkmake \
-    && (GO111MODULE=on go get github.com/uber/prototool/cmd/prototool@7df3b957ffe3d09dc57fe4e1eb96694614db8c7a) \
-    && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.19.1) \
+    && (GO111MODULE=on go get github.com/uber/prototool/cmd/prototool@v1.9.0) \
+    && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.24.0) \
     && mv /root/go/bin/* /usr/local/bin \
     && rm -rf /root/go /root/.cache/go-build
 

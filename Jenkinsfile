@@ -145,6 +145,9 @@ pipeline {
                 # disable per-line comments
                 YETUS_ARGS+=(--linecomments='')
 
+                # pylint settings
+                YETUS_ARGS+=('--pylint=pylint2')
+
                 # auto-kill any surefire stragglers during unit test runs
                 YETUS_ARGS+=(--reapermode=report)
 

@@ -241,10 +241,10 @@ function maven_precheck
     # let's do some cleanup while we're here
 
     find "${MAVEN_CUSTOM_REPOS_DIR}" \
+      -maxdepth 1 \
       -name '*-*-*' \
       -type d \
       -mtime +30 \
-      -maxdepth 1 \
       -print \
         > "${logfile}"
 
