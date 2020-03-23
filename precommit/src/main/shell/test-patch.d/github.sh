@@ -33,8 +33,9 @@ GITHUB_API_URL="https://api.github.com"
 GITHUB_REPO=""
 
 # user settings
-GITHUB_PASSWD="${GITHUB_PASSWD}"
-GITHUB_USER="${GITHUB_USER}"
+GITHUB_PASSWD="${GITHUB_PASSWD-}"
+GITHUB_USER="${GITHUB_USER-}"
+GITHUB_TOKEN="${GITHUB_TOKEN-}"
 GITHUB_ISSUE=""
 GITHUB_USE_EMOJI_VOTE=false
 
@@ -59,6 +60,7 @@ function github_usage
 # Do not extract GITHUB_PASSWD environment variable
   yetus_add_option "--github-password=<pw>" "Github password (or OAuth token) (default: 'GITHUB_PASSWD' environment variable)"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
+  yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
   yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
   yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
 }
@@ -86,6 +88,10 @@ function github_parse_args
       --github-password=*)
         delete_parameter "${i}"
         GITHUB_PASSWD=${i#*=}
+      ;;
+      --github-token=*)
+        delete_parameter "${i}"
+        GITHUB_TOKEN=${i#*=}
       ;;
       --github-user=*)
         delete_parameter "${i}"
@@ -314,7 +320,9 @@ function github_locate_pr_patch
   # shellcheck disable=SC2034
   PATCHURL="${GITHUB_BASE_URL}/${GITHUB_REPO}/pull/${input}.patch"
 
-  if [[ -n "${GITHUB_USER}"
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   else
@@ -393,7 +401,9 @@ function github_locate_sha_patch
   # locate the PR number via GitHub API v3
   #curl https://api.github.com/search/issues?q=sha:40a7af3377d8087779bf8ad66397947b7270737a\&type:pr\&repo:apache/yetus
 
-  if [[ -n "${GITHUB_USER}"
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   else
@@ -515,7 +525,9 @@ function github_linecomments
     echo "}"
   } > "${tempfile}"
 
-  if [[ -n "${GITHUB_USER}"
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   else
@@ -558,7 +570,9 @@ function github_write_comment
     echo "\"}"
   } > "${restfile}"
 
-  if [[ -n "${GITHUB_USER}"
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
      && -n "${GITHUB_PASSWD}" ]]; then
     githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   else

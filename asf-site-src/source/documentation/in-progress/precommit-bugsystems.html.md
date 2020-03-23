@@ -72,15 +72,6 @@ By default, the GitHub plug-in assumes that <https://github.com> is the base URL
 
 The specific repository on GitHub is defined with either `--github-repo` on the command line or GITHUB\_REPO in a personality.  It should take the form of "user/repo".
 
-In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports authentication via user name/passphrase or token.
-
-The user name is provided via the `--github-user` option or the GITHUB\_USER environment variable.  The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
-`--project=yetus` will set `GITHUB_USER=yetusqa`.
-
-The password or OAuth token is provided via the `--github-password` or GITHUB\_PASSWD environment variable.
-
-Both username and password options must be provided.
-
 GitHub pull requests may be directly processed on the command line in two ways:
 
 * GH:(PR number)
@@ -88,6 +79,23 @@ GitHub pull requests may be directly processed on the command line in two ways:
 
 The GitHub bugsystem plugin will attempt to download the unified diff that the pull request references.
 Pull requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the pull request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.
+
+## GitHub Authentication
+
+In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports authentication via token or user name/passphrase.
+
+### GitHub Token
+
+The token is provided via the `--github-token` option.
+
+### GitHub Username/password (Deprecated)
+
+The user name is provided via the `--github-user` option or the GITHUB\_USER environment variable.  The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
+`--project=yetus` will set `GITHUB_USER=yetusqa`.
+
+The password is provided via the `--github-password` or GITHUB\_PASSWD environment variable.
+
+Both username and password options must be provided.
 
 # GitLab Specific
 
