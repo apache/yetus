@@ -150,11 +150,15 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm -rf /var/lib/apt/lists/*
 
 ######
-# Install maven
+# Install maven 3.6.3
 ######
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y maven \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p /opt/maven && \
+    curl -L -s -S \
+        https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz \
+        -o /opt/maven.tar.gz && \
+    tar xzf /opt/maven.tar.gz --strip-components 1 -C /opt/maven
+ENV MAVEN_HOME /opt/maven
+ENV PATH "$PATH/opt/maven/bin"
 
 ######
 # Install perl
