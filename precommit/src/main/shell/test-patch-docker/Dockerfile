@@ -23,7 +23,7 @@
 #
 ###############
 
-FROM ubuntu:xenial-20200212
+FROM ubuntu:xenial
 
 ## NOTE to committers: if this gets moved from Xenial to something else, be
 ## sure to also fix the gpg link in asf-site-src as appropriate
@@ -158,11 +158,7 @@ RUN mkdir -p /opt/maven && \
         -o /opt/maven.tar.gz && \
     tar xzf /opt/maven.tar.gz --strip-components 1 -C /opt/maven
 ENV MAVEN_HOME /opt/maven
-ENV PATH "$PATH/opt/maven/bin"
-
-# Hack. Refresh apt key to avoid GPG error
-RUN rm -rf /etc/apt/trusted.gpg*
-RUN apt-key update
+ENV PATH $PATH:/opt/maven/bin
 
 ######
 # Install perl
