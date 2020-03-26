@@ -255,8 +255,12 @@ function maven_precheck
   fi
 
   # finally let folks know what version they'll be dealing with.
-  maven_version=$(${MAVEN} --offline --version 2>/dev/null | head -n 1 2>/dev/null)
-  maven_version=${maven_version##* }
+  # In Maven 3.5.x and 3.6.x, mvn --version contains control characters
+  # even in batch mode. Passing strings command to remove these.
+  maven_version=$("${MAVEN}" "${MAVEN_ARGS[@]}" --offline --version 2>/dev/null \
+    | head -n 1 2>/dev/null \
+    | strings \
+    | cut -d' ' -f3)
   add_version_data maven "${maven_version}"
 }
 
