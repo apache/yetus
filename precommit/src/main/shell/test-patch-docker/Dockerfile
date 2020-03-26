@@ -23,7 +23,7 @@
 #
 ###############
 
-FROM ubuntu:xenial
+FROM ubuntu:xenial-20200212
 
 ## NOTE to committers: if this gets moved from Xenial to something else, be
 ## sure to also fix the gpg link in asf-site-src as appropriate
