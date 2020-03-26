@@ -160,6 +160,10 @@ RUN mkdir -p /opt/maven && \
 ENV MAVEN_HOME /opt/maven
 ENV PATH "$PATH/opt/maven/bin"
 
+# Hack. Refresh apt key to avoid GPG error
+RUN rm -rf /etc/apt/trusted.gpg*
+RUN apt-key update
+
 ######
 # Install perl
 ######
