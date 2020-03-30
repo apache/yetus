@@ -203,6 +203,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm -rf /var/lib/apt/lists/*
 RUN pip2 install -v \
         astroid==1.6.5 \
+        configparser==4.0.2 \
         pylint==1.9.2 \
         python-dateutil==2.7.3 \
     && rm -rf /root/.cache
