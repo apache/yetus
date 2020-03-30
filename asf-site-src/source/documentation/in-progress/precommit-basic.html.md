@@ -394,11 +394,7 @@ NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JA
 `test-patch` also has a built-in mode (i.e., no plug-in required) to utilize Docker:
 
 ```diff
-<<<<<<< HEAD
-$ test-patch (other options) --docker
-=======
 $ test-patch --docker
->>>>>>> YETUS-109. documentation: clarify --plugin
 ```
 
 This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../precommit-docker) page and the [Apache Yetus Docker Hub Images](/yetus-docker-image) page for more information on the convenience Docker images.
