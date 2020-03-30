@@ -249,6 +249,7 @@ function hadoop_native_flags
         -Drequire.openssl \
         -Drequire.snappy \
         -Drequire.valgrind \
+        -Drequire.zstd \
         "${args[@]}"
     ;;
     Darwin)
