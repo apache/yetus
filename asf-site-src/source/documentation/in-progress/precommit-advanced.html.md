@@ -196,7 +196,7 @@ The `add_test` function is used to activate the standard tests.  Additional plug
 
 ## Module & Profile Determination
 
-Once the tests are determined, it is now time to pick which [modules](precommit-glossary.md#genericoutside-definitions) should get used.  That's the job of the `personality_modules` function.
+Once the tests are determined, it is now time to pick which [modules](../precommit-glossary#genericoutside-definitions) should get used.  That's the job of the `personality_modules` function.
 
 ```bash
 function personality_modules
@@ -257,7 +257,7 @@ This list is used if the user does not provide a list of plug-ins.
 
 There are a handful of extremely important system variables that make life easier for personality and plug-in writers.  Other variables may be provided by individual plug-ins.  Check their development documentation for more information.
 
-* BUILD\_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For [robots](precommit-robots), this is always true.
+* BUILD\_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For [robots](../precommit-robots), this is always true.
 
 * BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz\_ARGS to pass on to the build tool command line. (e.g., MAVEN\_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.
 
@@ -279,4 +279,4 @@ There are a handful of extremely important system variables that make life easie
 
 * PATCH\_NAMING\_RULE should be a URL that points to a project's on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project's personality.
 
-* TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel. For [robots](precommit-robots), this is always true.
+* TEST\_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST\_THREADS is the number of threads that have been requested to run in parallel. For [robots](../precommit-robots), this is always true.
