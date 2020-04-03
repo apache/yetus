@@ -202,6 +202,11 @@
       <li>executed prior to the patch being applied but after the git repository is setup.  Returning a fail status here will exit test-patch.</li>
     </ul>
   </li>
+  <li>pluginname_postcleanup
+    <ul>
+      <li>executed on test-patch shutdown.</li>
+    </ul>
+  </li>
   <li>pluginname_patchfile
     <ul>
       <li>executed prior to the patch being applied but after the git repository is setup. This step is intended to perform tests on the content of the patch itself.</li>
@@ -335,7 +340,7 @@ function is called almost immediately after the personality is loaded and plug-i
 
 <h2 id="module--profile-determination">Module &amp; Profile Determination</h2>
 
-<p>Once the tests are determined, it is now time to pick which <a href="precommit-glossary.md#genericoutside-definitions">modules</a> should get used.  That's the job of the <code>personality_modules</code> function.</p>
+<p>Once the tests are determined, it is now time to pick which <a href="../precommit-glossary#genericoutside-definitions">modules</a> should get used.  That's the job of the <code>personality_modules</code> function.</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_modules
 <span class="o">{</span>
@@ -392,7 +397,7 @@ function is called almost immediately after the personality is loaded and plug-i
 
 <ul>
   <li>
-    <p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For <a href="precommit-robots">robots</a>, this is always true.</p>
+    <p>BUILD_NATIVE will be set to true if the system has requested that non-JVM-based code be built (e.g., JNI or other compiled C code). For <a href="../precommit-robots">robots</a>, this is always true.</p>
   </li>
   <li>
     <p>BUILDTOOL specifies which tool is currently being used to drive compilation.  Additionally, many build tools define xyz_ARGS to pass on to the build tool command line. (e.g., MAVEN_ARGS if maven is in use).  Projects may set this in their personality.  NOTE: today, only one build tool at a time is supported.  This may change in the future.</p>
@@ -425,7 +430,7 @@ function is called almost immediately after the personality is loaded and plug-i
     <p>PATCH_NAMING_RULE should be a URL that points to a project's on-boarding documentation for new users. It is used to suggest a review of patch naming guidelines. Since this should be project specific information, it is useful to set in a project's personality.</p>
   </li>
   <li>
-    <p>TEST_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST_THREADS is the number of threads that have been requested to run in parallel. For <a href="precommit-robots">robots</a>, this is always true.</p>
+    <p>TEST_PARALLEL if parallel unit tests have been requested. Project personalities are responsible for actually enabling or ignoring the request. TEST_THREADS is the number of threads that have been requested to run in parallel. For <a href="../precommit-robots">robots</a>, this is always true.</p>
   </li>
 </ul>
 
@@ -437,7 +442,7 @@ function is called almost immediately after the personality is loaded and plug-i
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

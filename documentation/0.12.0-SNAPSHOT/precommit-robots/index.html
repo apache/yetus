@@ -163,8 +163,6 @@
 
 <p>Azure Pipelines support has only been tested on the Ubuntu VM with GitHub as the source repository. It automatically configures <code>--patch-dir</code> to be <code>${BUILD_ARTIFACTSTAGINGDIRECTORY}/yetus</code>.  While the URL to the console is provided in the report, links are not provided due to the URLs to artifacts not being available at runtime.</p>
 
-<p>As of this writing, Azure Pipelines has moved to a custom moby build for the 'docker' executable.  As a result, <code>--docker</code> is not supported.</p>
-
 <h1 id="circle-ci">Circle CI</h1>
 
 <p>TRIGGER: ${CIRCLECI}=true</p>
@@ -237,6 +235,20 @@
 
 <ul>
   <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.cirrus.yml">.cirrus.yml</a> for some tips and tricks.</li>
+</ul>
+
+<h1 id="github-actions">GitHub Actions</h1>
+
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: GitHub Actions support is not stable and should be viewed as experimental, at best.
+</code></pre></div>
+<p>TRIGGER: ${GITHUB_ACTIONS}=True</p>
+
+<p>GitHub Actions support has only been tested on the ubuntu-latest image. It automatically configures <code>--patch-dir</code> to be <code>${GITHUB_WORKSAPCE}/yetus</code> if not previously set.</p>
+
+<p>See also:</p>
+
+<ul>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.github/workflows/yetus.yml">yetus.yaml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="gitlab-ci">Gitlab CI</h1>
@@ -393,7 +405,7 @@ have a location to look at the output artifacts:</p>
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

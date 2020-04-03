@@ -150,17 +150,19 @@
   <li>Public/Stable/Not Replaceable
     <ul>
       <li><a href="#add_version_data">add_version_data</a></li>
-      <li><a href="#common_defaults">common_defaults</a></li>
       <li><a href="#delete_parameter">delete_parameter</a></li>
+      <li><a href="#escape_html">escape_html</a></li>
       <li><a href="#generate_stack">generate_stack</a></li>
       <li><a href="#module_file_fragment">module_file_fragment</a></li>
       <li><a href="#patchfile_verify_zero">patchfile_verify_zero</a></li>
+      <li><a href="#unescape_html">unescape_html</a></li>
       <li><a href="#yetus_abs">yetus_abs</a></li>
       <li><a href="#yetus_debug">yetus_debug</a></li>
       <li><a href="#yetus_error">yetus_error</a></li>
       <li><a href="#yetus_find_deepest_directory">yetus_find_deepest_directory</a></li>
       <li><a href="#yetus_run_and_redirect">yetus_run_and_redirect</a></li>
       <li><a href="#yetus_get_ctime">yetus_get_ctime</a></li>
+      <li><a href="#common_defaults">common_defaults</a></li>
     </ul>
   </li>
   <li>Public/Evolving/Replaceable
@@ -1201,19 +1203,19 @@
   </tbody>
 </table>
 
-<h3 id="common_defaults"><code>common_defaults</code></h3>
+<h3 id="delete_parameter"><code>delete_parameter</code></h3>
 
 <ul>
   <li>Synopsis</li>
 </ul>
 
-<div class="highlight"><pre class="highlight plaintext"><code>common_defaults
+<div class="highlight"><pre class="highlight plaintext"><code>delete_parameter parameter
 </code></pre></div>
 <ul>
   <li>Description</li>
 </ul>
 
-<p>Setup the default global variables</p>
+<p>remove entries from paramater tracker</p>
 
 <ul>
   <li>Returns</li>
@@ -1244,19 +1246,19 @@
   </tbody>
 </table>
 
-<h3 id="delete_parameter"><code>delete_parameter</code></h3>
+<h3 id="escape_html"><code>escape_html</code></h3>
 
 <ul>
   <li>Synopsis</li>
 </ul>
 
-<div class="highlight"><pre class="highlight plaintext"><code>delete_parameter parameter
+<div class="highlight"><pre class="highlight plaintext"><code>escape_html parameter
 </code></pre></div>
 <ul>
   <li>Description</li>
 </ul>
 
-<p>remove entries from paramater tracker</p>
+<p>escape common HTML entities</p>
 
 <ul>
   <li>Returns</li>
@@ -1392,6 +1394,49 @@
 </ul>
 
 <p>$?</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Stable</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="unescape_html"><code>unescape_html</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>unescape_html parameter
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>unescape common HTML entities</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
 
 <table class="table table-bordered table-striped">
   <thead>
@@ -1654,6 +1699,49 @@
 </ul>
 
 <p>ctime</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Stable</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="common_defaults"><code>common_defaults</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>common_defaults
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Setup the default global variables</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
 
 <table class="table table-bordered table-striped">
   <thead>
@@ -2598,7 +2686,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

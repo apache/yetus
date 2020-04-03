@@ -219,7 +219,7 @@ as a whole.</p>
 
 <ul>
   <li><a href="https://www.circleci.com">Circle CI</a></li>
-  <li><a href="https://www.docker.com">Docker</a> version 1.7.0+</li>
+  <li><a href="https://www.docker.com">Docker</a> Minimum: 17.0+ (moby Client API 1.27.0+) - Recommended: 18.0+ (moby Client API 1.38.0+)</li>
   <li><a href="https://www.gitlab.com">Gitlab CI</a></li>
   <li><a href="https://www.jenkins-ci.org">Jenkins</a></li>
   <li><a href="https://www.travis-ci.com">Travis CI</a></li>
@@ -485,12 +485,8 @@ TESTFORMATS:
 
 <p><code>test-patch</code> also has a built-in mode (i.e., no plug-in required) to utilize Docker:</p>
 
-<div class="highlight"><pre class="highlight diff"><code><span class="gd">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
-</span><span class="err">$</span> test-patch (other options) --docker
-<span class="gh">=======
-</span><span class="err">$</span> test-patch --docker
-<span class="gi">&gt;&gt;&gt;&gt;&gt;&gt;&gt; YETUS-109. documentation: clarify --plugin
-</span></code></pre></div>
+<div class="highlight"><pre class="highlight diff"><code><span class="err">$</span> test-patch --docker
+</code></pre></div>
 <p>This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific <a href="../precommit-docker">precommit Docker support</a> page and the <a href="/yetus-docker-image">Apache Yetus Docker Hub Images</a> page for more information on the convenience Docker images.</p>
 
 <h1 id="in-closing">In Closing</h1>
@@ -505,7 +501,7 @@ TESTFORMATS:
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2019 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

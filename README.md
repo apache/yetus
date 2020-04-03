@@ -30,7 +30,7 @@ Here is a list of the major components:
 Holds our documentation, which is presented via [our website](https://yetus.apache.org/).
 
 * [Precommit](precommit/)
-Precommit provides robust tools to deal with contributions, including applying patches from a variety of project sources and evaluating them against project norms via a system of plugins. See the [precommit overview](asf-site-src/source/documentation/in-progress/precommit-architecture.md) to get started working with precommit.
+Precommit provides robust tools to deal with contributions, including applying patches from a variety of project sources and evaluating them against project norms via a system of plugins. See the [precommit overview](asf-site-src/source/documentation/in-progress/precommit-architecture.html.md) to get started working with precommit.
 
 * [Audience Annotations](audience-annotations-component/)
 Audience Annotations allows projects to use Java Annotations to delineate public and non-public parts of their APIs. It also provides doclets to generate javadocs filtered by the intended audience. Currently builds with Maven 3.2.0+.
@@ -38,7 +38,7 @@ Audience Annotations allows projects to use Java Annotations to delineate public
 * [Shelldocs](shelldocs/)
 Shelldocs processes comments on Bash functions for annotations similar to Javadoc. It also includes built-in audience scoping functionality similar to the doclet from Audience Annotations.
 
-* [Release Doc Maker](release-doc-maker/)
+* [Release Doc Maker](releasedocmaker/)
 Release Doc Maker analyzes Jira and Git information to produce Markdown formatted release notes.
 
 * [yetus-maven-plugin](yetus-maven-plugin/)
