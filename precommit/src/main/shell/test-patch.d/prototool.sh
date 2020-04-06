@@ -25,6 +25,9 @@ PROTOTOOL=${PROTOTOOL:-$(command -v prototool 2>/dev/null)}
 function prototool_usage
 {
   yetus_add_option "--prototool=<path>" "path to prototool executable (default: ${PROTOTOOL})"
+  yetus_add_option "--prototool-dir=<path>" "set the starting dir to run prototool"
+  yetus_add_option "--prototool-walktimeout=<###u>" "set prototool walktimeout value"
+
 }
 
 function prototool_parse_args
@@ -33,10 +36,19 @@ function prototool_parse_args
 
   for i in "$@"; do
     case ${i} in
-    --prototool=*)
-      delete_parameter "${i}"
-      PROTOTOOL=${i#*=}
-    ;;
+      --prototool=*)
+        delete_parameter "${i}"
+        PROTOTOOL=${i#*=}
+      ;;
+      --prototool-basedir=*)
+        delete_parameter "${i}"
+        PROTOTOOL_BASEDIR=${i#*=}
+      ;;
+      --prototool-walktimeout=*)
+        delete_parameter "${i}"
+        PROTOTOOL_WALKTIMEOUT=${i#*=}
+      ;;
+
     esac
   done
 }
@@ -58,10 +70,6 @@ function prototool_precheck
     add_vote_table 0 prototool "prototool was not available."
     delete_test prototool
   fi
-
-  # shellcheck disable=SC2016
-  PROTOTOOL_VERSION=$("${PROTOTOOL}" version 2>/dev/null | "${GREP}" Version | "${AWK}" '{print $NF}')
-  add_version_data prototool "${PROTOTOOL_VERSION}"
 }
 
 function prototool_executor
@@ -69,6 +77,7 @@ function prototool_executor
   declare repostatus=$1
   declare prototoolStderr=${repostatus}-prototool-stderr.txt
   declare -a args
+  declare -a protoargs
 
   if ! verify_needed_test prototool; then
     return 0
@@ -89,8 +98,18 @@ function prototool_executor
     args=("cat")
   fi
 
+  if [[ -n "${PROTOTOOL_WALKTIMEOUT}" ]]; then
+    protoargs+=(--walk-timeout "${PROTOTOOL_WALKTIMEOUT}")
+  fi
+
+  ## MUST ALWAYS BE LAST!
+  if [[ -n "${PROTOTOOL_BASEDIR}" ]]; then
+    protoargs+=("${PROTOTOOL_BASEDIR}")
+  fi
+
   pushd "${BASEDIR}" >/dev/null || return 1
-  "${PROTOTOOL}" lint 2> "${PATCH_DIR}/${prototoolStderr}" | \
+
+  "${PROTOTOOL}" lint  "${protoargs[@]}" 2> "${PATCH_DIR}/${prototoolStderr}" | \
     "${args[@]}" > "${PATCH_DIR}/${repostatus}-prototool-result.txt"
   popd >/dev/null || return 1
 
@@ -131,6 +150,10 @@ function prototool_postapply
   if ! verify_needed_test prototool; then
     return 0
   fi
+
+  # shellcheck disable=SC2016
+  PROTOTOOL_VERSION=$("${PROTOTOOL}" version 2>/dev/null | "${GREP}" Version | "${AWK}" '{print $NF}')
+  add_version_data prototool "${PROTOTOOL_VERSION}"
 
   prototool_executor patch
 
