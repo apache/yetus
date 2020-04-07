@@ -17,12 +17,11 @@
   under the License.
 -->
 
-smart-apply-patch
-=================
+# smart-apply-patch
 
 `smart-apply-patch` is a command to help apply patches easily.  It uses the same plug-ins and many of the same options as test-patch.  This means that it can, for example, fetch patches from JIRA and apply them to a local source tree.
 
-# Usage
+## Usage
 
 Its simplest form is used when a patch is stored in a local file:
 
