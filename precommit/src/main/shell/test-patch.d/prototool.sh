@@ -25,7 +25,7 @@ PROTOTOOL=${PROTOTOOL:-$(command -v prototool 2>/dev/null)}
 function prototool_usage
 {
   yetus_add_option "--prototool=<path>" "path to prototool executable (default: ${PROTOTOOL})"
-  yetus_add_option "--prototool-dir=<path>" "set the starting dir to run prototool"
+  yetus_add_option "--prototool-basedir=<path>" "set the starting dir to run prototool"
   yetus_add_option "--prototool-walktimeout=<###u>" "set prototool walktimeout value"
 
 }
@@ -102,12 +102,11 @@ function prototool_executor
     protoargs+=(--walk-timeout "${PROTOTOOL_WALKTIMEOUT}")
   fi
 
-  ## MUST ALWAYS BE LAST!
   if [[ -n "${PROTOTOOL_BASEDIR}" ]]; then
-    protoargs+=("${PROTOTOOL_BASEDIR}")
+    pushd "${PROTOTOOL_BASEDIR}" >/dev/null || return 1
+  else
+    pushd "${BASEDIR}" >/dev/null || return 1
   fi
-
-  pushd "${BASEDIR}" >/dev/null || return 1
 
   "${PROTOTOOL}" lint  "${protoargs[@]}" 2> "${PATCH_DIR}/${prototoolStderr}" | \
     "${args[@]}" > "${PATCH_DIR}/${repostatus}-prototool-result.txt"
