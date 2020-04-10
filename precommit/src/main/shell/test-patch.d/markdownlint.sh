@@ -47,23 +47,25 @@ function markdownlint_logic
 {
   declare repostatus=$1
   declare i
-  declare fn
+  declare line
   declare output
 
   pushd "${BASEDIR}" >/dev/null || return 1
 
   for i in "${MARKDOWNLINT_CHECKFILES[@]}"; do
     if [[ -f "${i}" ]]; then
-      fn=""
       while read -r; do
-        if [[ -z "${fn}" ]]; then
-          fn=$REPLY
-        elif [[ -n "${REPLY}" ]]; then
-          # (space)line:col(space)error/warning(space)text
-          output=$(echo "${REPLY}" | awk '{$1=$1":"; $2=$2":"; print $0;}')
-          # fn:line:col:(space)error/warning:(space)text
-          echo "${fn}:${output}" >> "${PATCH_DIR}/${repostatus}-markdownlint-result.txt"
+        if [[ "${REPLY}" =~ ^.*:[0-9]+:[0-9]+ ]]; then
+          # fn:line(space)MD333/key long description
+          line=${REPLY}
+        else
+          # fn:line(space)MD###/key long description
+          line=$(echo "${REPLY}" | "${SED}" 's, ,:0 ,')
         fi
+        #fn:line:col:MD###/key long description
+        output=$(echo "${line}" | "${SED}" 's, ,:,')
+
+        echo "${output}" >> "${PATCH_DIR}/${repostatus}-markdownlint-result.txt"
       done < <("${MARKDOWNLINT}" "${i}" 2>&1)
     fi
   done

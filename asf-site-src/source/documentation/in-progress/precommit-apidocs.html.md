@@ -19,7 +19,6 @@
 
 # Precommit API Docs
 
-
 Following gives the downstream consumable API for precommit components.
 
 * [Core Functions](core/), common to both smart-apply-patch and test-patch.
