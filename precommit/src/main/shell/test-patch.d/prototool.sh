@@ -103,7 +103,7 @@ function prototool_executor
   fi
 
   if [[ -n "${PROTOTOOL_BASEDIR}" ]]; then
-    pushd "${PROTOTOOL_BASEDIR}" >/dev/null || return 1
+    pushd "${BASEDIR}/${PROTOTOOL_BASEDIR}" >/dev/null || return 1
   else
     pushd "${BASEDIR}" >/dev/null || return 1
   fi
