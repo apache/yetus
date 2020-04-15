@@ -118,6 +118,7 @@ Compiler Support:
 Language Support, Licensing, and more:
 
 * [Apache Creadur Rat](https://creadur.apache.org/rat/) entries in build system or installed
+* [buf](https://github.com/bufbuild/buf) installed
 * [checkmake](https://github.com/mrtazz/checkmake) installed
 * [checkstyle](https://checkstyle.sourceforge.net/) entries in build system (ant and maven only)
 * [FindBugs](https://findbugs.sourceforge.net/) entries in build system and 3.x executables
@@ -128,7 +129,6 @@ Language Support, Licensing, and more:
 * [jshint](https://jshint.com) installed
 * [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) installed
 * [Perl::Critic](https://perlcritic.com/) installed
-* [prototool](https://github.com/uber/prototool) installed
 * [pylint](https://www.pylint.org/) installed
 * [revive](https://github.com/mgechev/revive) installed
 * [rubocop](https://batsov.com/rubocop/) installed

@@ -276,10 +276,17 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
     && rm -rf /var/lib/apt/lists/*
 RUN go get -u github.com/mgechev/revive \
     && go get -u github.com/mrtazz/checkmake \
-    && (GO111MODULE=on go get github.com/uber/prototool/cmd/prototool@8fd43bfa177c73b628d189cb942d0f4c4af4908d) \
     && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.24.0) \
     && mv /root/go/bin/* /usr/local/bin \
     && rm -rf /root/go /root/.cache/go-build
+
+RUN curl -L -s -S \
+      https://github.com/bufbuild/buf/releases/download/v0.18.1/buf-Linux-x86_64.tar.gz \
+      -o buf.tar.gz \
+    && shasum -a 256 buf.tar.gz \
+    | awk '$1!="82a35087879c35449f336a37ab4b655e43992615140f4c37f1f0187ce4e6e6db" {exit(1)}' \
+    && tar -xzf buf.tar.gz -C /usr/local --strip-components 1 \
+    && rm buf.tar.gz
 
 ####
 # YETUS CUT HERE
