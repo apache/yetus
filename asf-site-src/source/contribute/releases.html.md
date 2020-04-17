@@ -564,6 +564,8 @@ Once a release candidate obtains majority approval from the PMC, there are sever
    $ # update the sha256. e.g., shasum -a 256 bin.gz
    $ # test the formula:
    $ brew install --build-from-source Formula/yetus.rb
+    # or if you already have it installed:
+   $ brew upgrade --build-from-source Formula/yetus.rb
    ```
 
 1. Update the documentation in the git master branch for the new release.  Remove the oldest release and add the latest.
