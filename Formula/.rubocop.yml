@@ -28,12 +28,12 @@
 #
 ---
 # make our hashes consistent
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedHashRocketStyle: table
   EnforcedColonStyle: table
 
 # `system` is a special case and aligns on second argument
-Layout/AlignParameters:
+Layout/ParameterAlignment:
   Enabled: false
 
 # favour parens-less DSL-style arguments
@@ -99,7 +99,7 @@ Metrics/PerceivedComplexity:
   Enabled: false
 
 # GitHub diff UI wraps beyond 118 characters (so that's the goal)
-Metrics/LineLength:
+Layout/LineLength:
   Max: 170
   # ignore manpage comments and long single-line strings
   IgnoredPatterns: ['#: ', ' url "', ' mirror "', ' plist_options :']
@@ -147,3 +147,10 @@ Style/TrailingBodyOnMethodDefinition:
 # a bit confusing to non-Rubyists but useful for longer arrays
 Style/WordArray:
   MinSize: 4
+
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true
