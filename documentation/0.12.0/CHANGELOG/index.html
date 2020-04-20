@@ -1,0 +1,463 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        
+<!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
+
+<h2 id="release-0120---2020-04-13">Release 0.12.0 - 2020-04-13</h2>
+
+<h3 id="important-issues">IMPORTANT ISSUES:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-936">YETUS-936</a></td>
+      <td style="text-align: left">test-patch.sh does not do gradle</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Pierre Smits</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-955">YETUS-955</a></td>
+      <td style="text-align: left">Update many of the binaries in Dockerfile</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build, Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="new-features">NEW FEATURES:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-947">YETUS-947</a></td>
+      <td style="text-align: left">Support github actions as a robot</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-954">YETUS-954</a></td>
+      <td style="text-align: left">Re-instate github token support</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="improvements">IMPROVEMENTS:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-893">YETUS-893</a></td>
+      <td style="text-align: left">Update the link to doclet javadoc</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Frederick Ayala</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-919">YETUS-919</a></td>
+      <td style="text-align: left">Support extra Docker build-args</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Clay B.</td>
+      <td style="text-align: left">Clay B.</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-926">YETUS-926</a></td>
+      <td style="text-align: left">Add visual separation to console report summary</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Nick Dimiduk</td>
+      <td style="text-align: left">Nick Dimiduk</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-937">YETUS-937</a></td>
+      <td style="text-align: left">Fix Release Doc Maker link in README.md</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">alfonso</td>
+      <td style="text-align: left">alfonso</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-895">YETUS-895</a></td>
+      <td style="text-align: left">Add ZStandard Compression support in Hadoop precommit</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Wei-Chiu Chuang</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="bug-fixes">BUG FIXES:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-915">YETUS-915</a></td>
+      <td style="text-align: left">Update GitHub vote emojis for usability by color blind folks</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Duo Zhang</td>
+      <td style="text-align: left">Duo Zhang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-927">YETUS-927</a></td>
+      <td style="text-align: left">GITHUB_PASSWD environment variable is not effective</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-897">YETUS-897</a></td>
+      <td style="text-align: left">Remove duplicate jdk.tools dependency from audience-annotations module</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Audience Annotations</td>
+      <td style="text-align: left">Martin Todorov</td>
+      <td style="text-align: left">Priyank Bagrecha</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-931">YETUS-931</a></td>
+      <td style="text-align: left">golangci.sh is not executable</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-863">YETUS-863</a></td>
+      <td style="text-align: left">Wrong quote characters in the RC verification document</td>
+      <td style="text-align: left">Trivial</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Jan Hentschel</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-939">YETUS-939</a></td>
+      <td style="text-align: left">shellcheck plugin's exclusion support is broken</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-941">YETUS-941</a></td>
+      <td style="text-align: left">Wrong URL in the checkstyle report</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Siyao Meng</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-945">YETUS-945</a></td>
+      <td style="text-align: left">Update some dependencies</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-942">YETUS-942</a></td>
+      <td style="text-align: left">yetus-dl for specific versions is broken</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-949">YETUS-949</a></td>
+      <td style="text-align: left">remove empty filenames in find_changed_files</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-925">YETUS-925</a></td>
+      <td style="text-align: left">Fix link error in README.md</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Kevin Su</td>
+      <td style="text-align: left">Kevin Su</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-943">YETUS-943</a></td>
+      <td style="text-align: left">Test patch fails to extract version information from a JDK11 jvm</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Nick Dimiduk</td>
+      <td style="text-align: left">Nick Dimiduk</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-957">YETUS-957</a></td>
+      <td style="text-align: left">maven.sh fails to parse maven version</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-958">YETUS-958</a></td>
+      <td style="text-align: left">precommit-basic docs contains merge conflict marker</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Nick Dimiduk</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-960">YETUS-960</a></td>
+      <td style="text-align: left">Yetus build env cannot execute pylint2</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-959">YETUS-959</a></td>
+      <td style="text-align: left">Dead link in precommit-advanced</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Nick Dimiduk</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-961">YETUS-961</a></td>
+      <td style="text-align: left">Upgrade prototool to include the fix for the walktimeout</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-962">YETUS-962</a></td>
+      <td style="text-align: left">markdownlint is smashing lines together</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-963">YETUS-963</a></td>
+      <td style="text-align: left">prototool-basedir should be a cwd</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="other">OTHER:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-932">YETUS-932</a></td>
+      <td style="text-align: left">Update copyrights for 2020</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Sean Busbey</td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>
