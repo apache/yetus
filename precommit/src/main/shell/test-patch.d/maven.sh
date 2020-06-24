@@ -111,7 +111,7 @@ function maven_parse_args
         delete_parameter "${i}"
         MAVEN_DEPENDENCY_ORDER=${i#*=}
       ;;
-      --mvn-javadoc=*)
+      --mvn-javadoc-goals=*)
         delete_parameter "${i}"
         MAVEN_JAVADOC_GOALS=${i#*=}
         MAVEN_JAVADOC_GOALS=${MAVEN_JAVADOC_GOALS//,/ }
