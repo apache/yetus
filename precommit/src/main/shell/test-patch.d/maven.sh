@@ -26,7 +26,7 @@ MAVEN_CUSTOM_REPOS=false
 MAVEN_CUSTOM_REPOS_DIR="@@@WORKSPACE@@@/yetus-m2"
 MAVEN_DEPENDENCY_ORDER=true
 MAVEN_FOUND_ROOT_POM=false
-MAVEN_JAVADOC_GOALS="javadoc:javadoc"
+MAVEN_JAVADOC_GOALS=("javadoc:javadoc")
 
 add_test_type mvnsite
 add_build_tool maven
@@ -113,9 +113,7 @@ function maven_parse_args
       ;;
       --mvn-javadoc-goals=*)
         delete_parameter "${i}"
-        MAVEN_JAVADOC_GOALS=${i#*=}
-        MAVEN_JAVADOC_GOALS=${MAVEN_JAVADOC_GOALS//,/ }
-        yetus_debug "Setting javadoc goals to ${MAVEN_JAVADOC_GOALS}"
+        yetus_comma_to_array MAVEN_JAVADOC_GOALS "${i#*=}"
       ;;
       --mvn-settings=*)
         delete_parameter "${i}"
@@ -343,7 +341,7 @@ function maven_modules_worker
       modules_workers "${repostatus}" distclean clean -DskipTests=true
     ;;
     javadoc)
-      modules_workers "${repostatus}" javadoc clean "${MAVEN_JAVADOC_GOALS}" -DskipTests=true
+      modules_workers "${repostatus}" javadoc clean "${MAVEN_JAVADOC_GOALS[@]}" -DskipTests=true
     ;;
     scaladoc)
       modules_workers "${repostatus}" scaladoc clean scala:doc -DskipTests=true
