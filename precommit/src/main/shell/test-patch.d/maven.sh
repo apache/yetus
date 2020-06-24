@@ -26,7 +26,7 @@ MAVEN_CUSTOM_REPOS=false
 MAVEN_CUSTOM_REPOS_DIR="@@@WORKSPACE@@@/yetus-m2"
 MAVEN_DEPENDENCY_ORDER=true
 MAVEN_FOUND_ROOT_POM=false
-MAVEN_JAVADOC="javadoc:javadoc"
+MAVEN_JAVADOC_GOALS="javadoc:javadoc"
 
 add_test_type mvnsite
 add_build_tool maven
@@ -81,7 +81,7 @@ function maven_usage
   yetus_add_option "--mvn-custom-repos" "Use per-project maven repos"
   yetus_add_option "--mvn-custom-repos-dir=dir" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
   yetus_add_option "--mvn-deps-order=<bool>" "Disable maven's auto-dependency module ordering (Default: '${MAVEN_DEPENDENCY_ORDER}')"
-  yetus_add_option "--mvn-javadoc=<goal>" "The javadoc goal (Default: 'javadoc:javadoc')"
+  yetus_add_option "--mvn-javadoc-goals=<list>" "The comma-separated javadoc goals (Default: 'javadoc:javadoc')"
   yetus_add_option "--mvn-settings=file" "File to use for settings.xml"
 }
 
@@ -113,7 +113,9 @@ function maven_parse_args
       ;;
       --mvn-javadoc=*)
         delete_parameter "${i}"
-        MAVEN_JAVADOC=${i#*=}
+        MAVEN_JAVADOC_GOALS=${i#*=}
+        MAVEN_JAVADOC_GOALS=${MAVEN_JAVADOC_GOALS//,/ }
+        yetus_debug "Setting javadoc goals to ${MAVEN_JAVADOC_GOALS}"
       ;;
       --mvn-settings=*)
         delete_parameter "${i}"
@@ -341,7 +343,7 @@ function maven_modules_worker
       modules_workers "${repostatus}" distclean clean -DskipTests=true
     ;;
     javadoc)
-      modules_workers "${repostatus}" javadoc clean "${MAVEN_JAVADOC}" -DskipTests=true
+      modules_workers "${repostatus}" javadoc clean "${MAVEN_JAVADOC_GOALS}" -DskipTests=true
     ;;
     scaladoc)
       modules_workers "${repostatus}" scaladoc clean scala:doc -DskipTests=true
