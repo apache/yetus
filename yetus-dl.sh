@@ -17,7 +17,7 @@
 
 EXTRACTDIR="${1:-/tmp/yetus}"
 VERSION=${2:-latest}
-KEYSURL="https://www.apache.org/dist/yetus"
+KEYSURL="https://downloads.apache.org/yetus"
 if [ "${VERSION}" != "latest" ]; then
   BASEURL="https://www.apache.org/dyn/closer.cgi?action=download&filename=yetus/${VERSION}"
   YETUSTGZ="apache-yetus-${VERSION}-bin.tar.gz"

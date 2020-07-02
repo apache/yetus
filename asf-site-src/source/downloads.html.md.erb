@@ -28,7 +28,7 @@ like to help out, check out the Getting Involved link above!
 The Apache Yetus project publishes a single source artifact per release for all of
 our components as well as a convenience artifact of binaries and documentation for immediate use. You
 should verify the integrity of these artifacts via [the ASF procedure](https://www.apache.org/info/verification.html)
-using the [KEYS file for our project](https://www.apache.org/dist/yetus/KEYS).
+using the [KEYS file for our project](https://downloads.apache.org/yetus/KEYS).
 
 In addition to the artifacts below, we publish convenience artifacts in some
 third-party repositories (e.g. Maven Central) and [Docker Hub](../yetus-docker-image).
@@ -40,11 +40,11 @@ third-party repositories (e.g. Maven Central) and [Docker Hub](../yetus-docker-i
     * [Release Notes](/documentation/<%= release %>/RELEASENOTES)
     * [CHANGELOG](/documentation/<%= release %>/CHANGELOG)
     <% if release =~ /^0\.[0-8]\./ %>
-      * Source : [yetus-<%= release %>-src.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.mds))
-      * Binaries : [yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.mds))
+      * Source : [yetus-<%= release %>-src.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz) ([signature](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.asc), [hashes](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.mds))
+      * Binaries : [yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz) ([signature](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.mds))
     <% else %>
-      * Source : [apache-yetus-<%= release %>-src.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/apache-yetus-<%= release %>-src.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/apache-yetus-<%= release %>-src.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/apache-yetus-<%= release %>-src.tar.gz.mds))
-      * Binaries : [apache-yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/apache-yetus-<%= release %>-bin.tar.gz) ([signature](https://www.apache.org/dist/yetus/<%= release %>/apache-yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://www.apache.org/dist/yetus/<%= release %>/apache-yetus-<%= release %>-bin.tar.gz.mds))
+      * Source : [apache-yetus-<%= release %>-src.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/apache-yetus-<%= release %>-src.tar.gz) ([signature](https://downloads.apache.org/yetus/<%= release %>/apache-yetus-<%= release %>-src.tar.gz.asc), [hashes](https://downloads.apache.org/yetus/<%= release %>/apache-yetus-<%= release %>-src.tar.gz.mds))
+      * Binaries : [apache-yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/apache-yetus-<%= release %>-bin.tar.gz) ([signature](https://downloads.apache.org/yetus/<%= release %>/apache-yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://downloads.apache.org/yetus/<%= release %>/apache-yetus-<%= release %>-bin.tar.gz.mds))
     <% end %>
 <%   end
    end %>

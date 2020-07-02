@@ -78,7 +78,7 @@ Before attempting to do a release, verify that the documentation, website, etc, 
 
 ### Ensure Your Public Key is in KEYS
 
-Like many ASF projects, we provide a single file that downstream folks can use to verify our release artifacts. It's located in the project's distribution area <https://www.apache.org/dist/yetus>. You can read about this file in the [ASF guide to release signing](https://www.apache.org/dev/release-signing) section. If your public key is not already included in [the KEYS file](https://www.apache.org/dist/yetus/KEYS), you will need to add it. You can either follow the instructions in the previously mentioned guide or those at the top of the actual KEYS file. In any case, you will need to use Subversion to update the KEYS file in the project's distribution area. Note that this area is writable only by the project PMC. If you are not yet on the PMC, your last step should be providing a patch rather than committing.
+Like many ASF projects, we provide a single file that downstream folks can use to verify our release artifacts. It's located in the project's distribution area <https://downloads.apache.org/yetus>. You can read about this file in the [ASF guide to release signing](https://www.apache.org/dev/release-signing) section. If your public key is not already included in [the KEYS file](https://downloads.apache.org/yetus/KEYS), you will need to add it. You can either follow the instructions in the previously mentioned guide or those at the top of the actual KEYS file. In any case, you will need to use Subversion to update the KEYS file in the project's distribution area. Note that this area is writable only by the project PMC. If you are not yet on the PMC, your last step should be providing a patch rather than committing.
 
 Example commands:
 
@@ -262,7 +262,7 @@ Depending on how candidate evaluation goes, you may end up performing these step
         Source repository commit: 1e8f4588906a51317207092bd97b35687f2e3fa3
         Maven staging repository: https://repository.apache.org/content/repositories/orgapacheyetus-1011
 
-        Our KEYS file is at: https://www.apache.org/dist/yetus/KEYS
+        Our KEYS file is at: https://downloads.apache.org/yetus/KEYS
         All artifacts are signed with my key (DEADBEEF)
 
         JIRA version: https://s.apache.org/yetus-0.7.0-jira
@@ -319,7 +319,7 @@ dist.apache.org//robots.txt
 Lastly, if you haven't verified a release before, you'll need to download and import the public keys for the project's release managers. The public keys are located in the KEYS file that should have been mentioned in the [VOTE] thread announcement. The specific output of the following commands will vary depending on how many release managers there have been and which keys, if any, you have previously imported.
 
 ```bash
-$ curl --output KEYS.yetus --silent 'https://www.apache.org/dist/yetus/KEYS'
+$ curl --output KEYS.yetus --silent 'https://downloads.apache.org/yetus/KEYS'
 $ gpg --import KEYS.yetus
 gpg: key 0D80DB7C: "Sean Busbey (CODE SIGNING KEY) <busbey@apache.org>" not changed
 gpg: Total number processed: 1
@@ -622,19 +622,19 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 
         The relevant checksums files are available at:
 
-            https://www.apache.org/dist/yetus/0.7.0/apache-yetus-0.7.0-src.tar.gz.sha512
-            https://www.apache.org/dist/yetus/0.7.0/apache-yetus-0.7.0-src.tar.gz.mds
-            https://www.apache.org/dist/yetus/0.7.0/apache-yetus-0.7.0-bin.tar.gz.sha512
-            https://www.apache.org/dist/yetus/0.7.0/apache-yetus-0.7.0-bin.tar.gz.mds
+            https://downloads.apache.org/yetus/0.7.0/apache-yetus-0.7.0-src.tar.gz.sha512
+            https://downloads.apache.org/yetus/0.7.0/apache-yetus-0.7.0-src.tar.gz.mds
+            https://downloads.apache.org/yetus/0.7.0/apache-yetus-0.7.0-bin.tar.gz.sha512
+            https://downloads.apache.org/yetus/0.7.0/apache-yetus-0.7.0-bin.tar.gz.mds
 
         Project member signature keys can be found at
 
-           https://www.apache.org/dist/yetus/KEYS
+           https://downloads.apache.org/yetus/KEYS
 
         PGP signatures are available at:
 
-            https://www.apache.org/dist/yetus/0.7.0/apache-yetus-0.7.0-src.tar.gz.asc
-            https://www.apache.org/dist/yetus/0.7.0/apache-yetus-0.7.0-bin.tar.gz.asc
+            https://downloads.apache.org/yetus/0.7.0/apache-yetus-0.7.0-src.tar.gz.asc
+            https://downloads.apache.org/yetus/0.7.0/apache-yetus-0.7.0-bin.tar.gz.asc
 
         The list of changes included in this release and release notes can be browsed at:
 
