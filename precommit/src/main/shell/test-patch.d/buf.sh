@@ -1,0 +1,359 @@
+#!/usr/bin/env bash
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# SHELLDOC-IGNORE
+
+add_test_type buf
+add_test_type buflint
+add_test_type bufcompat
+
+BUFLINT_TIMER=0
+BUFCOMPAT_TIMER=0
+BUF=${BUF:-$(command -v buf 2>/dev/null)}
+BUF_ALREADY=false
+
+function buf_usage
+{
+  yetus_add_option "--buf=<path>" "path to buf executable (default: ${BUF})"
+  yetus_add_option "--buf-basedir=<path>" "set the starting dir to run buf"
+  yetus_add_option "--buf-timeout=###u" "Set the buf timeout"
+}
+
+function buf_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --buf=*)
+        delete_parameter "${i}"
+        BUF=${i#*=}
+      ;;
+      --buf-basedir=*)
+        delete_parameter "${i}"
+        BUF_BASEDIR=${i#*=}
+      ;;
+      --buf-timeout=*)
+        delete_parameter "${i}"
+        BUF_TIMEOUT=${i#*=}
+      ;;
+    esac
+  done
+}
+
+function buf_filefilter
+{
+  local filename=$1
+
+  if [[ ${filename} =~ \.proto$ ]] ||
+     [[ "${filename}" =~ buf\.json$ ]] ||
+     [[ "${filename}" =~ buf\.yaml$ ]]; then
+    add_test buflint
+    add_test bufcompat
+  fi
+}
+
+function buf_precheck
+{
+
+  if [[ "${BUF_ALREADY}" == true ]]; then
+    return 0
+  fi
+
+  if ! verify_command "buf" "${BUF}"; then
+    add_vote_table 0 buf "buf was not available."
+    delete_test buflint
+    delete_test bufcompat
+  fi
+
+  # shellcheck disable=SC2016
+  BUF_VERSION=$("${BUF}" --version 2>/dev/null)
+  add_version_data buf "${BUF_VERSION}"
+  BUF_ALREADY=true
+}
+
+##############
+
+function bufcompat_parse_args {
+  buf_parse_args "$@"
+}
+
+function bufcompat_filefilter
+{
+  buf_filefilter "$@"
+}
+
+function bufcompat_precheck
+{
+  buf_precheck "$@"
+}
+
+function bufcompat_executor
+{
+  declare repostatus=$1
+  declare bufStderr=${repostatus}-bufcompat-stderr.txt
+  declare -a args
+  declare -a bufargs
+
+  if ! verify_needed_test bufcompat ; then
+    return 0
+  fi
+
+  big_console_header "bufcompat plugin: ${BUILDMODE}"
+
+  start_clock
+
+  # add our previous elapsed to our new timer
+  # by setting the clock back
+  offset_clock "${BUFCOMPAT_TIMER}"
+
+  echo "Running buf against identified protobuf files."
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]] && [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+    args=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  else
+    args=("cat")
+  fi
+
+  if [[ -n "${BUF_TIMEOUT}" ]]; then
+    bufargs+=(--timeout "${BUF_TIMEOUT}")
+  fi
+
+  if [[ -n "${BUF_BASEDIR}" ]]; then
+    pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
+  else
+    pushd "${BASEDIR}" >/dev/null || return 1
+  fi
+
+  if [[ "${repostatus}" == "branch" ]]; then
+    "${BUF}" image build "${bufargs[@]}" -o "${PATCH_DIR}/buf-image.bin" 2>> "${PATCH_DIR}/${bufStderr}"
+  elif [[ -f  "${PATCH_DIR}/buf-image.bin" ]]; then
+    "${BUF}" check breaking "${bufargs[@]}" \
+      --against-input "${PATCH_DIR}/buf-image.bin" \
+      > "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" \
+      2>> "${PATCH_DIR}/${bufStderr}"
+  fi
+
+  popd >/dev/null || return 1
+
+  if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${bufStderr}" ]]; then
+    add_vote_table -1 bufcompat "Error running buf. Please check buf stderr files."
+    add_footer_table bufcompat "@@BASE@@/${bufStderr}"
+    return 1
+  fi
+  rm "${PATCH_DIR}/${bufStderr}" 2>/dev/null
+  return 0
+}
+
+function bufcompat_preapply
+{
+  declare retval
+
+
+  if ! verify_needed_test bufcompat; then
+    return 0
+  fi
+
+  bufcompat_executor "branch"
+  retval=$?
+
+  # keep track of how much as elapsed for us already
+  BUFCOMPAT_TIMER=$(stop_clock)
+  return ${retval}
+}
+
+function bufcompat_postapply
+{
+  declare incompatcount
+
+  if ! verify_needed_test bufcompat; then
+    return 0
+  fi
+
+  big_console_header "bufcompat plugin: ${BUILDMODE}"
+
+  bufcompat_executor "patch"
+
+  offset_clock "${BUFCOMPAT_TIMER}"
+
+  if [[ -s "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" ]]; then
+    # shellcheck disable=SC2016
+    incompatcount=$(wc -l "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" | "${AWK}" '{print $1}')
+    add_vote_table -1 bufcompat "${incompatcount} Incompatible protobuf changes"
+    add_footer_table bufcompat "@@BASE@@/${repostatus}-bufcompat-result.txt"
+    return 1
+  fi
+  return 0
+}
+
+function bufcompat_postcompile
+{
+  declare repostatus=$1
+
+  if [[ "${repostatus}" = branch ]]; then
+    bufcompat_preapply
+  else
+    bufcompat_postapply
+  fi
+}
+
+##############
+
+
+function buflint_parse_args {
+  buf_parse_args "$@"
+}
+
+function buflint_filefilter
+{
+  buf_filefilter "$@"
+}
+
+function buflint_precheck
+{
+  buf_precheck "$@"
+}
+
+function buflint_executor
+{
+  declare repostatus=$1
+  declare bufStderr=${repostatus}-buflint-stderr.txt
+  declare -a args
+  declare -a bufargs
+
+  if ! verify_needed_test buflint ; then
+    return 0
+  fi
+
+  big_console_header "buflint plugin: ${BUILDMODE}"
+
+  start_clock
+
+  # add our previous elapsed to our new timer
+  # by setting the clock back
+  offset_clock "${BUFLINT_TIMER}"
+
+  echo "Running buf against identified protobuf files."
+  if [[ -n "${EXCLUDE_PATHS_FILE}" ]] && [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+    args=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  else
+    args=("cat")
+  fi
+
+
+  if [[ -n "${BUF_TIMEOUT}" ]]; then
+    bufargs+=(--timeout "${BUF_TIMEOUT}")
+  fi
+
+  if [[ -n "${BUF_BASEDIR}" ]]; then
+    pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
+  else
+    pushd "${BASEDIR}" >/dev/null || return 1
+  fi
+
+  "${BUF}" check lint  "${bufargs[@]}" 2>> "${PATCH_DIR}/${bufStderr}" | \
+    "${args[@]}" > "${PATCH_DIR}/${repostatus}-buflint-result.txt"
+
+  popd >/dev/null || return 1
+
+  if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${bufStderr}" ]]; then
+    add_vote_table -1 buflint "Error running buf. Please check buf stderr files."
+    add_footer_table buflint "@@BASE@@/${bufStderr}"
+    return 1
+  fi
+  rm "${PATCH_DIR}/${bufStderr}" 2>/dev/null
+  return 0
+}
+
+
+function buflint_preapply
+{
+  declare retval
+
+  if ! verify_needed_test buflint; then
+    return 0
+  fi
+
+  buflint_executor "branch"
+  retval=$?
+
+  # keep track of how much as elapsed for us already
+  BUFLINT_TIMER=$(stop_clock)
+  return ${retval}
+}
+
+function buflint_postapply
+{
+  declare numPrepatch
+  declare numPostpatch
+  declare diffPostpatch
+  declare fixedpatch
+  declare statstring
+
+  if ! verify_needed_test buflint; then
+    return 0
+  fi
+
+  if [[ -s "${PATCH_DIR}/${repostatus}-buflint-result.txt" ]]; then
+    add_vote_table -1 buflint "Incompatible protobuf changes"
+    add_footer_table buflint "@@BASE@@/${repostatus}-buflint-result.txt"
+  fi
+
+  # shellcheck disable=SC2016
+  BUF_VERSION=$("${BUF}" version 2>/dev/null | "${GREP}" Version | "${AWK}" '{print $NF}')
+  add_version_data buf "${BUF_VERSION}"
+
+  buflint_executor patch
+
+  calcdiffs "${PATCH_DIR}/branch-buflint-result.txt" \
+            "${PATCH_DIR}/patch-buflint-result.txt" \
+            buf > "${PATCH_DIR}/diff-patch-buflint.txt"
+
+  # shellcheck disable=SC2016
+  numPrepatch=$(wc -l "${PATCH_DIR}/branch-buflint-result.txt" | "${AWK}" '{print $1}')
+
+  # shellcheck disable=SC2016
+  numPostpatch=$(wc -l "${PATCH_DIR}/patch-buflint-result.txt" | "${AWK}" '{print $1}')
+
+  # shellcheck disable=SC2016
+  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-buflint.txt" | "${AWK}" '{print $1}')
+
+  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
+
+  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
+
+  if [[ ${diffPostpatch} -gt 0 ]] ; then
+    add_vote_table -1 buflint "${BUILDMODEMSG} ${statstring}"
+    add_footer_table buflint "@@BASE@@/diff-patch-buflint.txt"
+    return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+    add_vote_table +1 buflint "${BUILDMODEMSG} ${statstring}"
+    return 0
+  fi
+
+  add_vote_table +1 buflint "There were no new buf lint issues."
+  return 0
+}
+
+function buflint_postcompile
+{
+  declare repostatus=$1
+
+  if [[ "${repostatus}" = branch ]]; then
+    buflint_preapply
+  else
+    buflint_postapply
+  fi
+}
