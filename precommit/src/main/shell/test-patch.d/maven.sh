@@ -674,8 +674,6 @@ function maven_docker_support
   if [[ ${MAVEN_CUSTOM_REPOS} = true ]]; then
     DOCKER_EXTRAARGS+=("-v" "${MAVEN_CUSTOM_REPOS_DIR}:${MAVEN_CUSTOM_REPOS_DIR}")
   fi
-
-  add_docker_env MAVEN_OPTS
 }
 
 ## @description  worker for maven reordering. MAVEN_DEP_LOG is set to the log file name
