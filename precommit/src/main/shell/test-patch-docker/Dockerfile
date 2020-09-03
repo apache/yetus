@@ -129,8 +129,8 @@ ENV FINDBUGS_HOME /usr
 #####
 # Install SpotBugs
 #####
-RUN curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.0.1/spotbugs-4.0.1.tgz -o spotbugs.tgz \
-    && curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.0.1/spotbugs-4.0.1.tgz.sha1 -o spotbugs.tgz.sha1 \
+RUN curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.1.2/spotbugs-4.1.2.tgz -o spotbugs.tgz \
+    && curl -fsSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.1.2/spotbugs-4.1.2.tgz.sha1 -o spotbugs.tgz.sha1 \
     && echo -n "  spotbugs.tgz" >> spotbugs.tgz.sha1 \
     && shasum -c spotbugs.tgz.sha1 \
     && mkdir -p /opt/spotbugs \
