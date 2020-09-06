@@ -35,9 +35,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.scijava</groupId>
-      <artifactId>jython-shaded</artifactId>
-      <version>${jython-shaded.version}</version>
+      <groupId>org.python</groupId>
+      <artifactId>jython-slim</artifactId>
+      <version>${jython-slim.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.yetus</groupId>

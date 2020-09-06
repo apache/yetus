@@ -399,7 +399,7 @@ function patchfile_apply_driver
   declare patchfile=$1
   declare gpg=$2
 
-  if declare -f ${PATCH_METHOD}_apply >/dev/null; then
+  if declare -f "${PATCH_METHOD}_apply" >/dev/null; then
     if ! "${PATCH_METHOD}_apply" "${patchfile}" "${gpg}"; then
      return 1
     fi

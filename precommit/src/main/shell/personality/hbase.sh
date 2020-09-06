@@ -222,7 +222,7 @@ function hbaseprotoc_rebuild
     count=$(${GREP} -c ERROR "${logfile}")
 
     if [[ ${count} -gt 0 ]]; then
-      module_status ${i} -1 "patch-hbaseprotoc-${fn}.txt" "Patch generated "\
+      module_status "${i}" -1 "patch-hbaseprotoc-${fn}.txt" "Patch generated "\
         "${count} new protoc errors in ${module}."
       ((result=result+1))
     fi

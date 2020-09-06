@@ -107,17 +107,17 @@ function gitlab_breakup_url
     ((pos2=count-3))
     ((pos1=pos2))
 
-    GITLAB_BASE_URL=$(echo "${url}" | cut -f1-${pos2} -d/)
+    GITLAB_BASE_URL=$(echo "${url}" | cut "-f1-${pos2}" -d/)
 
     ((pos1=pos1+1))
     ((pos2=pos1+1))
 
-    GITLAB_REPO=$(echo "${url}" | cut -f${pos1}-${pos2} -d/)
+    GITLAB_REPO=$(echo "${url}" | cut "-f${pos1}-${pos2}" -d/)
 
     ((pos1=pos2+2))
     unset pos2
 
-    GITLAB_ISSUE=$(echo "${url}" | cut -f${pos1}-${pos2} -d/ | cut -f1 -d.)
+    GITLAB_ISSUE=$(echo "${url}" | cut "-f${pos1}-${pos2}" -d/ | cut -f1 -d.)
   else
     GITLAB_BASE_URL=$(echo "${url}" | cut -f1-3 -d/)
     GITLAB_REPO=$(echo "${url}" | cut -f4- -d/)

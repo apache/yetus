@@ -155,17 +155,17 @@ function github_breakup_url
     ((pos2=count-3))
     ((pos1=pos2))
 
-    GITHUB_BASE_URL=$(echo "${url}" | cut -f1-${pos2} -d/)
+    GITHUB_BASE_URL=$(echo "${url}" | cut "-f1-${pos2}" -d/)
 
     ((pos1=pos1+1))
     ((pos2=pos1+1))
 
-    GITHUB_REPO=$(echo "${url}" | cut -f${pos1}-${pos2} -d/)
+    GITHUB_REPO=$(echo "${url}" | cut "-f${pos1}-${pos2}" -d/)
 
     ((pos1=pos2+2))
     unset pos2
 
-    GITHUB_ISSUE=$(echo "${url}" | cut -f${pos1}-${pos2} -d/ | cut -f1 -d.)
+    GITHUB_ISSUE=$(echo "${url}" | cut "-f${pos1}-${pos2}" -d/ | cut -f1 -d.)
   else
     GITHUB_BASE_URL=$(echo "${url}" | cut -f1-3 -d/)
     GITHUB_REPO=$(echo "${url}" | cut -f4- -d/)

@@ -24,9 +24,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: checkout
+        uses: actions/checkout@v2
         with:
           path: src
+          fetch-depth: 0
       - name: test-patch
         run: >-
           "${GITHUB_WORKSPACE}/src/precommit/src/main/shell/test-patch.sh"
@@ -35,6 +37,7 @@ jobs:
           --docker
           --project=yetus
           --pylint=pylint2
+          --java-home=/usr/lib/jvm/java-8-openjdk-amd64
           --brief-report-file="${GITHUB_WORKSPACE}/out/brief.txt"
           --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
           --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
@@ -46,7 +49,8 @@ jobs:
           --tests-filter=checkstyle,javadoc,rubocop,test4tests
           --docker-cache-from=apache/yetus-base:master
       - name: Artifact output
-        uses: actions/upload-artifact@v1
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
         with:
           name: apacheyetuspatchdir
-          path: out
+          path: ${{ github.workspace }}/out

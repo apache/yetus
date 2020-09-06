@@ -211,7 +211,7 @@ function yetus_generic_columnprinter
     while read -r line; do
       printf "%-${maxoptsize}s   %-s\\n" "${option}" "${line}"
       option=" "
-    done < <(echo "${giventext}"| fold -s -w ${foldsize})
+    done < <(echo "${giventext}"| fold -s -w "${foldsize}")
     ((i=i+1))
   done
 }

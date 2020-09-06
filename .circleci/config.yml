@@ -38,6 +38,7 @@ jobs:
       - run: >
              ~/repo/precommit/src/main/shell/test-patch.sh
              --plugins=all
+             --java-home=/usr/lib/jvm/java-8-openjdk-amd64
              --patch-dir=/tmp/yetus-out
              --pylint=pylint2
              --html-report-file=/tmp/yetus-out/report.html

@@ -30,6 +30,7 @@ script:
     precommit/src/main/shell/test-patch.sh
     --docker
     --patch-dir=/tmp/yetus-out
+    --java-home=/usr/lib/jvm/java-8-openjdk-amd64
     --plugins=all
     --pylint=pylint2
     --docker-cache-from=apache/yetus:master

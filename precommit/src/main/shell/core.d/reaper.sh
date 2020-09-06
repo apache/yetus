@@ -148,7 +148,7 @@ function reaper_coproc_func
 
         # tell our parent how many
         # doing this now means killing in the background
-        echo ${count}
+        echo "${count}"
 
         if [[ ${count} -eq 0 ]]; then
           rm "${PATCH_DIR}/${logfile}"

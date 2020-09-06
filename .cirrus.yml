@@ -22,6 +22,7 @@ yetus_task:
              ${CIRRUS_WORKING_DIR}/precommit/src/main/shell/test-patch.sh
              --plugins=all
              --pylint=pylint2
+             --java-home=/usr/lib/jvm/java-8-openjdk-amd64
              --basedir="${CIRRUS_WORKING_DIR}"
              --html-report-file=/tmp/yetus-out/report.html
              --console-report-file=/tmp/yetus-out/console.txt

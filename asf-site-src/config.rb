@@ -17,6 +17,8 @@
 # limitations under the License.
 #
 
+require 'ruby27_fix_uri'
+
 set :markdown_engine, :kramdown
 # rubocop:disable Layout/HashAlignment
 set(
@@ -215,17 +217,16 @@ after_configuration do # rubocop:disable Metrics/BlockLength
     releasenotes('target', release)
     if release =~ /^0.[0-8]\./
       # stitch the javadoc in place
-      # rubocop:disable Layout/LineLength
       sitemap.register_resource_list_manipulator(
         "#{release}_javadocs".to_sym,
         ApiDocs.new(
           sitemap,
           "documentation/#{release}/audience-annotations-apidocs",
-          File.expand_path("target/build-#{release}/audience-annotations-component/target/site/apidocs", # rubocop:disable Layout/LineLength
+          File.expand_path("target/build-#{release}/audience-annotations-component/target/site/apidocs",  # rubocop:disable Layout/LineLength
                            File.dirname(__FILE__))
         )
       )
-      # rubocop:enable Layout/LineLength
+
     else
       sitemap.register_resource_list_manipulator(
         "#{release}_javadocs".to_sym,

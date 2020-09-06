@@ -1964,13 +1964,13 @@ function modules_workers
 
     if [[ ${execvalue} == 0 ]] ; then
       module_status \
-        ${modindex} \
+        "${modindex}" \
         +1 \
         "${repostatus}-${testtype}-${fn}.txt" \
         "${modulesuffix} in ${repo} passed${statusjdk}."
     else
       module_status \
-        ${modindex} \
+        "${modindex}" \
         -1 \
         "${repostatus}-${testtype}-${fn}.txt" \
         "${modulesuffix} in ${repo} failed${statusjdk}."
@@ -3360,5 +3360,5 @@ finish_vote_table
 
 finish_footer_table
 
-bugsystem_finalreport ${RESULT}
-cleanup_and_exit ${RESULT}
+bugsystem_finalreport "${RESULT}"
+cleanup_and_exit "${RESULT}"
