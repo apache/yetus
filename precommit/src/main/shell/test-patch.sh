@@ -1047,15 +1047,15 @@ function parse_args
   COPROC_LOGFILE="${PATCH_DIR}/coprocessors.txt"
 
   if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
+    # shellcheck disable=SC2034
+    EXCLUDE_PATHS_FILE_SAVEOFF=${EXCLUDE_PATHS_FILE}
     if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
       EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
     elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE}" ]]; then
       EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE}")
-    elif [[ -f "${PATCH_DIR}/precommit/excluded.txt" ]]; then
-       EXCLUDE_PATHS_FILE="${PATCH_DIR}/precommit/excluded.txt"
     else
-      yetus_error "ERROR: Excluded paths file (${EXCLUDE_PATHS_FILE}}) does not exist!"
-      cleanup_and_exit 1
+      yetus_error "WARNING: Excluded paths file (${EXCLUDE_PATHS_FILE}}) does not exist (yet?)."
+      unset EXCLUDE_PATHS_FILE
     fi
   fi
 

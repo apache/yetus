@@ -93,10 +93,42 @@ function exclude_paths_from_changed_files
   declare strip
   declare -a a
 
+
+  # empty the existing list
   EXCLUDE_PATHS=()
 
+  # if E_P_F has been defined, then it was found earlier
   if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
-    yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
+
+    # if it still exists ( it may have gotten deleted post-patch!)
+    # read it in
+    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+      yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
+    else
+      # it was deleted post-patch, so delete it
+      unset EXCLUDE_PATHS_FILE
+      return
+    fi
+
+ # User provided us with a name but it wasn't there.
+ # let's see if it is now
+ elif [[ -n "${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
+    # try to absolute the file name
+    if [[ -f "${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
+      EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE_SAVEOFF}")
+    elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
+      EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EEXCLUDE_PATHS_FILE_SAVEOFF}")
+    fi
+
+    # if it exists, process, otherwise just return because nothing
+    # to do
+
+    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+      yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
+    else
+      unset EXCLUDE_PATHS_FILE
+      return
+    fi
   else
     return
   fi
