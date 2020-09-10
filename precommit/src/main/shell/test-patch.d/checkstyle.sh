@@ -457,9 +457,9 @@ function checkstyle_postapply
 
     if [[ ${addpatch} -gt 0 ]] ; then
       ((result = result + 1))
-      module_status ${i} -1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
+      module_status "${i}" -1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
     elif [[ ${fixedpatch} -gt 0 ]]; then
-      module_status ${i} +1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
+      module_status "${i}" +1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
       summarize=false
     fi
     ((i=i+1))

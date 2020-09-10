@@ -28,8 +28,6 @@ ARG USER_NAME
 # hadolint ignore=DL3008
 RUN apt-get -q update \
     && apt-get -q install --no-install-recommends -y \
-      gnupg2 \
-      gnupg-agent \
       pinentry-curses \
       pinentry-tty \
       subversion \
@@ -38,10 +36,6 @@ RUN apt-get -q update \
       zlib1g-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# we really want gpg2 to be the default gpg implementation
-# it doesn't appear Xenial supports that though
-RUN ln -s /usr/bin/gpg2 /usr/local/bin/gpg
 
 RUN echo "export GPG_TTY=\$(tty)" >>  /root/.bashrc
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}"
@@ -62,13 +56,13 @@ ENV GEM_HOME ${BUNDLE_PATH}
 # on re-launches
 # hadolint ignore=DL3028
 RUN gem install bundler \
-    middleman:'~>3.4.0' \
+    middleman:'4.3.6' \
     middleman-livereload \
     middleman-syntax \
     redcarpet \
     therubyracer \
     tzinfo-data \
-    rake:10.3.1 \
-    nokogiri:1.8.5
+    rake:13.0.1 \
+    nokogiri:1.10.10
 
 CMD ["/bin/bash"]

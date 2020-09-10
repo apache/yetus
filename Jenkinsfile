@@ -136,6 +136,8 @@ pipeline {
                 # use emoji as vote result on GitHub
                 YETUS_ARGS+=(--github-use-emoji-vote)
 
+                YETUS_ARGS+=(--java-home=/usr/lib/jvm/java-8-openjdk-amd64)
+
                 # enable writing back to ASF JIRA
                 YETUS_ARGS+=(--jira-issue-re='^YETUS-[0-9]*$')
                 YETUS_ARGS+=(--jira-password="${JIRA_PASSWORD}")

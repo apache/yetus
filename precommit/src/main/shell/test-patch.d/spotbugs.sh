@@ -190,7 +190,7 @@ function spotbugs_runner
     warnings_file="${PATCH_DIR}/${name}-${SPOTBUGS_MODE}-${fn}-warnings"
 
     if [[ "${#files[@]}" -lt 1 ]]; then
-      module_status ${i} 0 "" "${name}/${module} no ${SPOTBUGS_MODE} output file (${targetfile})"
+      module_status "${i}" 0 "" "${name}/${module} no ${SPOTBUGS_MODE} output file (${targetfile})"
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -215,14 +215,14 @@ function spotbugs_runner
     if [[ ${retval} != 0 ]]; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
-      module_status ${i} -1 "" "${name}/${module} cannot run setBugDatabaseInfo from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${name}/${module} cannot run setBugDatabaseInfo from ${SPOTBUGS_MODE}"
       ((result=result+1))
       ((i=i+1))
       continue
     fi
 
     if [[ ! -f "${warnings_file}.xml" ]]; then
-      module_status ${i} 0 "" "${name}/${module} no data in SpotBugs/FindBugs output file (${targetfile})"
+      module_status "${i}" 0 "" "${name}/${module} no data in SpotBugs/FindBugs output file (${targetfile})"
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -233,7 +233,7 @@ function spotbugs_runner
       "${warnings_file}.html"; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
-      module_status ${i} -1 "" "${name}/${module} cannot run convertXmlToText from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${name}/${module} cannot run convertXmlToText from ${SPOTBUGS_MODE}"
       ((result=result+1))
     fi
 
@@ -250,7 +250,7 @@ function spotbugs_runner
     ((i=i+1))
   done
 
-  return ${result}
+  return "${result}"
 }
 
 ## @description  Track pre-existing spotbugs warnings
@@ -320,10 +320,10 @@ function spotbugs_preapply
     if [[ ${module_spotbugs_warnings} -gt 0 ]] ; then
       msg="${module} in ${PATCH_BRANCH} has ${module_spotbugs_warnings} extant ${SPOTBUGS_MODE} warnings."
       if [[ "${SPOTBUGS_WARNINGS_FAIL_PRECHECK}" = "true" ]]; then
-        module_status ${modindex} -1 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
+        module_status "${modindex}" -1 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
         ((result=result+1))
       elif [[ "${BUILDMODE}" = full ]]; then
-        module_status ${modindex} -1 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
+        module_status "${modindex}" -1 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
         ((result=result+1))
         populate_test_table "${SPOTBUGS_MODE}" "module:${module}"
         #shellcheck disable=SC2162
@@ -333,7 +333,7 @@ function spotbugs_preapply
           add_test_table "" "${firstpart}:${secondpart}"
         done < <("${SPOTBUGS_HOME}/bin/convertXmlToText" "${warnings_file}.xml")
       else
-        module_status ${modindex} 0 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
+        module_status "${modindex}" 0 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
       fi
     fi
 
@@ -426,7 +426,7 @@ function spotbugs_postinstall
     fixedbugsbase="${PATCH_DIR}/fixed-${SPOTBUGS_MODE}-${fn}"
 
     if [[ ! -f "${branchxml}" ]] && [[ ! -f "${patchxml}" ]]; then
-      module_status ${i} 0 "" "${module} has no data from ${SPOTBUGS_MODE}"
+      module_status "${i}" 0 "" "${module} has no data from ${SPOTBUGS_MODE}"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -441,7 +441,7 @@ function spotbugs_postinstall
             -output "${combined_xml}" \
             "${branchxml}" \
             "${patchxml}"; then
-      module_status ${i} -1 "" "${module} cannot run computeBugHistory from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run computeBugHistory from ${SPOTBUGS_MODE}"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -462,7 +462,7 @@ function spotbugs_postinstall
         "${combined_xml}" "${newbugsbase}.xml" | ${AWK} '{print $1}')
     retval=$?
     if [[ ${retval} != 0 ]]; then
-      module_status ${i} -1 "" "${module} cannot run filterBugs (#1) from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run filterBugs (#1) from ${SPOTBUGS_MODE}"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -476,7 +476,7 @@ function spotbugs_postinstall
         "${combined_xml}" "${fixedbugsbase}.xml" | ${AWK} '{print $1}')
     retval=$?
     if [[ ${retval} != 0 ]]; then
-      module_status ${i} -1 "" "${module} cannot run filterBugs (#2) from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run filterBugs (#2) from ${SPOTBUGS_MODE}"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -489,7 +489,7 @@ function spotbugs_postinstall
 
     if ! "${SPOTBUGS_HOME}/bin/convertXmlToText" -html "${newbugsbase}.xml" \
         "${newbugsbase}.html"; then
-      module_status ${i} -1 "" "${module} cannot run convertXmlToText from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run convertXmlToText from ${SPOTBUGS_MODE}"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -507,10 +507,10 @@ function spotbugs_postinstall
         add_test_table "" "${firstpart}:${secondpart}"
       done < <("${SPOTBUGS_HOME}/bin/convertXmlToText" "${newbugsbase}.xml")
 
-      module_status ${i} -1 "new-${SPOTBUGS_MODE}-${fn}.html" "${module} ${statstring}"
+      module_status "${i}" -1 "new-${SPOTBUGS_MODE}-${fn}.html" "${module} ${statstring}"
       ((result=result+1))
     elif [[ ${fixed_warnings} -gt 0 ]]; then
-      module_status ${i} +1 "" "${module} ${statstring}"
+      module_status "${i}" +1 "" "${module} ${statstring}"
       summarize=false
     fi
     savestop=$(stop_clock)

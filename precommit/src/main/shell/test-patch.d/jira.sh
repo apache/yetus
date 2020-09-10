@@ -309,7 +309,7 @@ function jira_determine_branch
     total=${#count}
     ((total = total + 3 ))
     until [[ ${total} -lt 3 ]]; do
-      PATCH_BRANCH=$(echo "${patchnamechunk}" | cut -f3-${total} -d.)
+      PATCH_BRANCH=$(echo "${patchnamechunk}" | cut "-f3-${total}" -d.)
       yetus_debug "Determine branch: ISSUE[.##].branch = ${PATCH_BRANCH}"
       ((total=total-1))
       if [[ -n "${PATCH_BRANCH}" ]]; then
@@ -325,7 +325,7 @@ function jira_determine_branch
     total=${#count}
     ((total = total + 3 ))
     until [[ ${total} -lt 2 ]]; do
-      PATCH_BRANCH=$(echo "${patchnamechunk}" | cut -f2-${total} -d.)
+      PATCH_BRANCH=$(echo "${patchnamechunk}" | cut "-f2-${total}" -d.)
       yetus_debug "Determine branch: ISSUE.branch[.##] = ${PATCH_BRANCH}"
       ((total=total-1))
       if [[ -n "${PATCH_BRANCH}" ]]; then
@@ -341,7 +341,7 @@ function jira_determine_branch
     total=${#count}
     ((total = total + 1 ))
     until [[ ${total} -lt 1 ]]; do
-      PATCH_BRANCH=$(echo "${patchnamechunk}" | cut -f3- -d- | cut -f1-${total} -d. )
+      PATCH_BRANCH=$(echo "${patchnamechunk}" | cut -f3- -d- | cut "-f1-${total}" -d. )
       yetus_debug "Determine branch: ISSUE-branch[.##] = ${PATCH_BRANCH}"
       ((total=total-1))
       if [[ -n "${PATCH_BRANCH}" ]]; then
