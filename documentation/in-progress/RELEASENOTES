@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 -->
-<h1 id="apache-yetus--0120-snapshot-release-notes">Apache Yetus  0.12.0-SNAPSHOT Release Notes</h1>
+<h1 id="apache-yetus--0130-snapshot-release-notes">Apache Yetus  0.13.0-SNAPSHOT Release Notes</h1>
 
 <p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
 
@@ -27,9 +27,9 @@
     <table class="table table-bordered table-striped">
       <tbody>
         <tr>
-          <td><a href="https://issues.apache.org/jira/browse/YETUS-915">YETUS-915</a></td>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-964">YETUS-964</a></td>
           <td><em>Critical</em></td>
-          <td><strong>Update GitHub vote emojis for usability by color blind folks</strong></td>
+          <td><strong>Replace prototool with buf</strong></td>
         </tr>
       </tbody>
     </table>
@@ -37,10 +37,7 @@
 </ul>
 
 <!-- markdown -->
-
-<p>When configured to use emoji for plugin votes when posting feedback to GitHub, Yetus now ensures that those emojis have different shapes to designate meaning instead of just color differences.</p>
-
-<p>This change should allow users who have color-blindness to differentiate between meanings while scanning the result column.</p>
+<p>Support for prototool has been removed and replaced with buf.</p>
 
 <hr />
 
@@ -49,77 +46,15 @@
     <table class="table table-bordered table-striped">
       <tbody>
         <tr>
-          <td><a href="https://issues.apache.org/jira/browse/YETUS-919">YETUS-919</a></td>
-          <td><em>Minor</em></td>
-          <td><strong>Support extra Docker build-args</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-</ul>
-
-<p>Adds a function {{add_docker_build_arg}} taking a key or key and value to export to the Docker build via {{–build-arg}}.</p>
-
-<hr />
-
-<ul>
-  <li>
-    <table class="table table-bordered table-striped">
-      <tbody>
-        <tr>
-          <td><a href="https://issues.apache.org/jira/browse/YETUS-936">YETUS-936</a></td>
-          <td><em>Blocker</em></td>
-          <td><strong>test-patch.sh does not do gradle</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-</ul>
-
-<p>Gradle support has been modified to support modern gradle layouts.  As such, this is an incompatible change for gradle.  Bootstrapping gradle is no longer supported; gradlew is expected to be there.  Patches that wish to upgrade gradle are now expected to just be a patch against the gradle components in the repo.</p>
-
-<p>* checkstyle should now work<br />
-* $HOME/.gradle is no longer imported into docker containers to prevent cache corruption<br />
-* a new &lt;plugin&gt;_postcleanup has been added. In the case of gradle, this now shuts down the gradle daemon<br />
-* two new core routines have been added (escape_html/unescape_html) to cover some basic HTML entity resolution. These are not exhaustive but cover the most common ones seen.  <br />
-* GRADLE_ARGS is now GRADLEW_ARGS to match the functionality change.</p>
-
-<hr />
-
-<ul>
-  <li>
-    <table class="table table-bordered table-striped">
-      <tbody>
-        <tr>
-          <td><a href="https://issues.apache.org/jira/browse/YETUS-943">YETUS-943</a></td>
-          <td><em>Minor</em></td>
-          <td><strong>Test patch fails to extract version information from a JDK11 jvm</strong></td>
-        </tr>
-      </tbody>
-    </table>
-  </li>
-</ul>
-
-<p>This patch alters `report_jvm_version` to extract JVM vendor and version information from Java system properties. It now returns a string that is the concatenation of verdor and runtime versions.</p>
-
-<hr />
-
-<ul>
-  <li>
-    <table class="table table-bordered table-striped">
-      <tbody>
-        <tr>
-          <td><a href="https://issues.apache.org/jira/browse/YETUS-955">YETUS-955</a></td>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-982">YETUS-982</a></td>
           <td><em>Major</em></td>
-          <td><strong>Update many of the binaries in Dockerfile</strong></td>
+          <td><strong>Upgrade to Ubuntu Focal and update all dependencies/built-ins</strong></td>
         </tr>
       </tbody>
     </table>
   </li>
 </ul>
 
-<p>&lt;!–markdown –&gt;<br />
-Many of the versions of tools in the bundled Dockerfile have been upgraded.  Note that the configuration for those binaries may or may not be backward compatible.</p>
-
-<p>Also, the default the 'pylint' binary in the bundled Dockerfile has been switched to pylint3 to reflect that cpython version 2 is no longer supported upstream.  Setting `–pylint=pylint2` on the test-patch command line will use the older version of pylint, similar to previous releases.</p>
+<!-- markdown -->
+<p>This change moves the default Apache Yetus docker image to a new version of Ubuntu as well as upgrades many, many bundled components to new releases.  Users utilizing the docker image should upgrade carefully!</p>
 
