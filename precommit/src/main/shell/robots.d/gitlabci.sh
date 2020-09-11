@@ -30,11 +30,11 @@ if [[ "${GITLAB_CI}" = true ]] &&
   BUILD_URL_CONSOLE="/"
   GITLAB_REPO=${CI_PROJECT_PATH}
   BUILD_URL_ARTIFACTS=/artifacts/file/yetus-out
-  PATCH_OR_ISSUE="GLSHA:${CI_BUILD_REF}"
-  USER_PARAMS+=("GLSHA:${CI_BUILD_REF}")
+  PATCH_OR_ISSUE="GLSHA:${CI_COMMIT_SHA}"
+  USER_PARAMS+=("GLSHA:${CI_COMMIT_SHA}")
 
   add_docker_env \
-    CI_BUILD_REF \
+    CI_COMMIT_SHA \
     CI_JOB_ID \
     CI_JOB_URL \
     CI_PROJECT_PATH \
