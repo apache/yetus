@@ -180,10 +180,10 @@ pipeline {
                 # run in docker mode and specifically point to our
                 # Dockerfile since we don't want to use the auto-pulled version.
                 if [[ "${USE_DOCKER_FLAG}" == true ]]; then
-                  docker pull ubuntu:xenial
+                  docker pull ubuntu:focal
                   YETUS_ARGS+=("--docker")
                   YETUS_ARGS+=("--dockerfile=${YETUS_DOCKERFILE}")
-                  YETUS_ARGS+=("--docker-cache-from=apache/yetus-base:master")
+                  YETUS_ARGS+=("--docker-cache-from=apache/yetus-base:main")
                 else
                   # need to figure this out programmatically; hard-coded for now
                   export JAVA_HOME=/home/jenkins/tools/java/latest1.8
@@ -224,7 +224,7 @@ pipeline {
                       reportFiles: 'report.html',
                       reportName: 'Yetus Report'
         ])
-        if ((env.BRANCH_NAME == 'master') && (env.BUILD_URL.contains('apache.org'))) {
+        if ((env.BRANCH_NAME == 'main') && (env.BUILD_URL.contains('apache.org'))) {
           emailext(subject: '$DEFAULT_SUBJECT',
                    body:
 '''For more details, see ${BUILD_URL}

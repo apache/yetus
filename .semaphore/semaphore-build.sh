@@ -26,4 +26,4 @@ PRECOMMITDIR=precommit/src/main/shell
   --docker \
   --pylint=pylint2 \
   --dockerfile="${PRECOMMITDIR}/test-patch-docker/Dockerfile" \
-  --docker-cache-from=apache/yetus-base:master,ubuntu:xenial
+  --docker-cache-from=apache/yetus-base:main,ubuntu:focal

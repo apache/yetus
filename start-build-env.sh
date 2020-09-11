@@ -30,11 +30,11 @@ fi
 
 echo "Attempting a few pulls of ${YETUS_DOCKER_REPO} and ${YETUS_DOCKER_REPO}-base to save time"
 echo "Errors here will be ignored!"
-docker pull "${YETUS_DOCKER_REPO}-base:${BRANCH}" || docker pull "${YETUS_DOCKER_REPO}-base:master" || true
-docker pull "${YETUS_DOCKER_REPO}:${BRANCH}"  || docker pull "${YETUS_DOCKER_REPO}:master" || true
+docker pull "${YETUS_DOCKER_REPO}-base:${BRANCH}" || docker pull "${YETUS_DOCKER_REPO}-base:main" || true
+docker pull "${YETUS_DOCKER_REPO}:${BRANCH}"  || docker pull "${YETUS_DOCKER_REPO}:main" || true
 
 docker build \
-  --cache-from="${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:master,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:master" \
+  --cache-from="${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:main,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:main" \
   -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
 
 USER_NAME=${SUDO_USER:=$USER}

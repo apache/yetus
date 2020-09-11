@@ -280,7 +280,7 @@ function jira_determine_branch
     # detection since that's almost certainly not
     # intended.  In other words, if ISSUE-99 is the
     # name of a branch, you want to test ISSUE-99
-    # against master, not ISSUE-99's branch
+    # against main, not ISSUE-99's branch
     if [[ ${hinttype} =~ ${JIRA_ISSUE_RE} ]]; then
       continue
     fi

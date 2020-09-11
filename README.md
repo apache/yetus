@@ -74,7 +74,7 @@ After executing one or more of the Apache Maven commands, artifacts will be in `
 
 ## Container Quickstart
 
-The project makes available two convenience container images on <https://hub.docker.com> for both tagged releases and for the master branch.  It is highly recommended that casual users use a tagged release so as to not be surprised by incompatible changes that are still rolling through the master branch.
+The project makes available two convenience container images on <https://hub.docker.com> for both tagged releases and for the main branch.  It is highly recommended that casual users use a tagged release so as to not be surprised by incompatible changes that are still rolling through the main branch.
 
 ### apache/yetus-base
 

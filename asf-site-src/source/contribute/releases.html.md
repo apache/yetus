@@ -118,24 +118,24 @@ Like the rest of our project activity, we'll use an issue in JIRA to track manag
 
 ### Work in Git
 
-Once you have an issue to track things, you can create the git branch for staging our release. This separate branch will allow you to polish the release while regular work continues on the master branch. You will need to update master for the next SNAPSHOT version and the branch for the release.
+Once you have an issue to track things, you can create the git branch for staging our release. This separate branch will allow you to polish the release while regular work continues on the main branch. You will need to update main for the next SNAPSHOT version and the branch for the release.
 
 Example commands, presuming the release under management is **0.7.0** and the JIRA issue is **YETUS-XXX**:
 
 ```bash
-$ # Ensure master is up to date
+$ # Ensure main is up to date
 $ mvn clean
 $ git fetch origin
 $ git status
-# On branch master
-# Your branch is behind 'origin/master' by 6 commits, and can be fast-forwarded.
+# On branch main
+# Your branch is behind 'origin/main' by 6 commits, and can be fast-forwarded.
 #
 nothing to commit (working directory clean)
-$ git rebase origin/master
+$ git rebase origin/main
 First, rewinding head to replay your work on top of it...
-Fast-forwarded master to origin/master.
+Fast-forwarded main to origin/main.
 $ git status
-# On branch master
+# On branch main
 nothing to commit (working directory clean)
 $ # create a branch and push without changes
 $ git checkout -b YETUS-XXX
@@ -162,13 +162,13 @@ At this point, you should edit the files mentioned above. They must have the ver
 $ perl -pi -e 's,0.7.0-SNAPSHOT,0.7.0,g' $(find . -type f)
 ```
 
-After you are done, create a branch-specific patch and then prepare to update the master branch.
+After you are done, create a branch-specific patch and then prepare to update the main branch.
 
 ```bash
 $ git add -p
 $ git commit -m "YETUS-XXX. Stage version 0.7.0."
 $ git format-patch --stdout origin/YETUS-XXX > path/to/patches/YETUS-XXX-YETUS-XXX.1.patch
-$ git checkout master
+$ git checkout main
 $ grep -rl "0.7.0-SNAPSHOT" * 2>/dev/null
 asf-site-src/pom.xml
 audience-annotations-component/audience-annotations/pom.xml
@@ -193,8 +193,8 @@ After you are done, create a patch.
 
 ```bash
 $ git add -p
-$ git commit -m "YETUS-XXX. bump master version to 0.8.0-SNAPSHOT"
-$ git format-patch --stdout origin/master > path/to/patches/YETUS-XXX.1.patch
+$ git commit -m "YETUS-XXX. bump main version to 0.8.0-SNAPSHOT"
+$ git format-patch --stdout origin/main > path/to/patches/YETUS-XXX.1.patch
 ```
 
 Both of these patch files should be uploaded to your release issue for review. Push them to the repository once the patches get approval.
@@ -396,20 +396,20 @@ If you've gone through all of the ASF required checks, you'll already have made 
        |      |                 |            | tags.
        |  +1  |     test4tests  |  0m 0s     | The patch appears to include 2 new or
        |      |                 |            | modified test files.
-       |  +1  |     mvninstall  |  4m 41s    | master passed
-       |  +1  |        compile  |  1m 4s     | master passed with JDK v1.8.0_72
-       |  +1  |        compile  |  0m 57s    | master passed with JDK v1.7.0_95
-       |  +1  |     checkstyle  |  0m 36s    | master passed
-       |  +1  |     mvneclipse  |  0m 35s    | master passed
-       |  -1  |       findbugs  |  1m 6s     | hbase-client in master has 19 extant
+       |  +1  |     mvninstall  |  4m 41s    | main passed
+       |  +1  |        compile  |  1m 4s     | main passed with JDK v1.8.0_72
+       |  +1  |        compile  |  0m 57s    | main passed with JDK v1.7.0_95
+       |  +1  |     checkstyle  |  0m 36s    | main passed
+       |  +1  |     mvneclipse  |  0m 35s    | main passed
+       |  -1  |       findbugs  |  1m 6s     | hbase-client in main has 19 extant
        |      |                 |            | Findbugs warnings.
-       |  -1  |       findbugs  |  2m 8s     | hbase-server in master has 84 extant
+       |  -1  |       findbugs  |  2m 8s     | hbase-server in main has 84 extant
        |      |                 |            | Findbugs warnings.
-       |  -1  |        javadoc  |  0m 23s    | hbase-client in master failed with JDK
+       |  -1  |        javadoc  |  0m 23s    | hbase-client in main failed with JDK
        |      |                 |            | v1.8.0_72.
-       |  -1  |        javadoc  |  0m 34s    | hbase-server in master failed with JDK
+       |  -1  |        javadoc  |  0m 34s    | hbase-server in main failed with JDK
        |      |                 |            | v1.8.0_72.
-       |  +1  |        javadoc  |  0m 57s    | master passed with JDK v1.7.0_95
+       |  +1  |        javadoc  |  0m 57s    | main passed with JDK v1.7.0_95
        |  +1  |     mvninstall  |  1m 3s     | the patch passed
        |  +1  |        compile  |  0m 59s    | the patch passed with JDK v1.8.0_72
        |  +1  |          javac  |  0m 59s    | the patch passed
@@ -453,7 +453,7 @@ If you've gone through all of the ASF required checks, you'll already have made 
        | uname | Linux 67e02eb9aeea 3.13.0-36-lowlatency #63-Ubuntu SMP PREEMPT Wed Sep 3 21:56:12 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux |
        | Build tool | maven |
        | Personality | /testptch/patchprocess/precommit/personality/hbase.sh |
-       | git revision | master / 81a6fff |
+       | git revision | main / 81a6fff |
        | findbugs | v2.0.1 |
        | findbugs | /testptch/patchprocess/branch-findbugs-hbase-client-warnings.html |
        | findbugs | /testptch/patchprocess/branch-findbugs-hbase-server-warnings.html |
@@ -568,7 +568,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
    $ brew upgrade --build-from-source Formula/yetus.rb
    ```
 
-1. Update the documentation in the git master branch for the new release.  Remove the oldest release and add the latest.
+1. Update the documentation in the git main branch for the new release.  Remove the oldest release and add the latest.
 
    ```bash
    $ cd asf-site-src

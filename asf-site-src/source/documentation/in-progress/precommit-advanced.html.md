@@ -155,7 +155,7 @@ Globals for personalities should be defined in the `personality_globals` functio
 ```bash
 function personality_globals
 {
-  PATCH_BRANCH_DEFAULT=master
+  PATCH_BRANCH_DEFAULT=main
   GITHUB_REPO="apache/yetus"
 }
 ```
@@ -273,7 +273,7 @@ There are a handful of extremely important system variables that make life easie
 
 * MODULE and other MODULE\_\* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.
 
-* PATCH\_BRANCH\_DEFAULT is the name of the branch in the git repo that is considered the master.  This is useful to set in personalities.
+* PATCH\_BRANCH\_DEFAULT is the name of the branch in the git repo that is considered the primary development branch (e.g., 'main').  This is useful to set in personalities.
 
 * PATCH\_DIR is the name of the temporary directory that houses test-patch artifacts (such as logs and the patch file itself)
 

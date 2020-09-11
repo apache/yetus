@@ -98,7 +98,7 @@ jobs:
 
 See also:
 
-* Apache Yetus' source tree [.circleci/config.yaml](https://github.com/apache/yetus/blob/master/.circleci/config.yml) for some tips and tricks.
+* Apache Yetus' source tree [.circleci/config.yaml](https://github.com/apache/yetus/blob/main/.circleci/config.yml) for some tips and tricks.
 
 # Cirrus CI
 
@@ -131,7 +131,7 @@ yetus_task:
 
 See also:
 
-* Apache Yetus' source tree [.cirrus.yml](https://github.com/apache/yetus/blob/master/.cirrus.yml) for some tips and tricks.
+* Apache Yetus' source tree [.cirrus.yml](https://github.com/apache/yetus/blob/main/.cirrus.yml) for some tips and tricks.
 
 # GitHub Actions
 
@@ -143,7 +143,7 @@ GitHub Actions support has only been tested on the ubuntu-latest image. It autom
 
 See also:
 
-* Apache Yetus' source tree [yetus.yaml](https://github.com/apache/yetus/blob/master/.github/workflows/yetus.yml) for some tips and tricks.
+* Apache Yetus' source tree [yetus.yaml](https://github.com/apache/yetus/blob/main/.github/workflows/yetus.yml) for some tips and tricks.
 
 # Gitlab CI
 
@@ -175,7 +175,7 @@ job:
 
 See also:
 
-* Apache Yetus' source tree [.gitlab-ci.yml](https://github.com/apache/yetus/blob/master/.gitlab-ci.yml) for some tips and tricks.
+* Apache Yetus' source tree [.gitlab-ci.yml](https://github.com/apache/yetus/blob/main/.gitlab-ci.yml) for some tips and tricks.
 
 # Jenkins
 
@@ -208,7 +208,7 @@ pipeline {
 
 ```
 
-Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  `test-patch` will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  `pidfile.txt` contains the master `test-patch` process id and `cidfile.txt` contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:
+Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  `test-patch` will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  `pidfile.txt` contains the main `test-patch` process id and `cidfile.txt` contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:
 
  ```groovy
     post {
@@ -233,7 +233,7 @@ Experience has shown that certain Jenkins + Java + OS combinations have problems
 
 See also:
 
-* Apache Yetus' source tree [Jenkinsfile](https://github.com/apache/yetus/blob/master/Jenkinsfile) for some tips and tricks.
+* Apache Yetus' source tree [Jenkinsfile](https://github.com/apache/yetus/blob/main/Jenkinsfile) for some tips and tricks.
 * [precommit-admin](precommit-admin), for special utilities built for Jenkins.
 * [GitHub Branch Source Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin)
 * [GitHub Pull Request Builder Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin)
@@ -251,8 +251,8 @@ The GitHub repo and the Pull Request in use are automatically detected.  However
 
 See also:
 
-* Apache Yetus' source tree [semaphore.yml](https://github.com/apache/yetus/blob/master/.semaphore/semaphore.yml) for some tips and tricks.
-* Apache Yetus' helper script [semaphore-build.sh](https://github.com/apache/yetus/blob/master/.semaphore/semaphore-build.sh)
+* Apache Yetus' source tree [semaphore.yml](https://github.com/apache/yetus/blob/main/.semaphore/semaphore.yml) for some tips and tricks.
+* Apache Yetus' helper script [semaphore-build.sh](https://github.com/apache/yetus/blob/main/.semaphore/semaphore-build.sh)
 
 # Travis CI
 
@@ -268,7 +268,7 @@ As of this writing, it is not possible to make the Travis CI build environment u
 
 See also:
 
-* Apache Yetus' source tree [.travis.yml](https://github.com/apache/yetus/blob/master/.travis.yml) for some tips and tricks.
+* Apache Yetus' source tree [.travis.yml](https://github.com/apache/yetus/blob/main/.travis.yml) for some tips and tricks.
 
 # Manual Configuration
 

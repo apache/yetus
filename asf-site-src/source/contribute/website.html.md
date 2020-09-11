@@ -102,8 +102,8 @@ $ git clone --single-branch --branch asf-site https://github.com/apache/yetus.gi
 $ # Now build in the normal yetus check out
 $ cd yetus
 $ git fetch origin
-$ git checkout master
-$ git reset --hard origin/master
+$ git checkout main
+$ git reset --hard origin/main
 $ git clean -xdf
 $ mvn --batch-mode install
 $ mvn --batch-mode site site:stage
@@ -113,11 +113,11 @@ $ # check the set of differences
 $ git add -p
 $ # Verify any new files are also added
 $ git status
-$ # Try to reference the commit hash on master that this publication assures we include
+$ # Try to reference the commit hash on main that this publication assures we include
 $ git commit -m "git hash 6c6f6f6b696e6720746f6f20686172642c20796f"
 $ # Finally publish
 $ git push origin asf-site
 ```
 
-Publishing the website should be possible from the HEAD of the master branch under most circumstances. (See the [Guide for Release Managing](releases) for a notable time period where this won't be true.)
-Documentation changes will be reviewed as they make their way into the master branch; updates to the `asf-site` branch are handled without further review.
+Publishing the website should be possible from the HEAD of the main branch under most circumstances. (See the [Guide for Release Managing](releases) for a notable time period where this won't be true.)
+Documentation changes will be reviewed as they make their way into the main branch; updates to the `asf-site` branch are handled without further review.

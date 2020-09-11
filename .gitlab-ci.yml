@@ -16,7 +16,7 @@
 ---
 
 buretoolbox-job:
-  image: apache/yetus:master
+  image: apache/yetus:main
   allow_failure: true
   script:
     - >

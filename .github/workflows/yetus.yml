@@ -47,7 +47,7 @@ jobs:
           --archive-list="checkstyle-errors.xml,spotbugsXml.xml"
           --plugins=all
           --tests-filter=checkstyle,javadoc,rubocop,test4tests
-          --docker-cache-from=apache/yetus-base:master
+          --docker-cache-from=apache/yetus-base:main
       - name: Artifact output
         if: ${{ always() }}
         uses: actions/upload-artifact@v2

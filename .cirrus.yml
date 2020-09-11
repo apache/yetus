@@ -17,7 +17,7 @@
 
 yetus_task:
   container:
-    image: apache/yetus:master
+    image: apache/yetus:main
   test_script: >
              ${CIRRUS_WORKING_DIR}/precommit/src/main/shell/test-patch.sh
              --plugins=all

@@ -33,7 +33,7 @@ script:
     --java-home=/usr/lib/jvm/java-8-openjdk-amd64
     --plugins=all
     --pylint=pylint2
-    --docker-cache-from=apache/yetus:master
+    --docker-cache-from=apache/yetus:main
     --html-report-file=/tmp/yetus-out/report.html
     --console-report-file=/tmp/yetus-out/console.txt
     --brief-report-file=/tmp/yetus-out/brief.txt
