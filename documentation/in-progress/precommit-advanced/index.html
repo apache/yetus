@@ -304,7 +304,7 @@
 
 <div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_globals
 <span class="o">{</span>
-  <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>master
+  <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>main
   <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
 <span class="o">}</span>
 </code></pre></div>
@@ -421,7 +421,7 @@ function is called almost immediately after the personality is loaded and plug-i
     <p>MODULE and other MODULE_* are arrays that contain which modules, the status, etc, to be operated upon. These should be treated as read-only by plug-ins.</p>
   </li>
   <li>
-    <p>PATCH_BRANCH_DEFAULT is the name of the branch in the git repo that is considered the master.  This is useful to set in personalities.</p>
+    <p>PATCH_BRANCH_DEFAULT is the name of the branch in the git repo that is considered the primary development branch (e.g., 'main').  This is useful to set in personalities.</p>
   </li>
   <li>
     <p>PATCH_DIR is the name of the temporary directory that houses test-patch artifacts (such as logs and the patch file itself)</p>

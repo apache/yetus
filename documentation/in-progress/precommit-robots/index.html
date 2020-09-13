@@ -203,7 +203,7 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.circleci/config.yml">.circleci/config.yaml</a> for some tips and tricks.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.circleci/config.yml">.circleci/config.yaml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="cirrus-ci">Cirrus CI</h1>
@@ -234,7 +234,7 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.cirrus.yml">.cirrus.yml</a> for some tips and tricks.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.cirrus.yml">.cirrus.yml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="github-actions">GitHub Actions</h1>
@@ -248,7 +248,7 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.github/workflows/yetus.yml">yetus.yaml</a> for some tips and tricks.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.github/workflows/yetus.yml">yetus.yaml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="gitlab-ci">Gitlab CI</h1>
@@ -278,7 +278,7 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.gitlab-ci.yml">.gitlab-ci.yml</a> for some tips and tricks.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.gitlab-ci.yml">.gitlab-ci.yml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="jenkins">Jenkins</h1>
@@ -312,7 +312,7 @@
 <span class="o">}</span>
 
 </code></pre></div>
-<p>Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  <code>test-patch</code> will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  <code>pidfile.txt</code> contains the master <code>test-patch</code> process id and <code>cidfile.txt</code> contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:</p>
+<p>Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  <code>test-patch</code> will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  <code>pidfile.txt</code> contains the main <code>test-patch</code> process id and <code>cidfile.txt</code> contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:</p>
 
 <div class="highlight"><pre class="highlight groovy"><code>    <span class="n">post</span> <span class="o">{</span>
       <span class="n">cleanup</span><span class="o">()</span> <span class="o">{</span>
@@ -336,7 +336,7 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/Jenkinsfile">Jenkinsfile</a> for some tips and tricks.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/Jenkinsfile">Jenkinsfile</a> for some tips and tricks.</li>
   <li><a href="precommit-admin">precommit-admin</a>, for special utilities built for Jenkins.</li>
   <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin">GitHub Branch Source Plugin</a></li>
   <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin">GitHub Pull Request Builder Plugin</a></li>
@@ -356,8 +356,8 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.semaphore/semaphore.yml">semaphore.yml</a> for some tips and tricks.</li>
-  <li>Apache Yetus' helper script <a href="https://github.com/apache/yetus/blob/master/.semaphore/semaphore-build.sh">semaphore-build.sh</a></li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.semaphore/semaphore.yml">semaphore.yml</a> for some tips and tricks.</li>
+  <li>Apache Yetus' helper script <a href="https://github.com/apache/yetus/blob/main/.semaphore/semaphore-build.sh">semaphore-build.sh</a></li>
 </ul>
 
 <h1 id="travis-ci">Travis CI</h1>
@@ -375,7 +375,7 @@
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/master/.travis.yml">.travis.yml</a> for some tips and tricks.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.travis.yml">.travis.yml</a> for some tips and tricks.</li>
 </ul>
 
 <h1 id="manual-configuration">Manual Configuration</h1>

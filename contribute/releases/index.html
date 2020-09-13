@@ -235,23 +235,23 @@ For example, on the 0.7.0 release, you would use <code>https://issues.apache.org
 
 <h3 id="work-in-git">Work in Git</h3>
 
-<p>Once you have an issue to track things, you can create the git branch for staging our release. This separate branch will allow you to polish the release while regular work continues on the master branch. You will need to update master for the next SNAPSHOT version and the branch for the release.</p>
+<p>Once you have an issue to track things, you can create the git branch for staging our release. This separate branch will allow you to polish the release while regular work continues on the main branch. You will need to update main for the next SNAPSHOT version and the branch for the release.</p>
 
 <p>Example commands, presuming the release under management is <strong>0.7.0</strong> and the JIRA issue is <strong>YETUS-XXX</strong>:</p>
 
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="c"># Ensure master is up to date</span>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="c"># Ensure main is up to date</span>
 <span class="nv">$ </span>mvn clean
 <span class="nv">$ </span>git fetch origin
 <span class="nv">$ </span>git status
-<span class="c"># On branch master</span>
-<span class="c"># Your branch is behind 'origin/master' by 6 commits, and can be fast-forwarded.</span>
+<span class="c"># On branch main</span>
+<span class="c"># Your branch is behind 'origin/main' by 6 commits, and can be fast-forwarded.</span>
 <span class="c">#</span>
 nothing to commit <span class="o">(</span>working directory clean<span class="o">)</span>
-<span class="nv">$ </span>git rebase origin/master
+<span class="nv">$ </span>git rebase origin/main
 First, rewinding <span class="nb">head </span>to replay your work on top of it...
-Fast-forwarded master to origin/master.
+Fast-forwarded main to origin/main.
 <span class="nv">$ </span>git status
-<span class="c"># On branch master</span>
+<span class="c"># On branch main</span>
 nothing to commit <span class="o">(</span>working directory clean<span class="o">)</span>
 <span class="nv">$ </span><span class="c"># create a branch and push without changes</span>
 <span class="nv">$ </span>git checkout <span class="nt">-b</span> YETUS-XXX
@@ -275,12 +275,12 @@ yetus-minimaven-plugin/pom.xml
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>perl <span class="nt">-pi</span> <span class="nt">-e</span> <span class="s1">'s,0.7.0-SNAPSHOT,0.7.0,g'</span> <span class="si">$(</span>find <span class="nb">.</span> <span class="nt">-type</span> f<span class="si">)</span>
 </code></pre></div>
-<p>After you are done, create a branch-specific patch and then prepare to update the master branch.</p>
+<p>After you are done, create a branch-specific patch and then prepare to update the main branch.</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>git add <span class="nt">-p</span>
 <span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"YETUS-XXX. Stage version 0.7.0."</span>
 <span class="nv">$ </span>git format-patch <span class="nt">--stdout</span> origin/YETUS-XXX <span class="o">&gt;</span> path/to/patches/YETUS-XXX-YETUS-XXX.1.patch
-<span class="nv">$ </span>git checkout master
+<span class="nv">$ </span>git checkout main
 <span class="nv">$ </span><span class="nb">grep</span> <span class="nt">-rl</span> <span class="s2">"0.7.0-SNAPSHOT"</span> <span class="k">*</span> 2&gt;/dev/null
 asf-site-src/pom.xml
 audience-annotations-component/audience-annotations/pom.xml
@@ -301,8 +301,8 @@ yetus-minimaven-plugin/pom.xml
 <p>After you are done, create a patch.</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>git add <span class="nt">-p</span>
-<span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"YETUS-XXX. bump master version to 0.8.0-SNAPSHOT"</span>
-<span class="nv">$ </span>git format-patch <span class="nt">--stdout</span> origin/master <span class="o">&gt;</span> path/to/patches/YETUS-XXX.1.patch
+<span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"YETUS-XXX. bump main version to 0.8.0-SNAPSHOT"</span>
+<span class="nv">$ </span>git format-patch <span class="nt">--stdout</span> origin/main <span class="o">&gt;</span> path/to/patches/YETUS-XXX.1.patch
 </code></pre></div>
 <p>Both of these patch files should be uploaded to your release issue for review. Push them to the repository once the patches get approval.</p>
 
@@ -502,20 +502,20 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
     |      |                 |            | tags.
     |  +1  |     test4tests  |  0m 0s     | The patch appears to include 2 new or
     |      |                 |            | modified <span class="nb">test </span>files.
-    |  +1  |     mvninstall  |  4m 41s    | master passed
-    |  +1  |        compile  |  1m 4s     | master passed with JDK v1.8.0_72
-    |  +1  |        compile  |  0m 57s    | master passed with JDK v1.7.0_95
-    |  +1  |     checkstyle  |  0m 36s    | master passed
-    |  +1  |     mvneclipse  |  0m 35s    | master passed
-    |  <span class="nt">-1</span>  |       findbugs  |  1m 6s     | hbase-client <span class="k">in </span>master has 19 extant
+    |  +1  |     mvninstall  |  4m 41s    | main passed
+    |  +1  |        compile  |  1m 4s     | main passed with JDK v1.8.0_72
+    |  +1  |        compile  |  0m 57s    | main passed with JDK v1.7.0_95
+    |  +1  |     checkstyle  |  0m 36s    | main passed
+    |  +1  |     mvneclipse  |  0m 35s    | main passed
+    |  <span class="nt">-1</span>  |       findbugs  |  1m 6s     | hbase-client <span class="k">in </span>main has 19 extant
     |      |                 |            | Findbugs warnings.
-    |  <span class="nt">-1</span>  |       findbugs  |  2m 8s     | hbase-server <span class="k">in </span>master has 84 extant
+    |  <span class="nt">-1</span>  |       findbugs  |  2m 8s     | hbase-server <span class="k">in </span>main has 84 extant
     |      |                 |            | Findbugs warnings.
-    |  <span class="nt">-1</span>  |        javadoc  |  0m 23s    | hbase-client <span class="k">in </span>master failed with JDK
+    |  <span class="nt">-1</span>  |        javadoc  |  0m 23s    | hbase-client <span class="k">in </span>main failed with JDK
     |      |                 |            | v1.8.0_72.
-    |  <span class="nt">-1</span>  |        javadoc  |  0m 34s    | hbase-server <span class="k">in </span>master failed with JDK
+    |  <span class="nt">-1</span>  |        javadoc  |  0m 34s    | hbase-server <span class="k">in </span>main failed with JDK
     |      |                 |            | v1.8.0_72.
-    |  +1  |        javadoc  |  0m 57s    | master passed with JDK v1.7.0_95
+    |  +1  |        javadoc  |  0m 57s    | main passed with JDK v1.7.0_95
     |  +1  |     mvninstall  |  1m 3s     | the patch passed
     |  +1  |        compile  |  0m 59s    | the patch passed with JDK v1.8.0_72
     |  +1  |          javac  |  0m 59s    | the patch passed
@@ -559,7 +559,7 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
     | <span class="nb">uname</span> | Linux 67e02eb9aeea 3.13.0-36-lowlatency <span class="c">#63-Ubuntu SMP PREEMPT Wed Sep 3 21:56:12 UTC 2014 x86_64 x86_64 x86_64 GNU/Linux |</span>
     | Build tool | maven |
     | Personality | /testptch/patchprocess/precommit/personality/hbase.sh |
-    | git revision | master / 81a6fff |
+    | git revision | main / 81a6fff |
     | findbugs | v2.0.1 |
     | findbugs | /testptch/patchprocess/branch-findbugs-hbase-client-warnings.html |
     | findbugs | /testptch/patchprocess/branch-findbugs-hbase-server-warnings.html |
@@ -678,7 +678,7 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
 <span class="nv">$ </span>brew upgrade <span class="nt">--build-from-source</span> Formula/yetus.rb
 </code></pre></div>  </li>
   <li>
-    <p>Update the documentation in the git master branch for the new release.  Remove the oldest release and add the latest.</p>
+    <p>Update the documentation in the git main branch for the new release.  Remove the oldest release and add the latest.</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd </span>asf-site-src
 <span class="nv">$ </span><span class="c"># Add the release to the releases data file</span>

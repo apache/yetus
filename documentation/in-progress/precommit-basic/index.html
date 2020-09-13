@@ -280,7 +280,7 @@ as a whole.</p>
 <p>A typical local configuration is to have two repositories.  One with the code you are working on and another, clean repository.  The workflow looks similar to the following:</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd</span> &lt;workrepo&gt;
-<span class="nv">$ </span>git format-patch master <span class="o">&gt;</span> /tmp/patchfile
+<span class="nv">$ </span>git format-patch main <span class="o">&gt;</span> /tmp/patchfile
 <span class="nv">$ </span>test-patch <span class="nt">--basedir</span><span class="o">=</span>/some/path/testrepo /tmp/patchfile
 </code></pre></div>
 <ol>
@@ -295,7 +295,7 @@ as a whole.</p>
 <p>After running that command, the test repository will contain the remnants of the build for later debugging.  It is inconvenient to instead use:</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">cd</span> &lt;workrepo&gt;
-<span class="nv">$ </span>git format-patch master <span class="o">&gt;</span> /tmp/patchfile
+<span class="nv">$ </span>git format-patch main <span class="o">&gt;</span> /tmp/patchfile
 <span class="nv">$ </span>test-patch <span class="nt">--basedir</span><span class="o">=</span>/some/path/testrepo <span class="nt">--resetrepo</span> /tmp/patchfile
 </code></pre></div>
 <p><code>--resetrepo</code> tells test patch that it can go into <strong>destructive</strong> mode.  Destructive mode will wipe out any changes made to that repository, so use it with care!</p>

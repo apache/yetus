@@ -195,8 +195,8 @@ bundle <span class="nb">exec </span>middleman
 <span class="nv">$ </span><span class="c"># Now build in the normal yetus check out</span>
 <span class="nv">$ </span><span class="nb">cd </span>yetus
 <span class="nv">$ </span>git fetch origin
-<span class="nv">$ </span>git checkout master
-<span class="nv">$ </span>git reset <span class="nt">--hard</span> origin/master
+<span class="nv">$ </span>git checkout main
+<span class="nv">$ </span>git reset <span class="nt">--hard</span> origin/main
 <span class="nv">$ </span>git clean <span class="nt">-xdf</span>
 <span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> <span class="nb">install</span>
 <span class="nv">$ </span>mvn <span class="nt">--batch-mode</span> site site:stage
@@ -206,13 +206,13 @@ bundle <span class="nb">exec </span>middleman
 <span class="nv">$ </span>git add <span class="nt">-p</span>
 <span class="nv">$ </span><span class="c"># Verify any new files are also added</span>
 <span class="nv">$ </span>git status
-<span class="nv">$ </span><span class="c"># Try to reference the commit hash on master that this publication assures we include</span>
+<span class="nv">$ </span><span class="c"># Try to reference the commit hash on main that this publication assures we include</span>
 <span class="nv">$ </span>git commit <span class="nt">-m</span> <span class="s2">"git hash 6c6f6f6b696e6720746f6f20686172642c20796f"</span>
 <span class="nv">$ </span><span class="c"># Finally publish</span>
 <span class="nv">$ </span>git push origin asf-site
 </code></pre></div>
-<p>Publishing the website should be possible from the HEAD of the master branch under most circumstances. (See the <a href="releases">Guide for Release Managing</a> for a notable time period where this won't be true.)<br />
-Documentation changes will be reviewed as they make their way into the master branch; updates to the <code>asf-site</code> branch are handled without further review.</p>
+<p>Publishing the website should be possible from the HEAD of the main branch under most circumstances. (See the <a href="releases">Guide for Release Managing</a> for a notable time period where this won't be true.)<br />
+Documentation changes will be reviewed as they make their way into the main branch; updates to the <code>asf-site</code> branch are handled without further review.</p>
 
     </div>
       
