@@ -127,6 +127,7 @@ Some build tools (e.g., maven) use custom output for certain types of compilatio
 ## pluginname\_docker\_support
 
 To affect the various `docker` command lines, one can use helper functions:
+
 * Affecting `docker build` command line:
   * [`add_docker_build_arg`](../precommit-apidocs/core/#add_docker_build_arg)
 * Affecting `docker run` command line:
