@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG DOCKER_TAG=master
+ARG DOCKER_TAG=main
 ARG DOCKER_REPO=apache/yetus
 FROM ${DOCKER_REPO}-build:${DOCKER_TAG}
 

@@ -24,7 +24,7 @@ function personality_globals
   # shellcheck disable=SC2034
   BUILDTOOL=maven
   #shellcheck disable=SC2034
-  PATCH_BRANCH_DEFAULT=master
+  PATCH_BRANCH_DEFAULT=main
   #shellcheck disable=SC2034
   JIRA_ISSUE_RE='^YETUS-[0-9]+$'
   #shellcheck disable=SC2034

@@ -143,7 +143,7 @@ A typical local configuration is to have two repositories.  One with the code yo
 
 ```bash
 $ cd <workrepo>
-$ git format-patch master > /tmp/patchfile
+$ git format-patch main > /tmp/patchfile
 $ test-patch --basedir=/some/path/testrepo /tmp/patchfile
 ```
 
@@ -158,7 +158,7 @@ After running that command, the test repository will contain the remnants of the
 
 ```bash
 $ cd <workrepo>
-$ git format-patch master > /tmp/patchfile
+$ git format-patch main > /tmp/patchfile
 $ test-patch --basedir=/some/path/testrepo --resetrepo /tmp/patchfile
 ```
 

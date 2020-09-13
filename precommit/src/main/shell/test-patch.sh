@@ -682,7 +682,7 @@ function yetus_usage
   yetus_add_option "--archive-list=<list>" "Comma delimited list of pattern matching notations to copy to patch-dir"
   yetus_add_option "--basedir=<dir>" "The directory to apply the patch to (default: current directory)"
   yetus_add_option "--branch=<ref>" "Forcibly set the branch"
-  yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'master')"
+  yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'main')"
   yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
   # shellcheck disable=SC2153
   yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (default: autodetect from '${buildtools}')"

@@ -38,7 +38,7 @@ While not official releases, the Apache Yetus project makes available two types 
 
 Both images should be suitable to be used as a building block or even directly if your build environment needs no other dependencies.  These images are especially useful for various CI systems that require a Docker image to be used.
 
-Images are tagged such that 'master' represents the last successful Docker image build of the master branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no 'latest' tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.
+Images are tagged such that 'main' represents the last successful Docker image build of the main branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no 'latest' tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.
 
 # File Access
 
