@@ -37,4 +37,6 @@ gem 'tzinfo-data', platforms: [:mswin, :mingw, :jruby]
 
 gem 'therubyracer'
 
+gem 'kramdown-parser-gfm'
+
 # rubocop:enable Style/HashSyntax, Style/SymbolArray
