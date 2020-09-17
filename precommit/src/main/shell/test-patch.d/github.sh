@@ -594,6 +594,177 @@ function github_write_comment
   return ${retval}
 }
 
+# @description  Print out the finished details to the Github PR
+# @audience     private
+# @stability    evolving
+# @replaceable  no
+# @param        runresult
+# function github_finalreport
+# {
+#   declare result=$1
+#   declare i
+#   declare commentfile=${PATCH_DIR}/gitcommentfile.$$
+#   declare comment
+#   declare url
+#   declare ela
+#   declare subs
+#   declare logfile
+#   declare calctime
+#   declare vote
+#   declare emoji
+
+#   rm "${commentfile}" 2>/dev/null
+
+#   if [[ ${ROBOT} = "false"
+#      || -z ${GITHUB_ISSUE} ]] ; then
+#     return 0
+#   fi
+
+#   url=$(get_artifact_url)
+
+#   big_console_header "Adding comment to Github"
+
+#   if [[ ${result} == 0 ]]; then
+#     echo ":confetti_ball: **+1 overall**" >> "${commentfile}"
+#   else
+#     echo ":broken_heart: **-1 overall**" >> "${commentfile}"
+#   fi
+#   printf '\n\n\n\n' >>  "${commentfile}"
+
+#   i=0
+#   until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
+#     printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
+#     ((i=i+1))
+#   done
+
+#   {
+#     printf '\n\n'
+#     echo "| Vote | Subsystem | Runtime |  Logfile | Comment |"
+#     echo "|:----:|----------:|--------:|:--------:|:-------:|"
+#   } >> "${commentfile}"
+
+#   i=0
+#   until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
+#     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+#     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
+#     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+#     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+#     calctime=$(clock_display "${ela}")
+#     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+#     comment=$(echo "${ourstring}"  | cut -f6 -d\|)
+
+#     if [[ "${vote}" = "H" ]]; then
+#       echo "|||| _${comment}_ |" >> "${commentfile}"
+#       ((i=i+1))
+#       continue
+#     fi
+
+#     if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
+#       emoji=""
+#       case ${vote} in
+#         1|"+1")
+#           emoji="+1 :green_heart:"
+#         ;;
+#         -1)
+#           emoji="-1 :x:"
+#         ;;
+#         0)
+#           emoji="+0 :ok:"
+#         ;;
+#         -0)
+#           emoji="-0 :warning:"
+#         ;;
+#         H)
+#           # this never gets called (see above) but this is here so others know the color is taken
+#           emoji=""
+#         ;;
+#         *)
+#           # usually this should not happen but let's keep the old vote result if it happens
+#           emoji=${vote}
+#         ;;
+#       esac
+#     else
+#       emoji="${vote}"
+#     fi
+
+#     if [[ -n "${logfile}" ]]; then
+#       t1=${logfile/@@BASE@@/}
+#       t2=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+#       t2="[${t1}](${t2})"
+#     else
+#       t2=""
+#     fi
+
+#     printf '| %s | %s | %s | %s | %s |\n' \
+#       "${emoji}" \
+#       "${subs}" \
+#       "${calctime}" \
+#       "${t2}" \
+#       "${comment}" \
+#       >> "${commentfile}"
+
+#     ((i=i+1))
+#   done
+
+#   if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
+#     {
+#       printf '\n\n'
+#       echo "| Reason | Tests |"
+#       echo "|-------:|:------|"
+#     } >> "${commentfile}"
+#     i=0
+#     until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
+#       echo "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
+#       ((i=i+1))
+#     done
+#   fi
+
+#   {
+#     printf '\n\n'
+#     echo "| Subsystem | Report/Notes |"
+#     echo "|----------:|:-------------|"
+#   } >> "${commentfile}"
+
+#   i=0
+#   until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
+#     comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
+#     printf '%s\n' "${comment}" >> "${commentfile}"
+#     ((i=i+1))
+#   done
+#   printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
+
+#   github_write_comment "${commentfile}"
+# }
+
+## @description  Write a github status
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+function github_status_write()
+{
+  declare filename=$1
+  declare -a githubauth
+
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
+     && -n "${GITHUB_PASSWD}" ]]; then
+    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
+  else
+    echo "githubstatus-report: no credentials provided to write statuses."
+    return 0
+  fi
+
+  "${CURL}" --silent --fail -X POST \
+    -H "Accept: application/vnd.github.v3.full+json" \
+    -H "Content-Type: application/json" \
+    "${githubauth[@]}" \
+    -d @"${filename}" \
+    --location \
+    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GITHUB_SHA}"
+}
+
 ## @description  Print out the finished details to the Github PR
 ## @audience     private
 ## @stability    evolving
@@ -602,136 +773,148 @@ function github_write_comment
 function github_finalreport
 {
   declare result=$1
-  declare i
-  declare commentfile=${PATCH_DIR}/gitcommentfile.$$
+  declare tempfile="${PATCH_DIR}/ghstatus.$$.${RANDOM}"
+  declare warnings=false
+  declare foundlogs=false
+  declare url
+  declare logurl
   declare comment
   declare url
-  declare ela
   declare subs
   declare logfile
-  declare calctime
   declare vote
-  declare emoji
+  declare ourstring
+  declare -a githubauth
+  declare -i i=0
+  declare header
 
-  rm "${commentfile}" 2>/dev/null
+  big_console_header "Adding GitHub Statuses"
 
-  if [[ ${ROBOT} = "false"
-     || -z ${GITHUB_ISSUE} ]] ; then
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
+     && -n "${GITHUB_PASSWD}" ]]; then
+    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
+  else
+    echo "githubstatus-report: no credentials provided to write statuses."
+    return 0
+  fi
+
+  if [[ -z "${GITHUB_SHA}" ]]; then
+    echo "Unknown GITHUB_SHA defined. Skipping."
     return 0
   fi
 
   url=$(get_artifact_url)
 
-  big_console_header "Adding comment to Github"
-
-  if [[ ${result} == 0 ]]; then
-    echo ":confetti_ball: **+1 overall**" >> "${commentfile}"
+  if [[ "${ROBOTTYPE}" ]]; then
+    header="Apache Yetus(${ROBOTTYPE})"
   else
-    echo ":broken_heart: **-1 overall**" >> "${commentfile}"
+    header="Apache Yetus"
   fi
-  printf '\n\n\n\n' >>  "${commentfile}"
+
+  # Customize the message based upon type of passing:
+  # - if there were no warnings, then just put a single message
+  # - if there were warningss, but no logs, then just mention warnings
+  # - if there were warnings and logs, handle in the next section
+  if [[ "${result}" == 0 ]]; then
+    i=0
+    until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
+      ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+      vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
+
+      if [[ "${vote}" == "-0" ]]; then
+        warnings=true
+        logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+
+        if [[ -n "${logfile}" ]]; then
+          foundlogs=true
+          break
+        fi
+      fi
+      ((i=i+1))
+    done
+
+    # did not find any logs, so just give a simple success status
+    if [[ ${foundlogs} == false ]]; then
+      if [[ ${warnings} == false ]]; then
+        # build our REST post
+        {
+          echo "{\"state\": \"success\", "
+          echo "\"target_url\": \"${BUILD_URL}${BUILD_URL_CONSOLE}\","
+          echo "\"description\": \"passed\","
+          echo "\"context\":\"${header}\"}"
+        } > "${tempfile}"
+      elif [[ ${warnings} == true ]]; then
+        # build our REST post
+        {
+          echo "{\"state\": \"success\", "
+          echo "\"target_url\": \"${BUILD_URL}${BUILD_URL_CONSOLE}\","
+          echo "\"description\": \"passed with warnings\","
+          echo "\"context\":\"${header}\"}"
+        } > "${tempfile}"
+      fi
+      github_status_write "${tempfile}"
+      rm "${tempfile}"
+      return 0
+    fi
+  fi
+
+  # from here on, success w/logs or failure.
+  # give a separate status for each:
+  # - failure
+  # - failure w/log
+  # - successs w/warning log
 
   i=0
-  until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
-    printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
-    ((i=i+1))
-  done
-
-  {
-    printf '\n\n'
-    echo "| Vote | Subsystem | Runtime |  Logfile | Comment |"
-    echo "|:----:|----------:|--------:|:--------:|:-------:|"
-  } >> "${commentfile}"
-
-  i=0
-  until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
-    ela=$(echo "${ourstring}" | cut -f4 -d\|)
-    calctime=$(clock_display "${ela}")
     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
     comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
     if [[ "${vote}" = "H" ]]; then
-      echo "|||| _${comment}_ |" >> "${commentfile}"
       ((i=i+1))
       continue
     fi
 
-    if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
-      emoji=""
-      case ${vote} in
-        1|"+1")
-          emoji="+1 :green_heart:"
-        ;;
-        -1)
-          emoji="-1 :x:"
-        ;;
-        0)
-          emoji="+0 :ok:"
-        ;;
-        -0)
-          emoji="-0 :warning:"
-        ;;
-        H)
-          # this never gets called (see above) but this is here so others know the color is taken
-          emoji=""
-        ;;
-        *)
-          # usually this should not happen but let's keep the old vote result if it happens
-          emoji=${vote}
-        ;;
-      esac
-    else
-      emoji="${vote}"
+    # GitHub needs more statuses to cover everything yetus does :(
+    case ${vote} in
+      -1)
+        status="error"
+      ;;
+      *)
+        status="success"
+      ;;
+    esac
+
+    logurl=${BUILD_URL}${BUILD_URL_CONSOLE}
+    if [[ "${url}" =~ ^http ]]; then
+      if [[ -n "${logfile}" ]]; then
+        logurl=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+      fi
     fi
 
-    if [[ -n "${logfile}" ]]; then
-      t1=${logfile/@@BASE@@/}
-      t2=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
-      t2="[${t1}](${t2})"
-    else
-      t2=""
+    if [[ ${status} == "success" && -n "${logfile}" ]]; then
+      {
+        echo "{\"state\": \"${status}\", "
+        echo "\"target_url\": \"${logurl}\","
+        echo "\"description\": \"${comment}\","
+        echo "\"context\":\"${header} warning: ${subs}\"}"
+      } > "${tempfile}"
+      github_status_write "${tempfile}"
+      rm "${tempfile}"
+    elif [[ ${status} == "error" ]]; then
+      {
+        echo "{\"state\": \"${status}\", "
+        echo "\"target_url\": \"${logurl}\","
+        echo "\"description\": \"${comment}\","
+        echo "\"context\":\"${header} error: ${subs}\"}"
+      } > "${tempfile}"
+      github_status_write "${tempfile}"
+      rm "${tempfile}"
     fi
-
-    printf '| %s | %s | %s | %s | %s |\n' \
-      "${emoji}" \
-      "${subs}" \
-      "${calctime}" \
-      "${t2}" \
-      "${comment}" \
-      >> "${commentfile}"
-
     ((i=i+1))
   done
-
-  if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
-    {
-      printf '\n\n'
-      echo "| Reason | Tests |"
-      echo "|-------:|:------|"
-    } >> "${commentfile}"
-    i=0
-    until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
-      echo "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
-      ((i=i+1))
-    done
-  fi
-
-  {
-    printf '\n\n'
-    echo "| Subsystem | Report/Notes |"
-    echo "|----------:|:-------------|"
-  } >> "${commentfile}"
-
-  i=0
-  until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
-    printf '%s\n' "${comment}" >> "${commentfile}"
-    ((i=i+1))
-  done
-  printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
-
-  github_write_comment "${commentfile}"
 }

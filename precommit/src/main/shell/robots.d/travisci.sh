@@ -46,12 +46,16 @@ if [[ "${TRAVIS}" == true ]] &&
   # shellcheck disable=SC2034
   GITHUB_REPO=${TRAVIS_REPO_SLUG}
 
+  # shellcheck disable=SC2034
+  GITHUB_SHA=${TRAVIS_PULL_REQUEST_SHA}
+
   add_docker_env \
     TRAVIS \
     TRAVIS_BRANCH \
     TRAVIS_BUILD_ID \
     TRAVIS_BUILD_WEB_URL \
     TRAVIS_PULL_REQUEST \
+    TRAVIS_PULL_REQUEST_SHA \
     TRAVIS_REPO_SLUG
 
   # shellcheck disable=SC2034

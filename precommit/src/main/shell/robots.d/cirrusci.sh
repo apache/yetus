@@ -48,14 +48,18 @@ if [[ "${CIRRUS_CI}" == true ]] &&
 
   add_docker_env \
     CI \
+    CIRRUS_BASE_SHA \
+    CIRRUS_BRANCH \
+    CIRRUS_BUILD_ID
+    CIRRUS_BUILD_ID \
     CIRRUS_CI \
     CIRRUS_DEFAULT_BRANCH \
-    CIRRUS_BUILD_ID \
     CIRRUS_PR \
-    CIRRUS_BRANCH \
     CIRRUS_REPO_FULL_NAME \
-    CIRRUS_TASK_ID \
-    CIRRUS_BUILD_ID
+    CIRRUS_TASK_ID
+
+  # shellcheck disable=SC2034
+  GITHUB_SHA=${CIRRUS_BASE_SHA}
 
   # shellcheck disable=SC2034
   BUILD_URL="https://cirrus-ci.com/task/${CIRRUS_TASK_ID}"
