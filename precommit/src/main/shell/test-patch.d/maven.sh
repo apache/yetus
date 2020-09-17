@@ -27,6 +27,7 @@ MAVEN_CUSTOM_REPOS_DIR="@@@WORKSPACE@@@/yetus-m2"
 MAVEN_DEPENDENCY_ORDER=true
 MAVEN_FOUND_ROOT_POM=false
 MAVEN_JAVADOC_GOALS=("javadoc:javadoc")
+MAVEN_ONLY_CHANGED_TESTS=false
 
 add_test_type mvnsite
 add_build_tool maven
@@ -82,6 +83,7 @@ function maven_usage
   yetus_add_option "--mvn-custom-repos-dir=dir" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
   yetus_add_option "--mvn-deps-order=<bool>" "Disable maven's auto-dependency module ordering (Default: '${MAVEN_DEPENDENCY_ORDER}')"
   yetus_add_option "--mvn-javadoc-goals=<list>" "The comma-separated javadoc goals (Default: 'javadoc:javadoc')"
+  yetus_add_option "--mvn-only-changed-tests=<bool>" "If only Java test files are changed, just test them (Default: '${MAVEN_ONLY_CHANGED_TESTS}')"
   yetus_add_option "--mvn-settings=file" "File to use for settings.xml"
 }
 
@@ -114,6 +116,10 @@ function maven_parse_args
       --mvn-javadoc-goals=*)
         delete_parameter "${i}"
         yetus_comma_to_array MAVEN_JAVADOC_GOALS "${i#*=}"
+      ;;
+      ----mvn-only-changed-tests=*)
+        delete_parameter "${i}"
+        MAVEN_ONLY_CHANGED_TESTS=${i#*=}
       ;;
       --mvn-settings=*)
         delete_parameter "${i}"
@@ -561,6 +567,13 @@ function maven_builtin_personality_file_tests
 function maven_unit_test_filter()
 {
   declare filtered
+  declare line
+  declare file
+  declare dir
+  declare pkg
+  declare class
+  declare sclass
+  declare -a testonly
 
   if [[ -n "${UNIT_TEST_FILTER_FILE}" ]]; then
     while read -r line || [[ -n "${line}" ]]; do
@@ -570,6 +583,29 @@ function maven_unit_test_filter()
 
       filtered="${filtered}${line},"
     done < "${UNIT_TEST_FILTER_FILE}"
+  elif [[ "${BUILDMODE}" != 'full' ]] &&
+       [[ "${MAVEN_ONLY_CHANGED_TESTS}" == true ]]; then
+    for file in "${CHANGED_FILES[@]}"; do
+      if [[ "${file}" =~ src/test/java ]]; then
+        dir=$(dirname "${file}")
+        pkg=$(echo "${dir}" | "${SED}" -e 's,.*/src/test/java/,,g' -e 's,/,.,g' )
+        sclass=$(basename "${file}")
+        sclass=${sclass%.java}
+        class="${pkg}.${sclass}"
+        if [[ -f "${file}" ]]; then
+          if "${GREP}" -q "package ${pkg}" "${file}"; then
+            if "${GREP}" -q "class ${sclass}" "${file}"; then
+              testonly+=("${class}")
+              filtered="${filtered}${class},"
+            fi
+          fi
+        fi
+      fi
+    done
+
+    if [[ ${#testonly[@]} -ne ${#CHANGED_FILES[@]} ]]; then
+      unset filtered
+    fi
   fi
 
   if [[ -z "${filtered}" ]]; then
