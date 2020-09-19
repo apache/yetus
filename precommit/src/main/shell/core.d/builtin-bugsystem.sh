@@ -46,6 +46,7 @@ function console_finalreport
   declare spcfx=${PATCH_DIR}/spcl.txt
   declare calctime
   declare url
+  declare logfile
 
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
     exec 6>&1
@@ -103,7 +104,7 @@ function console_finalreport
 
   seccoladj=$((seccoladj + 2 ))
   i=0
-  until [[ $i -eq ${#TP_HEADER[@]} ]]; do
+  until [[ $i -ge ${#TP_HEADER[@]} ]]; do
     printf '%s\n' "${TP_HEADER[${i}]}"
     ((i=i+1))
   done
@@ -111,17 +112,17 @@ function console_finalreport
   printf '| %s | %*s |  %s   | %s\n' "Vote" ${seccoladj} Subsystem Runtime "Comment"
   echo "============================================================================"
   i=0
-  until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
     calctime=$(clock_display "${ela}")
-    comment=$(echo "${ourstring}"  | cut -f5 -d\|)
+    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
     echo "${comment}" | fold -s -w $((78-seccoladj-22)) > "${commentfile1}"
     normaltop=$(head -1 "${commentfile1}")
-    ${SED} -e '1d' "${commentfile1}"  > "${commentfile2}"
+    "${SED}" -e '1d' "${commentfile1}"  > "${commentfile2}"
 
     if [[ "${vote}" = "H" ]]; then
       echo "+---------------------------------------------------------------------------"
@@ -143,7 +144,7 @@ function console_finalreport
     seccoladj=$(findlargest 1 "${TP_TEST_TABLE[@]}")
     printf '\n\n%*s | Tests\n' "${seccoladj}" "Reason"
     i=0
-    until [[ $i -eq ${#TP_TEST_TABLE[@]} ]]; do
+    until [[ $i -ge ${#TP_TEST_TABLE[@]} ]]; do
       ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
       vote=$(echo "${ourstring}" | cut -f2 -d\|)
       subs=$(echo "${ourstring}"  | cut -f3 -d\|)
@@ -164,12 +165,33 @@ function console_finalreport
     url=${PATCH_DIR}
   fi
 
-  until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              "${SED}" -e "s,@@BASE@@,${url},g")
+  i=0
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
+    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    vote=$(echo "${ourstring}" | cut -f2 -d\|)
+    subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+
+    if [[ "${vote}" == H ]] || [[ -z "${logfile}" ]]; then
+       ((i=i+1))
+       continue
+    fi
+
+    comment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+
+    printf '| %s | %s |\n' "${subs}" "${comment}"
+
+    ((i=i+1))
+  done
+
+  i=0
+  until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
+    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}"
     ((i=i+1))
   done
+
+
 
   if [[ -n "${CONSOLE_REPORT_FILE}" ]]; then
     exec 1>&6 6>&-

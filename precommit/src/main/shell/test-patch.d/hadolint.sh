@@ -40,7 +40,7 @@ function hadolint_precheck
   declare langs
 
   if ! verify_command "hadolint" "${HADOLINT}"; then
-    add_vote_table 0 hadolint "hadolint was not available."
+    add_vote_table_v2 0 hadolint "" "hadolint was not available."
     delete_test hadolint
   fi
 
@@ -181,16 +181,15 @@ function hadolint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 hadolint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table hadolint "@@BASE@@/diff-patch-hadolint.txt"
+    add_vote_table_v2 -1 hadolint "@@BASE@@/diff-patch-hadolint.txt" "${BUILDMODEMSG} ${statstring}"
     bugsystem_linecomments_queue "hadolint" "${PATCH_DIR}/diff-patch-hadolint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 hadolint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 hadolint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 hadolint "There were no new hadolint issues."
+  add_vote_table_v2 +1 hadolint "" "There were no new hadolint issues."
   return 0
 }
 

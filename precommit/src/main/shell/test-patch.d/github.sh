@@ -606,13 +606,21 @@ function github_finalreport
   declare commentfile=${PATCH_DIR}/gitcommentfile.$$
   declare comment
   declare url
+  declare ela
+  declare subs
+  declare logfile
+  declare calctime
+  declare vote
+  declare emoji
 
   rm "${commentfile}" 2>/dev/null
 
   if [[ ${ROBOT} = "false"
-    || -z ${GITHUB_ISSUE} ]] ; then
+     || -z ${GITHUB_ISSUE} ]] ; then
     return 0
   fi
+
+  url=$(get_artifact_url)
 
   big_console_header "Adding comment to Github"
 
@@ -624,64 +632,77 @@ function github_finalreport
   printf '\n\n\n\n' >>  "${commentfile}"
 
   i=0
-  until [[ ${i} -eq ${#TP_HEADER[@]} ]]; do
+  until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
     printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
     ((i=i+1))
   done
 
   {
     printf '\n\n'
-    echo "| Vote | Subsystem | Runtime | Comment |"
-    echo "|:----:|----------:|--------:|:--------|"
+    echo "| Vote | Subsystem | Runtime |  Logfile | Comment |"
+    echo "|:----:|----------:|--------:|:--------:|:-------:|"
   } >> "${commentfile}"
 
   i=0
-  until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
     calctime=$(clock_display "${ela}")
-    comment=$(echo "${ourstring}"  | cut -f5 -d\|)
-
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
     if [[ "${vote}" = "H" ]]; then
-      echo "||| _${comment}_ |" >> "${commentfile}"
-    else
-      if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
-        emoji=""
-        case ${vote} in
-          1|"+1")
-            emoji="+1 :green_heart:"
-          ;;
-          -1)
-            emoji="-1 :x:"
-          ;;
-          0)
-            emoji="+0 :ok:"
-          ;;
-          -0)
-            emoji="-0 :warning:"
-          ;;
-          H)
-            # this never gets called (see above) but this is here so others know the color is taken
-            emoji=""
-          ;;
-          *)
-            # usually this should not happen but let's keep the old vote result if it happens
-            emoji=${vote}
-          ;;
-        esac
-        printf '| %s | %s | %s | %s |\n' \
-        "${emoji}" \
-        "${subs}" \
-        "${calctime}" \
-        "${comment}" \
-        >> "${commentfile}"
-      else
-        echo "${TP_VOTE_TABLE[${i}]}" >> "${commentfile}"
-      fi
+      echo "|||| _${comment}_ |" >> "${commentfile}"
+      ((i=i+1))
+      continue
     fi
+
+    if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
+      emoji=""
+      case ${vote} in
+        1|"+1")
+          emoji="+1 :green_heart:"
+        ;;
+        -1)
+          emoji="-1 :x:"
+        ;;
+        0)
+          emoji="+0 :ok:"
+        ;;
+        -0)
+          emoji="-0 :warning:"
+        ;;
+        H)
+          # this never gets called (see above) but this is here so others know the color is taken
+          emoji=""
+        ;;
+        *)
+          # usually this should not happen but let's keep the old vote result if it happens
+          emoji=${vote}
+        ;;
+      esac
+    else
+      emoji="${vote}"
+    fi
+
+    if [[ -n "${logfile}" ]]; then
+      t1=${logfile/@@BASE@@/}
+      t2=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+      t2="[${t1}](${t2})"
+    else
+      t2=""
+    fi
+
+    printf '| %s | %s | %s | %s | %s |\n' \
+      "${emoji}" \
+      "${subs}" \
+      "${calctime}" \
+      "${t2}" \
+      "${comment}" \
+      >> "${commentfile}"
+
     ((i=i+1))
   done
 
@@ -692,7 +713,7 @@ function github_finalreport
       echo "|-------:|:------|"
     } >> "${commentfile}"
     i=0
-    until [[ ${i} -eq ${#TP_TEST_TABLE[@]} ]]; do
+    until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
       echo "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
       ((i=i+1))
     done
@@ -704,13 +725,9 @@ function github_finalreport
     echo "|----------:|:-------------|"
   } >> "${commentfile}"
 
-
-  url=$(get_artifact_url)
-
   i=0
-  until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              "${SED}" -e "s,@@BASE@@,${url},g")
+  until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
+    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done

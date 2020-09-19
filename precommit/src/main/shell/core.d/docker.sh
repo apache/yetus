@@ -198,7 +198,7 @@ function docker_initialize
   IFS='.' read -r -a DOCKER_VERSION <<< "${dockvers}"
   if [[ "${DOCKER_VERSION[0]}" -lt 1 ]] || \
      [[ "${DOCKER_VERSION[0]}" -lt 2 && "${DOCKER_VERSION[1]}" -lt 27 ]]; then
-    add_vote_table -1 docker "Docker command '${DOCKERCMD}' is too old (${dockvers} <  API v 1.27.0)."
+    add_vote_table_v2 -1 docker "" "Docker command '${DOCKERCMD}' is too old (${dockvers} <  API v 1.27.0)."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -214,7 +214,7 @@ function docker_initialize
   elif "${STAT}" -f '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
     DOCKER_SOCKET_GID=$("${STAT}" -f '%g' "${DOCKER_SOCKET}")
   elif [[ ${DOCKER_IN_DOCKER} == true ]]; then
-    add_vote_table -1 docker "Docker-in-Docker mode (--dockerind) requires a working stat command."
+    add_vote_table_v2 -1 docker "" "Docker-in-Docker mode (--dockerind) requires a working stat command."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -235,7 +235,7 @@ function docker_fileverify
         DOCKERFILE=$(yetus_abs "${DOCKERFILE}")
       else
         yetus_error "ERROR: Dockerfile '${DOCKERFILE}' not found."
-        add_vote_table -1 docker "Dockerfile '${DOCKERFILE}' not found."
+        add_vote_table_v2 -1 docker "" "Dockerfile '${DOCKERFILE}' not found."
         bugsystem_finalreport 1
         cleanup_and_exit 1
       fi
@@ -648,7 +648,7 @@ function docker_run_image
 
     if ! dockercmd pull "${dockplat[@]}" "${DOCKER_TAG}"; then
       yetus_error "ERROR: Docker failed to pull ${DOCKER_TAG}."
-      add_vote_table -1 docker "Docker failed to pull ${DOCKER_TAG}."
+      add_vote_table_v2 -1 docker "" "Docker failed to pull ${DOCKER_TAG}."
       bugsystem_finalreport 1
       cleanup_and_exit 1
     fi
@@ -732,7 +732,7 @@ function docker_run_image
           "${dockerdir}"; then
       popd >/dev/null || return 1
       yetus_error "ERROR: Docker failed to build ${baseimagename}."
-      add_vote_table -1 docker "Docker failed to build ${baseimagename}."
+      add_vote_table_v2 -1 docker "" "Docker failed to build ${baseimagename}."
       bugsystem_finalreport 1
       cleanup_and_exit 1
     fi
@@ -783,7 +783,7 @@ function docker_run_image
 
   if [[ ${retval} != 0 ]]; then
     yetus_error "ERROR: Docker failed to build run-specific ${patchimagename}."
-    add_vote_table -1 docker "Docker failed to build run-specific ${patchimagename}}."
+    add_vote_table_v2 -1 docker "" "Docker failed to build run-specific ${patchimagename}}."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi

@@ -63,7 +63,7 @@ function autoconf_precheck
 {
   declare autoconf_version
   if ! verify_command autoconf autoreconf; then
-    add_vote_table -1 autoconf "autoreconf was not available."
+    add_vote_table_v2 -1 autoconf "" "autoreconf was not available."
     return 1
   fi
 
@@ -126,18 +126,21 @@ function autoconf_precompile
   if [[ ${result} != 0 ]]; then
     if [[ "${repostatus}" = branch ]]; then
       # shellcheck disable=SC2153
-      add_vote_table -1 autoreconf "${PATCH_BRANCH} unable to autoreconf"
+      add_vote_table_v2 -1 autoreconf \
+        "@@BASE@@/${repostatus}-autoconf-autoreconf" \
+        "${PATCH_BRANCH} unable to autoreconf"
     else
-      add_vote_table -1 autoreconf "${BUILDMODEMSG} is unable to autoreconf"
+      add_vote_table_v2 -1 autoreconf \
+        "@@BASE@@/${repostatus}-autoconf-autoreconf" \
+        "${BUILDMODEMSG} is unable to autoreconf"
     fi
-    add_footer_table "autoreconf" "@@BASE@@/${repostatus}-autoconf-autoreconf"
     return 1
   else
     if [[ "${repostatus}" = branch ]]; then
       # shellcheck disable=SC2153
-      add_vote_table +1 autoreconf "${PATCH_BRANCH} autoreconf successful"
+      add_vote_table_v2 +1 autoreconf "" "${PATCH_BRANCH} autoreconf successful"
     else
-      add_vote_table +1 autoreconf "${BUILDMODEMSG} can autoreconf"
+      add_vote_table_v2 +1 autoreconf "" "${BUILDMODEMSG} can autoreconf"
     fi
   fi
 
@@ -156,18 +159,21 @@ function autoconf_precompile
   if [[ ${result} != 0 ]]; then
     if [[ "${repostatus}" = branch ]]; then
       # shellcheck disable=SC2153
-      add_vote_table -1 configure "${PATCH_BRANCH} unable to configure"
+      add_vote_table_v2 -1 configure \
+        "@@BASE@@/${repostatus}-autoconf-configure" \
+        "${PATCH_BRANCH} unable to configure"
     else
-      add_vote_table -1 configure "${BUILDMODEMSG} is unable to configure"
+      add_vote_table_v2 -1 configure \
+        "@@BASE@@/${repostatus}-autoconf-configure" \
+        "${BUILDMODEMSG} is unable to configure"
     fi
-    add_footer_table "configure" "@@BASE@@/${repostatus}-autoconf-configure"
     return 1
   else
     if [[ "${repostatus}" = branch ]]; then
       # shellcheck disable=SC2153
-      add_vote_table +1 configure "${PATCH_BRANCH} configure successful"
+      add_vote_table_v2 +1 configure "" "${PATCH_BRANCH} configure successful"
     else
-      add_vote_table +1 configure "${BUILDMODEMSG} can configure"
+      add_vote_table_v2 +1 configure "" "${BUILDMODEMSG} can configure"
     fi
   fi
   return 0

@@ -250,6 +250,6 @@ function reaper_total_count
   fi
 
   if [[ ${REAPER_TOTAL_COUNT} -gt 0 ]]; then
-    add_vote_table -0 reaper "Unreaped process count: ${REAPER_TOTAL_COUNT}"
+    add_vote_table_v2 -0 reaper "" "Unreaped process count: ${REAPER_TOTAL_COUNT}"
   fi
 }

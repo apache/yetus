@@ -98,8 +98,8 @@ function briefreport_finalreport
   declare -a filtered
   declare hours
   declare newtime
-  declare havelogs=false
   declare fn
+  declare logfile
 
   if [[ -z "${BRIEFOUT_REPORTFILE}" ]]; then
     return
@@ -114,11 +114,12 @@ function briefreport_finalreport
   fi
 
   i=0
-  until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
 
     if [[ "${vote}" = "H" ]]; then
        ((i=i+1))
@@ -223,47 +224,38 @@ function briefreport_finalreport
   url=$(get_artifact_url)
 
   i=0
-  until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    if [[ "${TP_FOOTER_TABLE[${i}]}" =~ \@\@BASE\@\@ ]] \
-       && [[ ! "${TP_FOOTER_TABLE[${i}]}" =~ Dockerfile ]]; then
-      havelogs=true
-      break
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
+    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+
+    if [[ -z "${logfile}" ]]; then
+       ((i=i+1))
+       continue
     fi
+
+    logentry=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
+    fn="${logentry// }"
+
+    if [[ -f ${fn} ]]; then
+      # shellcheck disable=SC2016
+      size=$(du -sh "${fn}" | "${AWK}" '{print $1}')
+    fi
+    if [[ -n "${url}" ]]; then
+      comment=$(echo "${logfile}" |"${SED}" -e "s,@@BASE@@,${url},g")
+    fi
+    {
+      if [[ "${subs}" != "${vote}" ]]; then
+        echo ""
+        printf '   %s:\n' "${subs// }"
+        echo ""
+        vote=${subs}
+      fi
+      printf '      %s [%s]\n' "${comment}" "${size}"
+    } >> "${BRIEFOUT_REPORTFILE}"
+
     ((i=i+1))
   done
-
-  if [[ "${havelogs}" == true ]]; then
-    vote=""
-    until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-      if [[ "${TP_FOOTER_TABLE[${i}]}" =~ \@\@BASE\@\@ ]]; then
-        ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
-        subs=$(echo "${TP_FOOTER_TABLE[${i}]}" | cut -f2 -d\|)
-        comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-                    cut -f3 -d\| |
-                    "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
-        fn="${comment// }"
-        if [[ -f ${fn} ]]; then
-          # shellcheck disable=SC2016
-          size=$(du -sh "${fn}" | "${AWK}" '{print $1}')
-        fi
-        if [[ -n "${url}" ]]; then
-          comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-                    cut -f3 -d\| |
-                    "${SED}" -e "s,@@BASE@@,${url},g")
-        fi
-        {
-          if [[ "${subs}" != "${vote}" ]]; then
-            echo ""
-            printf '   %s:\n' "${subs// }"
-            echo ""
-            vote=${subs}
-          fi
-          printf '      %s [%s]\n' "${comment}" "${size}"
-        } >> "${BRIEFOUT_REPORTFILE}"
-      fi
-      ((i=i+1))
-    done
-  fi
 
   {
    echo ""

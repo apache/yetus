@@ -58,7 +58,7 @@ function rubocop_filefilter
 function rubocop_precheck
 {
   if ! verify_command rubocop "${RUBOCOP}"; then
-    add_vote_table 0 rubocop "rubocop was not available."
+    add_vote_table_v2 0 rubocop "" "rubocop was not available."
     delete_test rubocop
   fi
 }
@@ -164,15 +164,14 @@ function rubocop_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 rubocop "${BUILDMODEMSG} ${statstring}"
-    add_footer_table rubocop "@@BASE@@/diff-patch-rubocop.txt"
+    add_vote_table_v2 -1 rubocop "@@BASE@@/diff-patch-rubocop.txt" "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 rubocop "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 rubocop "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 rubocop "There were no new rubocop issues."
+  add_vote_table_v2 +1 rubocop "" "There were no new rubocop issues."
   return 0
 }
 

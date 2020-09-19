@@ -111,18 +111,18 @@ function dupname_precheck
 
   if [[ ${count} -gt 0 ]]; then
     if [[ "${BUILDMODE}" != full ]]; then
-      add_vote_table -1 dupname "The patch has ${count}" \
+      add_vote_table_v2 -1 dupname "@@BASE@@/dupnames.txt" \
+        "The patch has ${count}" \
         " duplicated filenames that differ only in case."
-      add_footer_table dupname "@@BASE@@/dupnames.txt"
       yetus_error "ERROR: Won't apply the patch; may break the workspace."
       return 1
     else
-      add_vote_table -1 dupname "Source has ${count}" \
+      add_vote_table_v2 -1 dupname "@@BASE@@/dupnames.txt" \
+      "Source has ${count}" \
         " duplicated filenames that differ only in case."
-      add_footer_table dupname "@@BASE@@/dupnames.txt"
     fi
   else
-    add_vote_table +1 dupname "No case conflicting files found."
+    add_vote_table_v2 +1 dupname "" "No case conflicting files found."
   fi
 
   return 0

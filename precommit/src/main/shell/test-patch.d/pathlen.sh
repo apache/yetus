@@ -78,9 +78,9 @@ function pathlen_generic
   # shellcheck disable=SC2016
   echo "${counter} files in the ${msg} with paths longer that ${PATHLEN_SIZE}."
   if [[ ${counter} -gt 0 ]] ; then
-    add_vote_table -1 pathlen \
+    add_vote_table_v2 -1 pathlen \
+      "@@BASE@@/pathlen.txt" \
       "${BUILDMODEMSG} appears to contain ${counter} files with names longer than ${PATHLEN_SIZE}"
-    add_footer_table pathlen "@@BASE@@/pathlen.txt"
     return 1
   fi
   return 0

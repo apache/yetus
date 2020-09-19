@@ -65,7 +65,7 @@ function golangcilint_filefilter
 function golangcilint_precheck
 {
   if [[ -z "${GOLANGCI_LINT}" ]]; then
-    add_vote_table 0 golangcilint "golangci-lint was not found."
+    add_vote_table_v2 0 golangcilint "" "golangci-lint was not found."
     delete_test golangcilint
   fi
 }
@@ -179,15 +179,14 @@ function golangcilint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 golangcilint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table golangcilint "@@BASE@@/diff-patch-golangcilint.txt"
+    add_vote_table_v2 -1 golangcilint "@@BASE@@/diff-patch-golangcilint.txt" "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 golangcilint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 golangcilint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 golangcilint "There were no new golangcilint issues."
+  add_vote_table_v2 +1 golangcilint "" "There were no new golangcilint issues."
   return 0
 }
 

@@ -77,7 +77,7 @@ function cmake_precheck
 {
   declare cmake_version
   if ! verify_command cmake "${CMAKE}"; then
-    add_vote_table -1 cmake "cmake was not available."
+    add_vote_table_v2 -1 cmake "" "cmake was not available."
     return 1
   fi
   # finally let folks know what version they'll be dealing with.

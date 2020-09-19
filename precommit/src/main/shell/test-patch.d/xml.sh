@@ -32,7 +32,7 @@ function xml_filefilter
 function xml_precheck
 {
   if ! verify_command "jrunscript" "${JAVA_HOME}/bin/jrunscript"; then
-    add_vote_table 0 xml "jrunscript was not available."
+    add_vote_table_v2 0 xml "" "jrunscript was not available."
     delete_test xml
   fi
 }
@@ -81,12 +81,11 @@ function xml_postcompile
   fi
 
   if [[ ${count} -gt 0 ]]; then
-    add_vote_table -1 xml "${BUILDMODEMSG} has ${count} ill-formed XML file(s)."
-    add_footer_table xml "@@BASE@@/xml.txt"
+    add_vote_table_v2 -1 xml "@@BASE@@/xml.txt" "${BUILDMODEMSG} has ${count} ill-formed XML file(s)."
     populate_test_table "XML" "Parsing Error(s):" "${XML_FILES[@]}"
     return 1
   fi
 
-  add_vote_table +1 xml "${BUILDMODEMSG} has no ill-formed XML file."
+  add_vote_table_v2 +1 xml "" "${BUILDMODEMSG} has no ill-formed XML file."
   return 0
 }

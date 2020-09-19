@@ -53,7 +53,7 @@ function perlcritic_filefilter
 function perlcritic_precheck
 {
   if ! verify_command "Perl::Critic" "${PERLCRITIC}"; then
-    add_vote_table 0 perlcritic "Perl::Critic was not available."
+    add_vote_table_v2 0 perlcritic "" "Perl::Critic was not available."
     delete_test perlcritic
   fi
 }
@@ -150,15 +150,14 @@ function perlcritic_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]]; then
-    add_vote_table -1 perlcritic "${BUILDMODEMSG} ${statstring}"
-    add_footer_table perlcritic "@@BASE@@/diff-patch-perlcritic.txt"
+    add_vote_table_v2 -1 perlcritic "@@BASE@@/diff-patch-perlcritic.txt" "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 perlcritic "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 perlcritic "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 perlcritic "There were no new perlcritic issues."
+  add_vote_table_v2 +1 perlcritic "" "There were no new perlcritic issues."
   return 0
 }
 

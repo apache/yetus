@@ -39,7 +39,7 @@ function yamllint_filefilter
 function yamllint_precheck
 {
   if ! verify_command "yamllint" "${YAMLLINT}"; then
-    add_vote_table 0 yamllint "yamllint was not available."
+    add_vote_table_v2 0 yamllint "" "yamllint was not available."
     delete_test yamllint
   fi
 
@@ -144,16 +144,15 @@ function yamllint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 yamllint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table yamllint "@@BASE@@/diff-patch-yamllint.txt"
+    add_vote_table_v2 -1 yamllint "@@BASE@@/diff-patch-yamllint.txt" "${BUILDMODEMSG} ${statstring}"
     bugsystem_linecomments_queue "yamllint" "${PATCH_DIR}/diff-patch-yamllint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 yamllint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 yamllint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 yamllint "There were no new yamllint issues."
+  add_vote_table_v2 +1 yamllint "" "There were no new yamllint issues."
   return 0
 }
 

@@ -56,7 +56,7 @@ function shellcheck_precheck
   declare langs
 
   if ! verify_command "shellcheck" "${SHELLCHECK}"; then
-    add_vote_table 0 shellcheck "Shellcheck was not available."
+    add_vote_table_v2 0 shellcheck "" "Shellcheck was not available."
     delete_test shellcheck
   else
     # shellcheck disable=SC2016
@@ -248,16 +248,15 @@ function shellcheck_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 shellcheck "${BUILDMODEMSG} ${statstring}"
-    add_footer_table shellcheck "@@BASE@@/diff-patch-shellcheck.txt"
+    add_vote_table_v2 -1 shellcheck "@@BASE@@/diff-patch-shellcheck.txt" "${BUILDMODEMSG} ${statstring}"
     bugsystem_linecomments_queue "shellcheck" "${PATCH_DIR}/diff-patch-shellcheck.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 shellcheck "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 shellcheck "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 shellcheck "There were no new shellcheck issues."
+  add_vote_table_v2 +1 shellcheck "" "There were no new shellcheck issues."
   return 0
 }
 

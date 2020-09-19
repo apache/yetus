@@ -85,6 +85,10 @@ function htmlout_finalreport
   declare color
   declare comment
   declare calctime
+  declare url
+  declare logfile
+
+  url=$(get_artifact_url)
 
   rm "${commentfile}" 2>/dev/null
 
@@ -107,7 +111,7 @@ function htmlout_finalreport
   } >  "${commentfile}"
 
   i=0
-  until [[ $i -eq ${#TP_HEADER[@]} ]]; do
+  until [[ $i -ge ${#TP_HEADER[@]} ]]; do
     ourstring=$(echo "${TP_HEADER[${i}]}" | tr -s ' ')
     comment=$(echo "${ourstring}"  | cut -f2 -d\|)
     printf '<tr><td>%s</td></tr>\n' "${comment}"
@@ -120,18 +124,20 @@ function htmlout_finalreport
     echo "<th>Vote</th>"
     echo "<th>Subsystem</th>"
     echo "<th>Runtime</th>"
+    echo "<th>Log</th>"
     echo "<th>Comment</th>"
     echo "</tr>"
   } >> "${commentfile}"
 
   i=0
-  until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
     calctime=$(clock_display "${ela}")
-    comment=$(echo "${ourstring}"  | cut -f5 -d\|)
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
     if [[ "${vote}" = "H" ]]; then
       {
@@ -139,6 +145,7 @@ function htmlout_finalreport
         printf '\t\t<td></td>'
         printf "<td></td>"
         printf "<td></td>"
+        printf '<td></td>'
         printf '<td><font color=\"%s\">%s</font></td>\n' "brown" "${comment}"
         echo "</tr>"
       } >> "${commentfile}"
@@ -147,8 +154,7 @@ function htmlout_finalreport
     fi
 
     # summary line
-    if [[ -z ${vote}
-      && -n ${ela} ]]; then
+    if [[ -z ${vote} && -n ${ela} ]]; then
       color="black"
     elif [[ -z ${vote} ]]; then
       # keep same color
@@ -175,12 +181,19 @@ function htmlout_finalreport
     fi
 
     {
-      echo "<tr>"
-      printf '\t\t<td><font color=\"%s\">%s</font></td>' "${color}" "${vote}"
-      printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${subs}"
-      printf "<td><font color=\"%s\">%s</font></td>" "${color}" "${calctime}"
+      printf "<tr>\n"
+      printf '\t\t<td><font color=\"%s\">%s</font></td>\n' "${color}" "${vote}"
+      printf "\t\t<td><font color=\"%s\">%s</font></td>\n" "${color}" "${subs}"
+      printf "\t\t<td><font color=\"%s\">%s</font></td>\n" "${color}" "${calctime}"
+      if [[ -n "${logfile}" ]]; then
+        t1=${logfile/@@BASE@@/}
+        t2="<a href=\"${url}${t1}\">${t1}</a>"
+        printf '<td><font color=\"%s\">%s</></font></td>\n' "${color}" "${t2}"
+      else
+        printf '<td></td>\n'
+      fi
       printf '<td><font color=\"%s\">%s</font></td>\n' "${color}" "${comment}"
-      echo "</tr>"
+      printf "</tr>\n"
     } >> "${commentfile}"
     ((i=i+1))
   done
@@ -199,7 +212,7 @@ function htmlout_finalreport
     } >> "${commentfile}"
 
     i=0
-    until [[ $i -eq ${#TP_TEST_TABLE[@]} ]]; do
+    until [[ $i -ge ${#TP_TEST_TABLE[@]} ]]; do
       ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
       subs=$(echo "${ourstring}"  | cut -f2 -d\|)
       comment=$(echo "${ourstring}"  | cut -f3 -d\|)
@@ -226,9 +239,8 @@ function htmlout_finalreport
     echo "</tr>"
   } >> "${commentfile}"
 
-  url=$(get_artifact_url)
   i=0
-  until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
+  until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
 
     # turn off file globbing. break apart the string by spaces.
     # if our string begins with @@BASE@@, then create a substring

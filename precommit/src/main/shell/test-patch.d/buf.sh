@@ -74,7 +74,7 @@ function buf_precheck
   fi
 
   if ! verify_command "buf" "${BUF}"; then
-    add_vote_table 0 buf "buf was not available."
+    add_vote_table_v2 0 buf "" "buf was not available."
     delete_test buflint
     delete_test bufcompat
   fi
@@ -149,8 +149,7 @@ function bufcompat_executor
   popd >/dev/null || return 1
 
   if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${bufStderr}" ]]; then
-    add_vote_table -1 bufcompat "Error running buf. Please check buf stderr files."
-    add_footer_table bufcompat "@@BASE@@/${bufStderr}"
+    add_vote_table_v2 -1 bufcompat "@@BASE@@/${bufStderr}" "Error running buf. Please check buf stderr files."
     return 1
   fi
   rm "${PATCH_DIR}/${bufStderr}" 2>/dev/null
@@ -191,8 +190,9 @@ function bufcompat_postapply
   if [[ -s "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" ]]; then
     # shellcheck disable=SC2016
     incompatcount=$(wc -l "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" | "${AWK}" '{print $1}')
-    add_vote_table -1 bufcompat "${incompatcount} Incompatible protobuf changes"
-    add_footer_table bufcompat "@@BASE@@/${repostatus}-bufcompat-result.txt"
+    add_vote_table_v2 -1 bufcompat \
+      "@@BASE@@/${repostatus}-bufcompat-result.txt" \
+      "${incompatcount} Incompatible protobuf changes"
     return 1
   fi
   return 0
@@ -269,8 +269,9 @@ function buflint_executor
   popd >/dev/null || return 1
 
   if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${bufStderr}" ]]; then
-    add_vote_table -1 buflint "Error running buf. Please check buf stderr files."
-    add_footer_table buflint "@@BASE@@/${bufStderr}"
+    add_vote_table_v2 -1 buflint \
+      "@@BASE@@/${bufStderr}" \
+      "Error running buf. Please check buf stderr files."
     return 1
   fi
   rm "${PATCH_DIR}/${bufStderr}" 2>/dev/null
@@ -307,8 +308,9 @@ function buflint_postapply
   fi
 
   if [[ -s "${PATCH_DIR}/${repostatus}-buflint-result.txt" ]]; then
-    add_vote_table -1 buflint "Incompatible protobuf changes"
-    add_footer_table buflint "@@BASE@@/${repostatus}-buflint-result.txt"
+    add_vote_table_v2 -1 buflint \
+      "@@BASE@@/${repostatus}-buflint-result.txt" \
+      "Incompatible protobuf changes"
   fi
 
   # shellcheck disable=SC2016
@@ -335,15 +337,16 @@ function buflint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 buflint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table buflint "@@BASE@@/diff-patch-buflint.txt"
+    add_vote_table_v2 -1 buflint \
+      "@@BASE@@/diff-patch-buflint.txt" \
+      "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 buflint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 buflint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 buflint "There were no new buf lint issues."
+  add_vote_table_v2 +1 buflint "" "There were no new buf lint issues."
   return 0
 }
 

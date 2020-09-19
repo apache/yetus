@@ -143,8 +143,10 @@ function junit_finalreport
   declare vote
   declare subs
   declare ela
-  declare footsub
   declare footcomment
+  declare logfile
+  declare comment
+  declare url
 
   if [[ -z "${JUNIT_REPORT_XML}" ]]; then
     return
@@ -160,12 +162,13 @@ cat << EOF > "${JUNIT_REPORT_XML}"
 EOF
 
   i=0
-  until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
-    msg=$(echo "${ourstring}" | cut -f5 -d\|)
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
     subs=${subs// }
 
@@ -195,27 +198,17 @@ EOF
         "${failures}" \
         "${ela}"
       if [[ "${failures}" == 1 ]]; then
-        msg=$(escape_html "${msg}")
-        printf "<failure message=\"%s\">" "${msg}"
-        j=0
-        until [[ $j -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-          if [[ "${TP_FOOTER_TABLE[${j}]}" =~ \@\@BASE\@\@ ]]; then
-            footsub=$(echo "${TP_FOOTER_TABLE[${j}]}" | cut -f2 -d\|)
-            footcomment=$(echo "${TP_FOOTER_TABLE[${j}]}" |
-                        cut -f3 -d\| |
-                        "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
-            if [[ -n "${url}" ]]; then
-              footcomment=$(echo "${TP_FOOTER_TABLE[${j}]}" |
-                        cut -f3 -d\| |
-                        "${SED}" -e "s,@@BASE@@,${url},g")
-            fi
-            if [[ "${footsub// }" == "${subs}" ]]; then
-              footcomment=$(escape_html "${footcomment}")
-              echo "${footcomment}"
-            fi
+        comment=$(escape_html "${comment}")
+        printf "<failure message=\"%s\">" "${comment}"
+
+        if [[ -n "${logfile}" ]]; then
+          if [[ -n "${url}" ]]; then
+            footcomment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+          else
+            footcomment=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${PATCH_DIR},g")
           fi
-          ((j=j+1))
-        done
+          escape_html "${footcomment}"
+        fi
         echo "</failure>"
       fi
       echo "</testcase>"
