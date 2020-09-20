@@ -27,6 +27,8 @@
 # Taken from Homebrew @ Dec 3, 2018. Modified to pass yamllint
 #
 ---
+AllCops:
+  NewCops: disable
 # make our hashes consistent
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
