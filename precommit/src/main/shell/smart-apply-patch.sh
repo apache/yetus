@@ -34,7 +34,7 @@ STARTINGDIR=$(pwd)
 ## @stability    stable
 ## @audience     private
 ## @replaceable  no
-function add_vote_table
+function add_vote_table_v2
 {
   true
 }

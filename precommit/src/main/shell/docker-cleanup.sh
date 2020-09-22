@@ -38,7 +38,7 @@ USER_PARAMS=("$@")
 QATESTMODE=false
 
 # dummy functions
-function add_vote_table
+function add_vote_table_v2
 {
   true
 }

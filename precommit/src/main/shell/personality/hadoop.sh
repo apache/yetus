@@ -580,10 +580,12 @@ function shadedclient_rebuild
 
   count=$("${GREP}" -c '\[ERROR\]' "${logfile}")
   if [[ ${count} -gt 0 ]]; then
-    add_vote_table -1 shadedclient "${repostatus} has errors when building and testing our client artifacts."
+    add_vote_table_v2 -1 shadedclient \
+      "@@BASE@@/${repostatus}-shadedclient.txt" \
+      "${repostatus} has errors when building and testing our client artifacts."
     return 1
   fi
 
-  add_vote_table +1 shadedclient "${repostatus} has no errors when building and testing our client artifacts."
+  add_vote_table_v2 +1 shadedclient "" "${repostatus} has no errors when building and testing our client artifacts."
   return 0
 }

@@ -65,13 +65,13 @@ function author_generic
   authortags=$(wc -l "${PATCH_DIR}/author-tags.txt" | "${AWK}" '{print $1}')
   echo "There appear to be ${authortags} @author tags in the ${msg}."
   if [[ ${authortags} != 0 ]] ; then
-    add_vote_table -1 @author \
+    add_vote_table_v2 -1 @author \
+      "@@BASE@@/author-tags.txt" \
       "${BUILDMODEMSG} appears to contain ${authortags} @author tags which the" \
       " community has agreed to not allow in code contributions."
-    add_footer_table @author "@@BASE@@/author-tags.txt"
     return 1
   fi
-  add_vote_table +1 @author "${BUILDMODEMSG} does not contain any @author tags."
+  add_vote_table_v2 +1 @author "" "${BUILDMODEMSG} does not contain any @author tags."
   return 0
 }
 
@@ -100,7 +100,7 @@ function author_patchfile
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ ${appname} ]]; then
       echo "Skipping @author checks as ${appname} has been patched."
-      add_vote_table 0 @author "Skipping @author checks as ${appname} has been patched."
+      add_vote_table_v2 0 @author "" "Skipping @author checks as ${appname} has been patched."
       return 0
     fi
   done

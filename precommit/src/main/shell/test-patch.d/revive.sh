@@ -58,7 +58,7 @@ function revive_filefilter
 function revive_precheck
 {
   if ! verify_command revive "${REVIVE}"; then
-    add_vote_table 0 revive "revive was not available."
+    add_vote_table_v2 0 revive "" "revive was not available."
     delete_test revive
   fi
 }
@@ -159,15 +159,14 @@ function revive_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 revive "${BUILDMODEMSG} ${statstring}"
-    add_footer_table revive "@@BASE@@/diff-patch-revive.txt"
+    add_vote_table_v2 -1 revive "@@BASE@@/diff-patch-revive.txt" "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 revive "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 revive "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 revive "There were no new revive issues."
+  add_vote_table_v2 +1 revive "" "There were no new revive issues."
   return 0
 }
 

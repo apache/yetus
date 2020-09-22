@@ -148,7 +148,10 @@ function hadoopcheck_rebuild
         -Dhadoop-two.version="${hadoopver}"
     count=$(${GREP} -c ERROR "${logfile}")
     if [[ ${count} -gt 0 ]]; then
-      add_vote_table -1 hadoopcheck "${BUILDMODEMSG} causes ${count} errors with Hadoop v${hadoopver}."
+      add_vote_table_v2 -1 \
+        hadoopcheck \
+        "@@BASE@@/patch-javac-${hadoopver}.txt" \
+        "${BUILDMODEMSG} causes ${count} errors with Hadoop v${hadoopver}."
       ((result=result+1))
     fi
   done
@@ -157,7 +160,7 @@ function hadoopcheck_rebuild
     return 1
   fi
 
-  add_vote_table +1 hadoopcheck "${BUILDMODEMSG} does not cause any errors with Hadoop ${HBASE_HADOOP_VERSIONS}."
+  add_vote_table_v2 +1 hadoopcheck "" "${BUILDMODEMSG} does not cause any errors with Hadoop ${HBASE_HADOOP_VERSIONS}."
   return 0
 }
 
@@ -277,13 +280,13 @@ function hbaseanti_patchfile
 
   warnings=$("${GREP}" 'new TreeMap<byte.*()' "${patchfile}")
   if [[ ${warnings} -gt 0 ]]; then
-    add_vote_table -1 hbaseanti "" "The patch appears to have anti-pattern where BYTES_COMPARATOR was omitted: ${warnings}."
+    add_vote_table_v2 -1 hbaseanti "" "The patch appears to have anti-pattern where BYTES_COMPARATOR was omitted: ${warnings}."
     ((result=result+1))
   fi
 
   warnings=$("${GREP}" 'import org.apache.hadoop.classification' "${patchfile}")
   if [[ ${warnings} -gt 0 ]]; then
-    add_vote_table -1 hbaseanti "" "The patch appears use Hadoop classification instead of HBase: ${warnings}."
+    add_vote_table_v2 -1 hbaseanti "" "The patch appears use Hadoop classification instead of HBase: ${warnings}."
     ((result=result+1))
   fi
 
@@ -291,7 +294,7 @@ function hbaseanti_patchfile
     return 1
   fi
 
-  add_vote_table +1 hbaseanti "" "Patch does not have any anti-patterns."
+  add_vote_table_v2 +1 hbaseanti "" "Patch does not have any anti-patterns."
   return 0
 }
 
@@ -355,14 +358,14 @@ function mvnsite_filefilter
 #      done
 #    fi
 #    if [ "${zombie_count}" -ne 0 ]; then
-#      add_vote_table -1 zombies "There are ${zombie_count} zombie test(s)"
+#      add_vote_table_v2 -1 zombies "There are ${zombie_count} zombie test(s)"
 #      populate_test_table "zombie unit tests" "${zombies}"
 #    else
 #      yetus_info "Zombie check complete. All test runs exited normally."
 #      stop_clock
 #    fi
 #  else
-#    add_vote_table -0 zombies "There is no BUILD_ID env variable; can't check for zombies."
+#    add_vote_table_v2 -0 zombies "There is no BUILD_ID env variable; can't check for zombies."
 #  fi
 #
 #}

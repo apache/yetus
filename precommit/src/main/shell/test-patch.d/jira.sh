@@ -247,7 +247,7 @@ function jira_locate_patch
   if [[ ! ${PATCHURL} =~ \.patch$ ]]; then
     if guess_patch_file "${patchout}"; then
       yetus_debug "The patch ${PATCHURL} was not named properly, but it looks like a patch file. Proceeding, but issue/branch matching might go awry."
-      add_vote_table 0 patch "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${PATCH_NAMING_RULE} for instructions."
+      add_vote_table_v2 0 patch "" "The patch file was not named according to ${PROJECT_NAME}'s naming conventions. Please see ${PATCH_NAMING_RULE} for instructions."
     else
       # this definitely isn't a patch so just bail out.
       return 1
@@ -418,6 +418,9 @@ function jira_finalreport
   declare comment
   declare calctime
   declare url
+  declare logfile
+
+  url=$(get_artifact_url)
 
   rm "${commentfile}" 2>/dev/null
 
@@ -426,9 +429,9 @@ function jira_finalreport
     return 0
   fi
 
-  if [[ -z "${JIRA_ISSUE}" ]]; then
-    return 0
-  fi
+  #if [[ -z "${JIRA_ISSUE}" ]]; then
+  #  return 0
+  #fi
 
   big_console_header "Adding comment to JIRA"
 
@@ -441,26 +444,27 @@ function jira_finalreport
   echo "\\\\" >>  "${commentfile}"
 
   i=0
-  until [[ $i -eq ${#TP_HEADER[@]} ]]; do
+  until [[ $i -ge ${#TP_HEADER[@]} ]]; do
     printf '%s\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
     ((i=i+1))
   done
 
   echo "\\\\" >>  "${commentfile}"
 
-  echo "|| Vote || Subsystem || Runtime || Comment ||" >> "${commentfile}"
+  echo "|| Vote || Subsystem || Runtime ||  Logfile || Comment ||" >> "${commentfile}"
 
   i=0
-  until [[ $i -eq ${#TP_VOTE_TABLE[@]} ]]; do
+  until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
     calctime=$(clock_display "${ela}")
-    comment=$(echo "${ourstring}"  | cut -f5 -d\|)
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
     if [[ "${vote}" = "H" ]]; then
-      echo "|| || || || {color:brown}${comment}{color} ||" >> "${commentfile}"
+      echo "|| || || || {color:brown}${comment}{color} || ||" >> "${commentfile}"
       ((i=i+1))
       continue
     fi
@@ -496,10 +500,17 @@ function jira_finalreport
         ;;
       esac
     fi
-    printf '| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} |\n' \
+    if [[ -n "${logfile}" ]]; then
+      logfile=$(echo "${logfile}" |
+              "${SED}" -e "s,@@BASE@@,${url},g")
+    else
+      logfile=""
+    fi
+    printf '| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} |\n' \
       "${color}" "${vote}" \
       "${color}" "${subs}" \
       "${color}" "${calctime}" \
+      "${color}" "${logfile}" \
       "${color}" "${comment}" \
       >> "${commentfile}"
     ((i=i+1))
@@ -510,7 +521,7 @@ function jira_finalreport
 
     echo "|| Reason || Tests ||" >>  "${commentfile}"
     i=0
-    until [[ $i -eq ${#TP_TEST_TABLE[@]} ]]; do
+    until [[ $i -ge ${#TP_TEST_TABLE[@]} ]]; do
       printf '%s\n' "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
       ((i=i+1))
     done
@@ -518,18 +529,18 @@ function jira_finalreport
 
   { echo "\\\\" ; echo "\\\\"; } >>  "${commentfile}"
 
-  url=$(get_artifact_url)
 
   echo "|| Subsystem || Report/Notes ||" >> "${commentfile}"
   i=0
-  until [[ $i -eq ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" |
-              "${SED}" -e "s,@@BASE@@,${url},g")
+  until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
+    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done
 
   printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
+
+  cp "${commentfile}" "${commentfile}-jira.txt"
 
   jira_write_comment "${commentfile}"
 }

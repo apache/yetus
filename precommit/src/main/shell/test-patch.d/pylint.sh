@@ -77,12 +77,12 @@ function pylint_filefilter
 function pylint_precheck
 {
   if ! verify_command "Pylint" "${PYLINT}"; then
-    add_vote_table 0 pylint "Pylint was not available."
+    add_vote_table_v2 0 pylint "" "Pylint was not available."
     delete_test pylint
   fi
 
   if [[ "${PYLINT_REQUIREMENTS}" == true ]] && ! verify_command pip "${PYLINT_PIP_CMD}"; then
-    add_vote_table 0 pylint "pip command not available. Will process without it."
+    add_vote_table_v2 0 pylint "" "pip command not available. Will process without it."
   fi
 }
 
@@ -159,8 +159,7 @@ function pylint_executor
   if [[ -f ${PATCH_DIR}/${pylintStderr} ]]; then
     count=$("${GREP}"  -Evc "^(No config file found|Using config file)" "${PATCH_DIR}/${pylintStderr}")
     if [[ ${count} -gt 0 ]]; then
-      add_vote_table -1 pylint "Error running pylint. Please check pylint stderr files."
-      add_footer_table pylint "@@BASE@@/${pylintStderr}"
+      add_vote_table_v2 -1 pylint "@@BASE@@/${pylintStderr}" "Error running pylint. Please check pylint stderr files."
       return 1
     fi
   fi
@@ -217,15 +216,14 @@ function pylint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 pylint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table pylint "@@BASE@@/diff-patch-pylint.txt"
+    add_vote_table_v2 -1 pylint "@@BASE@@/diff-patch-pylint.txt" "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 pylint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 pylint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 pylint "There were no new pylint issues."
+  add_vote_table_v2 +1 pylint "" "There were no new pylint issues."
   return 0
 }
 

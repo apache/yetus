@@ -114,7 +114,7 @@ function asflicense_tests
   # RAT fails the build if there are license problems.
   # so let's take advantage of that a bit.
   if [[ ${retval} == 0 && ${btfails} = true ]]; then
-    add_vote_table 1 asflicense "${BUILDMODEMSG} does not generate ASF License warnings."
+    add_vote_table_v2 1 asflicense "" "${BUILDMODEMSG} does not generate ASF License warnings."
     return 0
   fi
 
@@ -132,7 +132,7 @@ function asflicense_tests
       modules_messages patch asflicense true
       return 1
     else
-      add_vote_table 0 asflicense "ASF License check generated no output?"
+      add_vote_table_v2 0 asflicense "" "ASF License check generated no output?"
       return 0
     fi
   fi
@@ -143,7 +143,9 @@ function asflicense_tests
   echo "There appear to be ${numpatch} ASF License warnings after applying the patch."
   if [[ -n ${numpatch}
      && ${numpatch} -gt 0 ]] ; then
-    add_vote_table -1 asflicense "${BUILDMODEMSG} generated ${numpatch} ASF License warnings."
+    add_vote_table_v2 -1 asflicense \
+      "@@BASE@@/patch-asflicense-problems.txt" \
+      "${BUILDMODEMSG} generated ${numpatch} ASF License warnings."
 
     echo "Lines that start with ????? in the ASF License "\
         "report indicate files that do not have an Apache license header:" \
@@ -152,10 +154,9 @@ function asflicense_tests
     ${GREP} '\!?????' "${PATCH_DIR}/patch-asflicense.txt" \
     >>  "${PATCH_DIR}/patch-asflicense-problems.txt"
 
-    add_footer_table asflicense "@@BASE@@/patch-asflicense-problems.txt"
     return 1
   fi
-  add_vote_table 1 asflicense "${BUILDMODEMSG} does not generate ASF License warnings."
+  add_vote_table_v2 1 asflicense "" "${BUILDMODEMSG} does not generate ASF License warnings."
   return 0
 }
 

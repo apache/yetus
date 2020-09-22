@@ -48,13 +48,13 @@ function test4tests_patchfile
 
   echo "There appear to be ${testReferences} test file(s) referenced in the patch."
   if [[ ${testReferences} == 0 ]] ; then
-    add_vote_table -1 "test4tests" \
+    add_vote_table_v2 -1 "test4tests" "" \
       "The patch doesn't appear to include any new or modified tests. " \
       "Please justify why no new tests are needed for this patch." \
       "Also please list what manual steps were performed to verify this patch."
     return 1
   fi
-  add_vote_table +1 "test4tests" \
+  add_vote_table_v2 +1 "" "test4tests" \
     "The patch appears to include ${testReferences} new or modified test files."
   return 0
 }

@@ -144,16 +144,18 @@ function whitespace_postcompile
 
   if [[ ${count} -gt 0 ]]; then
     if [[ "${BUILDMODE}" = full ]]; then
-      add_vote_table -1 whitespace "${BUILDMODEMSG} has ${count} line(s) that end in whitespace."
+      add_vote_table_v2 -1 whitespace \
+        "@@BASE@@/whitespace-eol.txt" \
+        "${BUILDMODEMSG} has ${count} line(s) that end in whitespace."
     else
-      add_vote_table -1 whitespace \
+      add_vote_table_v2 -1 whitespace \
+        "@@BASE@@/whitespace-eol.txt" \
         "${BUILDMODEMSG} has ${count} line(s) that end in whitespace. Use git apply --whitespace=fix <<patch_file>>. Refer https://git-scm.com/docs/git-apply"
     fi
 
     if [[ -n "${BUGLINECOMMENTS}" ]]; then
       whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-eol.txt" "end of line"
     fi
-    add_footer_table whitespace "@@BASE@@/whitespace-eol.txt"
     ((result=result+1))
   fi
 
@@ -161,9 +163,9 @@ function whitespace_postcompile
   count=$(wc -l "${PATCH_DIR}/whitespace-tabs.txt" | ${AWK} '{print $1}')
 
   if [[ ${count} -gt 0 ]]; then
-    add_vote_table -1 whitespace "${BUILDMODEMSG} ${count}"\
-      " line(s) with tabs."
-    add_footer_table whitespace "@@BASE@@/whitespace-tabs.txt"
+    add_vote_table_v2 -1 whitespace \
+      "@@BASE@@/whitespace-tabs.txt" \
+      "${BUILDMODEMSG} ${count} line(s) with tabs."
     if [[ -n "${BUGLINECOMMENTS}" ]]; then
       whitespace_linecomment_reporter "${PATCH_DIR}/whitespace-tabs.txt" "tabs in line"
     fi
@@ -176,6 +178,6 @@ function whitespace_postcompile
     return 1
   fi
 
-  add_vote_table +1 whitespace "${BUILDMODEMSG} has no whitespace issues."
+  add_vote_table_v2 +1 whitespace "" "${BUILDMODEMSG} has no whitespace issues."
   return 0
 }

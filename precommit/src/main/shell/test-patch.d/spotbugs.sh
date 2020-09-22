@@ -115,7 +115,7 @@ function spotbugs_precheck
     done
   fi
   if [[ ${status} == 1 ]]; then
-    add_vote_table 0 "${SPOTBUGS_MODE}" "${SPOTBUGS_MODE} executables are not available."
+    add_vote_table_v2 0 "${SPOTBUGS_MODE}" "" "${SPOTBUGS_MODE} executables are not available."
     delete_test "${SPOTBUGS_MODE}"
   fi
 }
@@ -152,7 +152,7 @@ function spotbugs_runner
   echo ""
 
   if [[ "${SPOTBUGS_TABLE_DUPE}" == true ]] && [[ "${name}" == branch ]]; then
-    add_vote_table 0 spotbugs "Both FindBugs and SpotBugs are enabled, using SpotBugs."
+    add_vote_table_v2 0 spotbugs "" "Both FindBugs and SpotBugs are enabled, using SpotBugs."
   fi
 
   #shellcheck disable=SC2153
@@ -283,7 +283,7 @@ function spotbugs_preapply
   fi
 
   if [[ "${SPOTBUGS_MODE}" == findbugs ]]; then
-    add_vote_table 0 spotbugs "Used deprecated FindBugs config; considering switching to SpotBugs."
+    add_vote_table_v2 0 spotbugs "" "Used deprecated FindBugs config; considering switching to SpotBugs."
   fi
 
   until [[ ${modindex} -eq ${#MODULE[@]} ]]; do

@@ -200,22 +200,24 @@ function add_header_line
 ## @replaceable  no
 ## @param        +1/0/-1/H
 ## @param        subsystem
+## @param        logfile
 ## @param        string
-function add_vote_table
+function add_vote_table_v2
 {
   declare value=$1
   declare subsystem=$2
-  shift 2
+  declare logfile=$3
+  shift 3
 
   # apparently shellcheck doesn't know about declare -r
   #shellcheck disable=SC2155
   declare -r elapsed=$(stop_clock)
   declare filt
 
-  yetus_debug "add_vote_table ${value} ${subsystem} ${elapsed} ${*}"
+  yetus_debug "add_vote_table_v2 >${value}< >${subsystem}< >${logfile}< >${elapsed}< ${*}"
 
   if [[ "${value}" = H ]]; then
-    TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="|${value}| | | ${subsystem} |"
+    TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="|${value}| | | | ${subsystem} |"
     ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
     return
   fi
@@ -231,12 +233,24 @@ function add_vote_table
   done
 
   # shellcheck disable=SC2034
-  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| ${value} | ${subsystem} | ${elapsed} | $* |"
+  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| ${value} | ${subsystem} | ${elapsed} | ${logfile} | $* |"
   ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
 
   if [[ "${value}" = -1 ]]; then
     ((RESULT = RESULT + 1))
   fi
+}
+
+## @description  Deprecated. Use add_vote_table_v2 instead.
+## @audience     public
+## @stability    stable
+## @replaceable  no
+function add_vote_table
+{
+  declare param1=$1
+  declare param2=$2
+  shift 2
+  add_vote_table_v2 "${param1}" "${param2}" "" "$@"
 }
 
 ## @description  Report the JVM vendor and version of the given directory
@@ -1017,11 +1031,11 @@ function parse_args
     else
       yetus_add_array_element EXEC_MODES Docker
     fi
-    add_vote_table 0 reexec "Docker mode activated."
+    add_vote_table_v2 0 reexec "" "Docker mode activated."
     start_clock
   elif [[ "${REEXECED}" = true ]]; then
     yetus_add_array_element EXEC_MODES Re-exec
-    add_vote_table 0 reexec "Precommit patch detected."
+    add_vote_table_v2 0 reexec "" "Precommit patch detected."
     start_clock
   fi
 
@@ -1464,7 +1478,7 @@ function apply_patch_file
 
   if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
     BUGLINECOMMENTS=""
-    add_vote_table '-0' patch "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
+    add_vote_table_v2 '-0' patch "" "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
     big_console_header "Applying diff to ${PATCH_BRANCH}"
   else
     big_console_header "Applying patch to ${PATCH_BRANCH}"
@@ -1473,7 +1487,7 @@ function apply_patch_file
   if ! patchfile_apply_driver "${INPUT_APPLIED_FILE}"; then
     echo "PATCH APPLICATION FAILED"
     ((RESULT = RESULT + 1))
-    add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
+    add_vote_table_v2 -1 patch "" "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
@@ -1619,7 +1633,7 @@ function check_reexec
     if [[ ${RESETREPO} == false ]]; then
       ((RESULT = RESULT + 1))
       yetus_debug "can't destructively change the working directory. run with '--resetrepo' please. :("
-      add_vote_table -1 precommit "Couldn't test precommit changes because we aren't configured to destructively change the working directory."
+      add_vote_table_v2 -1 precommit "" "Couldn't test precommit changes because we aren't configured to destructively change the working directory."
     else
 
       apply_patch_file
@@ -1814,10 +1828,19 @@ function modules_messages
         echo "${MODULE_STATUS_MSG[${modindex}]}"
         echo ""
         offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
-        add_vote_table "${MODULE_STATUS[${modindex}]}" "${testtype}" "${MODULE_STATUS_MSG[${modindex}]}"
         if [[ ${MODULE_STATUS[${modindex}]} == -1
           && -n "${MODULE_STATUS_LOG[${modindex}]}" ]]; then
-          add_footer_table "${testtype}" "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}"
+          add_vote_table_v2 \
+            "${MODULE_STATUS[${modindex}]}" \
+            "${testtype}" \
+            "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}" \
+            "${MODULE_STATUS_MSG[${modindex}]}"
+        else
+          add_vote_table_v2 \
+            "${MODULE_STATUS[${modindex}]}" \
+            "${testtype}" \
+            "" \
+            "${MODULE_STATUS_MSG[${modindex}]}"
         fi
       fi
       ((modindex=modindex+1))
@@ -1826,7 +1849,7 @@ function modules_messages
     if [[ ${failure} == false ]]; then
       start_clock
       offset_clock "${goodtime}"
-      add_vote_table +1 "${testtype}" "${repo} passed${statusjdk}"
+      add_vote_table_v2 +1 "${testtype}" "" "${repo} passed${statusjdk}"
     fi
   else
     until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
@@ -1835,10 +1858,19 @@ function modules_messages
       echo "${MODULE_STATUS_MSG[${modindex}]}"
       echo ""
       offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
-      add_vote_table "${MODULE_STATUS[${modindex}]}" "${testtype}" "${MODULE_STATUS_MSG[${modindex}]}"
       if [[ ${MODULE_STATUS[${modindex}]} == -1
         && -n "${MODULE_STATUS_LOG[${modindex}]}" ]]; then
-        add_footer_table "${testtype}" "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}"
+        add_vote_table_v2 \
+          "${MODULE_STATUS[${modindex}]}" \
+          "${testtype}" \
+          "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}" \
+          "${MODULE_STATUS_MSG[${modindex}]}"
+      else
+        add_vote_table_v2 \
+          "${MODULE_STATUS[${modindex}]}" \
+          "${testtype}" \
+          "" \
+          "${MODULE_STATUS_MSG[${modindex}]}"
       fi
       ((modindex=modindex+1))
     done
@@ -3096,7 +3128,7 @@ function patch_setup_work
   if ! dryrun_both_files; then
       ((RESULT = RESULT + 1))
       yetus_error "ERROR: ${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}."
-      add_vote_table -1 patch "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
+      add_vote_table_v2 -1 patch "" "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
       bugsystem_finalreport 1
       cleanup_and_exit 1
   fi
@@ -3190,9 +3222,9 @@ function initialize
   if [[ "${#PARAMETER_TRACKER}" -gt 0 ]]; then
     yetus_error "ERROR: Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
     if [[ "${IGNORE_UNKNOWN_OPTIONS}" == true ]]; then
-      add_vote_table "-0" yetus "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+      add_vote_table_v2 "-0" yetus "" "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
     else
-      add_vote_table -1 yetus "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+      add_vote_table_v2 -1 yetus "" "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
       bugsystem_finalreport 1
       cleanup_and_exit 1
     fi
@@ -3318,7 +3350,7 @@ else
   yetus_debug "Changed process/Java native thread limit to ${PROC_LIMIT}"
 fi
 
-add_vote_table H "Prechecks"
+add_vote_table_v2 H "Prechecks"
 
 prechecks
 
@@ -3326,7 +3358,7 @@ if [[ "${BUILDMODE}" = patch ]]; then
 
   patchfiletests
 
-  add_vote_table H "${PATCH_BRANCH} Compile Tests"
+  add_vote_table_v2 H "${PATCH_BRANCH} Compile Tests"
 
   compile_cycle branch
 
@@ -3338,17 +3370,17 @@ if [[ "${BUILDMODE}" = patch ]]; then
 
   compute_gitdiff
 
-  add_vote_table H "Patch Compile Tests"
+  add_vote_table_v2 H "Patch Compile Tests"
 
 else
 
-  add_vote_table H "Compile Tests"
+  add_vote_table_v2 H "Compile Tests"
 
 fi
 
 compile_cycle patch
 
-add_vote_table H "Other Tests"
+add_vote_table_v2 H "Other Tests"
 
 runtests
 

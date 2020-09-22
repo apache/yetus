@@ -60,6 +60,6 @@ function unitveto_patchfile
     return 0
   fi
 
-  add_vote_table -1 unitveto "Patch requires manual testing."
+  add_vote_table_v2 -1 unitveto "" "Patch requires manual testing."
   return 1
 }

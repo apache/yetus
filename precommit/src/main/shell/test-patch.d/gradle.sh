@@ -37,7 +37,7 @@ function gradle_precheck
 
   pushd "${BASEDIR}" >/dev/null || return 1
   if ! verify_command gradle "${GRADLEW}"; then
-      add_vote_table -1 gradle "ERROR: gradlew is not available."
+      add_vote_table_v2 -1 gradle "" "ERROR: gradlew is not available."
       popd >/dev/null || return 1
       return 1
   fi

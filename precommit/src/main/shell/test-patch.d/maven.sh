@@ -216,7 +216,7 @@ function maven_precheck
   fi
 
   if ! verify_command maven "${MAVEN}"; then
-    add_vote_table -1 maven "ERROR: maven was not available."
+    add_vote_table_v2 -1 maven "" "ERROR: maven was not available."
     return 1
   fi
 
@@ -857,17 +857,15 @@ function maven_reorder_modules
 
   if [[ "${BUILDMODE}" = patch ]]; then
     if [[ ${ret} == 0 ]]; then
-      add_vote_table 0 mvndep "Maven dependency ordering for ${repostatus}"
+      add_vote_table_v2 0 mvndep "" "Maven dependency ordering for ${repostatus}"
     else
-      add_vote_table -1 mvndep "Maven dependency ordering for ${repostatus}"
-      add_footer_table mvndep "${MAVEN_DEP_LOG}"
+      add_vote_table_v2 -1 mvndep "@@BASE@@/${MAVEN_DEP_LOG}" "Maven dependency ordering for ${repostatus}"
     fi
   else
     if [[ ${ret} == 0 ]]; then
-      add_vote_table 0 mvndep "Maven dependency ordering"
+      add_vote_table_v2 0 mvndep "" "Maven dependency ordering"
     else
-      add_vote_table -1 mvndep "Maven dependency ordering"
-      add_footer_table mvndep "${MAVEN_DEP_LOG}"
+      add_vote_table_v2 -1 mvndep "@@BASE@@/${MAVEN_DEP_LOG}" "Maven dependency ordering"
     fi
   fi
 

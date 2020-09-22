@@ -111,7 +111,7 @@ function javac_precheck
 
   if [[ -z ${JAVA_HOME:-} ]]; then
     yetus_error "ERROR: JAVA_HOME is not defined."
-    add_vote_table -1 pre-patch "JAVA_HOME is not defined."
+    add_vote_table_v2 -1 pre-patch "" "JAVA_HOME is not defined."
     return 1
   fi
 

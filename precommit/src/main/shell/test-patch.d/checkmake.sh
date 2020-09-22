@@ -56,7 +56,7 @@ function checkmake_filefilter
 function checkmake_precheck
 {
   if ! verify_command checkmake "${CHECKMAKE}"; then
-    add_vote_table 0 checkmake "checkmake was not available."
+    add_vote_table_v2 0 checkmake "" "checkmake was not available."
     delete_test checkmake
   fi
 }
@@ -162,15 +162,14 @@ function checkmake_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 checkmake "${BUILDMODEMSG} ${statstring}"
-    add_footer_table checkmake "@@BASE@@/diff-patch-checkmake.txt"
+    add_vote_table_v2 -1 checkmake "@@BASE@@/diff-patch-checkmake.txt" "${BUILDMODEMSG} ${statstring}"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 checkmake "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 checkmake "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 checkmake "There were no new checkmake issues."
+  add_vote_table_v2 +1 checkmake "" "There were no new checkmake issues."
   return 0
 }
 

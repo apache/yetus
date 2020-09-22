@@ -69,7 +69,7 @@ function ant_precheck
   declare ant_version
 
   if ! verify_command ant "${ANT}"; then
-    add_vote_table -1 ant "ERROR: ant is not available."
+    add_vote_table_v2 -1 ant "" "ERROR: ant is not available."
     return 1
   fi
   # finally let folks know what version they'll be dealing with.

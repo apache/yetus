@@ -74,7 +74,7 @@ function shelldocs_filefilter
 function shelldocs_precheck
 {
   if ! verify_command "shelldocs" "${SHELLDOCS}"; then
-    add_vote_table 0 shelldocs "Shelldocs was not available."
+    add_vote_table_v2 0 shelldocs "" "Shelldocs was not available."
     delete_test shelldocs
   fi
 }
@@ -177,16 +177,15 @@ function shelldocs_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 shelldocs "${BUILDMODEMSG} ${statstring}"
-    add_footer_table shelldocs "@@BASE@@/diff-patch-shelldocs.txt"
+    add_vote_table_v2 -1 shelldocs "@@BASE@@/diff-patch-shelldocs.txt" "${BUILDMODEMSG} ${statstring}"
     bugsystem_linecomments_queue "shelldocs" "${PATCH_DIR}/diff-patch-shelldocs.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 shelldocs "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 shelldocs "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 shelldocs "There were no new shelldocs issues."
+  add_vote_table_v2 +1 shelldocs "" "There were no new shelldocs issues."
   return 0
 }
 

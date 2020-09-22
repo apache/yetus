@@ -59,7 +59,7 @@ function jshint_filefilter
 function jshint_precheck
 {
   if ! verify_command "jshint" "${JSHINT}"; then
-    add_vote_table 0 jshint "jshint was not available."
+    add_vote_table_v2 0 jshint "" "jshint was not available."
     delete_test jshint
   fi
 
@@ -187,16 +187,15 @@ function jshint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 jshint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table jshint "@@BASE@@/diff-patch-jshint.txt"
+    add_vote_table_v2 -1 jshint "@@BASE@@/diff-patch-jshint.txt" "${BUILDMODEMSG} ${statstring}"
     bugsystem_linecomments_queue "jshint" "${PATCH_DIR}/diff-patch-jshint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 jshint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 jshint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 jshint "There were no new jshint issues."
+  add_vote_table_v2 +1 jshint "" "There were no new jshint issues."
   return 0
 }
 

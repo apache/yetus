@@ -38,7 +38,7 @@ function markdownlint_filefilter
 function markdownlint_precheck
 {
   if ! verify_command "markdownlint" "${MARKDOWNLINT}"; then
-    add_vote_table 0 markdownlint "markdownlint was not available."
+    add_vote_table_v2 0 markdownlint "" "markdownlint was not available."
     delete_test markdownlint
   fi
 }
@@ -143,16 +143,15 @@ function markdownlint_postapply
   statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
 
   if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table -1 markdownlint "${BUILDMODEMSG} ${statstring}"
-    add_footer_table markdownlint "@@BASE@@/diff-patch-markdownlint.txt"
+    add_vote_table_v2 -1 markdownlint "@@BASE@@/diff-patch-markdownlint.txt" "${BUILDMODEMSG} ${statstring}"
     bugsystem_linecomments_queue "markdownlint" "${PATCH_DIR}/diff-patch-markdownlint.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table +1 markdownlint "${BUILDMODEMSG} ${statstring}"
+    add_vote_table_v2 +1 markdownlint "" "${BUILDMODEMSG} ${statstring}"
     return 0
   fi
 
-  add_vote_table +1 markdownlint "There were no new markdownlint issues."
+  add_vote_table_v2 +1 markdownlint "" "There were no new markdownlint issues."
   return 0
 }
 
