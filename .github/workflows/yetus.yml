@@ -44,10 +44,12 @@ jobs:
           --junit-report-xml="${GITHUB_WORKSPACE}/out/junit-report.xml"
           --linecomments=''
           --proclimit=2000
+          --bugcomments=console,briefreport,github,htmlout,junit
           --archive-list="checkstyle-errors.xml,spotbugsXml.xml"
           --plugins=all
           --tests-filter=checkstyle,javadoc,rubocop,test4tests
           --docker-cache-from=apache/yetus-base:main
+          --github-token="${{ secrets.GITHUB_TOKEN }}"
       - name: Artifact output
         if: ${{ always() }}
         uses: actions/upload-artifact@v2

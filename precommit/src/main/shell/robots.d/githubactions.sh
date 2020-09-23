@@ -32,6 +32,15 @@ if [[ "${GITHUB_ACTIONS}" == true ]] &&
   ROBOTTYPE=githubactions
 
   # shellcheck disable=SC2034
+  BUILD_URL="https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+
+  # shellcheck disable=SC2034
+  BUILD_URL_CONSOLE=/
+
+  # shellcheck disable=SC2034
+  CONSOLE_USE_BUILD_URL=true
+
+  # shellcheck disable=SC2034
   GITHUB_REPO="${GITHUB_REPOSITORY}"
 
   if [[ "${GITHUB_EVENT_NAME}" == push ]]; then
@@ -51,20 +60,15 @@ if [[ "${GITHUB_ACTIONS}" == true ]] &&
   fi
 
   add_docker_env \
-    GITHUB_WORKSPACE \
-    GITHUB_SHA \
+    GITHUB_ACTIONS \
+    GITHUB_BASE_REF \
+    GITHUB_EVENT_NAME \
+    GITHUB_REF \
     GITHUB_REPOSITORY \
     GITHUB_RUN_NUMBER \
-    GITHUB_REF \
-    GITHUB_ACTIONS \
-    GITHUB_EVENT_NAME \
-    GITHUB_BASE_REF
-
-  # shellcheck disable=SC2034
-  BUILD_URL_CONSOLE=console
-
-  # shellcheck disable=SC2034
-  CONSOLE_USE_BUILD_URL=true
+    GITHUB_SHA \
+    GITHUB_TOKEN \
+    GITHUB_WORKSPACE
 
   if [[ -d ${BASEDIR}/.git ]]; then
     echo "Updating the local git repo to include all branches/tags:"

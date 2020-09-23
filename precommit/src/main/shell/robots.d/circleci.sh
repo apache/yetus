@@ -49,15 +49,19 @@ if [[ "${CIRCLECI}" = true ]] &&
     fi
 
     add_docker_env \
-      CIRCLECI \
       CIRCLE_BRANCH \
       CIRCLE_BUILD_NUM \
+      CIRCLE_PROJECT_REPONAME \
+      CIRCLE_PROJECT_USERNAME \
       CIRCLE_PULL_REQUEST \
       CIRCLE_PULL_REQUESTS \
-      CIRCLE_PROJECT_USERNAME \
-      CIRCLE_PROJECT_REPONAME \
       CIRCLE_REPOSITORY_URL \
-      CIRCLE_TOKEN
+      CIRCLE_SHA1 \
+      CIRCLE_TOKEN \
+      CIRCLECI
+
+    # shellcheck disable=SC2034
+    GITHUB_SHA=${CIRCLE_SHA1}
 
     yetus_add_array_element EXEC_MODES Circle_CI
   fi
