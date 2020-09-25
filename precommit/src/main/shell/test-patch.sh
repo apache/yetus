@@ -582,6 +582,9 @@ function compute_unidiff
   # 'filename:diff line:content' format
 
   for fn in "${CHANGED_FILES[@]}"; do
+    echo $fn
+    filen=${fn##./}
+    echo $filen
     if [[ -f "${filen}" ]]; then
       "${GIT}" diff "${filen}" \
         | tail -n +6 \
@@ -1477,7 +1480,6 @@ function apply_patch_file
 {
 
   if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
-    BUGLINECOMMENTS=""
     add_vote_table_v2 '-0' patch "" "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
     big_console_header "Applying diff to ${PATCH_BRANCH}"
   else

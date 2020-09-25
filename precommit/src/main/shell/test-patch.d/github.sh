@@ -498,6 +498,15 @@ function github_linecomments
   declare tempfile="${PATCH_DIR}/ghcomment.$$.${RANDOM}"
   declare githubauth
 
+  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
+    if [[ -z "${uniline}" ]]; then
+      echo "::error file=${file},line=${linenum}::${text[*]}"
+    else
+      echo "::error file=${file},line=${linenum},col=${uniline}::${text[*]}"
+    fi
+    return 0
+  fi
+
   if [[ -z "${GITHUB_COMMITSHA}" ]]; then
     GITHUB_COMMITSHA=$("${GREP}" \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
       | head -1 \
