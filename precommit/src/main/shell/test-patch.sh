@@ -2231,7 +2231,7 @@ function bugsystem_linecomments_queue
   declare linenum
   declare text
 
-  if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
+  if [[ ! -f "${GITUNIDIFFLINES}" && "${BUILDMODE}" == patch ]]; then
     return
   fi
 
