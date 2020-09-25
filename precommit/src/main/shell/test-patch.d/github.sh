@@ -41,7 +41,6 @@ GITHUB_USE_EMOJI_VOTE=false
 
 # private globals...
 GITHUB_BRIDGED=false
-GITHUB_COMMITSHA=""
 
 # Simple function to set a default GitHub user after PROJECT_NAME has been set
 function github_set_github_user
@@ -489,60 +488,20 @@ function github_locate_patch
 function github_linecomments
 {
   declare file=$1
-  # shellcheck disable=SC2034
   declare linenum=$2
-  declare uniline=$3
-  shift 3
-  declare -a text
-  text=("$@")
-  declare tempfile="${PATCH_DIR}/ghcomment.$$.${RANDOM}"
-  declare githubauth
+  declare column=$3
+  declare plugin=$4
+  shift 4
+  declare text=$*
 
-  if [[ -z "${GITHUB_COMMITSHA}" ]]; then
-    GITHUB_COMMITSHA=$("${GREP}" \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
-      | head -1 \
-      | cut -f4 -d\")
-  fi
-
-  if [[ -z "${uniline}" ]]; then
-    return
-  fi
-
-  # build our REST post
-  {
-    printf "{\"body\":\""
-    for line in "${text[@]}"; do
-      echo "${line}" \
-      | "${SED}" -e 's,\\,\\\\,g' \
-        -e 's,\",\\\",g' \
-        -e 's,$,\\r\\n,g' \
-      | tr -d '\n'
-    done
-    echo "\","
-    echo "\"commit_id\":\"${GITHUB_COMMITSHA}\","
-    echo "\"path\":\"${file}\","
-    echo "\"position\":${uniline}"
-    echo "}"
-  } > "${tempfile}"
-
-  if [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
+  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
+    if [[ -z "${column}" ]] || [[ "${column}" == 0 ]]; then
+      echo "::error file=${file},line=${linenum}::${plugin}:${text}"
+    else
+      echo "::error file=${file},line=${linenum},col=${column}::${plugin}:${text}"
+    fi
     return 0
   fi
-
-  "${CURL}" -X POST \
-    -H "Accept: application/vnd.github.v3.full+json" \
-    -H "Content-Type: application/json" \
-     "${githubauth[@]}" \
-    -d @"${tempfile}" \
-    --silent --location \
-    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${GITHUB_ISSUE}/comments" \
-    >/dev/null
-  rm "${tempfile}"
 }
 
 ## @description Write the contents of a file to github

@@ -42,7 +42,6 @@ jobs:
           --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
           --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
           --junit-report-xml="${GITHUB_WORKSPACE}/out/junit-report.xml"
-          --linecomments=''
           --proclimit=2000
           --bugcomments=console,briefreport,github,htmlout,junit
           --archive-list="checkstyle-errors.xml,spotbugsXml.xml"
