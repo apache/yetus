@@ -198,7 +198,7 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa \
     && pip3 install -v \
         astroid==2.4.2 \
         docker-compose==1.26.2 \
-        pylint==2.6.0 \
+        pylint==2.5.3 \
         yamllint==1.24.2 \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3
