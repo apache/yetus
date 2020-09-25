@@ -62,45 +62,6 @@ pipeline {
             sh '''#!/usr/bin/env bash
 
                 USE_DOCKER_FLAG=${USE_DOCKER_FLAG:-true}
-                # The ASF Jenkins servers are always full of broken JVMs left over
-                # from really terrible jobs/bugs in Java. This should get moved to
-                # the core code as part of YETUS-745
-
-                uptime
-
-                free -h
-
-                pidscur=$(cat /sys/fs/cgroup/pids/user.slice/user-${UID}.slice/pids.current)
-                pidsmax=$(cat /sys/fs/cgroup/pids/user.slice/user-${UID}.slice/pids.max)
-                ((remainingpids=pidsmax - pidscur))
-
-                echo "PIDS:  max: ${pidsmax} cur: ${pidscur} rem: ${remainingpids}"
-
-                # Doing this lets us log them. We pull
-                # out test-patch since --java-home + --jira-home might appear on
-                # its command line
-
-                pids=$(ps -ef | grep /home/jenkins/jenkins-slave/workspace/ | grep -v test-patch | awk '{print $2}')
-
-
-                for pid in ${pids}; do
-                  elapsed=$(ps -o etimes= -p ${pid})
-                  if [[ ${elapsed} -gt 86400 ]]; then
-                    ps up ${pid}
-                    echo "Killing ${pid} ***"
-                    kill -9 "${pid}"
-                  fi
-                done
-
-                uptime
-
-                free -h
-
-                pidscur=$(cat /sys/fs/cgroup/pids/user.slice/user-${UID}.slice/pids.current)
-                pidsmax=$(cat /sys/fs/cgroup/pids/user.slice/user-${UID}.slice/pids.max)
-                ((remainingpids=pidsmax - pidscur))
-
-                echo "PIDS:  max: ${pidsmax} cur: ${pidscur} rem: ${remainingpids}"
 
                 # clean and make a new directory for our output artifacts, temporary
                 # storage, etc just incase the workspace directory
