@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,21 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG DOCKER_TAG=main
-ARG DOCKER_REPO=apache/yetus
-FROM ${DOCKER_REPO}-base:${DOCKER_TAG}
-
-LABEL org.apache.yetus=""
-COPY . /ysrc/
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod a+rx /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-
-# hadolint ignore=DL3003
-RUN cd /ysrc \
-    && mvn clean install -DskipTests \
-    && rm -rf /.m2 \
-    && cd /usr \
-    && tar xzpf /ysrc/yetus-dist/target/artifacts/apache-yetus*bin.tar.gz \
-       --strip 1 \
-    && rm -rf /ysrc /root/.m2
+# if passed a flag, assume test-patch
+# otherwise assume bash
+if [[ "${1:0:1}" = '-' ]]; then
+  set -- test-patch "$@"
+elif [[ -z "${1}" ]]; then
+  set -- bash "$@"
+fi
+exec "$@"
