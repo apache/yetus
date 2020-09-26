@@ -44,7 +44,10 @@ function common_defaults
   OSTYPE=$(uname -s)
   #shellcheck disable=SC2034
   PATCH_BRANCH=""
-  PATCH_BRANCH_DEFAULT="main"
+
+  # This will get automatically determined when possible
+  # later if this is still empty after various initializations
+  PATCH_BRANCH_DEFAULT=""
   #shellcheck disable=SC2034
   PATCH_DRYRUNMODE=false
   PATCH_DIR=/tmp
