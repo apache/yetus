@@ -186,10 +186,25 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
 # hadolint ignore=DL3008,DL3013
-RUN add-apt-repository -y ppa:deadsnakes/ppa \
-    && apt-get -q update && apt-get -q install --no-install-recommends -y \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3 \
+        python3-bcrypt \
+        python3-cffi \
+        python3-cryptography \
+        python3-dateutil \
         python3-dev \
+        python3-dev \
+        python3-isort \
+        python3-dockerpty \
+        python3-nacl \
+        python3-pyrsistent \
+        python3-setuptools \
+        python3-setuptools \
+        python3-singledispatch \
+        python3-six \
+        python3-wheel \
+        python3-wrapt \
+        python3-yaml \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
@@ -208,9 +223,18 @@ RUN add-apt-repository -y ppa:deadsnakes/ppa \
 ######
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python2 \
+        python-backports.functools-lru-cache \
+        python-bcrypt \
+        python-cffi \
+        python-cryptography \
+        python-dateutil \
+        python-dev \
+        python-enum34 \
         python-pkg-resources \
         python-setuptools \
-        python-dev \
+        python-singledispatch \
+        python-six \
+        python-yaml \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
@@ -221,7 +245,6 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         configparser==4.0.2 \
         isort==4.3.21 \
         pylint==1.9.2 \
-        python-dateutil==2.7.3 \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint2
 
