@@ -70,14 +70,6 @@ if [[ "${GITHUB_ACTIONS}" == true ]] &&
     GITHUB_TOKEN \
     GITHUB_WORKSPACE
 
-  if [[ -d ${BASEDIR}/.git ]]; then
-    echo "Updating the local git repo to include all branches/tags:"
-    pushd "${BASEDIR}" >/dev/null || exit 1
-    "${GIT}" config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
-    "${GIT}" fetch --tags
-    popd >/dev/null || exit 1
-  fi
-
   yetus_add_array_element EXEC_MODES GitHubActions
 fi
 
