@@ -1266,7 +1266,7 @@ function git_checkout
     # we need to explicitly fetch in case the
     # git ref hasn't been brought in tree yet
     if [[ ${GIT_OFFLINE} == false ]]; then
-      if ! "${GIT}" pull --rebase; then
+      if ! "${GIT}" pull --rebase --tags --force; then
           yetus_error "ERROR: git pull is failing"
           cleanup_and_exit 1
       fi
@@ -1288,14 +1288,19 @@ function git_checkout
       # protected by OFFLINE == false
 
       if [[ "${GIT_OFFLINE}" == false ]]; then
-        if ! "${GIT}" fetch; then
-          yetus_error "ERROR: git fetch is failing"
-          cleanup_and_exit 1
-        fi
 
-        if ! "${GIT}" reset --hard FETCH_HEAD; then
-          yetus_error "ERROR: git reset is failing"
-          cleanup_and_exit 1
+        # if it is a tag, then the pull rebase should have done
+        # the trick already
+        if [[ ! -f ".git/refs/tags/${PATCH_BRANCH}" ]]; then
+          if ! "${GIT}" fetch; then
+            yetus_error "ERROR: git fetch is failing"
+            cleanup_and_exit 1
+          fi
+
+          if ! "${GIT}" reset --hard FETCH_HEAD; then
+            yetus_error "ERROR: git reset is failing"
+            cleanup_and_exit 1
+          fi
         fi
       fi
 
