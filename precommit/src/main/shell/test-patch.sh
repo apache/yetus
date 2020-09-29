@@ -552,65 +552,10 @@ function compute_gitdiff
     touch "${GITDIFFCONTENT}"
   fi
 
-  if [[ -s "${GITDIFFLINES}" ]]; then
-    compute_unidiff
-  fi
-
   popd >/dev/null || return 1
 }
 
-## @description generate an index of unified diff lines vs. modified/added lines
-## @description ${GITDIFFLINES} must exist.
-## @audience    private
-## @stability   stable
-## @replaceable no
-function compute_unidiff
-{
-  declare fn
-  declare filen
-  declare tmpfile="${PATCH_DIR}/tmp.$$.${RANDOM}"
 
-  # now that we know what lines are where, we can deal
-  # with github's pain-in-the-butt API. It requires
-  # that the client provides the line number of the
-  # unified diff on a per file basis.
-
-  # First, build a per-file unified diff, pulling
-  # out the 'extra' lines, grabbing the adds with
-  # the line number in the diff file along the way,
-  # finally rewriting the line so that it is in
-  # 'filename:diff line:content' format
-
-  for fn in "${CHANGED_FILES[@]}"; do
-    if [[ -f "${filen}" ]]; then
-      "${GIT}" diff "${filen}" \
-        | tail -n +6 \
-        | "${GREP}" -n '^+' \
-        | "${GREP}" -vE '^[0-9]*:\+\+\+' \
-        | "${SED}" -e 's,^\([0-9]*:\)\+,\1,g' \
-          -e "s,^,${filen}:,g" \
-              >>  "${tmpfile}"
-    fi
-  done
-
-  # if every file that got changed was excluded, there
-  # is no data to calculate.
-
-  if [[ -s "${tmpfile}" ]]; then
-
-    # at this point, tmpfile should be in the same format
-    # as gitdiffcontent, just with different line numbers.
-    # let's do a merge (using gitdifflines because it's easier)
-
-    # filename:real number:diff number
-    # shellcheck disable=SC2016
-    paste -d: "${GITDIFFLINES}" "${tmpfile}" \
-      | "${AWK}" -F: '{print $1":"$2":"$5":"$6}' \
-      >> "${GITUNIDIFFLINES}"
-
-    rm "${tmpfile}"
-  fi
-}
 
 
 ## @description  Print the command to be executing to the screen. Then
@@ -1098,7 +1043,6 @@ function parse_args
 
   GITDIFFLINES="${PATCH_DIR}/gitdifflines.txt"
   GITDIFFCONTENT="${PATCH_DIR}/gitdiffcontent.txt"
-  GITUNIDIFFLINES="${PATCH_DIR}/gitdiffunilines.txt"
 
   if [[ "${REEXECED}" = true
      && -f "${PATCH_DIR}/precommit/personality/provided.sh" ]]; then
@@ -1482,7 +1426,6 @@ function apply_patch_file
 {
 
   if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
-    BUGLINECOMMENTS=""
     add_vote_table_v2 '-0' patch "" "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
     big_console_header "Applying diff to ${PATCH_BRANCH}"
   else
@@ -2220,7 +2163,7 @@ function check_unittests
 ## @description  Queue up comments to write into bug systems
 ## @description  that have code review support, if such support
 ## @description  enabled/available.
-## @description  File should be in the form of "file:line:comment"
+## @description  File should be in the form of "file:line[:column]:comment"
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
@@ -2233,9 +2176,11 @@ function bugsystem_linecomments_queue
   declare line
   declare linenum
   declare text
+  declare columncheck
+  declare column
 
-  if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
-    return
+  if [[ -z "${BUGLINECOMMENTS}" ]]; then
+    return 0
   fi
 
   while read -r line; do
@@ -2244,43 +2189,18 @@ function bugsystem_linecomments_queue
       file=${file:2}
     fi
     linenum=$(echo "${line}" | cut -f2 -d:)
-    text=$(echo "${line}" | cut -f3- -d:)
+    columncheck=$(echo "${line}" | cut -f3 -d:)
+    if [[ "${columncheck}" =~ ^[0-9]+$ ]]; then
+      column=${columncheck}
+      text=$(echo "${line}" | cut -f4- -d:)
+    else
+      column="0"
+      text=$(echo "${line}" | cut -f3- -d:)
+    fi
 
-    echo "${file}:${linenum}:${plugin}:${text}" >> "${PATCH_DIR}/linecomments-in.txt"
+    echo "${file}:${linenum}:${column}:${plugin}:${text}" >> "${PATCH_DIR}/linecomments-in.txt"
 
   done < "${fn}"
-}
-
-## @description  Call relevant bug systems to write comments
-## @audience     private
-## @stability    evolving
-## @replaceable  no
-function bugsystem_linecomments_writer
-{
-  declare fn=$1
-  declare linenum=$2
-  shift 2
-  declare -a text
-  text=("$@")
-  declare idxline
-  declare uniline
-
-  if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
-    return
-  fi
-
-  if [[ -z "${fn}" ]]; then
-    return
-  fi
-
-  idxline="${fn}:${linenum}:"
-  uniline=$("${GREP}" "${idxline}" "${GITUNIDIFFLINES}" | cut -f3 -d: )
-
-  for bugs in ${BUGLINECOMMENTS}; do
-    if declare -f "${bugs}_linecomments" >/dev/null;then
-      "${bugs}_linecomments" "${fn}" "${linenum}" "${uniline}" "${linetext[@]}"
-    fi
-  done
 }
 
 ## @description  Write all of the bugsystem linecomments
@@ -2289,62 +2209,40 @@ function bugsystem_linecomments_writer
 ## @replaceable  no
 function bugsystem_linecomments_trigger
 {
-  declare line
+  declare plugin
   declare fn
+  declare line
   declare linenum
   declare text
-  declare -a linetext
-  declare prevnum
-  declare prevfn
-  declare plugin
-
-  if [[ ! -f "${GITUNIDIFFLINES}" ]]; then
-    return 0
-  fi
+  declare column
 
   if [[ ! -f "${PATCH_DIR}/linecomments-in.txt" ]]; then
     return 0
   fi
 
   # sort the file such that all files and lines are now next to each other
-  sort "${PATCH_DIR}/linecomments-in.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
+  sort -k1,1 -k2,2n -k3,3n -k4,4 "${PATCH_DIR}/linecomments-in.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
 
   while read -r line;do
     fn=$(echo "${line}" | cut -f1 -d:)
-    if [[ -z "${prevfn}" ]]; then
-      prevfn=${fn}
-    fi
-
     linenum=$(echo "${line}" | cut -f2 -d:)
-    if [[ -z "${prevnum}" ]]; then
-      prevnum=${linenum}
-    fi
+    column=$(echo "${line}" | cut -f3 -d:)
+    plugin=$(echo "${line}" | cut -f4 -d:)
+    text=$(echo "${line}" | cut -f5- -d:)
 
-    text=$(echo "${line}" | cut -f3- -d:)
-
-    # if, for some reason either one of these
-    # isn't a number, force it to be zero.
-    if [[ ! ${prevnum} =~ ^[0-9]+$ ]]; then
-      prevnum=0
-    fi
-
-    if [[ ! ${linenum} =~ ^[0-9]+$ ]]; then
-      linenum=0
-    fi
-
-    if [[ "${prevfn}" == "${fn}" ]] &&
-       [[ ${prevnum} -eq ${linenum} ]]; then
-      linetext+=("${text}")
-      continue
-    fi
-
-    bugsystem_linecomments_writer "${prevfn}" "${prevnum}" "${linetext[@]}"
-    prevfn=${fn}
-    prevnum=${linenum}
-    linetext=("${text}")
+    for bugs in ${BUGLINECOMMENTS}; do
+      if declare -f "${bugs}_linecomments" >/dev/null;then
+        "${bugs}_linecomments" "${fn}" "${linenum}" "${column}" "${plugin}" "${text}"
+      fi
+    done
   done < "${PATCH_DIR}/linecomments-sorted.txt"
 
-  bugsystem_linecomments_writer "${prevfn}" "${prevnum}" "${linetext[@]}"
+  for bugs in ${BUGLINECOMMENTS}; do
+    if declare -f "${bugs}_linecomments_end" >/dev/null;then
+      "${bugs}_linecomments_end"
+    fi
+  done
+
   if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
     yetus_debug "Keeping linecomments files for debugging"
   else
@@ -2372,6 +2270,8 @@ function bugsystem_finalreport
   fi
 
   add_footer_table "Powered by" "Apache Yetus ${VERSION} https://yetus.apache.org"
+
+  big_console_header "Generating Reports . . ."
 
   bugsystem_linecomments_trigger
 
