@@ -20,7 +20,7 @@ github:
     merge: false
     rebase: false
 notifications:
-  commits: commits@yetus.apache.org
-  issues: notifications@yetus.apache.org
-  pullrequests: notifications@yetus.apache.org
+  commits: gitbox@yetus.apache.org
+  issues: gitbox@yetus.apache.org
+  pullrequests: gitbox@yetus.apache.org
   jira_options: link label worklog
