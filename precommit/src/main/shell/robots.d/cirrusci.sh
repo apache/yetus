@@ -59,7 +59,7 @@ if [[ "${CIRRUS_CI}" == true ]] &&
     CIRRUS_TASK_ID
 
   # shellcheck disable=SC2034
-  GITHUB_SHA=${CIRRUS_BASE_SHA}
+  GIT_BRANCH_SHA=${CIRRUS_BASE_SHA}
 
   # shellcheck disable=SC2034
   BUILD_URL="https://cirrus-ci.com/task/${CIRRUS_TASK_ID}"

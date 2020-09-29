@@ -47,7 +47,7 @@ if [[ "${TRAVIS}" == true ]] &&
   GITHUB_REPO=${TRAVIS_REPO_SLUG}
 
   # shellcheck disable=SC2034
-  GITHUB_SHA=${TRAVIS_PULL_REQUEST_SHA}
+  GIT_BRANCH_SHA=${TRAVIS_PULL_REQUEST_SHA}
 
   add_docker_env \
     TRAVIS \

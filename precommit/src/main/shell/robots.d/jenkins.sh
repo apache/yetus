@@ -103,10 +103,11 @@ if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]] &&
     GIT_URL \
     JENKINS_URL
 
-  # Enable writes to GitHub Statuses
-  if [[ -z "${GITHUB_SHA}" ]]; then
+  # Jenkins doesn't always define this, so this
+  # dependency is highly unreliable
+  if [[ -n "${GIT_COMMIT}" ]]; then
     # shellcheck disable=SC2034
-    GITHUB_SHA=${GIT_COMMIT}
+    GIT_BRANCH_SHA=${GIT_COMMIT}
   fi
 
   yetus_add_array_element EXEC_MODES Jenkins
