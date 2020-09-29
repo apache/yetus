@@ -722,7 +722,7 @@ function github_status_write()
     "${githubauth[@]}" \
     -d @"${filename}" \
     --location \
-    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GITHUB_SHA}" \
+    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GIT_BRANCH_SHA}" \
     > /dev/null
 
   retval=$?
@@ -767,8 +767,8 @@ function github_finalreport
     return 0
   fi
 
-  if [[ -z "${GITHUB_SHA}" ]]; then
-    echo "Unknown GITHUB_SHA defined. Skipping."
+  if [[ -z "${GIT_BRANCH_SHA}" ]]; then
+    echo "Unknown GIT_BRANCH_SHA defined. Skipping."
     return 0
   fi
 

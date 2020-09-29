@@ -315,9 +315,7 @@ function prepopulate_footer
     add_footer_table "Personality" "${PERSONALITY}"
   fi
 
-  gitrev=$("${GIT}" rev-parse --verify --short HEAD)
-
-  add_footer_table "git revision" "${PATCH_BRANCH} / ${gitrev}"
+  add_footer_table "git revision" "${PATCH_BRANCH} / ${GIT_BRANCH_SHA}"
 }
 
 ## @description  Last minute entries on the footer table
@@ -1274,6 +1272,10 @@ function git_checkout
       fi
       PATCH_BRANCH=${currentbranch}
     fi
+  fi
+
+  if [[ -z "${GIT_BRANCH_SHA}" ]]; then
+    GIT_BRANCH_SHA=$("${GIT}" log -1 --format="%H")
   fi
 
   return 0
