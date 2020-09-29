@@ -767,7 +767,7 @@ function github_status_write()
     > /dev/null
 
   retval=$?
-  if [[ ${retval} -eq 0 ]]; then
+  if [[ ${retval} -gt 0 ]]; then
     echo "githubstatus-report: Failed to write status. Maybe the credential does not have write access to repo:status."
   fi
   return ${retval}
