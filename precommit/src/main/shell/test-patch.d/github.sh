@@ -704,6 +704,7 @@ function github_status_write()
 {
   declare filename=$1
   declare -a githubauth
+  declare retval=0
 
   if [[ -n "${GITHUB_TOKEN}" ]]; then
     githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
@@ -723,6 +724,12 @@ function github_status_write()
     --location \
     "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GITHUB_SHA}" \
     > /dev/null
+
+  retval=$?
+  if [[ ${retval} -gt 0 ]]; then
+    echo "githubstatus-report: Failed to write status. Maybe the credential does not have write access to repo:status."
+  fi
+  return ${retval}
 }
 
 ## @description  Print out the finished details to the Github PR
