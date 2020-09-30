@@ -419,6 +419,8 @@ function jira_finalreport
   declare calctime
   declare url
   declare logfile
+  declare fn
+  declare logurl
 
   url=$(get_artifact_url)
 
@@ -501,16 +503,19 @@ function jira_finalreport
       esac
     fi
     if [[ -n "${logfile}" ]]; then
-      logfile=$(echo "${logfile}" |
-              "${SED}" -e "s,@@BASE@@,${url},g")
+      fn=${logfile//@@BASE@@/}
+      if [[ "${url}" =~ http ]]; then
+        logurl=${logfile//@@BASE@@/${url}}
+        fn="[${fn}|${logurl}]"
+      fi
     else
-      logfile=""
+      fn=""
     fi
-    printf '| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} |\n' \
+    printf '| {color:%s}%s{color} | {color:%s}%s{color} | {color:%s}%s{color} | %s | {color:%s}%s{color} |\n' \
       "${color}" "${vote}" \
       "${color}" "${subs}" \
       "${color}" "${calctime}" \
-      "${color}" "${logfile}" \
+      "${fn}" \
       "${color}" "${comment}" \
       >> "${commentfile}"
     ((i=i+1))

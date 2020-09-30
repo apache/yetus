@@ -54,7 +54,7 @@ function test4tests_patchfile
       "Also please list what manual steps were performed to verify this patch."
     return 1
   fi
-  add_vote_table_v2 +1 "" "test4tests" \
+  add_vote_table_v2 +1 "test4tests" "" \
     "The patch appears to include ${testReferences} new or modified test files."
   return 0
 }
