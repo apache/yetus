@@ -706,13 +706,14 @@ function github_status_write()
     return 0
   fi
 
-  "${CURL}" --fail -X POST \
+  "${CURL}" --silent --fail -X POST \
     -H "Accept: application/vnd.github.v3.full+json" \
     -H "Content-Type: application/json" \
     "${GITHUB_AUTH[@]}" \
     -d @"${filename}" \
     --location \
-    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GIT_BRANCH_SHA}"
+    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GIT_BRANCH_SHA}" \
+    > /dev/null
 
   retval=$?
   if [[ ${retval} -gt 0 ]]; then
