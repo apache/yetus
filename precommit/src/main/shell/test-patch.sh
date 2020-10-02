@@ -873,6 +873,8 @@ function parse_args
       --sentinel)
         delete_parameter "${i}"
         # shellcheck disable=SC2034
+        ROBOT=true
+        # shellcheck disable=SC2034
         SENTINEL=true
         yetus_add_array_element EXEC_MODES Sentinel
       ;;
