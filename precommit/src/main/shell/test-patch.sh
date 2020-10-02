@@ -1157,6 +1157,9 @@ function git_checkout
 
   big_console_header "Confirming git environment"
 
+  # if this still hasn't been set by now, set it.
+  PATCH_BRANCH_DEFAULT=${PATCH_BRANCH_DEFAULT:="main"}
+
   git_requires_creds
 
   if [[ ${ROBOT} == true ]]; then

@@ -38,6 +38,7 @@ GITHUB_USER="${GITHUB_USER-}"
 GITHUB_TOKEN="${GITHUB_TOKEN-}"
 GITHUB_ISSUE=""
 GITHUB_USE_EMOJI_VOTE=false
+declare -a GITHUB_AUTH
 
 # private globals...
 GITHUB_BRIDGED=false
@@ -177,6 +178,26 @@ function github_initialize
   if [[ -z "${GITHUB_REPO}" ]]; then
     GITHUB_REPO=${GITHUB_REPO_DEFAULT:-}
   fi
+
+  if [[ -n "${GITHUB_TOKEN}" ]]; then
+    GITHUB_AUTH=(-H "Authorization: token ${GITHUB_TOKEN}")
+  elif [[ -n "${GITHUB_USER}"
+     && -n "${GITHUB_PASSWD}" ]]; then
+    GITHUB_AUTH=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
+  fi
+
+  # if the default branch hasn't been set yet, ask GitHub
+  if [[ -z "${PATCH_BRANCH_DEFAULT}"  && -n "${GITHUB_REPO}" && "${OFFLINE}" == false ]]; then
+    "${CURL}" --silent --fail \
+          -H "Accept: application/vnd.github.v3.full+json" \
+          "${GITHUB_AUTH[@]}" \
+          --output "${PATCH_DIR}/github-repo.json" \
+          --location \
+         "${GITHUB_API_URL}/repos/${GITHUB_REPO}" \
+         > /dev/null
+    PATCH_BRANCH_DEFAULT=$("${GREP}" default_branch "${PATCH_DIR}/github-repo.json" | head -1 | cut -d\" -f4)
+  fi
+
 }
 
 ## @description based upon a github PR, attempt to link back to JIRA
@@ -279,7 +300,6 @@ function github_locate_pr_patch
   declare input=$1
   declare patchout=$2
   declare diffout=$3
-  declare githubauth
   declare apiurl
 
   input=${input#GH:}
@@ -319,15 +339,6 @@ function github_locate_pr_patch
   # shellcheck disable=SC2034
   PATCHURL="${GITHUB_BASE_URL}/${GITHUB_REPO}/pull/${input}.patch"
 
-  if [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
-    githubauth=(-H "X-ignore-me: fake")
-  fi
-
   echo "GITHUB PR #${input} is being downloaded from"
   echo "${apiurl}"
 
@@ -335,7 +346,7 @@ function github_locate_pr_patch
   # Let's pull the PR JSON for later use
   if ! "${CURL}" --silent --fail \
           -H "Accept: application/vnd.github.v3.full+json" \
-          "${githubauth[@]}" \
+          "${GITHUB_AUTH[@]}" \
           --output "${PATCH_DIR}/github-pull.json" \
           --location \
          "${apiurl}"; then
@@ -350,7 +361,7 @@ function github_locate_pr_patch
           -H "Accept: application/vnd.github.v3.patch" \
           --output "${patchout}" \
           --location \
-          "${githubauth[@]}" \
+          "${GITHUB_AUTH[@]}" \
          "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"; then
     yetus_debug "github_locate_patch: not a github pull request."
     return 1
@@ -361,7 +372,7 @@ function github_locate_pr_patch
           -H "Accept: application/vnd.github.v3.diff" \
           --output "${diffout}" \
           --location \
-          "${githubauth[@]}" \
+          "${GITHUB_AUTH[@]}" \
          "${apiurl}"; then
     yetus_debug "github_locate_patch: cannot download diff"
     return 1
@@ -393,26 +404,17 @@ function github_locate_sha_patch
   declare diffout=$3
   declare gitsha
   declare number
-  declare githubauth
 
   gitsha=${input#GHSHA:}
 
   # locate the PR number via GitHub API v3
   #curl https://api.github.com/search/issues?q=sha:40a7af3377d8087779bf8ad66397947b7270737a\&type:pr\&repo:apache/yetus
 
-  if [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
-    githubauth=(-H "X-ignore-me: fake")
-  fi
 
    # Let's pull the PR JSON for later use
   if ! "${CURL}" --silent --fail \
           -H "Accept: application/vnd.github.v3.full+json" \
-          "${githubauth[@]}" \
+          "${GITHUB_AUTH[@]}" \
           --output "${PATCH_DIR}/github-search.json" \
           --location \
          "${GITHUB_API_URL}/search/issues?q=${gitsha}&type:pr&repo:${GITHUB_REPO}"; then
@@ -513,7 +515,6 @@ function github_write_comment
   declare -r commentfile=${1}
   declare retval=0
   declare restfile="${PATCH_DIR}/ghcomment.$$"
-  declare githubauth
 
   if [[ "${OFFLINE}" == true ]]; then
     echo "Github Plugin: Running in offline, comment skipped."
@@ -529,12 +530,7 @@ function github_write_comment
     echo "\"}"
   } > "${restfile}"
 
-  if [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
+  if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
     echo "Github Plugin: no credentials provided to write a comment."
     return 0
   fi
@@ -542,7 +538,7 @@ function github_write_comment
   "${CURL}" -X POST \
        -H "Accept: application/vnd.github.v3.full+json" \
        -H "Content-Type: application/json" \
-       "${githubauth[@]}" \
+       "${GITHUB_AUTH[@]}" \
        -d @"${restfile}" \
        --silent --location \
          "${GITHUB_API_URL}/repos/${GITHUB_REPO}/issues/${GITHUB_ISSUE}/comments" \
@@ -703,23 +699,17 @@ function github_write_comment
 function github_status_write()
 {
   declare filename=$1
-  declare -a githubauth
   declare retval=0
 
-  if [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
-    echo "githubstatus-report: no credentials provided to write statuses."
+  if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
+    echo "Github Plugin: no credentials provided to write a status."
     return 0
   fi
 
   "${CURL}" --silent --fail -X POST \
     -H "Accept: application/vnd.github.v3.full+json" \
     -H "Content-Type: application/json" \
-    "${githubauth[@]}" \
+    "${GITHUB_AUTH[@]}" \
     -d @"${filename}" \
     --location \
     "${GITHUB_API_URL}/repos/${GITHUB_REPO}/statuses/${GIT_BRANCH_SHA}" \
@@ -751,19 +741,13 @@ function github_finalreport
   declare logfile
   declare vote
   declare ourstring
-  declare -a githubauth
   declare -i i=0
   declare header
 
   big_console_header "Adding GitHub Statuses"
 
-  if [[ -n "${GITHUB_TOKEN}" ]]; then
-    githubauth=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    githubauth=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
-  else
-    echo "githubstatus-report: no credentials provided to write statuses."
+  if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
+    echo "Github Plugin: no credentials provided to write a status."
     return 0
   fi
 
