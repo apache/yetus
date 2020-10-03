@@ -166,6 +166,7 @@ function checkstyle_runner
   declare codeline
   declare cmdresult
   declare -a filelist
+  declare rol
 
   # first, let's clear out any previous run information
   modules_reset
@@ -306,13 +307,14 @@ function checkstyle_runner
 
       # file:linenum:(column:)error    ====>
       # file:linenum:code(:column)\x01:error
-      # \x01 will later used to identify the begining
+      # \x01 will later used to identify the beginning
       # of the checkstyle error message
       pushd "${BASEDIR}" >/dev/null || return 1
       while read -r logline; do
-        file=$(echo "${logline}" | cut -f1 -d:)
-        linenum=$(echo "${logline}" | cut -f2 -d:)
-        text=$(echo "${logline}" | cut -f3- -d:)
+        file=${logline%%:*}
+        rol=${logline/#${file}:}
+        linenum=${rol%%:*}
+        text=${rol/#${linenum}:}
         codeline=$(head -n "+${linenum}" "${file}" | tail -1 )
         {
           echo -n "${file}:${linenum}:${codeline}"
@@ -393,6 +395,7 @@ function checkstyle_postapply
   declare numpatch=0
   declare addpatch=0
   declare summarize=true
+  declare tmpvar
 
   if ! verify_needed_test checkstyle; then
     return 0
@@ -439,12 +442,15 @@ function checkstyle_postapply
         > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
     fi
 
-    #shellcheck disable=SC2016
-    numbranch=$(wc -l "${PATCH_DIR}/branch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
-    #shellcheck disable=SC2016
-    numpatch=$(wc -l "${PATCH_DIR}/patch-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
-    #shellcheck disable=SC2016
-    addpatch=$(wc -l "${PATCH_DIR}/diff-checkstyle-${fn}.txt" | ${AWK} '{print $1}')
+    tmpvar=$(wc -l "${PATCH_DIR}/branch-checkstyle-${fn}.txt")
+    numbranch=${tmpvar%% *}
+
+    tmpvar=$(wc -l "${PATCH_DIR}/patch-checkstyle-${fn}.txt")
+    numpatch=${tmpvar%% *}
+
+    tmpvar=$(wc -l "${PATCH_DIR}/diff-checkstyle-${fn}.txt")
+    addpatch=${tmpvar%% *}
+
 
     ((fixedpatch=numbranch-numpatch+addpatch))
 

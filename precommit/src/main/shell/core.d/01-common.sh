@@ -729,9 +729,9 @@ function set_yetus_version
     VERSION=$(cat "${BINDIR}/VERSION")
   elif [[ -f "${BINDIR}/../../../pom.xml" ]]; then
     # this way we have no dependency on Maven being installed
-    VERSION=$(${GREP} "<version>" "${BINDIR}/../../../pom.xml" 2>/dev/null \
+    VERSION=$("${GREP}" "<version>" "${BINDIR}/../../../pom.xml" 2>/dev/null \
       | head -1 \
-      | ${SED}  -e 's|^ *<version>||' -e 's|</version>.*$||' 2>/dev/null)
+      | "${SED}"  -e 's|^ *<version>||' -e 's|</version>.*$||' 2>/dev/null)
   fi
 }
 
@@ -804,12 +804,13 @@ function guess_build_tool
 ## @param        module
 function module_file_fragment
 {
-  local mod=$1
-  if [[ ${mod} = \. ]]; then
+  declare mod
+
+  if [[ ${1} = \. ]]; then
     echo root
   else
-    #shellcheck disable=SC1003
-    echo "$1" | tr '/' '_' | tr '\\' '_'
+    mod=${1//\//_}
+    echo "${mod//\\/_}"
   fi
 }
 
