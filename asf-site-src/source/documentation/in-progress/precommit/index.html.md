@@ -77,6 +77,7 @@ Features are plug-in based and enabled either individually or collectively on th
 These plug-ins are native to Apace Yetus and are (usually!) always available:
 
 * [author](plugins/author)
+* [blanks](plugins/blanks)
 * [briefreport](plugins/briefreport)
 * [dupname](plugins/dupname)
 * [htmlout](plugins/htmlout)
@@ -84,7 +85,6 @@ These plug-ins are native to Apace Yetus and are (usually!) always available:
 * [pathlen](plugins/pathlen)
 * [slack](plugins/slack)
 * [unitveto](plugins/unitveto)
-* [whitespace](plugins/whitespace)
 * [xml](plugins/xml)
 
 ### Optional Plug-ins
