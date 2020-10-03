@@ -94,7 +94,7 @@ function scalac_compile
   fi
 
   if [[ ${codebase} = patch ]]; then
-    generic_postlog_compare compile scalac "${multijdkmode}"
+    module_postlog_compare compile scalac "${multijdkmode}"
   fi
 }
 
@@ -109,9 +109,9 @@ function scaladoc_rebuild
   declare codebase=$1
 
   if [[ "${codebase}" = branch ]]; then
-    generic_pre_handler scaladoc false
+    module_pre_handler scaladoc false
   else
-    generic_post_handler scaladoc scaladoc false true
+    module_post_handler scaladoc scaladoc false true
   fi
 }
 

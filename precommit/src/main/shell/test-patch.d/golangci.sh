@@ -140,12 +140,6 @@ function golangcilint_calcdiffs
 
 function golangcilint_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
 
   if ! verify_needed_test golangcilint; then
     return 0
@@ -161,33 +155,10 @@ function golangcilint_postapply
 
   golangcilint_exec patch
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-golangcilint-result.txt" \
-    "${PATCH_DIR}/patch-golangcilint-result.txt" \
+  root_postlog_compare \
     golangcilint \
-      > "${PATCH_DIR}/diff-patch-golangcilint.txt"
-  diffPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-golangcilint.txt")
-
-  # shellcheck disable=SC2016
-  numPrepatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-golangcilint-result.txt")
-
-  # shellcheck disable=SC2016
-  numPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-golangcilint-result.txt")
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 golangcilint "@@BASE@@/diff-patch-golangcilint.txt" "${BUILDMODEMSG} ${statstring}"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 golangcilint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 golangcilint "" "There were no new golangcilint issues."
-  return 0
+    "${PATCH_DIR}/branch-golangcilint-result.txt" \
+    "${PATCH_DIR}/patch-golangcilint-result.txt"
 }
 
 function golangcilint_postcompile

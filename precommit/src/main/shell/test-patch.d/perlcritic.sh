@@ -99,11 +99,6 @@ function perlcritic_calcdiffs
 function perlcritic_postapply
 {
   declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
 
   if ! verify_needed_test perlcritic; then
     return 0
@@ -130,36 +125,10 @@ function perlcritic_postapply
   PERLCRITIC_VERSION=$(${PERLCRITIC} --version 2>/dev/null)
   add_version_data perlcritic "${PERLCRITIC_VERSION}"
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-perlcritic-result.txt" \
-    "${PATCH_DIR}/patch-perlcritic-result.txt" \
+  root_postlog_compare \
     perlcritic \
-    > "${PATCH_DIR}/diff-patch-perlcritic.txt"
-
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-perlcritic-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-perlcritic-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-perlcritic.txt" | "${AWK}" '{print $1}')
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]]; then
-    add_vote_table_v2 -1 perlcritic "@@BASE@@/diff-patch-perlcritic.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue perlcritic "@@BASE@@/diff-patch-perlcritic.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 perlcritic "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 perlcritic "" "There were no new perlcritic issues."
-  return 0
+    "${PATCH_DIR}/branch-perlcritic-result.txt" \
+    "${PATCH_DIR}/patch-perlcritic-result.txt"
 }
 
 function perlcritic_postcompile

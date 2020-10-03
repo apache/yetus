@@ -80,7 +80,17 @@ function hadolint_logic
 
   for i in "${HADOLINT_CHECKFILES[@]}"; do
     if [[ -f "${i}" ]]; then
-      "${HADOLINT}" "${i}" >> "${PATCH_DIR}/${repostatus}-hadolint-result.txt"
+
+      ## transform from
+      ## filename:line\sCODE Text
+      ##          to
+      ## filename:line:\sCODE text
+      ## so that built-in routines can get used
+
+      # shellcheck disable=SC2016
+      "${HADOLINT}" "${i}" \
+        | "${AWK}" '{printf "%s:",$1; $1=""; print $0}' \
+        >> "${PATCH_DIR}/${repostatus}-hadolint-result.txt"
     fi
   done
   popd > /dev/null || return 1
@@ -103,44 +113,13 @@ function hadolint_preapply
   return 0
 }
 
-## filename:line\sCODE Text
 function hadolint_calcdiffs
 {
-  declare branch=$1
-  declare patch=$2
-  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
-  declare j
-
-  # first, pull out just the errors
-  # shellcheck disable=SC2016
-  "${AWK}" -F: '{print $NF}' "${branch}" | cut -d' ' -f2- > "${tmp}.branch"
-
-  # shellcheck disable=SC2016
-  "${AWK}" -F: '{print $NF}' "${patch}" | cut -d' ' -f2- > "${tmp}.patch"
-
-  "${DIFF}" --unchanged-line-format="" \
-     --old-line-format="" \
-     --new-line-format="%dn " \
-     "${tmp}.branch" \
-     "${tmp}.patch" > "${tmp}.lined"
-
-  # now, pull out those lines of the raw output
-  # shellcheck disable=SC2013
-  for j in $(cat "${tmp}.lined"); do
-    head -"${j}" "${patch}" | tail -1
-  done
-
-  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
+  error_calcdiffs "$@"
 }
 
 function hadolint_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
   declare version
 
   if ! verify_needed_test hadolint; then
@@ -157,40 +136,13 @@ function hadolint_postapply
 
   hadolint_logic patch
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-hadolint-result.txt" \
-    "${PATCH_DIR}/patch-hadolint-result.txt" \
-    hadolint \
-      > "${PATCH_DIR}/diff-patch-hadolint.txt"
-
   version=$("${HADOLINT}" --version)
   add_version_data hadolint "${version##* v}"
 
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-hadolint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-hadolint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-hadolint.txt" | "${AWK}" '{print $1}')
-
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 hadolint "@@BASE@@/diff-patch-hadolint.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue "hadolint" "${PATCH_DIR}/diff-patch-hadolint.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 hadolint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 hadolint "" "There were no new hadolint issues."
-  return 0
+  root_postlog_compare \
+    hadolint \
+    "${PATCH_DIR}/branch-hadolint-result.txt" \
+    "${PATCH_DIR}/patch-hadolint-result.txt"
 }
 
 function hadolint_postcompile

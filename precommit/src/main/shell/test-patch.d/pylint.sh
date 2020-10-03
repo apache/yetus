@@ -86,6 +86,11 @@ function pylint_precheck
   fi
 }
 
+function pylint_calcdiffs
+{
+  column_calcdiffs "$@"
+}
+
 function pylint_executor
 {
   declare repostatus=$1
@@ -147,10 +152,19 @@ function pylint_executor
   pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.py$ && -f ${i} ]]; then
-      "${PYLINT}" "${pylintopts[@]}" --msg-template='{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}' "${i}" \
-        2>>"${PATCH_DIR}/${pylintStderr}" | "${AWK}" '1<NR' >> "${PATCH_DIR}/${repostatus}-pylint-result.txt"
+      "${PYLINT}" "${pylintopts[@]}" \
+        --msg-template='{path}:{line}:{column}:[{msg_id}({symbol}), {obj}] {msg}' "${i}" \
+        >> "${PATCH_DIR}/${repostatus}-pylint-result.tmp" \
+        2>>"${PATCH_DIR}/${pylintStderr}"
     fi
   done
+
+  # pylint likes to put extra headers and
+  # stuff, so need to look specifically for our content
+  "${GREP}" '^.*:.*:.*:' \
+    "${PATCH_DIR}/${repostatus}-pylint-result.tmp" \
+    > "${PATCH_DIR}/${repostatus}-pylint-result.txt"
+  rm "${PATCH_DIR}/${repostatus}-pylint-result.tmp"
 
   if [[ -n "${oldpp}" ]]; then
     export PYTHONPATH=${oldpp}
@@ -167,7 +181,6 @@ function pylint_executor
   popd >/dev/null || return 1
   return 0
 }
-
 
 function pylint_preapply
 {
@@ -187,12 +200,6 @@ function pylint_preapply
 
 function pylint_postapply
 {
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
-
   if ! verify_needed_test pylint; then
     return 0
   fi
@@ -203,28 +210,11 @@ function pylint_postapply
   PYLINT_VERSION=$("${PYLINT}" --version 2>/dev/null | "${GREP}" pylint | "${AWK}" '{print $NF}')
   add_version_data pylint "${PYLINT_VERSION%,}"
 
-  calcdiffs "${PATCH_DIR}/branch-pylint-result.txt" \
-            "${PATCH_DIR}/patch-pylint-result.txt" \
-            pylint > "${PATCH_DIR}/diff-patch-pylint.txt"
-  numPrepatch=$("${GREP}" -c '^.*:.*: \[.*\] ' "${PATCH_DIR}/branch-pylint-result.txt")
-  numPostpatch=$("${GREP}" -c '^.*:.*: \[.*\] ' "${PATCH_DIR}/patch-pylint-result.txt")
-  # Exclude Pylint messages from the information category to avoid false positives (see YETUS-309).
-  diffPostpatch=$("${GREP}" -c '^.*:.*: \[[^I].*\] ' "${PATCH_DIR}/diff-patch-pylint.txt")
 
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 pylint "@@BASE@@/diff-patch-pylint.txt" "${BUILDMODEMSG} ${statstring}"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 pylint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 pylint "" "There were no new pylint issues."
-  return 0
+  root_postlog_compare \
+    pylint \
+    "${PATCH_DIR}/branch-pylint-result.txt" \
+    "${PATCH_DIR}/patch-pylint-result.txt"
 }
 
 function pylint_postcompile

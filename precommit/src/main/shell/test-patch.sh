@@ -2539,7 +2539,7 @@ function generic_logfilter
   fi
 }
 
-## @description  Helper routine for plugins to do a pre-patch prun
+## @description  Deprecated. Use module_pre_handler instead.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
@@ -2548,6 +2548,19 @@ function generic_logfilter
 ## @return       1 on failure
 ## @return       0 on success
 function generic_pre_handler
+{
+  module_pre_handler "$@"
+}
+
+## @description  Helper routine for plugins to do a pre-patch run
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @param        testype
+## @param        multijdk
+## @return       1 on failure
+## @return       0 on success
+function module_pre_handler
 {
   declare testtype=$1
   declare multijdkmode=$2
@@ -2591,7 +2604,15 @@ function generic_pre_handler
   return 0
 }
 
-## @description  Generic post-patch log handler
+## @description  Deprecated. Use module_postlog_compare instead.
+## @audience     public
+## @stability    evolving
+function generic_postlog_compare
+{
+  module_postlog_compare "$@"
+}
+
+## @description  Module post-patch log handler
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
@@ -2600,7 +2621,7 @@ function generic_pre_handler
 ## @param        origlog
 ## @param        testtype
 ## @param        multijdkmode
-function generic_postlog_compare
+function module_postlog_compare
 {
   declare origlog=$1
   declare testtype=$2
@@ -2688,6 +2709,89 @@ function generic_postlog_compare
   return 0
 }
 
+## @description  Root-level post-patch log handler. Files should be
+## @description  linecomments compatible!
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+## @return       0 on success
+## @return       1 on failure
+## @param        testtype
+## @param        branchlog
+## @param        patchlog
+function root_postlog_compare
+{
+  declare testtype=$1
+  declare branchlog=$2
+  declare patchlog=$3
+  declare fn
+  declare -i numbranch=0
+  declare -i numpatch=0
+  declare -i addpatch=0
+  declare -i samepatch=0
+  declare -i fixedpatch=0
+  declare tmpvar
+
+  yetus_debug "${testtype}: ${branchlog} vs. ${patchlog}"
+
+  # if it was a new module, this won't exist.
+  if [[ ! -f "${branchlog}" ]]; then
+    touch "${branchlog}"
+  fi
+
+  if [[ ! -f "${patchlog}" ]]; then
+    touch "${patchlog}"
+  fi
+
+  if [[ "${BUILDMODE}" == "full" ]]; then
+    difflog="results-${testtype}.txt"
+  else
+    difflog="diff-${testtype}.txt"
+  fi
+
+  tmpvar=$(wc -l "${branchlog}")
+  numbranch="${tmpvar%% *}"
+  tmpvar=$(wc -l "${patchlog}")
+  numpatch="${tmpvar%% *}"
+
+  calcdiffs \
+    "${branchlog}" \
+    "${patchlog}" \
+    "${testtype}" \
+    > "${PATCH_DIR}/${difflog}"
+
+  tmpvar=$(wc -l "${PATCH_DIR}/${difflog}")
+  addpatch="${tmpvar%% *}"
+
+  ((fixedpatch=numbranch-numpatch+addpatch))
+
+  statstring=$(generic_calcdiff_status "${numbranch}" "${numpatch}" "${addpatch}" )
+
+  if [[ ${addpatch} -gt 0 ]]; then
+    add_vote_table_v2 -1 "${testtype}" "@@BASE@@/${difflog}" "${BUILDMODEMSG} ${statstring}"
+    bugsystem_linecomments_queue "${testtype}" "${PATCH_DIR}/${difflog}"
+    return 1
+  elif [[ ${fixedpatch} -gt 0 ]]; then
+   add_vote_table_v2 +1 "${testtype}" "" "${BUILDMODEMSG} ${statstring}"
+   return 0
+  fi
+
+  if [[ "${BUILDMODE}" == "full" ]]; then
+    add_vote_table_v2 +1 "${testtype}" "" "No issues."
+  else
+    add_vote_table_v2 +1 "${testtype}" "" "No new issues."
+  fi
+  return 0
+}
+
+## @description  Deprecated. Use module_post_handler instead.
+## @audience     public
+## @stability    evolving
+function generic_post_handler
+{
+  module_post_handler "$@"
+}
+
 ## @description  Generic post-patch handler
 ## @audience     public
 ## @stability    evolving
@@ -2698,7 +2802,7 @@ function generic_postlog_compare
 ## @param        testtype
 ## @param        multijdkmode
 ## @param        run commands
-function generic_post_handler
+function module_post_handler
 {
   declare origlog=$1
   declare testtype=$2
@@ -2736,7 +2840,7 @@ function generic_post_handler
       fi
     fi
 
-    generic_postlog_compare "${origlog}" "${testtype}" "${multijdkmode}"
+    module_postlog_compare "${origlog}" "${testtype}" "${multijdkmode}"
     ((result=result+$?))
   done
   JAVA_HOME=${savejavahome}

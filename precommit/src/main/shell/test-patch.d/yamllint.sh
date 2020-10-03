@@ -42,8 +42,6 @@ function yamllint_precheck
     add_vote_table_v2 0 yamllint "" "yamllint was not available."
     delete_test yamllint
   fi
-
-
 }
 
 function yamllint_logic
@@ -97,12 +95,6 @@ function yamllint_calcdiffs
 
 function yamllint_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
   declare version
 
   if ! verify_needed_test yamllint; then
@@ -123,37 +115,10 @@ function yamllint_postapply
   version=$("${YAMLLINT}" --version 2>&1)
   add_version_data yamllint "${version#* }"
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-yamllint-result.txt" \
-    "${PATCH_DIR}/patch-yamllint-result.txt" \
+  root_postlog_compare \
     yamllint \
-      > "${PATCH_DIR}/diff-patch-yamllint.txt"
-
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-yamllint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-yamllint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-yamllint.txt" | "${AWK}" '{print $1}')
-
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 yamllint "@@BASE@@/diff-patch-yamllint.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue "yamllint" "${PATCH_DIR}/diff-patch-yamllint.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 yamllint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 yamllint "" "There were no new yamllint issues."
-  return 0
+    "${PATCH_DIR}/branch-yamllint-result.txt" \
+    "${PATCH_DIR}/patch-yamllint-result.txt"
 }
 
 function yamllint_postcompile

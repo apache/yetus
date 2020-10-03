@@ -96,12 +96,6 @@ function markdownlint_calcdiffs
 
 function markdownlint_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
   declare version
 
   if ! verify_needed_test markdownlint; then
@@ -122,37 +116,10 @@ function markdownlint_postapply
   version=$("${MARKDOWNLINT}" --version 2>&1)
   add_version_data markdownlint "${version#* }"
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-markdownlint-result.txt" \
-    "${PATCH_DIR}/patch-markdownlint-result.txt" \
+  root_postlog_compare \
     markdownlint \
-      > "${PATCH_DIR}/diff-patch-markdownlint.txt"
-
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-markdownlint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-markdownlint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-markdownlint.txt" | "${AWK}" '{print $1}')
-
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 markdownlint "@@BASE@@/diff-patch-markdownlint.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue "markdownlint" "${PATCH_DIR}/diff-patch-markdownlint.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 markdownlint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 markdownlint "" "There were no new markdownlint issues."
-  return 0
+    "${PATCH_DIR}/branch-markdownlint-result.txt" \
+    "${PATCH_DIR}/patch-markdownlint-result.txt"
 }
 
 function markdownlint_postcompile

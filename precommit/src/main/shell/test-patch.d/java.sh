@@ -165,8 +165,8 @@ function javac_compile
   fi
 
   if [[ ${codebase} = patch ]]; then
-    yetus_debug "javac: calling generic_postlog_compare compile javac ${multijdkmode}"
-    generic_postlog_compare compile javac "${multijdkmode}"
+    yetus_debug "javac: calling module_postlog_compare compile javac ${multijdkmode}"
+    module_postlog_compare compile javac "${multijdkmode}"
   fi
 }
 
@@ -188,9 +188,9 @@ function javadoc_rebuild
   fi
 
   if [[ "${codebase}" = branch ]]; then
-    generic_pre_handler javadoc "${multijdkmode}"
+    module_pre_handler javadoc "${multijdkmode}"
   else
-    generic_post_handler javadoc javadoc "${multijdkmode}" true
+    module_post_handler javadoc javadoc "${multijdkmode}" true
   fi
 }
 
