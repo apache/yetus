@@ -24,14 +24,26 @@ if [[ "${CI}" = true ]] && [[ "${SEMAPHORE}" = true ]] &&
   ROBOT=true
   ROBOTTYPE=semaphoreci
   INSTANCE=${SEMAPHORE_JOB_ID}
-  BUILDMODE=full
 
   if [[ -e ${SEMAPHORE_GIT_DIR}/.git ]]; then
     BASEDIR=${SEMAPHORE_GIT_DIR}
   fi
 
-  PATCH_OR_ISSUE=GHSHA:${SEMAPHORE_GIT_SHA}
-  USER_PARAMS+=("GHSHA:${SEMAPHORE_GIT_SHA}")
+  case "${SEMAPHORE_GIT_REF_TYPE}" in
+    branch)
+      BUILDMODE=full
+      USER_PARAMS+=("--empty-patch")
+      PATCH_BRANCH=${SEMAPHORE_GIT_BRANCH}
+      ;;
+    tag)
+      BUILDMODE=full
+      USER_PARAMS+=("--empty-patch")
+      PATCH_BRANCH=${SEMAPHORE_GIT_TAG}
+      ;;
+    pull-request)
+      PATCH_OR_ISSUE="GH:${SEMAPHORE_GIT_PR_NUMBER}"
+      ;;
+  esac
 
   yetus_add_array_element EXEC_MODES SemaphoreCI
   yetus_add_array_element EXEC_MODES ResetRepo
@@ -41,10 +53,16 @@ if [[ "${CI}" = true ]] && [[ "${SEMAPHORE}" = true ]] &&
   add_docker_env \
     CI \
     SEMAPHORE \
+    SEMAPHORE_GIT_BRANCH \
     SEMAPHORE_GIT_DIR \
+    SEMAPHORE_GIT_PR_NUMBER \
+    SEMAPHORE_GIT_REF_TYPE \
     SEMAPHORE_GIT_SHA \
+    SEMAPHORE_GIT_TAG \
     SEMAPHORE_GIT_URL \
     SEMAPHORE_JOB_ID
+
+  GITHUB_REPO=${SEMAPHORE_GIT_REPO_SLUG}
 fi
 
 function semaphoreci_set_plugin_defaults
