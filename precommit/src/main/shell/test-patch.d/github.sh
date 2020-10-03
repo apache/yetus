@@ -198,6 +198,9 @@ function github_initialize
     PATCH_BRANCH_DEFAULT=$("${GREP}" default_branch "${PATCH_DIR}/github-repo.json" | head -1 | cut -d\" -f4)
   fi
 
+  if [[ "${PROJECT_NAME}" == "unknown" ]]; then
+    PROJECT_NAME=${GITHUB_REPO##*/}
+  fi
 }
 
 ## @description based upon a github PR, attempt to link back to JIRA
