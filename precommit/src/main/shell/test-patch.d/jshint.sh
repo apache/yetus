@@ -94,25 +94,23 @@ EOF
 function jshint_logic
 {
   declare repostatus=$1
-  declare -i count
+  declare j
+  declare full="${PATCH_DIR}/${repostatus}-jshint-result.full.txt"
+  declare filter="${PATCH_DIR}/${repostatus}-jshint-result.txt"
 
   pushd "${BASEDIR}" >/dev/null || return 1
   "${JSHINT}" \
     --extract=auto \
     --reporter="${PATCH_DIR}/jshintreporter.js" \
     . \
-    > "${PATCH_DIR}/${repostatus}-jshint-result.full.txt"
+    > "${full}"
 
-  # strip the last two lines
-  #shellcheck disable=SC2016
-  count=$(wc -l "${PATCH_DIR}/${repostatus}-jshint-result.full.txt" | "${AWK}" '{print $1}')
-  ((count=count-2))
-  if [[ "${count}" -gt 0 ]]; then
-    head "-${count}" "${PATCH_DIR}/${repostatus}-jshint-result.full.txt"\
-      > "${PATCH_DIR}/${repostatus}-jshint-result.txt"
-  else
-    touch "${PATCH_DIR}/${repostatus}-jshint-result.txt"
-  fi
+  # pull out the files we care about
+  for j in "${CHANGED_FILES[@]}"; do
+    "${GREP}" "^${j}:" "${full}" \
+      >> "${filter}"
+  done
+
   popd > /dev/null || return 1
 }
 
