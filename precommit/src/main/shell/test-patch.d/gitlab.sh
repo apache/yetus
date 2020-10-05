@@ -88,6 +88,10 @@ function gitlab_initialize
 
   # convert the repo into a URL encoded one.  Need this for lots of things.
   GITLAB_REPO_ENC=${GITLAB_REPO/\//%2F}
+
+  if [[ "${PROJECT_NAME}" == "unknown" ]]; then
+    PROJECT_NAME=${GITLAB_REPO##*/}
+  fi
 }
 
 ## @description given a URL, break it up into gitlab plugin globals
