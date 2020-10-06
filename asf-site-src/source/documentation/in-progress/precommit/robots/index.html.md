@@ -25,6 +25,7 @@
 * [Automated Robot Detection](#automated-robot-detection)
 * [Manual Configuration](#manual-configuration)
 * [Sentinel Mode](#sentinel-mode)
+* [Continuous Improvement](#continuous-improvement)
 
 <!-- /MarkdownTOC -->
 
@@ -45,14 +46,14 @@
 
 The following systems are detected automatically when run in one of these environments:
 
-* [Azure Pipelines](robots/azurepipelines)
-* [Circle CI](robots/circleci)
-* [Cirrus CI](robots/cirrusci)
-* [GitHub Actions](robots/githubactions)
-* [Gitlab CI](robots/gitlabci)
-* [Jenkins](robots/jenkins)
-* [Semaphore CI](robots/semaphoreci)
-* [Travis CI](robots/travisci)
+* [Azure Pipelines](azurepipelines)
+* [Circle CI](circleci)
+* [Cirrus CI](cirrusci)
+* [GitHub Actions](githubactions)
+* [Gitlab CI](gitlabci)
+* [Jenkins](jenkins)
+* [Semaphore CI](semaphoreci)
+* [Travis CI](travisci)
 
 # Manual Configuration
 
@@ -76,3 +77,25 @@ If `--robot` is specified without an instance, a random number is generated and 
 # Sentinel Mode
 
 If stuck Docker containers are a problem, a more aggressive robot may be enabled with the `--sentinel` option.  This option enables killing containers that have been running for over 24 hours as well.
+
+# Continuous Improvement
+
+It isn't unusual when adding a new linter to an existing source repository to be overwhelmed with new errors.
+Most projects want to start out where all new patches cannot add new errors, but the existing ones are
+acceptable.  In order to enable branches to build with errors but patches/PRs to fail on robots,
+`test-patch` supports the `--continuous-improvement` flag:
+
+Normally, `test-patch` execute with this flag set to false:
+
+```bash
+$ test-patch --continuous-improvement=false (other options)
+```
+
+This setting will fail branches and PRs if any errors are found. However, if this value is set to true:
+
+```bash
+$ test-patch --continuous-improvement=true (other options)
+```
+
+then branches will still report errors but the return code will be successful.  Using this mode is ideal for
+many CI/CD systems that are using repositories with known problems.

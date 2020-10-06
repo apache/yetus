@@ -28,7 +28,7 @@ Test
 # Description
 
 [checkstyle](https://checkstyle.sourceforge.net/) is a style linter for Java and many Java-adjacent languages.  This plugin requires
-support from the [Build Tool](../buildtools) in order to work correctly.  At present, support for `ant`, `maven`, and `gradle` are
+support from the [Build Tool](../../buildtools) in order to work correctly.  At present, support for `ant`, `maven`, and `gradle` are
 built-in.
 
 # Environment Variables

@@ -54,4 +54,4 @@ There are two variables that personalities should probably set that correspond t
 | CMAKE_BUILD_DIR | `--cmake-build-dir=<path>` |
 | CMAKE_ROOT_BUILD | `--cmake-root-build=<bool>` |
 
-See [build tools](../buildtools) for more information.
+See [build tools](../../buildtools) for more information.

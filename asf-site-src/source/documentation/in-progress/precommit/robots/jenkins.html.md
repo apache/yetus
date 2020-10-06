@@ -74,7 +74,7 @@ Experience has shown that certain Jenkins + Java + OS combinations have problems
 See also:
 
 * Apache Yetus' source tree [Jenkinsfile](https://github.com/apache/yetus/blob/main/Jenkinsfile) for some tips and tricks.
-* [precommit-admin](../admin), for special utilities built for Jenkins.
+* [precommit-admin](../../admin), for special utilities built for Jenkins.
 * [GitHub Branch Source Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin)
 * [GitHub Pull Request Builder Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin)
 * `https://{your local server}/env-vars.html/`

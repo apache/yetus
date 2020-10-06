@@ -89,4 +89,4 @@ This example builds a docker image based off of Apache Yetus 0.9.0 but with the 
 
 # A Note About Precommit
 
-test-patch and friends have direct support for Docker outside of the convenience images.  That information is covered in-depth in the[precommit-docker](../precommit-docker) section.
+test-patch and friends have direct support for Docker outside of the convenience images.  That information is covered in-depth in the[precommit-docker](/documentation/in-progress/precommit/docker/) section.

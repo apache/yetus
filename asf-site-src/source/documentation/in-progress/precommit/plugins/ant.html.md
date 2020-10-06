@@ -50,4 +50,4 @@ Provides support for the [Apache Ant](https://ant.apache.org) build tool.
 
 # Developer Notes
 
-See [build tools](../buildtools) for more information.
+See [build tools](../../buildtools) for more information.

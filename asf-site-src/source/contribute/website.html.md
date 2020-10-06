@@ -45,7 +45,7 @@ $ cd asf-site-src
 $ bundle install
 ```
 
-and a working Python 2.7 environment for [releasedocmaker](../in-progress/releasedocmaker/).
+and a working Python 2.7 environment for [releasedocmaker](/documentation/in-progress/releasedocmaker/).
 
 ## Make changes in asf-site-src/source
 
@@ -119,5 +119,5 @@ $ # Finally publish
 $ git push origin asf-site
 ```
 
-Publishing the website should be possible from the HEAD of the main branch under most circumstances. (See the [Guide for Release Managing](releases) for a notable time period where this won't be true.)
+Publishing the website should be possible from the HEAD of the main branch under most circumstances. (See the [Guide for Release Managing](../releases) for a notable time period where this won't be true.)
 Documentation changes will be reviewed as they make their way into the main branch; updates to the `asf-site` branch are handled without further review.

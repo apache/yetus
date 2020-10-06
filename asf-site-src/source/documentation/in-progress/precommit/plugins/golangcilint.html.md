@@ -31,7 +31,7 @@ NOTE: Go support is experimental.  Additionally, this plug-in only supports Go u
 
 Provides support for
 [golangci-lint](https://github.com/golangci/golangci-lint).  This
-plug-in requires the [golang](golang) plug-in to also be enabled.
+plug-in requires the [golang](../golang) plug-in to also be enabled.
 
 # Environment Variables
 

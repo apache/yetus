@@ -29,9 +29,9 @@ Test (Compile)
 
 NOTE: Go support is experimental.
 
-Provides support for [Go](https://golang.com) v1.12 and higher.  This support includes the ability to read compiler errors as well as supplemental routines for other precommit tests that support Go directly such as [revive](revive).
+Provides support for [Go](https://golang.com) v1.12 and higher.  This support includes the ability to read compiler errors as well as supplemental routines for other precommit tests that support Go directly such as [revive](../revive).
 
-Amongst other missing features, it does not support using Go as a [build tool](../buildtools) or `go test` formatted output.   Additionally, if Go source is detected, `precommit` will use `git checkout` in addition to `git clean` to maintain the source tree as part of the compile cycle.
+Amongst other missing features, it does not support using Go as a [build tool](../../buildtools) or `go test` formatted output.   Additionally, if Go source is detected, `precommit` will use `git checkout` in addition to `git clean` to maintain the source tree as part of the compile cycle.
 
 # Environment Variables
 

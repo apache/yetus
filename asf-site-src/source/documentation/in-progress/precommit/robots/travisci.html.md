@@ -27,7 +27,7 @@ If `${ARTIFACTS_PATH}` is configured, then `--patch-dir` is set to the first lis
 
 Personalities will override the auto-detected Github repository information.  It may be necessary to manually configure it in your `.travis.yml` file.
 
-As of this writing, it is not possible to make the Travis CI build environment use the Apache Yetus pre-built docker images without using `docker run` in the before_install phase.  Therefore, using the image is the same as described in the [Apache Yetus Docker Hub Images](/yetus-docker-image) page.
+As of this writing, it is not possible to make the Travis CI build environment use the Apache Yetus pre-built docker images without using `docker run` in the before_install phase.  Therefore, using the image is the same as described in the [Apache Yetus Docker Hub Images](../../../../../yetus-docker-image) page.
 
 See also:
 

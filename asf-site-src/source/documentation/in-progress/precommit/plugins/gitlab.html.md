@@ -27,7 +27,7 @@ Bug System
 
 # Description
 
-Enables support for reading and writing back to [Gitlab](https://gitlab.com/) and compatible systems such as Gitlab Enterprise.  See also the [Bugsystems](../bugsystems) documentation for more information.
+Enables support for reading and writing back to [Gitlab](https://gitlab.com/) and compatible systems such as Gitlab Enterprise.  See also the [Bugsystems](../../bugsystems) documentation for more information.
 
 # Environment Variables
 
@@ -48,4 +48,4 @@ None
 
 # Developer Notes
 
-All of the command line settings may also be set via internal environment variables.  However care must be taken to not step on [robots](../robots) that will also set some of these variables.
+All of the command line settings may also be set via internal environment variables.  However care must be taken to not step on [robots](../../robots) that will also set some of these variables.

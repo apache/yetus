@@ -27,7 +27,7 @@ Bug System
 
 # Description
 
-Enables support for reading and writing back to [GitHub](https://github.com/) and compatible systems such as GitHub Enterprise.  See also the [Bugsystems](../bugsystems) documentation for more information.
+Enables support for reading and writing back to [GitHub](https://github.com/) and compatible systems such as GitHub Enterprise.  See also the [Bugsystems](../../bugsystems) documentation for more information.
 
 # Environment Variables
 
@@ -49,4 +49,4 @@ None
 
 # Developer Notes
 
-All of the command line settings may also be set via internal environment variables.  However care must be taken to not step on [robots](../robots) that will also set some of these variables.
+All of the command line settings may also be set via internal environment variables.  However care must be taken to not step on [robots](../../robots) that will also set some of these variables.
