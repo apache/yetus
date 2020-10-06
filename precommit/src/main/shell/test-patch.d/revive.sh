@@ -24,8 +24,8 @@ REVIVE=${REVIVE:-$(command -v revive 2>/dev/null)}
 
 function revive_usage
 {
-  yetus_add_option "--revive=<path>" "path to revive executable"
-  yetus_add_option "--revive-config=<path>" "relative path to revive config in source tree [default: none]"
+  yetus_add_option "--revive=<file>" "path to revive executable"
+  yetus_add_option "--revive-config=<file>" "relative path to revive config in source tree [default: none]"
 }
 
 function revive_parse_args

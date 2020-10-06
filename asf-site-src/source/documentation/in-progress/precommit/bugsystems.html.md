@@ -19,10 +19,11 @@
 
 # Bug System Support
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [Bugzilla Specific](#bugzilla-specific)
 * [GitHub Specific](#github-specific)
+  * [GitHub Authentication](#github-authentication)
 * [GitLab Specific](#gitlab-specific)
 * [JIRA Specific](#jira-specific)
 

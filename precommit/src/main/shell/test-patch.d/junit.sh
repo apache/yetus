@@ -27,7 +27,7 @@ JUNIT_TEST_PREFIX="org.apache."
 
 function junit_usage
 {
-  yetus_add_option "--junit-test-output=<path>" "Directory to search for the test output TEST-*.xml files, relative to the module directory (default:'${JUNIT_TEST_OUTPUT_DIR}')"
+  yetus_add_option "--junit-test-output=<dir>" "Directory to search for the test output TEST-*.xml files, relative to the module directory (default:'${JUNIT_TEST_OUTPUT_DIR}')"
   yetus_add_option "--junit-test-prefix=<prefix to trim>" "Prefix of test names to be be removed. Used to shorten test names by removing common package name. (default:'${JUNIT_TEST_PREFIX}')"
   yetus_add_option "--junit-report-xml=<file>" "Filename to use when generating a JUnit-style report (default: ${JUNIT_REPORT_XML}"
 }

@@ -19,7 +19,7 @@
 
 # Yetus Maven Plug-in
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [Introduction](#introduction)
 * [File Utility Goals](#file-utility-goals)

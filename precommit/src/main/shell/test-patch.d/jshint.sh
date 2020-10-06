@@ -24,7 +24,7 @@ JSHINT=${JSHINT:-$(command -v jshint 2>/dev/null)}
 
 function jshint_usage
 {
-  yetus_add_option "--jshint-cmd=<cmd>" "The 'jshint' command to use (default: ${JSHINT})"
+  yetus_add_option "--jshint-cmd=<file>" "The 'jshint' command to use (default: ${JSHINT})"
 }
 
 ## @description  parse maven build tool args

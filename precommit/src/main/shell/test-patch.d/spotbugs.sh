@@ -45,7 +45,7 @@ function spotbugs_deprecate_test_type
 
 function spotbugs_usage
 {
-  yetus_add_option "--spotbugs-home=<path>" "SpotBugs home directory (default \${SPOTBUGS_HOME})"
+  yetus_add_option "--spotbugs-home=<dir>" "SpotBugs home directory (default \${SPOTBUGS_HOME})"
   yetus_add_option "--spotbugs-strict-precheck" "If there are SpotBugs warnings during precheck, fail"
 }
 
@@ -546,7 +546,7 @@ add_test_type findbugs
 
 function findbugs_usage
 {
-  yetus_add_option "--findbugs-home=<path>" "Findbugs home directory (default \${FINDBUGS_HOME})"
+  yetus_add_option "--findbugs-home=<dir>" "Findbugs home directory (default \${FINDBUGS_HOME})"
   yetus_add_option "--findbugs-strict-precheck" "If there are Findbugs warnings during precheck, fail"
 }
 

@@ -38,7 +38,7 @@ SHELLDOCS_SPECIFICFILES=""
 
 function shelldocs_usage
 {
-  yetus_add_option "--shelldocs=<path>" "path to shelldocs executable"
+  yetus_add_option "--shelldocs=<file>" "path to shelldocs executable"
 }
 
 function shelldocs_parse_args

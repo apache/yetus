@@ -24,8 +24,8 @@ RUBOCOP=${RUBOCOP:-$(command -v rubocop 2>/dev/null)}
 
 function rubocop_usage
 {
-  yetus_add_option "--rubocop=<path>" "path to rubocop executable"
-  yetus_add_option "--rubocopy-config=<path>" "relative path to rubocop config in source tree [default: none]"
+  yetus_add_option "--rubocop=<file>" "path to rubocop executable"
+  yetus_add_option "--rubocop-config=<file>" "relative path to rubocop config in source tree [default: none]"
 }
 
 function rubocop_parse_args

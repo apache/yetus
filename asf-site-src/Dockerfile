@@ -56,7 +56,7 @@ ENV GEM_HOME ${BUNDLE_PATH}
 # on re-launches
 # hadolint ignore=DL3028
 RUN gem install bundler \
-    middleman:'4.3.10' \
+    middleman:'4.3.11' \
     middleman-livereload \
     middleman-syntax \
     therubyracer \

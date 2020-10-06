@@ -19,7 +19,7 @@
 
 # Convenience Docker Hub Images
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [File Access](#file-access)
 * [A Note About Precommit](#a-note-about-precommit)

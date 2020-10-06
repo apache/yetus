@@ -109,6 +109,7 @@ RELEASEDOCMAKER = File.absolute_path('../releasedocmaker/src/main/python/release
 def releasenotes(output, version)
   # TODO: check jira for last update to the version and compare to source
   #       file timestamp
+  puts("Calling releasenotes #{version} @ #{output}")
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
                                        --projecttitle="Apache Yetus" \
                                        --dirversions --empty \
@@ -158,14 +159,18 @@ def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metri
     end
   else
     puts "Downloading and extracting #{version} from ASF archives"
-    `(cd  #{output} \
+    `(pushd #{output} \
       && mkdir -p build-#{version} \
       && curl --fail --location --output site-#{version}.tar.gz \
         https://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
       && tar -C build-#{version} \
          --strip-components 3 -xzpf site-#{version}.tar.gz \
         apache-yetus-#{version}-site/documentation/in-progress/ \
+      && popd
     )`
+    puts "Removing #{output}/build-#{version}/CHANGELOG"
+    FileUtils.rm_rf("#{output}/build-#{version}/CHANGELOG", secure: true)
+    FileUtils.rm_rf("#{output}/build-#{version}/RELEASENOTES", secure: true)
   end
 end
 
@@ -210,8 +215,8 @@ after_configuration do # rubocop:disable Metrics/BlockLength
   # has to be outside of hte asf-site-src directory.
   # TODO when we can, update to middleman 4 so we can use multiple source dirs
   # instead of symlinks
-  FileUtils.mkdir_p 'target/in-progress/precommit-apidocs/'
-  precommit_shelldocs('target/in-progress/precommit-apidocs/', '../precommit/src/main/shell')
+  FileUtils.mkdir_p 'target/in-progress/precommit/apidocs/'
+  precommit_shelldocs('target/in-progress/precommit/apidocs/', '../precommit/src/main/shell')
   # stitch the javadoc in place
   app.data.versions.releases&.each do |release|
     build_release_docs('target', release)

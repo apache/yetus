@@ -27,8 +27,8 @@ BUF_ALREADY=false
 
 function buf_usage
 {
-  yetus_add_option "--buf=<path>" "path to buf executable (default: ${BUF})"
-  yetus_add_option "--buf-basedir=<path>" "set the starting dir to run buf"
+  yetus_add_option "--buf=<file>" "path to buf executable (default: ${BUF})"
+  yetus_add_option "--buf-basedir=<dir>" "set the starting dir to run buf"
   yetus_add_option "--buf-timeout=###u" "Set the buf timeout"
 }
 

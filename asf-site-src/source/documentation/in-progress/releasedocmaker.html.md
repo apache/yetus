@@ -19,7 +19,7 @@
 
 # releasedocmaker
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [Purpose](#purpose)
 * [Requirements](#requirements)

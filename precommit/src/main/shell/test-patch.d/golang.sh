@@ -27,7 +27,7 @@ GOMOD_DIRS_CONTROL=reset
 ## @replaceable  no
 function golang_usage
 {
-  yetus_add_option "--golang-go=<cmd>" "Location of the go binary (default: \"${GOEXE:-not found}\")"
+  yetus_add_option "--golang-go=<file>" "Location of the go binary (default: \"${GOEXE:-not found}\")"
 }
 
 ## @description  Option parsing for go plugin

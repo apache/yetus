@@ -27,8 +27,8 @@ GOLANGCI_LINT=$(command -v golangci-lint 2>/dev/null)
 ## @replaceable  no
 function golangcilint_usage
 {
-  yetus_add_option "--golangcilint=<cmd>" "Location of the go binary (default: \"${GOLANGCI_LINT:-not found}\")"
-  yetus_add_option "--golangcilint-config=<cmd>" "Location of the config file"
+  yetus_add_option "--golangcilint=<file>" "Location of the go binary (default: \"${GOLANGCI_LINT:-not found}\")"
+  yetus_add_option "--golangcilint-config=<file>" "Location of the config file"
 }
 
 ## @description  Option parsing for slack plugin

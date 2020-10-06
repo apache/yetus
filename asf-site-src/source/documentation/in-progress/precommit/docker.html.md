@@ -19,7 +19,7 @@
 
 # test-patch Docker Support
 
-<!-- MarkdownTOC levels="1,2" autolink="true" -->
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 * [The Basics](#the-basics)
 * [Docker Base Images](#docker-base-images)

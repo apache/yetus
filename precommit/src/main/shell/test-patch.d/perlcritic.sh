@@ -24,7 +24,7 @@ PERLCRITIC=${PERLCRITIC:-$(command -v perlcritic 2>/dev/null)}
 
 function perlcritic_usage
 {
-  yetus_add_option "--perlcritic=<path>" "path to perlcritic executable"
+  yetus_add_option "--perlcritic=<file>" "path to perlcritic executable"
 }
 
 function perlcritic_parse_args
@@ -151,6 +151,7 @@ function perlcritic_postapply
 
   if [[ ${diffPostpatch} -gt 0 ]]; then
     add_vote_table_v2 -1 perlcritic "@@BASE@@/diff-patch-perlcritic.txt" "${BUILDMODEMSG} ${statstring}"
+    bugsystem_linecomments_queue perlcritic "@@BASE@@/diff-patch-perlcritic.txt"
     return 1
   elif [[ ${fixedpatch} -gt 0 ]]; then
     add_vote_table_v2 +1 perlcritic "" "${BUILDMODEMSG} ${statstring}"

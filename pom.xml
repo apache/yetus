@@ -279,6 +279,7 @@
               <maxmemory>1024m</maxmemory>
               <quiet>true</quiet>
               <verbose>false</verbose>
+              <notimestamp>true</notimestamp>
               <source>${maven.compile.source}</source>
               <charset>${maven.compile.encoding}</charset>
               <reportOutputDirectory>${project.build.directory}/site</reportOutputDirectory>
