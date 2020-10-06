@@ -27,7 +27,7 @@ Test
 
 # Description
 
-Runs [pylint](http://pylint.org/) against PYthon code.
+Runs [pylint](http://pylint.org/) against Python code.
 
 # Environment Variables
 

@@ -27,7 +27,7 @@ Build Tool
 
 # Description
 
-A stub build tool that does not do anything to enable just static linting.
+A stub build tool that does not do anything. Use this if you would like to enable static linting without getting Yetus to work with your project's build system.
 
 # Environment Variables
 

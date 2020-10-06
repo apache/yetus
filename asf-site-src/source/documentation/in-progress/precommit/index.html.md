@@ -34,7 +34,7 @@
 
 # Purpose
 
-Performing reviews can be an overwhelming process.  The more complex the base, the more comprehensive reviews end up.  Building that functionality into the build itself is a full time job.  Plus, if a new check is added, there is a good chance that the existing code has problems and just want to prevent new bits from making the existing problem worse.
+Performing reviews can be an overwhelming process.  The more complex the base, the more comprehensive reviews end up.  Building that functionality into the build itself is a full time job. When a new check is added there is a good chance the existing code has problems and often maintainers just want to prevent new bits from making the existing problem worse.
 
 This is where Apache Yetus' precommit utilities come into the picture.
 
@@ -52,8 +52,6 @@ All patches to the source base go through a test that does some (relatively) lig
 
 Almost all of the precommit components are written in bash for maximum portability.  As such, it mostly assumes the locations of commands to be in the file path. However, in many cases, this assumption may be overridden via command line options.
 
-For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in `/usr/xpg4/bin` and the default location for the GNU binaries is `/usr/gnu/bin`.
-
 ## Base Requirements
 
 These components are expected to be in-place for basic execution:
@@ -67,6 +65,8 @@ These components are expected to be in-place for basic execution:
 * POSIX sed
 * [curl](https://curl.haxx.se/) command
 * file command
+
+For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in `/usr/xpg4/bin` and the default location for the GNU binaries is `/usr/gnu/bin`.
 
 ## Plug-ins
 

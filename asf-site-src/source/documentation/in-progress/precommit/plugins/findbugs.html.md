@@ -29,6 +29,8 @@ Test
 
 Provides support for the [FindBugs](https://findbugs.sourceforge.net/) Java utility.
 
+NOTE: This plug-in is deprecated in favor of using [SpotBugs](spotbugs).
+
 # Environment Variables
 
 See the [spotbugs](spotbugs) plugin for more information.
