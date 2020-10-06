@@ -1,0 +1,302 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<h1 id="robots-github-actions">Robots: GitHub Actions</h1>
+
+<p>GitHub Action support is available in two different ways.  There are some settings common to both:</p>
+
+<ul>
+  <li>Annotations will be used to mark problems in the files for those plug-ins that support this feature and<br />
+if <code>--linecomments</code> has <code>github</code> as a configured bug system (the default).</li>
+  <li>Statuses will be added if the GitHub Token gives permission.</li>
+</ul>
+
+<h2 id="workflow-action">Workflow Action</h2>
+
+<p>The Apache Yetus community makes available a built-in action that may be executed as part of a standard GitHub Action workflow.<br />
+The basic workflow file should look like this, changing [VERSION] to either be a released version (or <code>main</code> to use the<br />
+bleeding edge, untested, and potentially unstable release):</p>
+
+<div class="highlight"><pre class="highlight yaml"><code><span class="nn">---</span>
+<span class="na">name</span><span class="pi">:</span> <span class="s">Apache Yetus</span>
+
+<span class="na">on</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">push</span><span class="pi">,</span> <span class="nv">pull_request</span><span class="pi">]</span>  <span class="c1"># yamllint disable-line rule:truthy</span>
+
+<span class="na">jobs</span><span class="pi">:</span>
+  <span class="na">build</span><span class="pi">:</span>
+
+    <span class="na">runs-on</span><span class="pi">:</span> <span class="s">ubuntu-latest</span>
+
+    <span class="na">steps</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">checkout</span>
+        <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v2</span>
+        <span class="na">with</span><span class="pi">:</span>
+          <span class="na">path</span><span class="pi">:</span> <span class="s">src</span>
+          <span class="na">fetch-depth</span><span class="pi">:</span> <span class="m">0</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Apache Yetus test-patch</span>
+        <span class="na">uses</span><span class="pi">:</span> <span class="s">apache/yetus-test-patch-action@[VERSION]</span>
+        <span class="na">with</span><span class="pi">:</span>
+          <span class="na">basedir</span><span class="pi">:</span> <span class="s">./src</span>
+          <span class="na">patchdir</span><span class="pi">:</span> <span class="s">./out</span>
+          <span class="na">buildtool</span><span class="pi">:</span> <span class="s">nobuild</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Artifact output</span>
+        <span class="na">if</span><span class="pi">:</span> <span class="s">${{ always() }}</span>
+        <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/upload-artifact@v2</span>
+        <span class="na">with</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">apacheyetuspatchdir</span>
+          <span class="na">path</span><span class="pi">:</span> <span class="s">${{ github.workspace }}/out</span>
+</code></pre></div>
+<p>Currently, not all arguments and parameters that can be set on the <code>test-patch</code> command line are available to set via the workflow action.<br />
+Options currently supported are:</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: center">Option</th>
+      <th style="text-align: center">Notes</th>
+      <th style="text-align: center">Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">basedir</td>
+      <td style="text-align: center">same as <code>--basedir</code></td>
+      <td style="text-align: center">NONE</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">buildtool</td>
+      <td style="text-align: center">same as <code>--build-tool</code></td>
+      <td style="text-align: center"><code>nobuild</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">continuousimprovement</td>
+      <td style="text-align: center">same as <code>--continuous-improvement</code></td>
+      <td style="text-align: center">true</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">excludes</td>
+      <td style="text-align: center">same as <code>--excludes</code></td>
+      <td style="text-align: center"><code>.yetus-excludes.txt</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">githubtoken</td>
+      <td style="text-align: center">same as <code>--github-token</code></td>
+      <td style="text-align: center">NONE</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">patchdir</td>
+      <td style="text-align: center">same as <code>--patch-dir</code></td>
+      <td style="text-align: center">NONE</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">pip</td>
+      <td style="text-align: center">same as <code>--pylint-pip</code></td>
+      <td style="text-align: center">pip3</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">plugins</td>
+      <td style="text-align: center">same as <code>--plugins</code></td>
+      <td style="text-align: center">all,-asflicense,-author,-findbugs,-gitlabcilint,-shelldocs</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">pylint</td>
+      <td style="text-align: center">same as <code>--pylint</code></td>
+      <td style="text-align: center">pylint3</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">reapermode</td>
+      <td style="text-align: center">same as <code>--reapermode</code></td>
+      <td style="text-align: center">kill</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Items marked NONE <em>MUST</em> be provided in the workflow yaml file.</p>
+
+<p>Some options are hard-coded to make <code>test-patch</code> easier to use:</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: center">Argument</th>
+      <th style="text-align: center">Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code>--brief-report-file</code></td>
+      <td style="text-align: center">patchdir/brief.txt</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--console-report-file</code></td>
+      <td style="text-align: center">patchdir/console.txt</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--html-report-file</code></td>
+      <td style="text-align: center">patchdir/report.html</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--junit-report-xml</code></td>
+      <td style="text-align: center">patchdir/junit-report.xml</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--pylint-requirements</code></td>
+      <td style="text-align: center">true</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="manual-configuration">Manual Configuration</h2>
+
+<p>Manual configuration is recommended if one needs significant customization over the test environment and <code>test-patch</code> flags.</p>
+
+<p>TRIGGER: ${GITHUB_ACTIONS}=True</p>
+
+<p>GitHub Actions support has only been tested on the ubuntu-latest image. It automatically configures <code>--patch-dir</code> to be <code>${GITHUB_WORKSAPCE}/yetus</code> if not previously set.</p>
+
+<p>See also:</p>
+
+<ul>
+  <li>Apache Yetus' <a href="https://github.com/apache/yetus/test-patch-action">workflow action source</a> for lower level details on the workflow action implementation.</li>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.github/workflows/yetus.yml">yetus.yaml</a> for some tips and tricks.</li>
+</ul>
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>

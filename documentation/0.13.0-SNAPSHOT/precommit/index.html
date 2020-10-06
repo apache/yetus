@@ -1,0 +1,319 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<h1 id="basic-precommit">Basic Precommit</h1>
+
+<!-- MarkdownTOC levels="1,2,3" autolink="true" indent="  " bullets="*" bracket="round" -->
+
+<ul>
+  <li><a href="#purpose">Purpose</a></li>
+  <li><a href="#goals">Goals</a></li>
+  <li><a href="#pre-requisites">Pre-requisites</a>
+    <ul>
+      <li><a href="#base-requirements">Base Requirements</a></li>
+      <li><a href="#plug-ins">Plug-ins</a>
+        <ul>
+          <li><a href="#bundled-plug-ins">Bundled Plug-ins</a></li>
+          <li><a href="#optional-plug-ins">Optional Plug-ins</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li><a href="#more-information">More information</a></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
+<h1 id="purpose">Purpose</h1>
+
+<p>Performing reviews can be an overwhelming process.  The more complex the base, the more comprehensive reviews end up.  Building that functionality into the build itself is a full time job. When a new check is added there is a good chance the existing code has problems and often maintainers just want to prevent new bits from making the existing problem worse.</p>
+
+<p>This is where Apache Yetus' precommit utilities come into the picture.</p>
+
+<p>All patches to the source base go through a test that does some (relatively) light checking to make sure the proposed change does not break unit tests and/or passes some other prerequisites such as code formatting guidelines.  This is meant as a preliminary check for reviewers so that the basic patch is in a known state and for contributors to know if they have followed the project's guidelines.  This check may also be used by individual developers to verify a patch prior to sending to the QA systems.</p>
+
+<h1 id="goals">Goals</h1>
+
+<ul>
+  <li>Everyone's time is valuable.  The quicker contributors can get feedback and iterate, the more likely and faster their contribution will get checked in.  A committer should be able to focus on the core issues of a contribution rather than details that can be determined automatically.</li>
+  <li>Checks should be fast.  There is no value in testing parts of the source tree that are not immediately impacted by a change.  Unit testing is the target. They are not a replacement for full builds or integration tests.</li>
+  <li>In many build systems (e.g., maven), a modular design has been picked.  This modularity should be exploited to reduce the amount of checks that need to be performed.</li>
+  <li>Projects that use the same language will, with a high degree of certainty, benefit from the same types of checks.</li>
+  <li>Portability matters.  Tooling should be as operating system and language agnostic as possible.</li>
+</ul>
+
+<h1 id="pre-requisites">Pre-requisites</h1>
+
+<p>Almost all of the precommit components are written in bash for maximum portability.  As such, it mostly assumes the locations of commands to be in the file path. However, in many cases, this assumption may be overridden via command line options.</p>
+
+<h2 id="base-requirements">Base Requirements</h2>
+
+<p>These components are expected to be in-place for basic execution:</p>
+
+<ul>
+  <li>git-based project (and git 1.7.3 or higher installed)</li>
+  <li>bash v3.2 or higher (bash v4.0 or higher is recommended)</li>
+  <li>GNU diff</li>
+  <li>GNU patch</li>
+  <li>POSIX awk</li>
+  <li>POSIX grep</li>
+  <li>POSIX sed</li>
+  <li><a href="https://curl.haxx.se/">curl</a> command</li>
+  <li>file command</li>
+</ul>
+
+<p>For Solaris and Solaris-like operating systems, the default location for the POSIX binaries is in <code>/usr/xpg4/bin</code> and the default location for the GNU binaries is <code>/usr/gnu/bin</code>.</p>
+
+<h2 id="plug-ins">Plug-ins</h2>
+
+<p>Features are plug-in based and enabled either individually or collectively on the command line. From there, these are activated based upon tool availability, the languages being tested, etc.  The external dependencies of plug-ins may have different licensing requirements than Apache Yetus.</p>
+
+<h3 id="bundled-plug-ins">Bundled Plug-ins</h3>
+
+<p>These plug-ins are native to Apace Yetus and are (usually!) always available:</p>
+
+<ul>
+  <li><a href="plugins/author">author</a></li>
+  <li><a href="plugins/briefreport">briefreport</a></li>
+  <li><a href="plugins/dupname">dupname</a></li>
+  <li><a href="plugins/htmlout">htmlout</a></li>
+  <li><a href="plugins/nobuild">nobuild</a></li>
+  <li><a href="plugins/pathlen">pathlen</a></li>
+  <li><a href="plugins/slack">slack</a></li>
+  <li><a href="plugins/unitveto">unitveto</a></li>
+  <li><a href="plugins/whitespace">whitespace</a></li>
+  <li><a href="plugins/xml">xml</a></li>
+</ul>
+
+<h3 id="optional-plug-ins">Optional Plug-ins</h3>
+
+<p><a href="bugsystems">Bug Systems</a>:</p>
+
+<ul>
+  <li><a href="plugins/bugzilla">Bugzilla</a>-based issue tracking (Read Only)</li>
+  <li><a href="plugins/github">GitHub</a>-based issue tracking</li>
+  <li><a href="plugins/gitlab">Gitlab</a>-based issue tracking</li>
+  <li><a href="plugins/jira">JIRA</a>-based issue tracking</li>
+</ul>
+
+<p><a href="buildtools">Build Tools</a>:</p>
+
+<ul>
+  <li><a href="plugins/ant">ant</a></li>
+  <li><a href="plugins/autoconf">autoconf</a></li>
+  <li><a href="plugins/cmake">cmake</a></li>
+  <li><a href="plugins/gradle">gradle</a></li>
+  <li><a href="plugins/maven">maven</a></li>
+  <li><a href="plugins/make">make</a></li>
+</ul>
+
+<p>Automation and Isolation:</p>
+
+<ul>
+  <li><a href="robots/azurepipelines">Azure Pipelines</a></li>
+  <li><a href="robots/circleci">Circle CI</a></li>
+  <li><a href="robots/cirrusci">Cirrus CI</a></li>
+  <li><a href="docker">Docker</a> version 1.7.0+</li>
+  <li><a href="robots/githubactions">Github Actions</a></li>
+  <li><a href="robots/gitlabci">Gitlab CI</a></li>
+  <li><a href="robots/jenkins">Jenkins</a></li>
+  <li><a href="robots/semaphoreci">Semaphore CI</a></li>
+  <li><a href="robots/travisci">Travis CI</a></li>
+</ul>
+
+<p><a href="testformats">Unit Test Formats</a>:</p>
+
+<ul>
+  <li><a href="plugins/ctest">ctest</a></li>
+  <li>JUnit, as <a href="plugins/junit-testformat">input</a> and <a href="plugins/junit-bugsystem">output</a></li>
+  <li><a href="plugins/tap">TAP</a></li>
+</ul>
+
+<p>Compiler Support:</p>
+
+<ul>
+  <li><a href="plugins/cc">C/C++</a></li>
+  <li><a href="plugins/golang">Go</a></li>
+  <li>Java, both <a href="plugins/javac">javac</a> and <a href="plugins/javadoc">javadoc</a></li>
+  <li>Scala, both <a href="plugins/scalac">scalac</a> and <a href="plugins/scaladoc">scaladoc</a></li>
+</ul>
+
+<p>Language Support, Licensing, and more:</p>
+
+<ul>
+  <li><a href="plugins/asflicense">Apache Creadur Rat</a></li>
+  <li><a href="/documentation/0.13.0-SNAPSHOT/precommit/plugins/buf">buf</a></li>
+  <li><a href="plugins/checkmake">checkmake</a></li>
+  <li><a href="plugins/checkstyle">checkstyle</a></li>
+  <li><a href="plugins/findbugs">FindBugs</a></li>
+  <li><a href="plugins/golangcilint">golangci-lint</a></li>
+  <li><a href="plugins/hadolint">hadolint</a></li>
+  <li><a href="plugins/jshint">jshint</a></li>
+  <li><a href="plugins/markdownlint">markdownlint-cli</a></li>
+  <li><a href="plugins/perlcritic">Perl::Critic</a></li>
+  <li><a href="plugins/pylint">pylint</a></li>
+  <li><a href="plugins/revive">revive</a></li>
+  <li><a href="plugins/rubocop">rubocop</a></li>
+  <li><a href="plugins/shellcheck">shellcheck</a></li>
+  <li><a href="plugins/spotbugs">SpotBugs</a></li>
+  <li><a href="plugins/yamllint">yamllint</a></li>
+</ul>
+
+<h1 id="more-information">More information</h1>
+
+<ul>
+  <li><a href="usage-intro">Usage Introduction</a></li>
+  <li><a href="advanced">Advanced Usage Guide</a></li>
+  <li><a href="architecture">Internal Architecture</a></li>
+  <li>Various Subsystems:
+    <ul>
+      <li><a href="buildtools">build systems</a></li>
+      <li><a href="bugsystems">bug systems</a></li>
+      <li><a href="robots">continuous integration system support</a></li>
+      <li><a href="testformats">test formats</a></li>
+    </ul>
+  </li>
+  <li>Detailed <a href="docker">Docker</a> information</li>
+  <li><a href="apidocs/">Generated API documentation</a></li>
+  <li><a href="glossary">Glossary</a></li>
+</ul>
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>
