@@ -314,7 +314,7 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
     && rm -rf /var/lib/apt/lists/* \
     && go get -u github.com/mgechev/revive \
     && go get -u github.com/mrtazz/checkmake \
-    && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.30.0) \
+    && (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.31.0) \
     && mv /root/go/bin/* /usr/local/bin \
     && rm -rf /root/go /root/.cache/go-build
 
