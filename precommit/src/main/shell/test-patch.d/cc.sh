@@ -54,7 +54,7 @@ function cc_compile
   fi
 
   if [[ ${codebase} = patch ]]; then
-    generic_postlog_compare compile cc "${multijdkmode}"
+    module_postlog_compare compile cc "${multijdkmode}"
   fi
 }
 

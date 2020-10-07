@@ -141,12 +141,6 @@ function jshint_calcdiffs
 
 function jshint_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
   declare version
 
   if ! verify_needed_test jshint; then
@@ -166,37 +160,10 @@ function jshint_postapply
   version=$("${JSHINT}" --version 2>&1)
   add_version_data jshint "${version#*v}"
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-jshint-result.txt" \
-    "${PATCH_DIR}/patch-jshint-result.txt" \
+  root_postlog_compare \
     jshint \
-      > "${PATCH_DIR}/diff-patch-jshint.txt"
-
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-jshint-result.txt" | ${AWK} '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-jshint-result.txt" | ${AWK} '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-jshint.txt" | ${AWK} '{print $1}')
-
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 jshint "@@BASE@@/diff-patch-jshint.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue "jshint" "${PATCH_DIR}/diff-patch-jshint.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 jshint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 jshint "" "There were no new jshint issues."
-  return 0
+    "${PATCH_DIR}/branch-jshint-result.txt" \
+    "${PATCH_DIR}/patch-jshint-result.txt"
 }
 
 function jshint_precompile

@@ -126,7 +126,7 @@ function golang_compile
   fi
 
   if [[ ${codebase} = patch ]]; then
-    generic_postlog_compare compile golang "${multijdkmode}"
+    module_postlog_compare compile golang "${multijdkmode}"
   fi
 }
 

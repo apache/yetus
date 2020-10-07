@@ -121,13 +121,6 @@ function rubocop_calcdiffs
 
 function rubocop_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
-
   if ! verify_needed_test rubocop; then
     return 0
   fi
@@ -146,33 +139,10 @@ function rubocop_postapply
   RUBOCOP_VERSION=$("${RUBOCOP}" -v | "${AWK}" '{print $NF}')
   add_version_data rubocop "${RUBOCOP_VERSION}"
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-rubocop-result.txt" \
-    "${PATCH_DIR}/patch-rubocop-result.txt" \
+  root_postlog_compare \
     rubocop \
-      > "${PATCH_DIR}/diff-patch-rubocop.txt"
-  diffPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-rubocop.txt")
-
-  # shellcheck disable=SC2016
-  numPrepatch=$("${AWK}" -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-rubocop-result.txt")
-
-  # shellcheck disable=SC2016
-  numPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 4<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-rubocop-result.txt")
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 rubocop "@@BASE@@/diff-patch-rubocop.txt" "${BUILDMODEMSG} ${statstring}"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 rubocop "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 rubocop "" "There were no new rubocop issues."
-  return 0
+    "${PATCH_DIR}/branch-rubocop-result.txt" \
+    "${PATCH_DIR}/patch-rubocop-result.txt"
 }
 
 function rubocop_postcompile

@@ -297,12 +297,6 @@ function buflint_preapply
 
 function buflint_postapply
 {
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
-
   if ! verify_needed_test buflint; then
     return 0
   fi
@@ -323,31 +317,10 @@ function buflint_postapply
             "${PATCH_DIR}/patch-buflint-result.txt" \
             buf > "${PATCH_DIR}/diff-patch-buflint.txt"
 
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-buflint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-buflint-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-buflint.txt" | "${AWK}" '{print $1}')
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 buflint \
-      "@@BASE@@/diff-patch-buflint.txt" \
-      "${BUILDMODEMSG} ${statstring}"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 buflint "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 buflint "" "There were no new buf lint issues."
-  return 0
+  root_postlog_compare \
+    buflint \
+    "${PATCH_DIR}/branch-buflint-result.txt" \
+    "${PATCH_DIR}/patch-buflint-result.txt"
 }
 
 function buflint_postcompile

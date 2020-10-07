@@ -206,12 +206,6 @@ function shellcheck_calcdiffs
 
 function shellcheck_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
 
   if ! verify_needed_test shellcheck; then
     return 0
@@ -227,37 +221,10 @@ function shellcheck_postapply
 
   shellcheck_logic patch
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-shellcheck-result.txt" \
-    "${PATCH_DIR}/patch-shellcheck-result.txt" \
+  root_postlog_compare \
     shellcheck \
-      > "${PATCH_DIR}/diff-patch-shellcheck.txt"
-
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shellcheck-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shellcheck-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shellcheck.txt" | "${AWK}" '{print $1}')
-
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 shellcheck "@@BASE@@/diff-patch-shellcheck.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue "shellcheck" "${PATCH_DIR}/diff-patch-shellcheck.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 shellcheck "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 shellcheck "" "There were no new shellcheck issues."
-  return 0
+    "${PATCH_DIR}/branch-shellcheck-result.txt" \
+    "${PATCH_DIR}/patch-shellcheck-result.txt"
 }
 
 function shellcheck_postcompile

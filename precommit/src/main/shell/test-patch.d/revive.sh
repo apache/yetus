@@ -72,7 +72,7 @@ function revive_exec
   echo "Running revive against identified go files."
   pushd "${BASEDIR}" >/dev/null || return 1
 
-  args=('-formatter' 'default')
+  args=('-formatter' 'plain')
   if [[ -f "${REVIVE_CONFIG}" ]]; then
     args+=('-config' "${REVIVE_CONFIG}")
   fi
@@ -120,13 +120,6 @@ function revive_calcdiffs
 
 function revive_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
-
   if ! verify_needed_test revive; then
     return 0
   fi
@@ -141,33 +134,10 @@ function revive_postapply
 
   revive_exec patch
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-revive-result.txt" \
-    "${PATCH_DIR}/patch-revive-result.txt" \
+  root_postlog_compare \
     revive \
-      > "${PATCH_DIR}/diff-patch-revive.txt"
-  diffPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-revive.txt")
-
-  # shellcheck disable=SC2016
-  numPrepatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-revive-result.txt")
-
-  # shellcheck disable=SC2016
-  numPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-revive-result.txt")
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 revive "@@BASE@@/diff-patch-revive.txt" "${BUILDMODEMSG} ${statstring}"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 revive "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 revive "" "There were no new revive issues."
-  return 0
+    "${PATCH_DIR}/branch-revive-result.txt" \
+    "${PATCH_DIR}/patch-revive-result.txt"
 }
 
 function revive_postcompile

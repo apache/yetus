@@ -131,11 +131,6 @@ function shelldocs_preapply
 function shelldocs_postapply
 {
   declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
 
   if ! verify_needed_test shelldocs; then
     return 0
@@ -157,36 +152,10 @@ function shelldocs_postapply
     fi
   done
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-shelldocs-result.txt" \
-    "${PATCH_DIR}/patch-shelldocs-result.txt" \
+  root_postlog_compare \
     shelldocs \
-      > "${PATCH_DIR}/diff-patch-shelldocs.txt"
-
-  # shellcheck disable=SC2016
-  numPrepatch=$(wc -l "${PATCH_DIR}/branch-shelldocs-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  numPostpatch=$(wc -l "${PATCH_DIR}/patch-shelldocs-result.txt" | "${AWK}" '{print $1}')
-
-  # shellcheck disable=SC2016
-  diffPostpatch=$(wc -l "${PATCH_DIR}/diff-patch-shelldocs.txt" | "${AWK}" '{print $1}')
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 shelldocs "@@BASE@@/diff-patch-shelldocs.txt" "${BUILDMODEMSG} ${statstring}"
-    bugsystem_linecomments_queue "shelldocs" "${PATCH_DIR}/diff-patch-shelldocs.txt"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 shelldocs "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 shelldocs "" "There were no new shelldocs issues."
-  return 0
+    "${PATCH_DIR}/branch-shelldocs-result.txt" \
+    "${PATCH_DIR}/patch-shelldocs-result.txt"
 }
 
 function shelldocs_postcompile

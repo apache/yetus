@@ -123,13 +123,6 @@ function checkmake_calcdiffs
 
 function checkmake_postapply
 {
-  declare i
-  declare numPrepatch
-  declare numPostpatch
-  declare diffPostpatch
-  declare fixedpatch
-  declare statstring
-
   if ! verify_needed_test checkmake; then
     return 0
   fi
@@ -144,33 +137,10 @@ function checkmake_postapply
 
   checkmake_exec patch
 
-  calcdiffs \
-    "${PATCH_DIR}/branch-checkmake-result.txt" \
-    "${PATCH_DIR}/patch-checkmake-result.txt" \
+  root_postlog_compare \
     checkmake \
-      > "${PATCH_DIR}/diff-patch-checkmake.txt"
-  diffPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/diff-patch-checkmake.txt")
-
-  # shellcheck disable=SC2016
-  numPrepatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/branch-checkmake-result.txt")
-
-  # shellcheck disable=SC2016
-  numPostpatch=$("${AWK}" -F: 'BEGIN {sum=0} 3<NF {sum+=1} END {print sum}' "${PATCH_DIR}/patch-checkmake-result.txt")
-
-  ((fixedpatch=numPrepatch-numPostpatch+diffPostpatch))
-
-  statstring=$(generic_calcdiff_status "${numPrepatch}" "${numPostpatch}" "${diffPostpatch}" )
-
-  if [[ ${diffPostpatch} -gt 0 ]] ; then
-    add_vote_table_v2 -1 checkmake "@@BASE@@/diff-patch-checkmake.txt" "${BUILDMODEMSG} ${statstring}"
-    return 1
-  elif [[ ${fixedpatch} -gt 0 ]]; then
-    add_vote_table_v2 +1 checkmake "" "${BUILDMODEMSG} ${statstring}"
-    return 0
-  fi
-
-  add_vote_table_v2 +1 checkmake "" "There were no new checkmake issues."
-  return 0
+    "${PATCH_DIR}/branch-checkmake-result.txt" \
+    "${PATCH_DIR}/patch-checkmake-result.txt"
 }
 
 function checkmake_postcompile
