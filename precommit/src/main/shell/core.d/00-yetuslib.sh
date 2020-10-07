@@ -193,7 +193,7 @@ function yetus_generic_columnprinter
   while read -r line; do
     tmpa[${counter}]=${line}
     ((counter=counter+1))
-    option=$(echo "${line}" | cut -f1 -d'@')
+    option="${line%%@*}"
     if [[ ${#option} -gt ${maxoptsize} ]]; then
       maxoptsize=${#option}
     fi
@@ -205,8 +205,8 @@ function yetus_generic_columnprinter
   ((foldsize=numcols-maxoptsize))
 
   until [[ $i -eq ${#tmpa[@]} ]]; do
-    option=$(echo "${tmpa[$i]}" | cut -f1 -d'@')
-    giventext=$(echo "${tmpa[$i]}" | cut -f2 -d'@')
+    option="${tmpa[$i]%%@*}"
+    giventext="${tmpa[$i]##*@}"
 
     while read -r line; do
       printf "%-${maxoptsize}s   %-s\\n" "${option}" "${line}"
@@ -405,7 +405,7 @@ function yetus_sort_array
   declare oifs
   declare -a sa
 
-  globstatus=$(set -o | grep noglob | awk '{print $NF}')
+  globstatus=$(set -o | awk '/noglob/ {print $NF}')
 
   if [[ -n ${IFS} ]]; then
     oifs=${IFS}
@@ -442,7 +442,7 @@ function yetus_sort_and_unique_array
   declare oifs
   declare -a sa
 
-  globstatus=$(set -o | grep noglob | awk '{print $NF}')
+  globstatus=$(set -o | awk '/noglob/ {print $NF}')
 
   if [[ -n ${IFS} ]]; then
     oifs=${IFS}

@@ -139,8 +139,8 @@ function whitespace_postcompile
     ;;
   esac
 
-  # shellcheck disable=SC2016
-  count=$(wc -l "${PATCH_DIR}/whitespace-eol.txt" | ${AWK} '{print $1}')
+  temp1=$(wc -l "${PATCH_DIR}/whitespace-eol.txt")
+  count=${temp1%% *}
 
   if [[ ${count} -gt 0 ]]; then
     if [[ "${BUILDMODE}" = full ]]; then
@@ -159,8 +159,8 @@ function whitespace_postcompile
     ((result=result+1))
   fi
 
-  # shellcheck disable=SC2016
-  count=$(wc -l "${PATCH_DIR}/whitespace-tabs.txt" | ${AWK} '{print $1}')
+  temp1=$(wc -l "${PATCH_DIR}/whitespace-tabs.txt")
+  count=${temp1%% *}
 
   if [[ ${count} -gt 0 ]]; then
     add_vote_table_v2 -1 whitespace \

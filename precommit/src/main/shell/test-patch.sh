@@ -2185,24 +2185,29 @@ function bugsystem_linecomments_queue
   declare text
   declare columncheck
   declare column
+  declare rol
+  declare file
 
   if [[ -z "${BUGLINECOMMENTS}" ]]; then
     return 0
   fi
 
   while read -r line; do
-    file=$(echo "${line}" | cut -f1 -d:)
+    file=${line%%:*}
+    rol=${line/#${file}:}
     if [[ "${file}" =~ ^\./ ]]; then
       file=${file:2}
     fi
-    linenum=$(echo "${line}" | cut -f2 -d:)
-    columncheck=$(echo "${line}" | cut -f3 -d:)
+
+    linenum=${rol%%:*}
+    rol=${rol/#${linenum}:}
+    columncheck=${rol%%:*}
     if [[ "${columncheck}" =~ ^[0-9]+$ ]]; then
       column=${columncheck}
-      text=$(echo "${line}" | cut -f4- -d:)
+      text=${rol/#${column}:}
     else
       column="0"
-      text=$(echo "${line}" | cut -f3- -d:)
+      text=${rol}
     fi
 
     echo "${file}:${linenum}:${column}:${plugin}:${text}" >> "${PATCH_DIR}/linecomments-in.txt"
@@ -2231,11 +2236,14 @@ function bugsystem_linecomments_trigger
   sort -k1,1 -k2,2n -k3,3n -k4,4 "${PATCH_DIR}/linecomments-in.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
 
   while read -r line;do
-    fn=$(echo "${line}" | cut -f1 -d:)
-    linenum=$(echo "${line}" | cut -f2 -d:)
-    column=$(echo "${line}" | cut -f3 -d:)
-    plugin=$(echo "${line}" | cut -f4 -d:)
-    text=$(echo "${line}" | cut -f5- -d:)
+    fn=${line%%:*}
+    rol=${line/#${fn}:}
+    linenum=${rol%%:*}
+    rol=${rol/#${linenum}:}
+    column=${rol%%:*}
+    rol=${rol/#${column}:}
+    plugin=${rol%%:*}
+    text=${rol/#${plugin}:}
 
     for bugs in ${BUGLINECOMMENTS}; do
       if declare -f "${bugs}_linecomments" >/dev/null;then
@@ -2637,6 +2645,8 @@ function module_postlog_compare
   declare -i samepatch=0
   declare -i fixedpatch=0
   declare summarize=true
+  declare tmpvar
+
 
   if [[ ${multijdk} == true ]]; then
     jdk=$(report_jvm_version "${JAVA_HOME}")
@@ -2674,10 +2684,10 @@ function module_postlog_compare
     generic_logfilter "${testtype}" "${PATCH_DIR}/branch-${origlog}-${fn}.txt" "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt"
     generic_logfilter "${testtype}" "${PATCH_DIR}/patch-${origlog}-${fn}.txt" "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt"
 
-    # shellcheck disable=SC2016
-    numbranch=$(wc -l "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" | "${AWK}" '{print $1}')
-    # shellcheck disable=SC2016
-    numpatch=$(wc -l "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt" | "${AWK}" '{print $1}')
+    tmpvar=$(wc -l "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt")
+    numbranch=${tmpvar%% *}
+    tmpvar=$(wc -l "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt")
+    numpatch=${tmpvar%% *}
 
     calcdiffs \
       "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" \
@@ -2685,8 +2695,8 @@ function module_postlog_compare
       "${testtype}" \
       > "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt"
 
-    # shellcheck disable=SC2016
-    addpatch=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt" | "${AWK}" '{print $1}')
+    tmpvar=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt")
+    addpatch=${tmpvar%% *}
 
     ((fixedpatch=numbranch-numpatch+addpatch))
 
