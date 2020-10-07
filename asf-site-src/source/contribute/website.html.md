@@ -21,11 +21,11 @@
 
 <!-- MarkdownTOC levels="1,2" autolink="true" -->
 
-* [Make changes in asf-site-src/source](#make-changes-in-asf-site-srcsource)
-* [Make changes to API Docs](#make-changes-to-api-docs)
-* [Generating the website](#generating-the-website)
-* [Live Development](#live-development)
-* [Publishing the Site](#publishing-the-site)
+- [Make changes in asf-site-src/source](#make-changes-in-asf-site-srcsource)
+- [Make changes to API Docs](#make-changes-to-api-docs)
+- [Generating the website](#generating-the-website)
+- [Live Development](#live-development)
+- [Publishing the Site](#publishing-the-site)
 
 <!-- /MarkdownTOC -->
 
@@ -73,7 +73,7 @@ To generate the static website for Apache Yetus run the following command at the
 
 ```bash
 mvn --batch-mode install
-mvn --batch-mode site site:stage
+mvn --batch-mode site site:stage < /dev/null
 ```
 
 Apache Yetus uses itself to build parts of its website. ('Flying our own airplanes')  This command will first generate a full build of Apache Yetus and create a static website in the `asf-site-src/target/site` sub directory and a tarball of the site in yetus-dist/target/. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:
