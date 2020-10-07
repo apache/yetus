@@ -82,6 +82,7 @@ function circleci_artifact_url
       baseurl=$("${GREP}" url "${PATCH_DIR}/circleci.txt" | head -1 | cut -f2- -d:)
       baseurl=${baseurl//\"/}
       baseurl=${baseurl%/*}
+      baseurl=${baseurl%% }
       rm "${PATCH_DIR}/circleci.txt" 2>/dev/null
       CIRCLECI_ARTIFACTS=${baseurl}
     fi
