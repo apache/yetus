@@ -19,7 +19,7 @@
 
 # Name
 
-whitespace
+blanks
 
 # Category
 
@@ -30,7 +30,9 @@ Test
 Provides a test to do two things:
 
 * Fail patches that use tabs instead of spaces (where appropriate)
-* End of line whitespace
+* End of line blank space
+
+By default, blanks will automatically ignore tabs in Makefiles and Go-related files.  However, if a file is provided, that file must also include the appropriate regexs for Makefiles and Go.
 
 # Environment Variables
 
@@ -40,8 +42,8 @@ None
 
 | Option | Notes |
 |:---------|:------|
-| `--whitespace-eol-ignore-list=<list>` | Comma-separated regex list of filenames |
-| `--whitespace-tabs-ignore-list=<list>` | Comma-separated regex list of filenames |
+| `--blanks-eol-ignore-file=<file>` | File containing regexs of files/dirs to ignore EOL blanks. Defaults to `.yetus/blanks-eol.txt` |
+| `--blanks-tabs-ignore-file=<file>` | File containing regexs of files/dirs to ignore tabs. Defaults to `.yetus/blanks-eol.txt` |
 
 # Docker Notes
 
