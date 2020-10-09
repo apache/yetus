@@ -67,11 +67,25 @@ Using the `--bugzilla-base-url` on the command line or BUGZILLA\_BASE\_URL in a 
 
 # GitHub Specific
 
-GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that `test-patch` will (generally) require that GitHub PRs be fully squashed and rebased (i.e., a single commit) in many circumstances.
+GitHub supports a large range of functionality, mostly self-adjusting based upon the
+environment it is running in.  Supported features include GitHub Enterprise, private
+repositories, GitHub Statuses, and GitHub Checks Annotations.
 
-By default, the GitHub plug-in assumes that <https://github.com> is the base URL for GitHub.  Enterprise users may override this with the `--github-base-url` for the normal web user interface and `--github-api-url` for the API URL.  Personalities may use GITHUB\_API\_URL and GITHUB\_BASE\_URL.
+Be aware, however, that `test-patch` will (generally) require
+that GitHub PRs be fully squashed and rebased (i.e., a single commit) in many
+circumstances, especially renames followed by commits to those renamed files.  It will
+try to fall back to 'diff' format if 'patch' format does not work, exiting
+completely if both fail.
 
-The specific repository on GitHub is defined with either `--github-repo` on the command line or GITHUB\_REPO in a personality.  It should take the form of "user/repo".
+By default, the GitHub plug-in assumes that <https://github.com> is the base URL
+for GitHub and <https://api.github.com> for base of the GitHub API URL.  Enterprise
+users may override this with the `--github-base-url` for the normal web user
+interface and `--github-api-url` for the API URL.  Personalities may use
+GITHUB\_API\_URL and GITHUB\_BASE\_URL.
+
+The specific repository on GitHub is defined with either `--github-repo` on the
+command line, GITHUB\_REPO in a personality, or automatically determined by various
+robot support mechanisms.  It should take the form of "user/repo".
 
 GitHub pull requests may be directly processed on the command line in two ways:
 
@@ -83,13 +97,23 @@ Pull requests that are made off of a specific branch will switch the test repo t
 
 ## GitHub Authentication
 
-In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports authentication via token or user name/passphrase.
+Some operations depend upon authentication credentials.  The GitHub plug-in
+supports authentication via token or user name/passphrase.  Authentication is
+required for controlling the API query rate, accessing private repositories,
+reading private pull requests, updating GitHub Statuses (requires
+`repo:status` permissions), writing comments to PRs, and other functionality.
+
+Some [robots](../robots) have built-in support for providing GitHub tokens.  See
+the appropriate documentation for your particular setup.
 
 ### GitHub Token
 
 The token is provided via the `--github-token` option.
 
-### GitHub Username/password (Deprecated)
+### GitHub Username/password
+
+    NOTE: GitHub is deprecating this format. It is kept here for backward compatibility
+    until such a time the format is completely removed from modern implementations.
 
 The user name is provided via the `--github-user` option or the GITHUB\_USER environment variable.  The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
 `--project=yetus` will set `GITHUB_USER=yetusqa`.

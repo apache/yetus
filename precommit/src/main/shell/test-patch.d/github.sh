@@ -304,6 +304,9 @@ function github_locate_pr_patch
   declare patchout=$2
   declare diffout=$3
   declare apiurl
+  declare line
+  declare sha
+  declare foundhead=false
 
   input=${input#GH:}
 
@@ -379,6 +382,21 @@ function github_locate_pr_patch
          "${apiurl}"; then
     yetus_debug "github_locate_patch: cannot download diff"
     return 1
+  fi
+
+  if [[ -z "${GIT_BRANCH_SHA}" ]]; then
+    while read -r line; do
+      if [[ "${line}" =~ \"head\": ]]; then
+        foundhead=true
+      fi
+      if [[ "${foundhead}" == true ]]; then
+        if [[ "${line}" =~ \"sha\": ]]; then
+          sha=${line##* \"}
+          GIT_BRANCH_SHA=${sha%%\"*}
+          break
+        fi
+      fi
+    done < <(cat "${PATCH_DIR}/github-pull.json")
   fi
 
   GITHUB_ISSUE=${input}
