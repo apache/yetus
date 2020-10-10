@@ -178,7 +178,7 @@ pipeline {
         try {
 	           recordIssues(
 		          tool: junitParser(pattern: '**/junit-report.xml'),
-              enabledForFailure: true)
+              enabledForFailure: true
 	           )
         } catch(e) {
             echo 'warningsng processing: ' + e.toString()
