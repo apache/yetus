@@ -99,16 +99,8 @@ if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]] &&
     EXECUTOR_NUMBER \
     ghprbPullId \
     ghprbPullLink \
-    GIT_COMMIT \
     GIT_URL \
     JENKINS_URL
-
-  # Jenkins doesn't always define this, so this
-  # dependency is highly unreliable
-  if [[ -n "${GIT_COMMIT}" ]]; then
-    # shellcheck disable=SC2034
-    GIT_BRANCH_SHA=${GIT_COMMIT}
-  fi
 
   yetus_add_array_element EXEC_MODES Jenkins
 fi

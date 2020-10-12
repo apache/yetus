@@ -71,6 +71,28 @@ Experience has shown that certain Jenkins + Java + OS combinations have problems
     }
  ```
 
+## GitHub Token Support
+
+Using the Jenkins Credential system, one can provide a specific personal access token
+to use with GitHub.  However, it is recommended that Jenkins be configured to act as
+a GitHub application as per the
+[Cloudbees documentation](https://docs.cloudbees.com/docs/cloudbees-jenkins-platform/latest/github-app-auth)
+for the optimal `test-patch` experience.  Configure up to the "Configuring the GitHub Organization" and then, using the Jenkins credential system, pass the GitHub App's token to `test-patch`. For example:
+
+```groovy
+...
+        withCredentials([usernamePassword(credentialsId: 'github-app',
+                         passwordVariable: 'GITHUB_TOKEN',
+                         usernameVariable: 'GITHUB_USER')]) {
+...
+
+        sh '''test-patch --github-token="${GITHUB_TOKEN}" (other options)'''
+...
+```
+
+Doing so will enable in many circumstances a bit more functionality, such as
+GitHub Statuses.
+
 See also:
 
 * Apache Yetus' source tree [Jenkinsfile](https://github.com/apache/yetus/blob/main/Jenkinsfile) for some tips and tricks.
@@ -78,3 +100,5 @@ See also:
 * [GitHub Branch Source Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin)
 * [GitHub Pull Request Builder Plugin](https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin)
 * `https://{your local server}/env-vars.html/`
+* [From Jenkins – GitHub App authentication support released](https://cd.foundation/blog/2020/04/22/from-jenkins-github-app-authentication-support-released/)
+* [Jenkins - Using GitHub App authentication](https://docs.cloudbees.com/docs/cloudbees-jenkins-platform/latest/github-app-auth)

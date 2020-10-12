@@ -157,6 +157,7 @@ function junit_finalreport
   url=$(get_artifact_url)
 
 cat << EOF > "${JUNIT_REPORT_XML}"
+<?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
     <testsuite tests="1" failures="'${result}'" time="1" name="Apache Yetus">
 EOF
