@@ -111,10 +111,10 @@ def releasenotes(output, version)
   #       file timestamp
   puts("Calling releasenotes #{version} @ #{output}")
   `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
-                                       --projecttitle="Apache Yetus" \
-                                       --dirversions --empty \
-                                       --extension=.html.md \
-                                       --usetoday --license --lint=all)`
+    --projecttitle="Apache Yetus" \
+    --dirversions --empty \
+    --extension=.html.md \
+    --usetoday --license --lint=all)`
   errmsg = $stderr
   return if $CHILD_STATUS.exitstatus.zero?
 
@@ -122,56 +122,25 @@ def releasenotes(output, version)
   abort("releasedocmaker failed to generate release notes for #{version}.")
 end
 
-GITREPO = 'https://github.com/apache/yetus.git'
-
-def build_release_docs(output, version) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
+def build_release_docs(output, version)
   # TODO: get the version date from jira and do an up to date check instead of building each time.
   puts "Building docs for release #{version}"
   puts "\tcleaning up output directories in #{output}"
   FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
   FileUtils.rm_rf("#{output}/#{version}", secure: true)
-  if version =~ /^0.[0-8]\./
-    puts "\tcloning from tag."
-    `(cd "#{output}" && \
-      git clone --depth 1 --branch "rel/#{version}" --single-branch -- \
-          "#{GITREPO}" "build-#{version}" \
-     ) >"#{output}/#{version}_git_checkout.log" 2>&1`
-    abort("building docs failed to for #{version}.") unless $CHILD_STATUS.exitstatus.zero?
-    puts "\tsetting up markdown docs"
-    FileUtils.mkdir "#{output}/#{version}"
-    FileUtils.mv(
-      Dir.glob("#{output}/build-#{version}/asf-site-src/source/documentation/in-progress/*.md*"),
-      "#{output}/#{version}/"
-    )
-    FileUtils.mv(
-      "#{output}/build-#{version}/asf-site-src/source/documentation/in-progress.html.md",
-      "#{output}/#{version}.html.md"
-    )
-    FileUtils.mkdir "#{output}/#{version}/precommit-apidocs"
-    precommit_shelldocs(
-      "#{output}/#{version}/precommit-apidocs",
-      "#{output}/build-#{version}/precommit"
-    )
-    puts "\tgenerating javadocs"
-    `(cd "#{output}/build-#{version}/audience-annotations-component" && mvn -DskipTests -Pinclude-jdiff-module javadoc:aggregate) >"#{output}/#{version}_mvn.log" 2>&1` # rubocop:disable Layout/LineLength
-    unless $CHILD_STATUS.exitstatus.zero?
-      puts "\tgenerating javadocs failed. maybe maven isn't installed? look in #{output}/#{version}_mvn.log" # rubocop:disable Layout/LineLength
-    end
-  else
-    puts "Downloading and extracting #{version} from ASF archives"
-    `(pushd #{output} \
-      && mkdir -p build-#{version} \
-      && curl --fail --location --output site-#{version}.tar.gz \
-        https://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
-      && tar -C build-#{version} \
-         --strip-components 3 -xzpf site-#{version}.tar.gz \
-        apache-yetus-#{version}-site/documentation/in-progress/ \
-      && popd
+
+  puts "Downloading and extracting #{version} from ASF archives"
+  `(cd #{output} \
+    && mkdir -p build-#{version} \
+    && curl --fail --location --output site-#{version}.tar.gz \
+    https://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
+    && tar -C build-#{version} \
+    --strip-components 3 -xzpf site-#{version}.tar.gz \
+    apache-yetus-#{version}-site/documentation/in-progress/ \
     )`
-    puts "Removing #{output}/build-#{version}/CHANGELOG"
-    FileUtils.rm_rf("#{output}/build-#{version}/CHANGELOG", secure: true)
-    FileUtils.rm_rf("#{output}/build-#{version}/RELEASENOTES", secure: true)
-  end
+  puts "Removing #{output}/build-#{version}/CHANGELOG"
+  FileUtils.rm_rf("#{output}/build-#{version}/CHANGELOG", secure: true)
+  FileUtils.rm_rf("#{output}/build-#{version}/RELEASENOTES", secure: true)
 end
 
 def precommit_shelldocs(apidocs_dir, source_dir)
@@ -199,7 +168,7 @@ after_configuration do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  # For Audiene Annotations we just rely on having made javadocs with Maven
+  # For Audience Annotations we just rely on having made javadocs with Maven
   sitemap.register_resource_list_manipulator(
     :audience_annotations,
     ApiDocs.new(
@@ -221,32 +190,22 @@ after_configuration do # rubocop:disable Metrics/BlockLength
   app.data.versions.releases&.each do |release|
     build_release_docs('target', release)
     releasenotes('target', release)
-    if release =~ /^0.[0-8]\./
-      # stitch the javadoc in place
-      sitemap.register_resource_list_manipulator(
-        "#{release}_javadocs".to_sym,
-        ApiDocs.new(
-          sitemap,
-          "documentation/#{release}/audience-annotations-apidocs",
-          File.expand_path("target/build-#{release}/audience-annotations-component/target/site/apidocs",  # rubocop:disable Layout/LineLength
-                           File.dirname(__FILE__))
-        )
+    sitemap.register_resource_list_manipulator(
+      "#{release}_javadocs".to_sym,
+      ApiDocs.new(
+        sitemap,
+        "documentation/#{release}",
+        File.expand_path("target/build-#{release}",
+                         File.dirname(__FILE__))
       )
-
-    else
-      sitemap.register_resource_list_manipulator(
-        "#{release}_javadocs".to_sym,
-        ApiDocs.new(
-          sitemap,
-          "documentation/#{release}",
-          File.expand_path("target/build-#{release}",
-                           File.dirname(__FILE__))
-        )
-      )
-    end
+    )
   end
 end
 
 after_build do
   File.rename 'target/site/.htaccess.apache', 'target/site/.htaccess'
+  File.rename(
+    'target/site/documentation/in-progress/precommit/apidocs-index/index.html',
+    'target/site/documentation/in-progress/precommit/apidocs/index.html'
+  )
 end

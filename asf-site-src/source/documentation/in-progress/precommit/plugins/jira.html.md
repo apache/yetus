@@ -27,7 +27,7 @@ Bug System
 
 # Description
 
-Enables support for reading and writing back to [JIRA](https://www.atlassian.com/software/jira), both on-premise and in-cloud.  See also the [Bugsystems](../bugsystems) documentation for more information.
+Enables support for reading and writing back to [JIRA](https://www.atlassian.com/software/jira), both on-premise and in-cloud.  See also the [Bugsystems](../../bugsystems) documentation for more information.
 
 # Environment Variables
 

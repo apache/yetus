@@ -51,4 +51,4 @@ None
 
 The `maven` plug-in adds several API calls that other plug-ins may use to configure specific Apache Maven behavior, generally around Maven cache management.
 
-See [build tools](../buildtools) for more information.
+See [build tools](../../buildtools) for more information.

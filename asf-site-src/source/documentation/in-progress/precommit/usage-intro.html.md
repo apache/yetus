@@ -35,6 +35,7 @@
   * [GITHUB](#github)
   * [GITLAB](#gitlab)
   * [Generic URLs](#generic-urls)
+* [Excluding Files](#excluding-files)
 * [Project-specific Capabilities](#project-specific-capabilities)
   * [Direct Method](#direct-method)
   * [Project Method](#project-method)
@@ -369,7 +370,21 @@ For example:
 $ test-patch --plugins=all https://example.com/webserver/file.patch
 ```
 
-... will download and process the file.patch from the example.com webserver.
+process the file.patch from the example.com webserver.
+
+# Excluding Files
+
+Some repositories have content that is either imported from other sources (aka "vendored") or in some
+other way have files that are known to break tests. By default, `.yetus/excludes.txt` will be read for any
+file, directory, or extended regular expression as the list to remove from test results.  The file to read
+may be overwritten by using the `--excludes` flag:
+
+```bash
+$ test-patch --plugins=all --excludes=(filename) (other options)
+```
+
+    NOTE: for best results, avoid using ^ and $ in your regular expressions.  `test-patch` will automatically
+    anchor the contents of that file.
 
 # Project-specific Capabilities
 
@@ -423,7 +438,7 @@ NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JA
 $ test-patch --docker
 ```
 
-This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../docker) page and the [Apache Yetus Docker Hub Images](/yetus-docker-image) page for more information on the convenience Docker images.
+This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../docker) page and the [Apache Yetus Docker Hub Images](../../../../yetus-docker-image) page for more information on the convenience Docker images.
 
 # In Closing
 

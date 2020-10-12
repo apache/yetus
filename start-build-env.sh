@@ -15,7 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-set -e               # exit on error
+if [[ "${GITHUB_ACTIONS}" == true ]]; then
+  echo "::group::start-build-env"
+fi
+
+set -e            # exit on error
 ROOTDIR=$(cd -P -- "$(dirname -- "${BASH_SOURCE-$0}")" >/dev/null && pwd -P)
 
 YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-apache/yetus}
@@ -23,10 +27,11 @@ YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-apache/yetus}
 # moving to the path of the Dockerfile reduces the context
 cd "${ROOTDIR}/precommit/src/main/shell/test-patch-docker"
 
-BRANCH=$(git branch | grep '\*' | cut -d ' ' -f2)
+BRANCH=$(git branch | grep '\*' | cut -d ' ' -f2 )
 if [[ "${BRANCH}" =~ HEAD ]]; then
   BRANCH=$(git branch | grep '\*' | awk '{print $NF}'  | sed -e s,rel/,,g -e s,\),,g )
 fi
+BRANCH=${BRANCH//\//_}
 
 echo "Attempting a few pulls of ${YETUS_DOCKER_REPO} and ${YETUS_DOCKER_REPO}-base to save time"
 echo "Errors here will be ignored!"
@@ -34,7 +39,7 @@ docker pull "${YETUS_DOCKER_REPO}-base:${BRANCH}" || docker pull "${YETUS_DOCKER
 docker pull "${YETUS_DOCKER_REPO}:${BRANCH}"  || docker pull "${YETUS_DOCKER_REPO}:main" || true
 
 docker build \
-  --cache-from="${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:main,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:main" \
+  --cache-from="${YETUS_DOCKER_REPO}-build:${BRANCH},${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:main,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:main" \
   -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
 
 USER_NAME=${SUDO_USER:=$USER}
@@ -85,11 +90,27 @@ cd "${ROOTDIR}"
 # builds because the dependencies are downloaded only once.
 # Additionally, we mount GPG and SSH directories so that
 # release managers can use the container to do releases
-docker run --rm=true -i -t \
-  -v "${PWD}:/home/${USER_NAME}/yetus${V_OPTS:-}" \
-  -w "/home/${USER_NAME}/yetus" \
-  -v "${HOME}/.m2:/home/${USER_NAME}/.m2${V_OPTS:-}" \
-  -v "${HOME}/.gnupg:/home/${USER_NAME}/.gnupg" \
-  -v "${HOME}/.ssh:/home/${USER_NAME}/.ssh" \
-  -u "${USER_NAME}" \
+
+dockerargs=(--rm=true)
+dockerargs+=(-v "${PWD}:/home/${USER_NAME}/yetus${V_OPTS:-}")
+dockerargs+=(-w "/home/${USER_NAME}/yetus")
+
+if [[ -z ${GITHUB_ACTIONS} ]]; then
+  dockerargs+=(-v "${HOME}/.m2:/home/${USER_NAME}/.m2${V_OPTS:-}")
+  dockerargs+=(-v "${HOME}/.gnupg:/home/${USER_NAME}/.gnupg")
+  dockerargs+=(-v "${HOME}/.ssh:/home/${USER_NAME}/.ssh")
+fi
+
+dockerargs+=(-u "${USER_NAME}")
+
+if tty -s; then
+  dockerargs+=(-t)
+fi
+
+if [[ "${GITHUB_ACTIONS}" == true ]]; then
+  echo "::endgroup::"
+fi
+
+docker run -i \
+   "${dockerargs[@]}" \
   "${YETUS_DOCKER_REPO}-build-${USER_ID}:${BRANCH}" "$@"

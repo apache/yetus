@@ -28,6 +28,7 @@ ARG USER_NAME
 # hadolint ignore=DL3008
 RUN apt-get -q update \
     && apt-get -q install --no-install-recommends -y \
+      apache2 \
       pinentry-curses \
       pinentry-tty \
       subversion \
@@ -46,6 +47,23 @@ ENV HOME /home/${USER_NAME}
 
 WORKDIR /home/${USER_NAME}
 
+ENV APACHE_PID_FILE /tmp/website/pid
+ENV APACHE_LOG_DIR /tmp/website/logdir
+ENV APACHE_RUN_DIR /tmp/website/rundir
+ENV APACHE_RUN_USER ${USER_NAME}
+ENV APACHE_RUN_GROUP ${USER_NAME}
+
+RUN mkdir -p /tmp/website/{logdir,rundir} \
+    && chown -R ${USER_ID}:${GROUP_ID} /var/www/html /tmp/website \
+    && ln -s /var/www/html /tmp/website/html \
+    && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
+    && sed -i "s,Listen 80,Listen 8123," /etc/apache2/ports.conf \
+    && sed -i "s,:80,:8123," /etc/apache2/sites-available/000-default.conf
+
+# there is no version to pin here, so....
+# hadolint ignore=DL3013
+RUN pip3 install git+https://github.com/linkchecker/linkchecker.git
+
 USER ${USER_NAME}
 
 RUN bundle config --global github.https true
@@ -59,9 +77,10 @@ RUN gem install bundler \
     middleman:'4.3.11' \
     middleman-livereload \
     middleman-syntax \
-    therubyracer \
-    tzinfo-data \
+    nokogiri:1.10.10 \
     rake:13.0.1 \
-    nokogiri:1.10.10
+    sassc:2.4.0 \
+    therubyracer \
+    tzinfo-data
 
 CMD ["/bin/bash"]
