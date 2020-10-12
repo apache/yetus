@@ -149,6 +149,7 @@
       <li><a href="#generic-urls">Generic URLs</a></li>
     </ul>
   </li>
+  <li><a href="#excluding-files">Excluding Files</a></li>
   <li><a href="#project-specific-capabilities">Project-specific Capabilities</a>
     <ul>
       <li><a href="#direct-method">Direct Method</a></li>
@@ -445,8 +446,20 @@ TESTFORMATS:
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--plugins</span><span class="o">=</span>all https://example.com/webserver/file.patch
 </code></pre></div>
-<p>… will download and process the file.patch from the example.com webserver.</p>
+<p>process the file.patch from the example.com webserver.</p>
 
+<h1 id="excluding-files">Excluding Files</h1>
+
+<p>Some repositories have content that is either imported from other sources (aka "vendored") or in some<br />
+other way have files that are known to break tests. By default, <code>.yetus/excludes.txt</code> will be read for any<br />
+file, directory, or extended regular expression as the list to remove from test results.  The file to read<br />
+may be overwritten by using the <code>--excludes</code> flag:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--plugins</span><span class="o">=</span>all <span class="nt">--excludes</span><span class="o">=(</span>filename<span class="o">)</span> <span class="o">(</span>other options<span class="o">)</span>
+</code></pre></div>
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: for best results, avoid using ^ and $ in your regular expressions.  `test-patch` will automatically
+anchor the contents of that file.
+</code></pre></div>
 <h1 id="project-specific-capabilities">Project-specific Capabilities</h1>
 
 <p>Due to the extensible nature of the system, <code>test-patch</code> allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.) There are two ways to specify which personality to use:</p>
@@ -489,7 +502,7 @@ TESTFORMATS:
 
 <div class="highlight"><pre class="highlight diff"><code><span class="err">$</span> test-patch --docker
 </code></pre></div>
-<p>This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific <a href="../docker">precommit Docker support</a> page and the <a href="/yetus-docker-image">Apache Yetus Docker Hub Images</a> page for more information on the convenience Docker images.</p>
+<p>This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific <a href="../docker">precommit Docker support</a> page and the <a href="../../../../yetus-docker-image">Apache Yetus Docker Hub Images</a> page for more information on the convenience Docker images.</p>
 
 <h1 id="in-closing">In Closing</h1>
 

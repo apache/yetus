@@ -149,7 +149,7 @@ NOTE: You MUST have run `mvn install` at least once prior to running `mvn site`.
 <span class="nv">$ </span><span class="nb">cd </span>asf-site-src
 <span class="nv">$ </span>bundle <span class="nb">install</span>
 </code></pre></div>
-<p>and a working Python 2.7 environment for <a href="../in-progress/releasedocmaker/">releasedocmaker</a>.</p>
+<p>and a working Python 2.7 environment for <a href="/documentation/in-progress/releasedocmaker/">releasedocmaker</a>.</p>
 
 <h2 id="make-changes-in-asf-site-srcsource">Make changes in asf-site-src/source</h2>
 
@@ -172,7 +172,7 @@ vi 01-common.sh
 <p>To generate the static website for Apache Yetus run the following command at the root directory:</p>
 
 <div class="highlight"><pre class="highlight shell"><code>mvn <span class="nt">--batch-mode</span> <span class="nb">install
-</span>mvn <span class="nt">--batch-mode</span> site site:stage
+</span>mvn <span class="nt">--batch-mode</span> site site:stage &lt; /dev/null
 </code></pre></div>
 <p>Apache Yetus uses itself to build parts of its website. ('Flying our own airplanes')  This command will first generate a full build of Apache Yetus and create a static website in the <code>asf-site-src/target/site</code> sub directory and a tarball of the site in yetus-dist/target/. You can load it in a web browser, e.g. assuming you are still in the asf-site-src directory on OS X:</p>
 
@@ -211,7 +211,7 @@ bundle <span class="nb">exec </span>middleman
 <span class="nv">$ </span><span class="c"># Finally publish</span>
 <span class="nv">$ </span>git push origin asf-site
 </code></pre></div>
-<p>Publishing the website should be possible from the HEAD of the main branch under most circumstances. (See the <a href="releases">Guide for Release Managing</a> for a notable time period where this won't be true.)<br />
+<p>Publishing the website should be possible from the HEAD of the main branch under most circumstances. (See the <a href="../releases">Guide for Release Managing</a> for a notable time period where this won't be true.)<br />
 Documentation changes will be reviewed as they make their way into the main branch; updates to the <code>asf-site</code> branch are handled without further review.</p>
 
     </div>

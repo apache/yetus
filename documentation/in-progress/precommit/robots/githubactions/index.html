@@ -133,9 +133,9 @@ if <code>--linecomments</code> has <code>github</code> as a configured bug syste
 
 <h2 id="workflow-action">Workflow Action</h2>
 
-<p>The Apache Yetus community makes available a built-in action that may be executed as part of a standard GitHub Action workflow.<br />
-The basic workflow file should look like this, changing [VERSION] to either be a released version (or <code>main</code> to use the<br />
-bleeding edge, untested, and potentially unstable release):</p>
+<p>The Apache Yetus community makes available a built-in action that may be executed as part of a<br />
+standard GitHub Action workflow. The basic workflow file should look like this, changing [VERSION] to<br />
+either be a released version (or <code>main</code> to use the bleeding edge, untested, and potentially unstable release):</p>
 
 <div class="highlight"><pre class="highlight yaml"><code><span class="nn">---</span>
 <span class="na">name</span><span class="pi">:</span> <span class="s">Apache Yetus</span>
@@ -175,6 +175,7 @@ Options currently supported are:</p>
       <th style="text-align: center">Option</th>
       <th style="text-align: center">Notes</th>
       <th style="text-align: center">Default</th>
+      <th style="text-align: center">More Information</th>
     </tr>
   </thead>
   <tbody>
@@ -182,51 +183,97 @@ Options currently supported are:</p>
       <td style="text-align: center">basedir</td>
       <td style="text-align: center">same as <code>--basedir</code></td>
       <td style="text-align: center">NONE</td>
+      <td style="text-align: center"><a href="../../usage-intro">Usage Introduction</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">blankseolignorefile</td>
+      <td style="text-align: center">same as <code>--blanks-eol-ignore-file</code></td>
+      <td style="text-align: center"><code>.yetus/blanks-eol.txt</code></td>
+      <td style="text-align: center"><a href="../../plugins/blanks">blanks plug-in</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">blankstabsignorefile</td>
+      <td style="text-align: center">same as <code>--blanks-tabs-ignore-file</code></td>
+      <td style="text-align: center"><code>.yetus/blanks-tabs.txt</code></td>
+      <td style="text-align: center"><a href="../../plugins/blanks">blanks plug-in</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">bufbasedir</td>
+      <td style="text-align: center">same as <code>--buf-basedir</code></td>
+      <td style="text-align: center"><code>.</code></td>
+      <td style="text-align: center"><a href="../../plugins/buf">buf plug-in</a></td>
     </tr>
     <tr>
       <td style="text-align: center">buildtool</td>
       <td style="text-align: center">same as <code>--build-tool</code></td>
       <td style="text-align: center"><code>nobuild</code></td>
+      <td style="text-align: center"><a href="../../buildtools">Build Tools</a></td>
     </tr>
     <tr>
       <td style="text-align: center">continuousimprovement</td>
       <td style="text-align: center">same as <code>--continuous-improvement</code></td>
       <td style="text-align: center">true</td>
+      <td style="text-align: center"><a href="..">Robots</a></td>
     </tr>
     <tr>
       <td style="text-align: center">excludes</td>
       <td style="text-align: center">same as <code>--excludes</code></td>
-      <td style="text-align: center"><code>.yetus-excludes.txt</code></td>
+      <td style="text-align: center"><code>.yetus/excludes.txt</code></td>
+      <td style="text-align: center"><a href="../../usage-intro">Usage Introduction</a></td>
     </tr>
     <tr>
       <td style="text-align: center">githubtoken</td>
       <td style="text-align: center">same as <code>--github-token</code></td>
       <td style="text-align: center">NONE</td>
+      <td style="text-align: center"><a href="../../plugins/github">GitHub plug-in</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">javahome</td>
+      <td style="text-align: center">same as <code>--java-home</code></td>
+      <td style="text-align: center"><code>/usr/lib/jvm/java-11-openjdk-amd64</code></td>
+      <td style="text-align: center"><a href="../../plugins/javac">Java-related plug-ins</a></td>
     </tr>
     <tr>
       <td style="text-align: center">patchdir</td>
       <td style="text-align: center">same as <code>--patch-dir</code></td>
       <td style="text-align: center">NONE</td>
+      <td style="text-align: center"><a href="../../usage-intro">Usage Introduction</a></td>
     </tr>
     <tr>
       <td style="text-align: center">pip</td>
       <td style="text-align: center">same as <code>--pylint-pip</code></td>
       <td style="text-align: center">pip3</td>
+      <td style="text-align: center"><a href="../../plugins/pylint">pylint plug-in</a></td>
     </tr>
     <tr>
       <td style="text-align: center">plugins</td>
       <td style="text-align: center">same as <code>--plugins</code></td>
       <td style="text-align: center">all,-asflicense,-author,-findbugs,-gitlabcilint,-shelldocs</td>
+      <td style="text-align: center"><a href="../../usage-intro">Usage Introduction</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">project</td>
+      <td style="text-align: center">same as <code>--project</code></td>
+      <td style="text-align: center">Auto-set based upon the repository name</td>
+      <td style="text-align: center"><a href="../../usage-intro">Usage Introduction</a></td>
     </tr>
     <tr>
       <td style="text-align: center">pylint</td>
       <td style="text-align: center">same as <code>--pylint</code></td>
       <td style="text-align: center">pylint3</td>
+      <td style="text-align: center"><a href="../../plugins/pylint">pylint plug-in</a></td>
     </tr>
     <tr>
       <td style="text-align: center">reapermode</td>
       <td style="text-align: center">same as <code>--reapermode</code></td>
       <td style="text-align: center">kill</td>
+      <td style="text-align: center"><a href="../../advanced">Advanced Usage</a></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">reviveconfig</td>
+      <td style="text-align: center">same as <code>--revive-config</code></td>
+      <td style="text-align: center"><code>.revive.toml</code></td>
+      <td style="text-align: center"><a href="../../plugins/revive">revive plug-in</a></td>
     </tr>
   </tbody>
 </table>
@@ -240,28 +287,34 @@ Options currently supported are:</p>
     <tr>
       <th style="text-align: center">Argument</th>
       <th style="text-align: center">Value</th>
+      <th style="text-align: center">More Information</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <td style="text-align: center"><code>--brief-report-file</code></td>
       <td style="text-align: center">patchdir/brief.txt</td>
+      <td style="text-align: center"><a href="../../plugins/briefreport">briefreport plug-in</a></td>
     </tr>
     <tr>
       <td style="text-align: center"><code>--console-report-file</code></td>
       <td style="text-align: center">patchdir/console.txt</td>
+      <td style="text-align: center"><a href="../../qbt">QBT</a></td>
     </tr>
     <tr>
       <td style="text-align: center"><code>--html-report-file</code></td>
       <td style="text-align: center">patchdir/report.html</td>
+      <td style="text-align: center"><a href="../../plugins/htmlout">htmlout plug-in</a></td>
     </tr>
     <tr>
       <td style="text-align: center"><code>--junit-report-xml</code></td>
       <td style="text-align: center">patchdir/junit-report.xml</td>
+      <td style="text-align: center"><a href="../../plugins/junit-bugsystem">junit plug-in</a></td>
     </tr>
     <tr>
       <td style="text-align: center"><code>--pylint-requirements</code></td>
       <td style="text-align: center">true</td>
+      <td style="text-align: center"><a href="../../plugins/pylint">pylint plug-in</a></td>
     </tr>
   </tbody>
 </table>

@@ -123,15 +123,22 @@
 
 <h1 id="name">Name</h1>
 
-<p>autoconf</p>
+<p>blanks</p>
 
 <h1 id="category">Category</h1>
 
-<p>Build Tool</p>
+<p>Test</p>
 
 <h1 id="description">Description</h1>
 
-<p>Provides support for the <a href="https://www.gnu.org/software/autoconf/">GNU Autoconf</a> environment.  It currently does not support file systems with spaces in the path.  It depends upon the <code>make</code> plug-in also being available.</p>
+<p>Provides a test to do two things:</p>
+
+<ul>
+  <li>Fail patches that use tabs instead of spaces (where appropriate)</li>
+  <li>End of line blank space</li>
+</ul>
+
+<p>By default, blanks will automatically ignore tabs in Makefiles and Go-related files.  However, if a file is provided, that file must also include the appropriate regexs for Makefiles and Go.</p>
 
 <h1 id="environment-variables">Environment Variables</h1>
 
@@ -148,8 +155,12 @@
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: left"><code>--autoconf-configure-flags=&lt;flags&gt;</code></td>
-      <td style="text-align: left">Set <code>./configure</code> flags</td>
+      <td style="text-align: left"><code>--blanks-eol-ignore-file=&lt;file&gt;</code></td>
+      <td style="text-align: left">File containing regexs of files/dirs to ignore EOL blanks. Defaults to <code>.yetus/blanks-eol.txt</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code>--blanks-tabs-ignore-file=&lt;file&gt;</code></td>
+      <td style="text-align: left">File containing regexs of files/dirs to ignore tabs. Defaults to <code>.yetus/blanks-eol.txt</code></td>
     </tr>
   </tbody>
 </table>
@@ -160,7 +171,7 @@
 
 <h1 id="developer-notes">Developer Notes</h1>
 
-<p>See <a href="../../buildtools">build tools</a> for more information.</p>
+<p>None</p>
 
     </div>
       

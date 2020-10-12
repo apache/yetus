@@ -200,3 +200,49 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
   <li>A new (bugsystem)_linecomments_end will be called when all line comments have been processed if there is any final work that needs to be done.</li>
 </ul>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1017">YETUS-1017</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Rework post-processing comparison to de-duplicate code</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>&lt;–! markdown –&gt;<br />
+Users:</p>
+
+<p>With this change, several plugins that did not generate line comments now do.</p>
+
+<p>Developers:</p>
+
+<p>The `generic_postlog_compare` / `generic_pre_handler` / `generic_post_handler` functions have been deprecated and replaced with `module_postlog_compare` / `module_pre_handler` / `module_post_handler` functions.  A new `root_postlog_compare` has been added that works similarly to `module_postlog_compare` for plug-ins that do not support the MODULE system.  Using `root_postlog_compare` makes writing plug-ins for static linters significantly easier.  See the associated APIs for more information.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1019">YETUS-1019</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Rename 'whitespace' to 'blanks</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>With this change, the whitespace plug-in has been renamed 'blanks'.   Users who specifically add <code>whitespace</code> to the plug-in list will need to change their parameters.  The old parameters are still supported (<code>--whitespace-tabs-ignore-list=&lt;list&gt;</code> and <code>--whitespace-eol-ignore-list=&lt;list&gt;</code>) in this release but will likely be removed in the next one.</p>
+
+<p>It also takes two different parameters: <code>--blanks-eol-ignore-file=&lt;file&gt;</code> and <code>--blanks-tabs-ignore-file=&lt;file&gt;</code> . These files contain regular expressions of files to ignore for their various targets, similar to the –excludes file option.   By default, Apache Yetus will automatically use <code>.yetus/blanks-eol.txt</code> and <code>.yetus/blanks-tabs.txt</code> if they exist.</p>
+
