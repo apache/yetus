@@ -23,3 +23,4 @@ elif [[ -z "${1}" ]]; then
   set -- bash "$@"
 fi
 exec "$@"
+	
