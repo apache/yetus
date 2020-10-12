@@ -29,8 +29,8 @@ Test
 
 # Description
 
-[buf](https://github.com/bufbuild/buf) is a protobuf linter (`buflint`) and backward compatibility checker (`bufcheck`).
-In order to use either `buflint` or `bufcheck`, `buf` must also be enabled.
+[buf](https://github.com/bufbuild/buf) is a protobuf linter (`buflint`) and backward compatibility checker (`bufcompat`).
+In order to use either `buflint` or `bufcompat`, `buf` must also be enabled.
 
 # Environment Variables
 
