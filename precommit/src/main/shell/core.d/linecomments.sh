@@ -124,7 +124,7 @@ function bugsystem_linecomments_trigger
 
   for bugs in ${BUGLINECOMMENTS}; do
     if declare -f "${bugs}_linecomments_end" >/dev/null;then
-      "${bugs}_linecomments_end"
+      "${bugs}_linecomments_end" "${PATCH_DIR}/results-full.txt"
     fi
   done
 }

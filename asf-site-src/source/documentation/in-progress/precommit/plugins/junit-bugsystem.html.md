@@ -41,7 +41,15 @@ None
 
 | Option | Notes |
 |:---------|:------|
+| `--junit-report-style=[full|line]` | Style of the junit report |
 | `--junit-report-xml=<file>` | Name of the output file |
+
+## JUnit Style
+
+The JUnit report type has two formats:
+
+* `full` - summarizes per-test and provides a link to the report for that test
+* `line` - summarizes per-file and works better with integrated CI systems and with external readers such as Jenkins WarningNG plug-in
 
 # Docker Notes
 

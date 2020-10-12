@@ -2175,7 +2175,6 @@ function check_unittests
   return 0
 }
 
-
 ## @description  Write the final output to the selected bug system
 ## @audience     private
 ## @stability    evolving

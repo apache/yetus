@@ -25,16 +25,21 @@ JUNIT_FAILED_TESTS=""
 JUNIT_TEST_OUTPUT_DIR="."
 JUNIT_TEST_PREFIX="org.apache."
 
+JUNIT_REPORT_STYLE="line"
+
 function junit_usage
 {
   yetus_add_option "--junit-test-output=<dir>" "Directory to search for the test output TEST-*.xml files, relative to the module directory (default:'${JUNIT_TEST_OUTPUT_DIR}')"
   yetus_add_option "--junit-test-prefix=<prefix to trim>" "Prefix of test names to be be removed. Used to shorten test names by removing common package name. (default:'${JUNIT_TEST_PREFIX}')"
+  yetus_add_option "--junit-report-style=[full|line]" "Format-type of the JUnit XML (default: ${JUNIT_REPORT_STYLE}"
   yetus_add_option "--junit-report-xml=<file>" "Filename to use when generating a JUnit-style report (default: ${JUNIT_REPORT_XML}"
 }
 
 function junit_parse_args
 {
   declare i
+  declare fn
+  declare style
 
   for i in "$@"; do
     case ${i} in
@@ -45,6 +50,10 @@ function junit_parse_args
       --junit-test-prefix=*)
         delete_parameter "${i}"
         JUNIT_TEST_PREFIX=${i#*=}
+      ;;
+      --junit-report-style=*)
+        delete_parameter "${i}"
+        style=${i#*=}
       ;;
       --junit-report-xml=*)
         delete_parameter "${i}"
@@ -60,6 +69,12 @@ function junit_parse_args
     else
       yetus_error "WARNING: cannot create JUnit XML report file ${fn}. Ignoring."
     fi
+  fi
+
+  if [[ "${style}" == "line" || "${style}" == "full" ]]; then
+    JUNIT_REPORT_STYLE=${style}
+  elif [[ -n "${style}" ]]; then
+    yetus_error "WARNING: unknown junit style ${style}. Sticking with ${JUNIT_REPORT_STYLE}."
   fi
 }
 
@@ -152,6 +167,10 @@ function junit_finalreport
     return
   fi
 
+  if [[ "${JUNIT_REPORT_STYLE}" != "full" ]]; then
+    return
+  fi
+
   big_console_header "Writing JUnit-style results to ${JUNIT_REPORT_XML}"
 
   url=$(get_artifact_url)
@@ -220,4 +239,56 @@ EOF
 
   echo "</testsuite>" >> "${JUNIT_REPORT_XML}"
   echo "</testsuites>" >> "${JUNIT_REPORT_XML}"
+}
+
+## @description  Line-based junit output
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+## @return       0 on success
+## @return       1 on failure
+function junit_linecomments_end
+{
+  declare testinfo=$1
+  declare linecount
+
+  if [[ "${JUNIT_REPORT_STYLE}" != "line" ]]; then
+    return
+  fi
+
+  linecount=$(wc -l "${testinfo}")
+  linecount=${linecount%% *}
+  timestamp=$(date +"%FT%T")
+
+  #shellcheck disable=SC2016
+  testcount=$("${AWK}" -F: '{print $4}' "${testinfo}" | sort -u | wc)
+
+  cat <<EOF > "${JUNIT_REPORT_XML}"
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="yetus" errors="0" failures="${linecount}" skipped="0" tests="${testcount}" time="${GLOBALTIMER}" timestamp="${timestamp}">
+EOF
+
+  while read -r ; do
+    fn=${REPLY%%:*}
+    rol=${REPLY/#${fn}:}
+    linenum=${rol%%:*}
+    rol=${rol/#${linenum}:}
+    column=${rol%%:*}
+    rol=${rol/#${column}:}
+    plugin=${rol%%:*}
+    text=${rol/#${plugin}:}
+    classname=${fn//\//.}
+    cat << EOF >> "${JUNIT_REPORT_XML}"
+  <testcase classname="${classname}" name="${plugin}" file="${fn}" line="${linenum}" column="${column}" time="0.003" timestamp="${timestamp}">
+    <failure message="ERROR" type="error">
+      ${fn}:${linenum}:${column} ${text}
+      </failure>
+  </testcase>
+EOF
+  done < <(cat "${testinfo}")
+
+  cat <<EOF >> "${JUNIT_REPORT_XML}"
+</testsuite>
+EOF
 }

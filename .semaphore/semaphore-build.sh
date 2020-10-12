@@ -23,6 +23,7 @@ PRECOMMITDIR=precommit/src/main/shell
   --mvn-custom-repos-dir=/tmp/yetus-m2 \
   --patch-dir=/tmp/yetus-out \
   --tests-filter=checkstyle,test4tests \
+  --junit-report-xml=/tmp/yetus-out/junit-results.xml \
   --docker \
   --dockerfile="${PRECOMMITDIR}/test-patch-docker/Dockerfile" \
   --docker-cache-from=ghcr.io/apache/yetus-base:main,ubuntu:focal

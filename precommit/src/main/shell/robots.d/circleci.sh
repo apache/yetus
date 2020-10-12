@@ -63,6 +63,9 @@ if [[ "${CIRCLECI}" = true ]] &&
     # shellcheck disable=SC2034
     GIT_BRANCH_SHA=${CIRCLE_SHA1}
 
+    # shellcheck disable=SC2034
+    JUNIT_REPORT_STYLE="full"
+
     yetus_add_array_element EXEC_MODES Circle_CI
   fi
 fi
