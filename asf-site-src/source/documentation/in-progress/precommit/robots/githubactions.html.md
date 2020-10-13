@@ -54,6 +54,7 @@ jobs:
           basedir: ./src
           patchdir: ./out
           buildtool: nobuild
+          githubtoken: ${{ secrets.GITHUB_TOKEN }}
       - name: Artifact output
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
@@ -106,5 +107,5 @@ GitHub Actions support has only been tested on the ubuntu-latest image. It autom
 
 See also:
 
-* Apache Yetus' [workflow action source](https://github.com/apache/yetus/test-patch-action) for lower level details on the workflow action implementation.
+* Apache Yetus' [workflow action source](https://github.com/apache/yetus-test-patch-action) for lower level details on the workflow action implementation.
 * Apache Yetus' source tree [yetus.yaml](https://github.com/apache/yetus/blob/main/.github/workflows/yetus.yml) for some tips and tricks.
