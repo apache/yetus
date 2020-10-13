@@ -159,6 +159,7 @@ either be a released version (or <code>main</code> to use the bleeding edge, unt
           <span class="na">basedir</span><span class="pi">:</span> <span class="s">./src</span>
           <span class="na">patchdir</span><span class="pi">:</span> <span class="s">./out</span>
           <span class="na">buildtool</span><span class="pi">:</span> <span class="s">nobuild</span>
+          <span class="na">githubtoken</span><span class="pi">:</span> <span class="s">${{ secrets.GITHUB_TOKEN }}</span>
       <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Artifact output</span>
         <span class="na">if</span><span class="pi">:</span> <span class="s">${{ always() }}</span>
         <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/upload-artifact@v2</span>
@@ -330,7 +331,7 @@ Options currently supported are:</p>
 <p>See also:</p>
 
 <ul>
-  <li>Apache Yetus' <a href="https://github.com/apache/yetus/test-patch-action">workflow action source</a> for lower level details on the workflow action implementation.</li>
+  <li>Apache Yetus' <a href="https://github.com/apache/yetus-test-patch-action">workflow action source</a> for lower level details on the workflow action implementation.</li>
   <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.github/workflows/yetus.yml">yetus.yaml</a> for some tips and tricks.</li>
 </ul>
 
