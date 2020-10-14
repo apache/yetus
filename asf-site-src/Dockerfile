@@ -31,6 +31,12 @@ RUN apt-get -q update \
       apache2 \
       pinentry-curses \
       pinentry-tty \
+      ruby-eventmachine \
+      ruby-fastimage \
+      ruby-ffi \
+      ruby-listen \
+      ruby-nokogiri \
+      ruby-sassc \
       subversion \
       sudo \
       vim \
@@ -78,7 +84,6 @@ RUN gem install bundler \
     middleman-livereload \
     middleman-syntax \
     nokogiri:1.10.10 \
-    rake:13.0.1 \
     sassc:2.4.0 \
     therubyracer \
     tzinfo-data

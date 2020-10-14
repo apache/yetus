@@ -36,12 +36,14 @@
   * [GITLAB](#gitlab)
   * [Generic URLs](#generic-urls)
 * [Excluding Files](#excluding-files)
+* ["Warn-only" Test Results](#warn-only-test-results)
 * [Project-specific Capabilities](#project-specific-capabilities)
   * [Direct Method](#direct-method)
   * [Project Method](#project-method)
 * [Fork Bomb Protection](#fork-bomb-protection)
 * [MultiJDK](#multijdk)
 * [Docker](#docker)
+* [Upgrading](#upgrading)
 * [In Closing](#in-closing)
 
 <!-- /MarkdownTOC -->
@@ -386,6 +388,18 @@ $ test-patch --plugins=all --excludes=(filename) (other options)
     NOTE: for best results, avoid using ^ and $ in your regular expressions.  `test-patch` will automatically
     anchor the contents of that file.
 
+# "Warn-only" Test Results
+
+In some cases, test plug-ins may always generate fail results in ways that cannot be avoided or are so
+monumental to fix that you just want to keep track of the results without ever failing the run.  `test-patch`
+provides the `--tests-filter` option to do just that; print the results but don't fail the job.  For example:
+
+```bash
+$ test-patch --plugins=all --tests-filter=checkstyle,javadoc (other options)
+```
+
+... will always force the `checkstyle` and `javadoc` tests to never vote -1.
+
 # Project-specific Capabilities
 
 Due to the extensible nature of the system, `test-patch` allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.) There are two ways to specify which personality to use:
@@ -439,6 +453,14 @@ $ test-patch --docker
 ```
 
 This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../docker) page and the [Apache Yetus Docker Hub Images](../../../../yetus-docker-image) page for more information on the convenience Docker images.
+
+# Upgrading
+
+Currently, Apache Yetus is still undergoing incompatible changes from time to time.  Despite that, in many cases
+the upgrade process for `test-patch` and friends is usually just verifying what flags are being passed. To help out,
+there is an option to `--ignore-unknown-options` so that `test-patch` does not error out if it is given flags it no
+longer understands.  It will print a list of those unknown options in the end report.  In situations where that is
+also undesirable, the `--report-unknown-options` may also be set simultaneously to remove the list from the report.
 
 # In Closing
 
