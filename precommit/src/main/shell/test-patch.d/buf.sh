@@ -189,10 +189,12 @@ function bufcompat_postapply
 
   if [[ -s "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" ]]; then
     # shellcheck disable=SC2016
-    incompatcount=$(wc -l "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" | "${AWK}" '{print $1}')
+    incompatcount=$(wc -l "${PATCH_DIR}/${repostatus}-bufcompat-result.txt")
+    incompatcount=${incompatcount%% *}
     add_vote_table_v2 -1 bufcompat \
       "@@BASE@@/${repostatus}-bufcompat-result.txt" \
       "${incompatcount} Incompatible protobuf changes"
+    bugsystem_linecomments_queue bufcompat "${PATCH_DIR}/${repostatus}-bufcompat-result.txt"
     return 1
   fi
   return 0
@@ -301,21 +303,11 @@ function buflint_postapply
     return 0
   fi
 
-  if [[ -s "${PATCH_DIR}/${repostatus}-buflint-result.txt" ]]; then
-    add_vote_table_v2 -1 buflint \
-      "@@BASE@@/${repostatus}-buflint-result.txt" \
-      "Incompatible protobuf changes"
-  fi
-
   # shellcheck disable=SC2016
   BUF_VERSION=$("${BUF}" version 2>/dev/null | "${GREP}" Version | "${AWK}" '{print $NF}')
   add_version_data buf "${BUF_VERSION}"
 
   buflint_executor patch
-
-  calcdiffs "${PATCH_DIR}/branch-buflint-result.txt" \
-            "${PATCH_DIR}/patch-buflint-result.txt" \
-            buf > "${PATCH_DIR}/diff-patch-buflint.txt"
 
   root_postlog_compare \
     buflint \
