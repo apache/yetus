@@ -29,26 +29,31 @@ jobs:
         with:
           path: src
           fetch-depth: 0
+      - name: maven cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: yetus-m2-${{ hashFiles('**/pom.xml') }}
       - name: test-patch
         run: >-
           "${GITHUB_WORKSPACE}/src/precommit/src/main/shell/test-patch.sh"
-          --basedir="${GITHUB_WORKSPACE}/src"
-          --patch-dir="${GITHUB_WORKSPACE}/out"
-          --docker
-          --project=yetus
-          --pylint=pylint2
-          --java-home=/usr/lib/jvm/java-8-openjdk-amd64
-          --brief-report-file="${GITHUB_WORKSPACE}/out/brief.txt"
-          --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
-          --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
-          --junit-report-xml="${GITHUB_WORKSPACE}/out/junit-report.xml"
-          --proclimit=2000
-          --bugcomments=console,briefreport,github,htmlout,junit
           --archive-list="checkstyle-errors.xml,spotbugsXml.xml"
-          --plugins=all
-          --tests-filter=checkstyle,javadoc,rubocop,test4tests
+          --basedir="${GITHUB_WORKSPACE}/src"
+          --brief-report-file="${GITHUB_WORKSPACE}/out/brief.txt"
+          --bugcomments=console,briefreport,github,htmlout,junit
+          --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
+          --docker
           --docker-cache-from=apache/yetus-base:main
           --github-token="${{ secrets.GITHUB_TOKEN }}"
+          --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
+          --java-home=/usr/lib/jvm/java-8-openjdk-amd64
+          --junit-report-xml="${GITHUB_WORKSPACE}/out/junit-report.xml"
+          --patch-dir="${GITHUB_WORKSPACE}/out"
+          --plugins=all
+          --proclimit=2000
+          --project=yetus
+          --pylint=pylint2
+          --tests-filter=checkstyle,javadoc,rubocop,test4tests
       - name: Artifact output
         if: ${{ always() }}
         uses: actions/upload-artifact@v2

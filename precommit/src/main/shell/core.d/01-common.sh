@@ -212,6 +212,11 @@ function common_args
         delete_parameter "${i}"
         PROJECT_NAME=${i#*=}
       ;;
+      --report-unknown-options=*)
+        delete_parameter "${i}"
+        #shellcheck disable=SC2034
+        REPORT_UNKNOWN_OPTIONS=${i#*=}
+      ;;
       --rsync-cmd=*)
         delete_parameter "${i}"
         RSYNC=${i#*=}

@@ -15,10 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-if [[ "${GITHUB_ACTIONS}" == true ]]; then
-  echo "::group::start-build-env"
-fi
-
 set -e            # exit on error
 ROOTDIR=$(cd -P -- "$(dirname -- "${BASH_SOURCE-$0}")" >/dev/null && pwd -P)
 
@@ -33,10 +29,19 @@ if [[ "${BRANCH}" =~ HEAD ]]; then
 fi
 BRANCH=${BRANCH//\//_}
 
+if [[ "${GITHUB_ACTIONS}" == true ]]; then
+  echo "::group::start-build-env - warm docker cache"
+fi
+
 echo "Attempting a few pulls of ${YETUS_DOCKER_REPO} and ${YETUS_DOCKER_REPO}-base to save time"
 echo "Errors here will be ignored!"
 docker pull "${YETUS_DOCKER_REPO}-base:${BRANCH}" || docker pull "${YETUS_DOCKER_REPO}-base:main" || true
 docker pull "${YETUS_DOCKER_REPO}:${BRANCH}"  || docker pull "${YETUS_DOCKER_REPO}:main" || true
+
+if [[ "${GITHUB_ACTIONS}" == true ]]; then
+  echo "::endgroup::"
+  echo "::group::start-build-env - rebuild base"
+fi
 
 docker build \
   --cache-from="${YETUS_DOCKER_REPO}-build:${BRANCH},${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:main,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:main" \
@@ -72,6 +77,11 @@ if command -v selinuxenabled >/dev/null && selinuxenabled; then
   fi
 fi
 
+if [[ "${GITHUB_ACTIONS}" == true ]]; then
+  echo "::endgroup::"
+  echo "::group::start-build-env - build asf-site-src container"
+fi
+
 cd "${ROOTDIR}/asf-site-src"
 docker build \
   -t "${YETUS_DOCKER_REPO}-build-${USER_ID}:${BRANCH}" \
@@ -92,14 +102,26 @@ cd "${ROOTDIR}"
 # release managers can use the container to do releases
 
 dockerargs=(--rm=true)
-dockerargs+=(-v "${PWD}:/home/${USER_NAME}/yetus${V_OPTS:-}")
 dockerargs+=(-w "/home/${USER_NAME}/yetus")
+dockerargs+=(-v "${PWD}:/home/${USER_NAME}/yetus${V_OPTS:-}")
 
-if [[ -z ${GITHUB_ACTIONS} ]]; then
-  dockerargs+=(-v "${HOME}/.m2:/home/${USER_NAME}/.m2${V_OPTS:-}")
-  dockerargs+=(-v "${HOME}/.gnupg:/home/${USER_NAME}/.gnupg")
-  dockerargs+=(-v "${HOME}/.ssh:/home/${USER_NAME}/.ssh")
+# maven cache
+if [[ ! -d  ${HOME}/.m2 ]]; then
+  mkdir "${HOME}/.m2"
 fi
+dockerargs+=(-v "${HOME}/.m2:/home/${USER_NAME}/.m2${V_OPTS:-}")
+
+# GPG Signing for dist creation
+if [[ ! -d ${HOME}/.gnupg ]]; then
+  mkdir "${HOME}/.gnupg"
+fi
+dockerargs+=(-v "${HOME}/.gnupg:/home/${USER_NAME}/.gnupg${V_OPTS:-}")
+
+# git opertions
+if [[ ! -d ${HOME}/.ssh ]]; then
+  mkdir "${HOME}/.ssh"
+fi
+dockerargs+=(-v "${HOME}/.ssh:/home/${USER_NAME}/.ssh${V_OPTS:-}")
 
 dockerargs+=(-u "${USER_NAME}")
 
@@ -110,6 +132,8 @@ fi
 if [[ "${GITHUB_ACTIONS}" == true ]]; then
   echo "::endgroup::"
 fi
+
+set -x
 
 docker run -i \
    "${dockerargs[@]}" \

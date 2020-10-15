@@ -96,6 +96,7 @@ function setup_defaults
   PROC_LIMIT=1000
   REEXECED=false
   RESETREPO=false
+  REPORT_UNKNOWN_OPTIONS=true
   BUILDMODE=${BUILDMODE:-patch}
   # shellcheck disable=SC2034
   BUILDMODEMSG=${BUILDMODEMSG:-"The patch"}
@@ -638,14 +639,13 @@ function yetus_usage
   echo ""
   yetus_add_option "--archive-list=<list>" "Comma delimited list of pattern matching notations to copy to patch-dir"
   yetus_add_option "--basedir=<dir>" "The directory to apply the patch to (default: current directory)"
-  yetus_add_option "--branch=<ref>" "Forcibly set the branch"
   yetus_add_option "--branch-default=<ref>" "If the branch isn't forced and we don't detect one in the patch name, use this branch (default 'main')"
-  yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
-  # shellcheck disable=SC2153
-  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (default: autodetect from '${buildtools}')"
+  yetus_add_option "--branch=<ref>" "Forcibly set the branch"
   yetus_add_option "--bugcomments=<bug>" "Only write comments to the screen and this comma delimited list (default: '${bugsys}')"
-  yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
+  yetus_add_option "--build-native=<bool>" "If true, then build native components (default 'true')"
+  yetus_add_option "--build-tool=<tool>" "Pick which build tool to focus around (default: autodetect from '${buildtools}')"
   yetus_add_option "--continuous-improvement=<bool>" "If true, then do not exit with failure on branches (default: ${CONTINUOUS_IMPROVEMENT})"
+  yetus_add_option "--contrib-guide=<url>" "URL to point new users towards project conventions. (default: ${PATCH_NAMING_RULE} )"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dirty-workspace" "Allow the local git workspace to have uncommitted changes"
   yetus_add_option "--empty-patch" "Create a summary of the current source tree"
@@ -656,15 +656,16 @@ function yetus_usage
   yetus_add_option "--java-home=<path>" "Set JAVA_HOME (In Docker mode, this should be local to the image)"
   yetus_add_option "--linecomments=<bug>" "Only write line comments to this comma delimited list (default: same as --bugcomments)"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
+  yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
   yetus_add_option "--multijdkdirs=<paths>" "Comma delimited lists of JDK paths to use for multi-JDK tests"
   yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: '${jdktlist}')"
-  yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
   yetus_add_option "--offline" "Avoid connecting to the network"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
   yetus_add_option "--personality=<file>" "The personality file to load"
+  yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found) e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
   yetus_add_option "--proclimit=<num>" "Limit on the number of processes (default: ${PROC_LIMIT})"
   yetus_add_option "--project=<name>" "The short name for project currently using test-patch (default 'yetus')"
-  yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found) e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
+  yetus_add_option "--report-unknown-options=<bool>" "Print a warning in the report if --ignore-unknown-options=true and unknown options were found (default: ${REPORT_UNKNOWN_OPTIONS})"
   yetus_add_option "--resetrepo" "Forcibly clean the repo"
   yetus_add_option "--run-tests" "Run all relevant tests below the base directory"
   yetus_add_option "--skip-dirs=<list>" "Skip following directories for module finding"
@@ -672,8 +673,8 @@ function yetus_usage
   yetus_add_option "--summarize=<bool>" "Allow tests to summarize results"
   yetus_add_option "--test-parallel=<bool>" "Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   yetus_add_option "--test-threads=<int>" "Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
-  yetus_add_option "--unit-test-filter-file=<file>" "The unit test filter file to load"
   yetus_add_option "--tests-filter=<list>" "Lists of tests to turn failures into warnings"
+  yetus_add_option "--unit-test-filter-file=<file>" "The unit test filter file to load"
   yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
 
@@ -696,9 +697,9 @@ function yetus_usage
 
   echo ""
   echo "Automation options:"
-  yetus_add_option "--build-url=<url>" "Set the build location web page (Default: '${BUILD_URL}')"
-  yetus_add_option "--build-url-console=<location>" "Location relative to --build-url of the console (Default: '${BUILD_URL_CONSOLE}')"
   yetus_add_option "--build-url-artifacts=<location>" "Location relative to --build-url of the --patch-dir (Default: '${BUILD_URL_ARTIFACTS}')"
+  yetus_add_option "--build-url-console=<location>" "Location relative to --build-url of the console (Default: '${BUILD_URL_CONSOLE}')"
+  yetus_add_option "--build-url=<url>" "Set the build location web page (Default: '${BUILD_URL}')"
   yetus_add_option "--console-report-file=<file>" "Save the final console-based report to a file in addition to the screen"
   yetus_add_option "--console-urls" "Use the build URL instead of path on the console report"
   yetus_add_option "--instance=<string>" "Parallel execution identifier string"
@@ -3248,7 +3249,9 @@ function initialize
   if [[ "${#PARAMETER_TRACKER}" -gt 0 ]]; then
     yetus_error "ERROR: Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
     if [[ "${IGNORE_UNKNOWN_OPTIONS}" == true ]]; then
-      add_vote_table_v2 "-0" yetus "" "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+      if [[ "${REPORT_UNKNOWN_OPTIONS}" == true ]]; then
+        add_vote_table_v2 "-0" yetus "" "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
+      fi
     else
       add_vote_table_v2 -1 yetus "" "Unprocessed flag(s): ${PARAMETER_TRACKER[*]}"
       bugsystem_finalreport 1

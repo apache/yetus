@@ -84,6 +84,7 @@ Options currently supported are:
 | pylint | same as `--pylint`               | pylint3  | [pylint plug-in](../../plugins/pylint) |
 | reapermode | same as `--reapermode`       | kill  | [Advanced Usage](../../advanced) |
 | reviveconfig | same as `--revive-config`  | `.revive.toml`  | [revive plug-in](../../plugins/revive) |
+| testsfilter | same as `--tests-filter`  | '' | [Usage Introduction](../../usage-intro) |
 
 Items marked NONE *MUST* be provided in the workflow yaml file.
 
@@ -94,8 +95,10 @@ Some options are hard-coded to make `test-patch` easier to use:
 | `--brief-report-file` | patchdir/brief.txt | [briefreport plug-in](../../plugins/briefreport) |
 | `--console-report-file` | patchdir/console.txt | [QBT](../../qbt) |
 | `--html-report-file` | patchdir/report.html | [htmlout plug-in](../../plugins/htmlout) |
+| `--ignore-unknown-options` | true | [Usage Introduction](../../usage-intro) |
 | `--junit-report-xml` | patchdir/junit-report.xml | [junit plug-in](../../plugins/junit-bugsystem) |
 | `--pylint-requirements` | true | [pylint plug-in](../../plugins/pylint) |
+| `--report-unknown-options` | true | [Usage Introduction](../../usage-intro) |
 
 ## Manual Configuration
 

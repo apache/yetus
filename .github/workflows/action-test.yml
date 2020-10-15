@@ -14,25 +14,39 @@
 # limitations under the License.
 
 ---
-name: linkcheck
+name: Apache Yetus (Action Test)
 
 on: [push, pull_request]  # yamllint disable-line rule:truthy
 
-
-#
-# NOTE: these paths are referenced in start-build-env.sh
-#
-
 jobs:
-  linkcheck:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
       - name: checkout
         uses: actions/checkout@v2
+        with:
+          path: src
+          fetch-depth: 0
       - name: maven cache
         uses: actions/cache@v2
         with:
           path: ~/.m2
           key: yetus-m2-${{ hashFiles('**/pom.xml') }}
-      - name: test
-        run: ./start-build-env.sh ./website-tester.sh
+      - name: test-patch
+        uses: apache/yetus-test-patch-action@main
+        with:
+          basedir: ./src
+          patchdir: ./out
+          buildtool: maven
+          githubtoken: ${{ secrets.GITHUB_TOKEN }}
+          pylint: pylint2
+          pip: pip2
+          testsfilter: checkstyle,javadoc
+      - name: Artifact output
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: apacheyetustestpatchactionout
+          path: ${{ github.workspace }}/out
