@@ -65,6 +65,7 @@ function checkmake_exec
 {
   declare i
   declare repostatus=$1
+  declare basefn="${PATCH_DIR}/${repostatus}-checkmake-result"
   declare -a args
 
   echo "Running checkmake against identified Makefiles."
@@ -80,11 +81,17 @@ function checkmake_exec
     if [[ ${i} =~ /Makefile$ ]] || [[ ${i} =~ ^Makefile$ ]]; then
       if [[ -f ${i} ]]; then
         while read -r; do
-           echo "${i}:${REPLY}" >> "${PATCH_DIR}/${repostatus}-checkmake-result.txt"
+           echo "${i}:${REPLY}" >> "${basefn}.tmp"
         done < <("${CHECKMAKE}" "${args[@]}" "${i}")
       fi
     fi
   done
+
+  if [[ -f  "$${basefn}.tmp" ]]; then
+    sort -k1,1 -k2,2n "${basefn}.tmp" \
+      >  "${basefn}.text"
+    rm  "${basefn}.tmp"
+  fi
 
   popd >/dev/null || return 1
   return 0
@@ -109,7 +116,7 @@ function checkmake_preapply
   return 0
 }
 
-## @description  Wrapper to call column_calcdiffs
+## @description  Wrapper to call error_calcdiffs
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -118,7 +125,7 @@ function checkmake_preapply
 ## @return       differences
 function checkmake_calcdiffs
 {
-  column_calcdiffs "$@"
+  error_calcdiffs "$@"
 }
 
 function checkmake_postapply
