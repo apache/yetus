@@ -143,17 +143,16 @@ function asflicense_tests
   echo "There appear to be ${numpatch} ASF License warnings after applying the patch."
   if [[ -n ${numpatch}
      && ${numpatch} -gt 0 ]] ; then
+
+    # shellcheck disable=SC2016
+    "${GREP}" '\!?????' "${PATCH_DIR}/patch-asflicense.txt" \
+      | "${SED}" -e "s,${BASEDIR},,g" -e "s, \!????? ,,g" \
+      | "${AWK}" '{print $1":1:Missing Apache License"}' \
+    >>  "${PATCH_DIR}/results-asflicense.txt"
     add_vote_table_v2 -1 asflicense \
-      "@@BASE@@/patch-asflicense-problems.txt" \
+      "@@BASE@@/results-asflicense.txt" \
       "${BUILDMODEMSG} generated ${numpatch} ASF License warnings."
-
-    echo "Lines that start with ????? in the ASF License "\
-        "report indicate files that do not have an Apache license header:" \
-          > "${PATCH_DIR}/patch-asflicense-problems.txt"
-
-    ${GREP} '\!?????' "${PATCH_DIR}/patch-asflicense.txt" \
-    >>  "${PATCH_DIR}/patch-asflicense-problems.txt"
-
+    bugsystem_linecomments_queue asflicense "${PATCH_DIR}/results-asflicense.txt"
     return 1
   fi
   add_vote_table_v2 1 asflicense "" "${BUILDMODEMSG} does not generate ASF License warnings."

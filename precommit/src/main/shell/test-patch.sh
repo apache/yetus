@@ -400,6 +400,12 @@ function big_console_header
 {
   local text="$*"
   local spacing=$(( (75+${#text}) /2 ))
+
+  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
+    echo "::endgroup::"
+    echo "::group::${text}"
+  fi
+
   printf '\n\n'
   echo "============================================================================"
   echo "============================================================================"
@@ -1791,6 +1797,9 @@ function modules_messages
             "${testtype}" \
             "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}" \
             "${MODULE_STATUS_MSG[${modindex}]}"
+          bugsystem_linecomments_queue \
+            "${testtype}" \
+            "${PATCH_DIR}/${MODULE_STATUS_LOG[${modindex}]}"
         else
           add_vote_table_v2 \
             "${MODULE_STATUS[${modindex}]}" \
@@ -2193,8 +2202,20 @@ function bugsystem_linecomments_queue
     return 0
   fi
 
+  for line in "${VOTE_FILTER[@]}"; do
+    if [[ "${plugin}" == "${line}" ]]; then
+      return 0
+    fi
+  done
+
+  pushd "${BASEDIR}" >/dev/null || return 1
   while read -r line; do
     file=${line%%:*}
+
+    if [[ ! -e "${file}" ]]; then
+      continue
+    fi
+
     rol=${line/#${file}:}
     if [[ "${file}" =~ ^\./ ]]; then
       file=${file:2}
@@ -2214,6 +2235,9 @@ function bugsystem_linecomments_queue
     echo "${file}:${linenum}:${column}:${plugin}:${text}" >> "${PATCH_DIR}/linecomments-in.txt"
 
   done < "${fn}"
+
+  popd >/dev/null || return 1
+
 }
 
 ## @description  Write all of the bugsystem linecomments
@@ -2694,9 +2718,9 @@ function module_postlog_compare
       "${PATCH_DIR}/branch-${origlog}-${testtype}-${fn}.txt" \
       "${PATCH_DIR}/patch-${origlog}-${testtype}-${fn}.txt" \
       "${testtype}" \
-      > "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt"
+      > "${PATCH_DIR}/results-${origlog}-${testtype}-${fn}.txt"
 
-    tmpvar=$(wc -l "${PATCH_DIR}/diff-${origlog}-${testtype}-${fn}.txt")
+    tmpvar=$(wc -l "${PATCH_DIR}/results-${origlog}-${testtype}-${fn}.txt")
     addpatch=${tmpvar%% *}
 
     ((fixedpatch=numbranch-numpatch+addpatch))
@@ -2705,7 +2729,7 @@ function module_postlog_compare
 
     if [[ ${addpatch} -gt 0 ]]; then
       ((result = result + 1))
-      module_status "${i}" -1 "diff-${origlog}-${testtype}-${fn}.txt" "${fn}${statusjdk} ${statstring}"
+      module_status "${i}" -1 "results-${origlog}-${testtype}-${fn}.txt" "${fn}${statusjdk} ${statstring}"
     elif [[ ${fixedpatch} -gt 0 ]]; then
       module_status "${i}" +1 "${MODULE_STATUS_LOG[${i}]}" "${fn}${statusjdk} ${statstring}"
       summarize=false
@@ -2754,11 +2778,7 @@ function root_postlog_compare
     touch "${patchlog}"
   fi
 
-  if [[ "${BUILDMODE}" == "full" ]]; then
-    difflog="results-${testtype}.txt"
-  else
-    difflog="diff-${testtype}.txt"
-  fi
+  difflog="results-${testtype}.txt"
 
   tmpvar=$(wc -l "${branchlog}")
   numbranch="${tmpvar%% *}"

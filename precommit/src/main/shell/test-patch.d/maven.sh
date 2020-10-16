@@ -382,7 +382,16 @@ function maven_javac_logfilter
   declare input=$1
   declare output=$2
 
-  ${GREP} -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" > "${output}"
+  # [WARNING] fullpath:[linenum,column] message
+
+  "${GREP}" -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" \
+    | "${SED}" -E -e 's,\[(ERROR|WARNING)\] ,,' \
+                  -e "s,^${BASEDIR}/,," \
+                  -e "s#:\[([[:digit:]]+),([[:digit:]]+)\] #:\1:\2:#" \
+                  -e "s#:\[([[:digit:]]+)\] #:\1:0:#" \
+    > "${output}"
+
+    # shortpath:linenum:column:message
 }
 
 ## @description  Helper for check_patch_javadoc
@@ -396,7 +405,15 @@ function maven_javadoc_logfilter
   declare input=$1
   declare output=$2
 
-  ${GREP} -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" > "${output}"
+  # [WARNING] fullpath:linenum:message
+
+  "${GREP}" -E '\[(ERROR|WARNING)\] /.*\.java:' "${input}" \
+    | "${SED}" -E -e 's,\[(ERROR|WARNING)\] ,,g' \
+                  -e "s,^${BASEDIR}/,," \
+    > "${output}"
+
+  # shortpath:linenum:message
+
 }
 
 ## @description  handle diffing maven javac errors
@@ -408,33 +425,7 @@ function maven_javadoc_logfilter
 ## @return       differences
 function maven_javac_calcdiffs
 {
-  declare orig=$1
-  declare new=$2
-  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
-
-  # first, strip :[line
-  # this keeps file,column in an attempt to increase
-  # accuracy in case of multiple, repeated errors
-  # since the column number shouldn't change
-  # if the line of code hasn't been touched
-  "${SED}" -e 's#:\[[0-9]*,#:#' "${orig}" > "${tmp}.branch"
-  "${SED}" -e 's#:\[[0-9]*,#:#' "${new}" > "${tmp}.patch"
-
-  # compare the errors, generating a string of line
-  # numbers. Sorry portability: GNU diff makes this too easy
-  ${DIFF} --unchanged-line-format="" \
-     --old-line-format="" \
-     --new-line-format="%dn " \
-     "${tmp}.branch" \
-     "${tmp}.patch" > "${tmp}.lined"
-
-  # now, pull out those lines of the raw output
-  # shellcheck disable=SC2013
-  for j in $(cat "${tmp}.lined"); do
-    head -"${j}" "${new}" | tail -1
-  done
-
-  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
+  column_calcdiffs "${@}"
 }
 
 ## @description  handle diffing maven javadoc errors
@@ -446,33 +437,8 @@ function maven_javac_calcdiffs
 ## @return       differences
 function maven_javadoc_calcdiffs
 {
-  declare orig=$1
-  declare new=$2
-  declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
-
-  # can't use the generic handler for this because of the
-  # [WARNING], etc headers.
-  # strip :linenum from the output, keeping the filename
-  "${SED}" -e 's#:[0-9]*:#:#' "${orig}" > "${tmp}.branch"
-  "${SED}" -e 's#:[0-9]*:#:#' "${new}" > "${tmp}.patch"
-
-  # compare the errors, generating a string of line
-  # numbers. Sorry portability: GNU diff makes this too easy
-  ${DIFF} --unchanged-line-format="" \
-     --old-line-format="" \
-     --new-line-format="%dn " \
-     "${tmp}.branch" \
-     "${tmp}.patch" > "${tmp}.lined"
-
-  # now, pull out those lines of the raw output
-  # shellcheck disable=SC2013
-  for j in $(cat "${tmp}.lined"); do
-    head -"${j}" "${new}" | tail -1
-  done
-
-  rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
+  error_calcdiffs "${@}"
 }
-
 
 ## @description  maven personality handler
 ## @audience     private
