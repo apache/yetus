@@ -120,6 +120,7 @@ function yetus_usage
   yetus_add_option "--committer" "Apply patches like a boss."
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--dry-run" "Check for patch viability without applying"
+  yetus_add_option "--gpg-sign" "GPG sign the commit using gpg keys"
   yetus_add_option "--ignore-unknown-options=<bool>" "Continue despite unknown options (default: ${IGNORE_UNKNOWN_OPTIONS})"
   yetus_add_option "--list-plugins" "List all installed plug-ins and then exit"
   yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
@@ -131,7 +132,6 @@ function yetus_usage
   yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
   yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
-  yetus_add_option "--gpg-sign" "GPG sign the commit using gpg keys"
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
@@ -150,11 +150,11 @@ function yetus_usage
 
   echo ""
   echo "Patch reporting:"
-  yetus_add_option "--report-only" "Do not try to apply at all; just report on the patch"
   yetus_add_option "--build-tool=<tool>" "Override the build tool"
   yetus_add_option "--changedfilesreport=<name>" "List of files that this patch modifies"
   yetus_add_option "--changedmodulesreport=<name>" "List of modules that this patch modifies"
   yetus_add_option "--changedunionreport=<name>" "Union of modules that this patch modifies"
+  yetus_add_option "--report-only" "Do not try to apply at all; just report on the patch"
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage
 
