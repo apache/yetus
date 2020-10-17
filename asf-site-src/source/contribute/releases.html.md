@@ -58,15 +58,9 @@ The Subversion project provides a nice set of pointers to installing on various 
 
 ### Project Specific Build Tools
 
-To create our convenience binary artifact and the Apache Maven plug-ins, you'll need to build both our project docs and all of the individual components. If you usually only work on one part of the project, say Yetus Precommit, this might require some additional programming languages and tools.
-
-All of these tools should be in the Docker container that is launched by using the `./start-build-dev.sh` script.  If you wish to build outside of the container (not recommended), you will need:
-
-- Maven 3.2.0+
-- Java 8
-- Python 2.7
-- Ruby 2.x+
-- bash, tar, gzip, gpg, and shasum
+To create our convenience binary artifact and the Apache Maven plug-ins, you'll need to build both our project docs and all of the individual components.
+All of the tools will be in the Docker container that is launched by using the `./start-build-dev.sh` script. Note that you will need to have a properly
+configured GnuPG and Maven settings.xml setup.
 
 ## Setup
 
@@ -112,92 +106,38 @@ Like the rest of our project activity, we'll use an issue in JIRA to track manag
    For example, on the 0.7.0 release, you would use `https://issues.apache.org/jira/secure/ReleaseNote.jspa?projectId=12318920&version=12334330` for the URI field and 'yetus-0.7.0-jira' for the key.
 1. Finally, you should create a JIRA version that matches the release _following_ the one you are managing. This action is so that folks can continue to work on things that won't make it into the in-progress release while we evaluate candidates.
     1. Browse to the ASF JIRA project management page for versions: <https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions>
-    1. Fill in a version one minor version up from the release you're managing. E.g., when managing the 0.7.0 release, fill in 0.3.0.
+    1. Fill in a version one minor version up from the release you're managing. E.g., when managing the 0.7.0 release, fill in 0.8.0.
     1. Set a start date of today.
     1. Click "Add"
 
 ### Work in Git
 
-Once you have an issue to track things, you can create the git branch for staging our release. This separate branch will allow you to polish the release while regular work continues on the main branch. You will need to update main for the next SNAPSHOT version and the branch for the release.
+Once you have an issue to track things, you can create the git branch for staging our release. This separate branch will allow you to polish the release while regular work continues on the main branch. For non-micro releases, you will need to update main for the next SNAPSHOT version and the branch for the release.
 
-Example commands, presuming the release under management is **0.7.0** and the JIRA issue is **YETUS-XXX**:
+- Major Release:
 
-```bash
-$ # Ensure main is up to date
-$ mvn clean
-$ git fetch origin
-$ git status
-# On branch main
-# Your branch is behind 'origin/main' by 6 commits, and can be fast-forwarded.
-#
-nothing to commit (working directory clean)
-$ git rebase origin/main
-First, rewinding head to replay your work on top of it...
-Fast-forwarded main to origin/main.
-$ git status
-# On branch main
-nothing to commit (working directory clean)
-$ # create a branch and push without changes
-$ git checkout -b YETUS-XXX
-Switched to a new branch 'YETUS-XXX'
-$ git push origin YETUS-XXX
-$ # find files we need to update for release
-$ grep -rl "0.7.0-SNAPSHOT" * 2>/dev/null
-asf-site-src/pom.xml
-audience-annotations-component/audience-annotations/pom.xml
-audience-annotations-component/audience-annotations-jdiff/pom.xml
-audience-annotations-component/pom.xml
-pom.xml
-precommit/pom.xml
-releasedocmaker/pom.xml
-shelldocs/pom.xml
-yetus-dist/pom.xml
-yetus-maven-plugin/pom.xml
-yetus-minimaven-plugin/pom.xml
-```
+  ```bash
+  $ release/initial-patches.sh --jira=<release JIRA> --version=<X.0.0>
+  ```
 
-At this point, you should edit the files mentioned above. They must have the version we expect upon a successful release. Search for instances of *VERSION-SNAPSHOT* and replace with *VERSION*; e.g., *0.7.0-SNAPSHOT* should become *0.7.0*:
+- Minor release:
 
-```bash
-$ perl -pi -e 's,0.7.0-SNAPSHOT,0.7.0,g' $(find . -type f)
-```
+  ```bash
+  $ release/initial-patches.sh --jira=<release JIRA>
+  ```
 
-After you are done, create a branch-specific patch and then prepare to update the main branch.
+- Micro release:
 
-```bash
-$ git add -p
-$ git commit -m "YETUS-XXX. Stage version 0.7.0."
-$ git format-patch --stdout origin/YETUS-XXX > path/to/patches/YETUS-XXX-YETUS-XXX.1.patch
-$ git checkout main
-$ grep -rl "0.7.0-SNAPSHOT" * 2>/dev/null
-asf-site-src/pom.xml
-audience-annotations-component/audience-annotations/pom.xml
-audience-annotations-component/audience-annotations-jdiff/pom.xml
-audience-annotations-component/pom.xml
-pom.xml
-precommit/pom.xml
-releasedocmaker/pom.xml
-shelldocs/pom.xml
-yetus-dist/pom.xml
-yetus-maven-plugin/pom.xml
-yetus-minimaven-plugin/pom.xml
-```
+  ```bash
+  $ release/initial-patches.sh --jira=<release JIRA> --startingbranch=rel/<previous micro version>
+  ```
 
-Now update these files, but this time you should update them for the next minor version's SNAPSHOT. e.g., *0.7.0-SNAPSHOT* should become *0.8.0-SNAPSHOT*:
+These commands will create one or two branches:
 
-```bash
-$ perl -pi -e 's,0.7.0-SNAPSHOT,0.8.0-SNAPSHOT,g' $(find . -type f)
-```
+- JIRA-release with updated poms that match the release you are working on
+- JIRA-main with updated poms that match the next SNAPSHOT release
 
-After you are done, create a patch.
-
-```bash
-$ git add -p
-$ git commit -m "YETUS-XXX. bump main version to 0.8.0-SNAPSHOT"
-$ git format-patch --stdout origin/main > path/to/patches/YETUS-XXX.1.patch
-```
-
-Both of these patch files should be uploaded to your release issue for review. Push them to the repository once the patches get approval.
+Verify these branches are correct and create the necessary PRs.  Once approved, merge to their respective branches.
 
 ## Release Candidate(s)
 
@@ -205,14 +145,17 @@ Depending on how candidate evaluation goes, you may end up performing these step
 
 1. Update JIRA version release date. Browse to the JIRA project version management page <https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions>, mark the version as 'Release', and set the release date. Our generated release notes will use this date.
 1. Update your `${HOME}/.m2/settings.xml` file to include the Maven snapshot information as indicated on <https://www.apache.org/dev/publishing-maven-artifacts.html>
-1. Build release artifacts. You should use our convenience script to create the tarballs and markdown documents for a release. Run the following from the release staging branch and inspect the results:
+1. Build release artifacts. Run the following from the *release staging branch* created by the `release/initial-patches.sh` script and run these commands:
 
    ```bash
-   $ mvn --batch-mode clean deploy -Papache-release
-   $ mvn --batch-mode site site:stage
+   $ git checkout YETUS-XXX-release
+   $ ./start-build-env.sh
+   (container build and eventually a shell in your source repo)
+   $ release/build-and-sign.sh --asfrelease
    $ ls -lah yetus-dist/target/artifacts/*
    ```
 
+1. Exit the container.
 1. Check out the staging area for release candidates and make a directory for this candidate, somewhere outside of your working directory. Copy the artifacts from the previous step into place. For example, when working on RC1 for the 0.7.0 release
 
    ```bash
@@ -220,19 +163,8 @@ Depending on how candidate evaluation goes, you may end up performing these step
    $ cd yetus-dist-dev
    $ mkdir 0.7.0-RC1
    $ cd 0.7.0-RC1
-   $ cp path/to/yetus/target/RELEASENOTES.md path/to/yetus/target/CHANGELOG.md path/to/yetus/target/*.tar.gz .
+   $ cp path/to/yetus/yetus-dist/target/artifacts/* .
    ```
-
-1. While still in the staging area, sign the artifacts and create the needed checksum files:
-
-   ```bash
-   $ for artifact in *; do
-      echo ${artifact}
-      gpg --use-agent --armor --output "${artifact}".asc --detach-sig "${artifact}"
-      gpg --print-mds "${artifact}" >"${artifact}".mds
-      shasum -a 512 "${artifact}" >"${artifact}".sha512
-    done
-    ```
 
 1. Push the release candidate to staging distribution. This will make the artifacts visible for the vote.
 
@@ -500,6 +432,8 @@ If you've gone through all of the ASF required checks, you'll already have made 
 
 Once a release candidate obtains majority approval from the PMC, there are several final maintenance tasks you must perform to close out the release.
 
+### Core Release Tasks
+
 1. Create shortcut links to the vote thread (e.g., <https://s.apache.org/yetus-0.7.0-rc1-vote>) and the result (e.g., <https://s.apache.org/yetus-0.7.0-vote-passes>) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.
 1. Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag's message should include ASF-shortened links to the vote and results. It should be named 'rel/_version_' so that it will be immutable due to ASF infra's git configuration. Presuming we're working on the 0.7.0 release and the RC1 example above has passed:
 
@@ -515,7 +449,6 @@ Once a release candidate obtains majority approval from the PMC, there are sever
     Then push:
 
         $ git push origin rel/0.7.0
-1. Add the release to the ASF reporter tool. To make our project reports for the ASF Board easier, you should include the release in the [Apache Committee Report Helper website](https://reporter.apache.org/addrelease.html?yetus). Be sure to use the date release artifacts first were pushed to the distribution area, which should be the same release date as in JIRA. Note that this website is only available to PMC members. If you are not yet in the PMC, please ask them to add the release information.  Additionally, it will not let you set a future date.
 1. Move release artifacts to the distribution area. The release officially happens once the artifacts are pushed to the ASF distribution servers. From this server, the artifacts will automatically be copied to the long-term archive as well as the various mirrors that will be used by downstream users. These must be _exactly_ the artifacts from the RC that passed. Please note that currently, only Yetus PMC members have write access to this space. If you are not yet on the PMC, please ask the PMC to post the artifacts.
 
         $ svn co https://dist.apache.org/repos/dist/release/yetus/ yetus-dist-release
@@ -525,6 +458,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
         $ svn add 0.7.0
         $ svn commit -m "Publish Apache Yetus 0.7.0"
     It may take up to 24 hours for the artifacts to make their way to the various mirrors. You should not announce the release until after this period.
+1. Add the release to the ASF reporter tool. To make our project reports for the ASF Board easier, you should include the release in the [Apache Committee Report Helper website](https://reporter.apache.org/addrelease.html?yetus). Be sure to use the date release artifacts first were pushed to the distribution area, which should be the same release date as in JIRA. Note that this website is only available to PMC members. If you are not yet in the PMC, please ask them to add the release information.  Additionally, it will not let you set a future date.
 1. Remove candidates from the staging area. Once you have moved the artifacts into the distribution area, they no longer need to be in the staging area and should be cleaned up as a courtesy to future release managers.
 
         $ svn co https://dist.apache.org/repos/dist/dev/yetus/ yetus-dist-dev
@@ -556,44 +490,6 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 1. Mark JIRA version as released. Browse to the [project version management page for the YETUS JIRA tracker](https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions). Mouse over the version you are managing, click on the gear in the far right and select Release.
 1. Delete staging branch. Now that there is an immutable tag for the release, all commits leading up to that release will be maintained by git. Should we need a future maintenance release after this version, we can reestablish the branch based off of the release tag.
         $ git push origin :YETUS-XXX
-1. Update the Mac OS X Homebrew Formula:
-
-   ```bash
-   $ vim Formula/yetus.rb
-   $ # change URL point to the new version
-   $ # update the sha256. e.g., shasum -a 256 bin.gz
-   $ # test the formula:
-   $ brew install --build-from-source Formula/yetus.rb
-    # or if you already have it installed:
-   $ brew upgrade --build-from-source Formula/yetus.rb
-   ```
-
-1. Update the documentation in the git main branch for the new release.  Remove the oldest release and add the latest.
-
-   ```bash
-   $ cd asf-site-src
-   $ # Add the release to the releases data file
-   $ vim data/versions.yml
-   $ vim data/htaccess.yml
-   $ vim pom.xml
-   $ # add the two stanzas
-   $ git add -p
-   $ git add asf-site-src/pom.xml
-   $ git commit
-   ```
-
-   - Example commit message:
-
-   ```text
-   YETUS-XXX. add release 0.7.0.
-
-   - list in releases
-   - remove 0.4.0, add 0.7.0 to pom.xml
-   ```
-
-1. You should then post this patch for review. Once you've gotten feedback, it's fine to push the patch to the ASF source repo immediately so long as the updated website is not published.
-1. Publish website updates. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should render the website and publish it using the instructions found in [Maintaining the Yetus Website](../website).
-1. Verify that https://yetus.apache.org/latest.tgz and https://yetus.apache.org/latest.tgz.asc download the newly released version.
 1. Remove old releases from the distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintenance for an earlier minor or major release line, you should delete those versions from the distribution area.
 1. Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
         Subject: [ANNOUNCE] Apache Yetus 0.7.0 release
@@ -656,7 +552,77 @@ Once a release candidate obtains majority approval from the PMC, there are sever
         Meg Smith
         Apache Yetus PMC
     If you'd like feedback on the draft, feel free to post it for review on your release issue.
-1. Send announcement emails. After the 24 hour window needed for the release artifacts to make their way to the variety of mirrors, you should send the announcement email. The email should come from your apache.org email address and at a minimum should go to the dev@yetus.apache.org list. For details see [the ASF Release Policy section How Should Releases Be Announced?](https://www.apache.org/dev/release.html#release-announcements). Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.
+1. Wait 24 hours for mirrors to get properly updated.
+
+### Documentation
+
+1. Update the documentation in the git main branch for the new release.  Remove the oldest release and add the latest.
+
+   ```bash
+   $ release/update-doc-versions.sh --version=<x.y.z -- version WITHOUT the rel/!>
+   $ git add -p
+   $ git add asf-site-src/pom.xml
+   $ git commit
+   ```
+
+   - Example commit message:
+
+   ```text
+   YETUS-XXX. add release 0.7.0.
+
+   - list in releases
+   - remove 0.4.0, add 0.7.0 to pom.xml
+   ```
+
+1. You should then post this patch for review. Once you've gotten feedback, it's fine to push the patch to the ASF source repo immediately so long as the updated website is not published.
+1. 24 hours after the distribution repo has been updated, publish website updates. See [Maintaining the Yetus Website](../website).
+1. Verify that https://yetus.apache.org/latest.tgz and https://yetus.apache.org/latest.tgz.asc download the newly released version.
+
+### Homebrew
+
+24 Hours after the distribution repo has been updated, update Homebrew to point to the new release:
+
+1. Update the `yetus-homebrew` repo by using the release script:
+
+  ```bash
+  $ ./release.sh YETUS-XXX <x.y.z -- version WITHOUT the rel/!>
+  ```
+
+1. Test the formula:
+
+  ```bash
+   $ # test the formula:
+   $ brew install --build-from-source Formula/yetus.rb
+    # or if you already have it installed:
+   $ brew upgrade --build-from-source Formula/yetus.rb
+   ```
+
+1. If all looks good, push it live.
+
+### Github Marketplace Action
+
+24 Hours after the distribution repo has been updated, update the Github Marketplace.
+
+1. Update the `yetus-test-patch-action` repo by using the release script to create a branch which will then tag that branch:
+
+  ```bash
+  $ ./release.sh YETUS-XXX <x.y.z -- version WITHOUT the rel/!>
+  ```
+
+1. Verify the branch and the tag match and that the container version matches the Apache Yetus release.
+1. Go to [Draft a release](https://github.com/aw-was-here/yetus-test-patch-action/releases/new?marketplace=true)
+1. Type the tag that you just pushed into the 'tag' box.
+1. Use categories 'Code quality' and 'Continuous integration'
+1. Release Title should reflect the version
+1. Describe this release should be a cut-down version of the anouncement email (drop SHA and direct download links. main page, github actions, and release notes should be mentioned)
+1. Mark 'This is a pre-release'
+1. Verify everything looks good.
+1. Publish release
+
+### Make it Official
+
+1. Did you wait 24 hours for the release artifacts to get everywhere?
+1. Send announcement emails. The email should come from your apache.org email address and at a minimum should go to the dev@yetus.apache.org list. For details see [the ASF Release Policy section How Should Releases Be Announced?](https://www.apache.org/dev/release.html#release-announcements). Additionally, you may want to send the announcement to the development lists of downstream projects we know are using Yetus components.
 1. Send tweet. Once the message to dev@yetus.apache.org has made it to the public archive, you should draft a tweet with a link to the announcement. You should use the ASF link shortener and a descriptive name. For example, the 0.7.0 release could use
 
         Apache Yetus 0.7.0 has been released:
