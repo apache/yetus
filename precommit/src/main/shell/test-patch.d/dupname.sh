@@ -82,7 +82,7 @@ function dupname_precheck
     existing=$(${GIT} ls-files ":(icase)${fn}")
     if [[ -n "${existing}" ]]; then
       if [[ "${existing}" != "${fn}" ]]; then
-        echo "patch:${fn} tree:${existing}" >> "${PATCH_DIR}/dupnames.txt"
+        echo "${fn}:1:patch ${fn} matches existing ${existing}" >> "${PATCH_DIR}/results-dupnames.txt"
         ((count=count + 1))
       fi
     fi
@@ -99,7 +99,7 @@ function dupname_precheck
         if [[ "${cur}" != "${prev}" ]]; then
           curlc=$(echo "${cur}" | tr '[:upper:]' '[:lower:]')
           if [[ "${curlc}" == "${prevlc}" ]]; then
-            echo "patch:${cur} patch:${prev}" >> "${PATCH_DIR}/dupnames.txt"
+            echo "${cur}:1:matches ${prev} in same patch file" >> "${PATCH_DIR}/results-dupnames.txt"
             ((count=count + 1))
           fi
         fi
@@ -111,15 +111,17 @@ function dupname_precheck
 
   if [[ ${count} -gt 0 ]]; then
     if [[ "${BUILDMODE}" != full ]]; then
-      add_vote_table_v2 -1 dupname "@@BASE@@/dupnames.txt" \
+      add_vote_table_v2 -1 dupname "@@BASE@@/results-dupnames.txt" \
         "The patch has ${count}" \
         " duplicated filenames that differ only in case."
+      bugsystem_linecomments_queue dupname "${PATCH_DIR}/results-dupnames.txt"
       yetus_error "ERROR: Won't apply the patch; may break the workspace."
       return 1
     else
-      add_vote_table_v2 -1 dupname "@@BASE@@/dupnames.txt" \
-      "Source has ${count}" \
+      add_vote_table_v2 -1 dupname "@@BASE@@/results-dupnames.txt" \
+        "Source has ${count}" \
         " duplicated filenames that differ only in case."
+      bugsystem_linecomments_queue dupname "${PATCH_DIR}/results-dupnames.txt"
     fi
   else
     add_vote_table_v2 +1 dupname "" "No case conflicting files found."

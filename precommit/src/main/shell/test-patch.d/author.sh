@@ -16,6 +16,8 @@
 
 add_test_type author
 
+AUTHOR_LOGNAME="results-author.txt"
+
 ## @description  author usage hook
 ## @audience     private
 ## @stability    evolving
@@ -62,13 +64,14 @@ function author_generic
   fi
 
   # shellcheck disable=SC2016
-  authortags=$(wc -l "${PATCH_DIR}/author-tags.txt" | "${AWK}" '{print $1}')
+  authortags=$(wc -l "${PATCH_DIR}/${AUTHOR_LOGNAME}" | "${AWK}" '{print $1}')
   echo "There appear to be ${authortags} @author tags in the ${msg}."
   if [[ ${authortags} != 0 ]] ; then
     add_vote_table_v2 -1 @author \
-      "@@BASE@@/author-tags.txt" \
+      "@@BASE@@/${AUTHOR_LOGNAME}" \
       "${BUILDMODEMSG} appears to contain ${authortags} @author tags which the" \
       " community has agreed to not allow in code contributions."
+    bugsystem_linecomments_queue author "${PATCH_DIR}/${AUTHOR_LOGNAME}"
     return 1
   fi
   add_vote_table_v2 +1 @author "" "${BUILDMODEMSG} does not contain any @author tags."
@@ -105,7 +108,7 @@ function author_patchfile
     fi
   done
 
-  "${GREP}" -i -n '^[^-].*@author' "${patchfile}" >> "${PATCH_DIR}/author-tags.txt"
+  "${GREP}" -i -n '^[^-].*@author' "${patchfile}" >> "${PATCH_DIR}/${AUTHOR_LOGNAME}"
   author_generic
 }
 
@@ -142,13 +145,13 @@ function author_postcompile
     >> "${PATCH_DIR}/author-tags-git.txt"
 
   if [[ -z "${AUTHOR_IGNORE_LIST[0]}" ]]; then
-    cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/author-tags.txt"
+    cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/${AUTHOR_LOGNAME}"
   else
     printf "^%s\n" "${AUTHOR_IGNORE_LIST[@]}" > "${PATCH_DIR}/author-tags-filter.txt"
     "${GREP}" -v -E \
       -f "${PATCH_DIR}/author-tags-filter.txt" \
       "${PATCH_DIR}/author-tags-git.txt" \
-      > "${PATCH_DIR}/author-tags.txt"
+      > "${PATCH_DIR}/${AUTHOR_LOGNAME}"
   fi
 
   author_generic

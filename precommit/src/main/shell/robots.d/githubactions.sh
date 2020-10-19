@@ -18,6 +18,9 @@
 
 if [[ "${GITHUB_ACTIONS}" == true ]] &&
   declare -f compile_cycle >/dev/null; then
+
+  echo "::group::Bootstrap"
+
   # shellcheck disable=SC2034
   ROBOT=true
   # shellcheck disable=SC2034
@@ -79,3 +82,7 @@ function githubactions_set_plugin_defaults
   GITHUB_REPO="${GITHUB_REPOSITORY}"
 }
 
+function githubactions_cleanup_and_exit
+{
+  echo "::endgroup::"
+}

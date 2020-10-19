@@ -19,6 +19,7 @@
 add_test_type unitveto
 
 UNITVETO_RE=${UNITVETO_RE:-}
+UNITVETO_LOGFILE="results-unitveto.txt"
 
 function unitveto_filefilter
 {
@@ -27,6 +28,8 @@ function unitveto_filefilter
   if [[ -n "${UNITVETO_RE}"
      && ${filename} =~ ${UNITVETO_RE} ]]; then
     yetus_debug "unitveto: ${filename} matched"
+    echo "${filename}:1:0:unitveto:matches ${UNITVETO_RE}" \
+      >> "${PATCH_DIR}/${UNITVETO_LOGFILE}"
     add_test unitveto
   fi
 }
@@ -60,6 +63,7 @@ function unitveto_patchfile
     return 0
   fi
 
-  add_vote_table_v2 -1 unitveto "" "Patch requires manual testing."
+  add_vote_table_v2 -1 unitveto "@@BASE@@/${UNITVETO_LOGFILE}" "Patch requires manual testing."
+  bugsystem_linecomments_queue unitveto "${PATCH_DIR}/${UNITVETO_LOGFILE}"
   return 1
 }

@@ -71,7 +71,7 @@ function pathlen_generic
     size=${#i}
     if [[ ${size} -gt ${PATHLEN_SIZE} ]]; then
       ((counter = counter + 1 ))
-      echo "${i}" >>  "${PATCH_DIR}/pathlen.txt"
+      echo "${i}:1:path size ${counter}" >>  "${PATCH_DIR}/results-pathlen.txt"
     fi
   done
 
@@ -79,8 +79,9 @@ function pathlen_generic
   echo "${counter} files in the ${msg} with paths longer that ${PATHLEN_SIZE}."
   if [[ ${counter} -gt 0 ]] ; then
     add_vote_table_v2 -1 pathlen \
-      "@@BASE@@/pathlen.txt" \
+      "@@BASE@@/results-pathlen.txt" \
       "${BUILDMODEMSG} appears to contain ${counter} files with names longer than ${PATHLEN_SIZE}"
+    bugsystem_linecomments_queue pathlen "${PATCH_DIR}/results-pathlen.txt"
     return 1
   fi
   return 0

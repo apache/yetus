@@ -431,7 +431,7 @@ function checkstyle_postapply
     if [[ "${BUILDMODE}" = full ]]; then
       touch  "${PATCH_DIR}/branch-checkstyle-${fn}.txt"
       cp -p "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
-        "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+        "${PATCH_DIR}/results-checkstyle-${fn}.txt"
     else
 
       # call calcdiffs to allow overrides
@@ -439,7 +439,7 @@ function checkstyle_postapply
         "${PATCH_DIR}/branch-checkstyle-${fn}.txt" \
         "${PATCH_DIR}/patch-checkstyle-${fn}.txt" \
         checkstyle \
-        > "${PATCH_DIR}/diff-checkstyle-${fn}.txt"
+        > "${PATCH_DIR}/results-checkstyle-${fn}.txt"
     fi
 
     tmpvar=$(wc -l "${PATCH_DIR}/branch-checkstyle-${fn}.txt")
@@ -448,7 +448,7 @@ function checkstyle_postapply
     tmpvar=$(wc -l "${PATCH_DIR}/patch-checkstyle-${fn}.txt")
     numpatch=${tmpvar%% *}
 
-    tmpvar=$(wc -l "${PATCH_DIR}/diff-checkstyle-${fn}.txt")
+    tmpvar=$(wc -l "${PATCH_DIR}/results-checkstyle-${fn}.txt")
     addpatch=${tmpvar%% *}
 
 
@@ -463,9 +463,9 @@ function checkstyle_postapply
 
     if [[ ${addpatch} -gt 0 ]] ; then
       ((result = result + 1))
-      module_status "${i}" -1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
+      module_status "${i}" -1 "results-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
     elif [[ ${fixedpatch} -gt 0 ]]; then
-      module_status "${i}" +1 "diff-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
+      module_status "${i}" +1 "results-checkstyle-${fn}.txt" "${mod}: ${BUILDMODEMSG} ${statstring}"
       summarize=false
     fi
     ((i=i+1))
