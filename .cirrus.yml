@@ -20,18 +20,20 @@ yetus_task:
     image: apache/yetus:main
   test_script: >
              ${CIRRUS_WORKING_DIR}/precommit/src/main/shell/test-patch.sh
-             --plugins=all
-             --pylint=pylint2
-             --java-home=/usr/lib/jvm/java-8-openjdk-amd64
              --basedir="${CIRRUS_WORKING_DIR}"
-             --html-report-file=/tmp/yetus-out/report.html
-             --console-report-file=/tmp/yetus-out/console.txt
              --brief-report-file=/tmp/yetus-out/brief.txt
              --bugcomments=briefreport,htmlout,junit
+             --console-report-file=/tmp/yetus-out/console.txt
+             --html-report-file=/tmp/yetus-out/report.html
+             --java-home=/usr/lib/jvm/java-8-openjdk-amd64
+             --junit-report-xml=/tmp/yetus-out/junit.xml
+             --plugins=all
+             --pylint=pylint2
              --tests-filter=checkstyle,javadoc,rubocop,test4tests
   always:
     junit_artifacts:
       path: "yetus-out/junit.xml"
+      type: text/xml
       format: junit
     other_artifacts:
       path: "yetus-out/**"
