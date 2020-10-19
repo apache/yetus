@@ -157,6 +157,38 @@
               </arguments>
             </configuration>
           </execution>
+            <execution>
+            <id>all-releasedocs</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${rdm.bin}</executable>
+              <requiresOnline>true</requiresOnline>
+              <arguments>
+                <argument>--dirversions</argument>
+                <argument>--fileversions</argument>
+                <argument>--lint=all</argument>
+                <argument>--license</argument>
+                <argument>--outputdir</argument>
+                <argument>source/downloads/releasenotes</argument>
+                <argument>--prettyindex</argument>
+                <argument>--project</argument>
+                <argument>YETUS</argument>
+                <argument>--projecttitle</argument>
+                <argument>Apache Yetus</argument>
+                <argument>--usetoday</argument>
+                <argument>--range</argument>
+                <argument>--version</argument>
+                <argument>0.0.0</argument>
+                <argument>--version</argument>
+                <argument>${project.version}</argument>
+                <argument>--extension</argument>
+                <argument>.html.md</argument>
+              </arguments>
+            </configuration>
+          </execution>
           <execution>
             <id>bundle-install</id>
             <phase>pre-site</phase>
