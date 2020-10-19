@@ -187,11 +187,25 @@
 
 <h1 id="github-specific">GitHub Specific</h1>
 
-<p>GitHub supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that <code>test-patch</code> will (generally) require that GitHub PRs be fully squashed and rebased (i.e., a single commit) in many circumstances.</p>
+<p>GitHub supports a large range of functionality, mostly self-adjusting based upon the<br />
+environment it is running in.  Supported features include GitHub Enterprise, private<br />
+repositories, GitHub Statuses, and GitHub Checks Annotations.</p>
 
-<p>By default, the GitHub plug-in assumes that <a href="https://github.com">https://github.com</a> is the base URL for GitHub.  Enterprise users may override this with the <code>--github-base-url</code> for the normal web user interface and <code>--github-api-url</code> for the API URL.  Personalities may use GITHUB_API_URL and GITHUB_BASE_URL.</p>
+<p>Be aware, however, that <code>test-patch</code> will (generally) require<br />
+that GitHub PRs be fully squashed and rebased (i.e., a single commit) in many<br />
+circumstances, especially renames followed by commits to those renamed files.  It will<br />
+try to fall back to 'diff' format if 'patch' format does not work, exiting<br />
+completely if both fail.</p>
 
-<p>The specific repository on GitHub is defined with either <code>--github-repo</code> on the command line or GITHUB_REPO in a personality.  It should take the form of "user/repo".</p>
+<p>By default, the GitHub plug-in assumes that <a href="https://github.com">https://github.com</a> is the base URL<br />
+for GitHub and <a href="https://api.github.com">https://api.github.com</a> for base of the GitHub API URL.  Enterprise<br />
+users may override this with the <code>--github-base-url</code> for the normal web user<br />
+interface and <code>--github-api-url</code> for the API URL.  Personalities may use<br />
+GITHUB_API_URL and GITHUB_BASE_URL.</p>
+
+<p>The specific repository on GitHub is defined with either <code>--github-repo</code> on the<br />
+command line, GITHUB_REPO in a personality, or automatically determined by various<br />
+robot support mechanisms.  It should take the form of "user/repo".</p>
 
 <p>GitHub pull requests may be directly processed on the command line in two ways:</p>
 
@@ -205,14 +219,24 @@ Pull requests that are made off of a specific branch will switch the test repo t
 
 <h2 id="github-authentication">GitHub Authentication</h2>
 
-<p>In order to comment on issues or, depending upon the security setup of the repo, authentication credentials.  The GitHub plug-in supports authentication via token or user name/passphrase.</p>
+<p>Some operations depend upon authentication credentials.  The GitHub plug-in<br />
+supports authentication via token or user name/passphrase.  Authentication is<br />
+required for controlling the API query rate, accessing private repositories,<br />
+reading private pull requests, updating GitHub Statuses (requires<br />
+<code>repo:status</code> permissions), writing comments to PRs, and other functionality.</p>
+
+<p>Some <a href="../robots">robots</a> have built-in support for providing GitHub tokens.  See<br />
+the appropriate documentation for your particular setup.</p>
 
 <h3 id="github-token">GitHub Token</h3>
 
 <p>The token is provided via the <code>--github-token</code> option.</p>
 
-<h3 id="github-usernamepassword-deprecated">GitHub Username/password (Deprecated)</h3>
+<h3 id="github-usernamepassword">GitHub Username/password</h3>
 
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: GitHub is deprecating this format. It is kept here for backward compatibility
+until such a time the format is completely removed from modern implementations.
+</code></pre></div>
 <p>The user name is provided via the <code>--github-user</code> option or the GITHUB_USER environment variable.  The default value for  GITHUB_USER is the value of <code>--project</code> suffixed with QA.  For example,<br />
 <code>--project=yetus</code> will set <code>GITHUB_USER=yetusqa</code>.</p>
 

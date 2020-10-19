@@ -121,89 +121,57 @@
   under the License.
 -->
 
-<h1 id="robots-jenkins">Robots: Jenkins</h1>
+<h1 id="name">Name</h1>
 
-<p>TRIGGER: ${JENKINS_URL}=(anything)  ,  ${EXECUTOR_NUMBER}=(anything)</p>
+<p>buf<br />
+buflint<br />
+bufcompat</p>
 
-<p>Jenkins is extremely open-ended and, given multiple executors, does not run workflows in isolation.  As a result, many more configuration options generally need to be configured as it is not safe or may be surprising to users for test-patch to auto-determine some settings.  By default, Jenkins will trigger a full build.</p>
+<h1 id="category">Category</h1>
 
-<p>There is some support for a few well known environment variables:</p>
+<p>Test</p>
 
-<ul>
-  <li><code>${CHANGE_URL}</code> or <code>${ghprbPullLink}</code> will set the patch location as well as trigger some extra handling if 'github' or 'gitlab' appear in the string.</li>
-  <li><code>${GIT_URL}</code> will trigger the same extra handling if 'github' or 'gitlab' appear in the string.</li>
-  <li>If <code>${ghprbPullId}</code> is set, then test-patch will configure itself for a Github-style PR.</li>
-</ul>
+<h1 id="description">Description</h1>
 
-<p>To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the <code>Jenkinsfile</code>, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:</p>
+<p><a href="https://github.com/bufbuild/buf">buf</a> is a protobuf linter (<code>buflint</code>) and backward compatibility checker (<code>bufcompat</code>).<br />
+In order to use either <code>buflint</code> or <code>bufcompat</code>, <code>buf</code> must also be enabled.</p>
 
-<div class="highlight"><pre class="highlight groovy"><code><span class="n">pipeline</span> <span class="o">{</span>
-  <span class="n">agent</span> <span class="o">{</span>
-    <span class="n">docker</span> <span class="o">{</span>
-      <span class="n">image</span> <span class="s1">'apache/yetus:0.9.0'</span>
-      <span class="n">args</span> <span class="s1">'-v /var/run/docker.sock:/var/run/docker.sock'</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
+<h1 id="environment-variables">Environment Variables</h1>
 
-  <span class="n">environment</span> <span class="o">{</span>
-    <span class="n">JAVA_HOME</span> <span class="o">=</span> <span class="s1">'/usr/lib/jvm/java-8-openjdk-amd64'</span>
-  <span class="o">}</span>
+<p>None</p>
 
-<span class="o">}</span>
+<h1 id="options">Options</h1>
 
-</code></pre></div>
-<p>Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  <code>test-patch</code> will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  <code>pidfile.txt</code> contains the main <code>test-patch</code> process id and <code>cidfile.txt</code> contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:</p>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Option</th>
+      <th style="text-align: left">Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><code>--buf=&lt;file&gt;</code></td>
+      <td style="text-align: left">path to <code>buf</code> executable if it is not on the path</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code>--buf-basedir=&lt;dir&gt;</code></td>
+      <td style="text-align: left">set the starting dir to run buf</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><code>--buf-timeout=###u</code></td>
+      <td style="text-align: left">Set the buf timeout</td>
+    </tr>
+  </tbody>
+</table>
 
-<div class="highlight"><pre class="highlight groovy"><code>    <span class="n">post</span> <span class="o">{</span>
-      <span class="n">cleanup</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">script</span> <span class="o">{</span>
-          <span class="n">sh</span> <span class="s1">'''
-            if [ -f "${env.PATCH_DIR}/pidfile.txt" ]; then
-              kill `cat "${env.PATCH_DIR}/pidfile.txt"` || true
-              sleep 5
-            fi
-            if [ -f "${env.PATCH_DIR}/cidfile.txt" ]; then
-              docker kill `cat "${env.PATCH_DIR}/cidfile.txt"` || true
-              sleep 5
-            fi
-            '''</span>
-            <span class="o">...</span>
-            <span class="n">deletedir</span><span class="o">()</span>
-        <span class="o">}</span>
-      <span class="o">}</span>
-    <span class="o">}</span>
-</code></pre></div>
-<h2 id="github-token-support">GitHub Token Support</h2>
+<h1 id="docker-notes">Docker Notes</h1>
 
-<p>Using the Jenkins Credential system, one can provide a specific personal access token<br />
-to use with GitHub.  However, it is recommended that Jenkins be configured to act as<br />
-a GitHub application as per the<br />
-<a href="https://docs.cloudbees.com/docs/cloudbees-jenkins-platform/latest/github-app-auth">Cloudbees documentation</a><br />
-for the optimal <code>test-patch</code> experience.  Configure up to the "Configuring the GitHub Organization" and then, using the Jenkins credential system, pass the GitHub App's token to <code>test-patch</code>. For example:</p>
+<p>None</p>
 
-<div class="highlight"><pre class="highlight groovy"><code><span class="o">...</span>
-        <span class="n">withCredentials</span><span class="o">([</span><span class="n">usernamePassword</span><span class="o">(</span><span class="nl">credentialsId:</span> <span class="s1">'github-app'</span><span class="o">,</span>
-                         <span class="nl">passwordVariable:</span> <span class="s1">'GITHUB_TOKEN'</span><span class="o">,</span>
-                         <span class="nl">usernameVariable:</span> <span class="s1">'GITHUB_USER'</span><span class="o">)])</span> <span class="o">{</span>
-<span class="o">...</span>
+<h1 id="developer-notes">Developer Notes</h1>
 
-        <span class="n">sh</span> <span class="s1">'''test-patch --github-token="${GITHUB_TOKEN}" (other options)'''</span>
-<span class="o">...</span>
-</code></pre></div>
-<p>Doing so will enable in many circumstances a bit more functionality, such as<br />
-GitHub Statuses.</p>
-
-<p>See also:</p>
-
-<ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/Jenkinsfile">Jenkinsfile</a> for some tips and tricks.</li>
-  <li><a href="../../admin">precommit-admin</a>, for special utilities built for Jenkins.</li>
-  <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin">GitHub Branch Source Plugin</a></li>
-  <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin">GitHub Pull Request Builder Plugin</a></li>
-  <li><code>https://{your local server}/env-vars.html/</code></li>
-  <li><a href="https://cd.foundation/blog/2020/04/22/from-jenkins-github-app-authentication-support-released/">From Jenkins – GitHub App authentication support released</a></li>
-  <li><a href="https://docs.cloudbees.com/docs/cloudbees-jenkins-platform/latest/github-app-auth">Jenkins - Using GitHub App authentication</a></li>
-</ul>
+<p>None</p>
 
     </div>
       

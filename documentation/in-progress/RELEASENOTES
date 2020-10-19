@@ -121,6 +121,10 @@
 </ul>
 
 <!-- markdown -->
+<p>Users:</p>
+
+<p>The log files for tests have been popped up into the voting table for many of the generated reports.</p>
+
 <p>Developers:</p>
 
 <p>This is a breaking change.  It reworks how tests should be registering the logfiles that they present to users and how bugsystem reporting engines should retrieve the filenames for those logfiles:</p>
@@ -207,6 +211,25 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
     <table class="table table-bordered table-striped">
       <tbody>
         <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1012">YETUS-1012</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Major overhaul of precommit documentation</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>The <a href="http://yetus.apache.org/documentation/in-progress/precommit/">precommit documentation on the ASF site</a> has been revamped! It now features greatly expanded information, more parameters are documented, more commands are documented, and even separate pages per plug-in!</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
           <td><a href="https://issues.apache.org/jira/browse/YETUS-1017">YETUS-1017</a></td>
           <td><em>Major</em></td>
           <td><strong>Rework post-processing comparison to de-duplicate code</strong></td>
@@ -245,4 +268,101 @@ Users:</p>
 <p>With this change, the whitespace plug-in has been renamed 'blanks'.   Users who specifically add <code>whitespace</code> to the plug-in list will need to change their parameters.  The old parameters are still supported (<code>--whitespace-tabs-ignore-list=&lt;list&gt;</code> and <code>--whitespace-eol-ignore-list=&lt;list&gt;</code>) in this release but will likely be removed in the next one.</p>
 
 <p>It also takes two different parameters: <code>--blanks-eol-ignore-file=&lt;file&gt;</code> and <code>--blanks-tabs-ignore-file=&lt;file&gt;</code> . These files contain regular expressions of files to ignore for their various targets, similar to the –excludes file option.   By default, Apache Yetus will automatically use <code>.yetus/blanks-eol.txt</code> and <code>.yetus/blanks-tabs.txt</code> if they exist.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1021">YETUS-1021</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Lots of minor documentation updates post-overhaul</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Developers:</p>
+
+<p>A new website link checker has been added to the CI process to verify that links are actually valid.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1022">YETUS-1022</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Get commit sha from github PR json</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Git SHAs should now be more consistent on repositories hosted on GitHub, especially when running on Jenkins.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1027">YETUS-1027</a></td>
+          <td><em>Blocker</em></td>
+          <td><strong>checkmake output is incorrect</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Prior to this fix, <code>checkmake</code> may have returned irrelevant results for a given change.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-992">YETUS-992</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Create and publish a github action</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>With this release, Apache Yetus' <code>test-patch</code> facility is now available as a Github Action! Please see the documentation for more details.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1028">YETUS-1028</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Various missing github annotations</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Many outputs for plug-ins have been reworked to provide a consistent format as well as compatibility with such features as GitHub Checks Annotations.  Additionally, most of the log files have been renamed to be prefixed with <code>results</code> to make them more consistent between the various modes.</p>
 

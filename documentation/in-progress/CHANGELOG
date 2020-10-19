@@ -18,7 +18,7 @@
 -->
 <h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h2 id="release-0130-snapshot---2020-10-12">Release 0.13.0-SNAPSHOT - 2020-10-12</h2>
+<h2 id="release-0130-snapshot---2020-10-19">Release 0.13.0-SNAPSHOT - 2020-10-19</h2>
 
 <h3 id="important-issues">IMPORTANT ISSUES:</h3>
 
@@ -91,6 +91,14 @@
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
     <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1012">YETUS-1012</a></td>
+      <td style="text-align: left">Major overhaul of precommit documentation</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
       <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1017">YETUS-1017</a></td>
       <td style="text-align: left">Rework post-processing comparison to de-duplicate code</td>
       <td style="text-align: left">Major</td>
@@ -101,6 +109,22 @@
     <tr>
       <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1019">YETUS-1019</a></td>
       <td style="text-align: left">Rename 'whitespace' to 'blanks</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-992">YETUS-992</a></td>
+      <td style="text-align: left">Create and publish a github action</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1028">YETUS-1028</a></td>
+      <td style="text-align: left">Various missing github annotations</td>
       <td style="text-align: left">Major</td>
       <td style="text-align: left">Precommit</td>
       <td style="text-align: left">Allen Wittenauer</td>
@@ -285,14 +309,6 @@
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
     <tr>
-      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1012">YETUS-1012</a></td>
-      <td style="text-align: left">Major overhaul of precommit documentation</td>
-      <td style="text-align: left">Major</td>
-      <td style="text-align: left">website and documentation</td>
-      <td style="text-align: left">Allen Wittenauer</td>
-      <td style="text-align: left">Allen Wittenauer</td>
-    </tr>
-    <tr>
       <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1016">YETUS-1016</a></td>
       <td style="text-align: left">Various test-patch performance improvements</td>
       <td style="text-align: left">Minor</td>
@@ -418,6 +434,30 @@
       <td style="text-align: left">Get commit sha from github PR json</td>
       <td style="text-align: left">Major</td>
       <td style="text-align: left">Precommit, website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1024">YETUS-1024</a></td>
+      <td style="text-align: left">github actions docs point to wrong repo, missing secrets</td>
+      <td style="text-align: left">Trivial</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1025">YETUS-1025</a></td>
+      <td style="text-align: left">bufcompat doesn't get linecomments</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1027">YETUS-1027</a></td>
+      <td style="text-align: left">checkmake output is incorrect</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
