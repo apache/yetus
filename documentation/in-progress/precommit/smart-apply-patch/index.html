@@ -123,9 +123,21 @@
 
 <h1 id="smart-apply-patch">smart-apply-patch</h1>
 
+<!-- MarkdownTOC levels="1,2,3" autolink="true" indent="  " bullets="*" bracket="round" -->
+
+<ul>
+  <li><a href="#local-file">Local File</a></li>
+  <li><a href="#remote-files-and-bug-systems">Remote Files and Bug Systems</a></li>
+  <li><a href="#dry-run">Dry-run</a></li>
+  <li><a href="#committer-mode">Committer Mode</a></li>
+  <li><a href="#patch-reporting">Patch Reporting</a></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
 <p><code>smart-apply-patch</code> is a command to help apply patches easily.  It uses the same plug-ins and many of the same options as test-patch.  This means that it can, for example, fetch patches from JIRA and apply them to a local source tree.</p>
 
-<h2 id="usage">Usage</h2>
+<h1 id="local-file">Local File</h1>
 
 <p>Its simplest form is used when a patch is stored in a local file:</p>
 
@@ -133,10 +145,23 @@
 </code></pre></div>
 <p>This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.</p>
 
+<h1 id="remote-files-and-bug-systems">Remote Files and Bug Systems</h1>
+
+<p><code>smart-apply-patch</code> supports many of the same switches and configurations<br />
+that <code>test-patch</code> does.  Using those switches means that, for example, it is possible to pull and apply a GitHub PR very easily:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--plugins</span><span class="o">=</span>github <span class="nt">--github-repo</span> apache/yetus GH:3000
+</code></pre></div>
+<p><code>smart-apply-patch</code> will do all the work of downloading, verifying, and applying just as <code>test-patch</code> would.</p>
+
+<h1 id="dry-run">Dry-run</h1>
+
 <p>Perhaps you just want to see if the patch even applies without changing your local repo.  The <code>--dry-run</code> option will just test for applicability:</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--dry-run</span> patch
 </code></pre></div>
+<h1 id="committer-mode">Committer Mode</h1>
+
 <p>For committers of projects, there is a special mode:</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--committer</span> patch
@@ -149,6 +174,30 @@
   <li>use <code>--signoff</code> and commit the change via git-am</li>
 </ul>
 
+<h1 id="patch-reporting">Patch Reporting</h1>
+
+<p>For speciality CI needs, it may be useful to just have access to Apache Yetus'<br />
+ability to interpret changes and then do your own actions based upon that<br />
+content.  <code>smart-apply-patch</code> has two options that expose that functionality<br />
+for highly customized CI needs:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--plugins</span><span class="o">=</span>gitlab <span class="nt">--changedfilesreport</span><span class="o">=</span>/tmp/myfile.txt GL:100
+</code></pre></div>
+<p>This command will download GitLab merge request #100, process it, and write a<br />
+file called <code>/tmp/myfile.txt</code> that lists the files that were changed.</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--build-tool</span><span class="o">=</span>maven <span class="nt">--plugins</span><span class="o">=</span>maven <span class="nt">--changedmodulesreport</span><span class="o">=</span>/tmp/mymodules.txt /tmp/file.patch
+</code></pre></div>
+<p>Similarly, this option will return the module list from <code>/tmp/file.patch</code>.<br />
+Or, perhaps you simply want to know the deepest directory with a change?</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--build-tool</span><span class="o">=</span>maven <span class="nt">--plugins</span><span class="o">=</span>maven <span class="nt">--changedunionreport</span><span class="o">=</span>/tmp/base.txt http://example.com/patch
+</code></pre></div>
+<p>If you want to generate these reports without actually applying it (where<br />
+possible), then the <code>--reports-only</code> option is available:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--reports-only</span> <span class="nt">--changedfilesreport</span><span class="o">=</span>/tmp/myfile.txt /tmp/file.patch
+</code></pre></div>
     </div>
       
 <div class="container">
