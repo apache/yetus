@@ -366,3 +366,22 @@ Users:</p>
 <!-- markdown -->
 <p>Many outputs for plug-ins have been reworked to provide a consistent format as well as compatibility with such features as GitHub Checks Annotations.  Additionally, most of the log files have been renamed to be prefixed with <code>results</code> to make them more consistent between the various modes.</p>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1033">YETUS-1033</a></td>
+          <td><em>Blocker</em></td>
+          <td><strong>Move homebrew tap into it's own repository</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Homebrew support has been moved into its own repository. The new tap name is <code>apache/yetus-homebrew</code>.  See the downloads documentation for more information.</p>
+
