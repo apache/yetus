@@ -45,6 +45,7 @@
         <artifactId>yetus-minimaven-plugin</artifactId>
         <version>${project.version}</version>
         <executions>
+          <!-- AUTOMATED_EDIT_BEGIN -->
           <execution>
             <id>0.10.0</id>
             <phase>pre-site</phase>
@@ -111,6 +112,7 @@
               <newLink>${basedir}/source/documentation/0.12.0.html.md</newLink>
             </configuration>
           </execution>
+          <!-- AUTOMATED_EDIT_END -->
           <execution>
             <!-- we create a symlink of current version->in-progress.  This will cause
                  middle man to generate two copies of the output. -->
