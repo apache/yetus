@@ -178,7 +178,6 @@
                 <argument>YETUS</argument>
                 <argument>--projecttitle</argument>
                 <argument>Apache Yetus</argument>
-                <argument>--usetoday</argument>
                 <argument>--range</argument>
                 <argument>--version</argument>
                 <argument>0.0.0</argument>
