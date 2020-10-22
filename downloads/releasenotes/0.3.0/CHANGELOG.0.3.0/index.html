@@ -1,0 +1,703 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        
+<!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
+
+<h2 id="release-030---2016-05-23">Release 0.3.0 - 2016-05-23</h2>
+
+<h3 id="important-issues">IMPORTANT ISSUES:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-322">YETUS-322</a></td>
+      <td style="text-align: left">flip verify_ result codes</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-300">YETUS-300</a></td>
+      <td style="text-align: left">CHANGED_FILES, CHANGED_MODULES, etc should really be arrays</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-156">YETUS-156</a></td>
+      <td style="text-align: left">[Umbrella] build driver</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="improvements">IMPROVEMENTS:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-330">YETUS-330</a></td>
+      <td style="text-align: left">show most recent release first on downloads page</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Sean Busbey</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-337">YETUS-337</a></td>
+      <td style="text-align: left">Upgrade version of pylint used in Dockerfile</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Andrew Wang</td>
+      <td style="text-align: left">Andrew Wang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-237">YETUS-237</a></td>
+      <td style="text-align: left">Shelldocs should pass pylint</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">ShellDocs</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-306">YETUS-306</a></td>
+      <td style="text-align: left">author tag detector should produce a file with pointers to incidence</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Kengo Seki</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-361">YETUS-361</a></td>
+      <td style="text-align: left">Use Google's pylintrc file</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Andrew Wang</td>
+      <td style="text-align: left">Andrew Wang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-358">YETUS-358</a></td>
+      <td style="text-align: left">make use of BSD tar in build script explicit</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Sean Busbey</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-289">YETUS-289</a></td>
+      <td style="text-align: left">shelldocs should output error positions in lint mode</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">ShellDocs</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-382">YETUS-382</a></td>
+      <td style="text-align: left">launch-test-patch.sh has shellcheck issues</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-381">YETUS-381</a></td>
+      <td style="text-align: left">fix config.rb rubocop issues</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-321">YETUS-321</a></td>
+      <td style="text-align: left">releasedocmaker.py lint mode enhancements</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Andrew Wang</td>
+      <td style="text-align: left">Andrew Wang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-383">YETUS-383</a></td>
+      <td style="text-align: left">fix releasedocmaker pylint issues</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build, Release Doc Maker</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-387">YETUS-387</a></td>
+      <td style="text-align: left">fix some dockerfile issues</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">build, Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-331">YETUS-331</a></td>
+      <td style="text-align: left">post-r0.2.0 doc feedback</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-364">YETUS-364</a></td>
+      <td style="text-align: left">make building source archive POSIX-compliant</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Kengo Seki</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="bug-fixes">BUG FIXES:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-335">YETUS-335</a></td>
+      <td style="text-align: left">switch Yetus Dockerfile to use ruby 2.0</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-338">YETUS-338</a></td>
+      <td style="text-align: left">test-patch may not update patchfile in patchdir</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-345">YETUS-345</a></td>
+      <td style="text-align: left">mvn dependency dupe fix broke hadoop</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-334">YETUS-334</a></td>
+      <td style="text-align: left">mvn dependency ordering generates duplicates</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Phil Yang</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-303">YETUS-303</a></td>
+      <td style="text-align: left">better sorting options for releasedocmaker</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-336">YETUS-336</a></td>
+      <td style="text-align: left">javadoc plugin giving conflicting answers on pass/fail</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-363">YETUS-363</a></td>
+      <td style="text-align: left">releasedocmaker fails due to the lack of dateutil module</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-366">YETUS-366</a></td>
+      <td style="text-align: left">Wrapper script generated by build.sh doesn't work if the user is in the same location and executes it with a relative path</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-370">YETUS-370</a></td>
+      <td style="text-align: left">multiple compile test types confuse later runs</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-377">YETUS-377</a></td>
+      <td style="text-align: left">clean up whitespace</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-65">YETUS-65</a></td>
+      <td style="text-align: left">fix shellcheck 4.1 errors</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-359">YETUS-359</a></td>
+      <td style="text-align: left">shellcheck needs UTF-8 protection</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-388">YETUS-388</a></td>
+      <td style="text-align: left">test-patch fails when no maven found</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-391">YETUS-391</a></td>
+      <td style="text-align: left">test-patch regards git 1.7.1x is lower than 1.7.3</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Kengo Seki</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-394">YETUS-394</a></td>
+      <td style="text-align: left">Minor fixes to contributor guide and website</td>
+      <td style="text-align: left">Trivial</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Aldrin Piri</td>
+      <td style="text-align: left">Aldrin Piri</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-393">YETUS-393</a></td>
+      <td style="text-align: left">docker check fails for 1.10+</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="sub-tasks">SUB-TASKS:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-324">YETUS-324</a></td>
+      <td style="text-align: left">Refactor releasedocmaker.py option parsing into separate function</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Andrew Wang</td>
+      <td style="text-align: left">Andrew Wang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-325">YETUS-325</a></td>
+      <td style="text-align: left">Refactor releasedocmaker.py lint functionality into separate class</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Andrew Wang</td>
+      <td style="text-align: left">Andrew Wang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-332">YETUS-332</a></td>
+      <td style="text-align: left">make use of outputdir option consistent with cleaning</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Sean Busbey</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-347">YETUS-347</a></td>
+      <td style="text-align: left">change docker's extraargs to be an array</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-348">YETUS-348</a></td>
+      <td style="text-align: left">add ability to write console report to a file</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-349">YETUS-349</a></td>
+      <td style="text-align: left">core engine changes for build driver</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-350">YETUS-350</a></td>
+      <td style="text-align: left">plug-in changes for build driver</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-353">YETUS-353</a></td>
+      <td style="text-align: left">runtime wrapper for build driver</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-351">YETUS-351</a></td>
+      <td style="text-align: left">documentation changes for build driver</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-352">YETUS-352</a></td>
+      <td style="text-align: left">hadoop and hbase personality changes for build driver</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-354">YETUS-354</a></td>
+      <td style="text-align: left">findbugs in build driver has problems</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-371">YETUS-371</a></td>
+      <td style="text-align: left">build driver: speed up checkstyle</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-357">YETUS-357</a></td>
+      <td style="text-align: left">build driver for hadoop shouldn't union unit tests</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-372">YETUS-372</a></td>
+      <td style="text-align: left">build driver: unit tests still mentions patches</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-373">YETUS-373</a></td>
+      <td style="text-align: left">build driver: maven install should be smarter</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-356">YETUS-356</a></td>
+      <td style="text-align: left">build driver: author plug-in still mentions patches</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-374">YETUS-374</a></td>
+      <td style="text-align: left">need a way to ignore results from a list of tests</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-375">YETUS-375</a></td>
+      <td style="text-align: left">build driver: maven install actually needs to be dumber</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-376">YETUS-376</a></td>
+      <td style="text-align: left">add ability to write report to an HTML formatted file</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-384">YETUS-384</a></td>
+      <td style="text-align: left">In build driver mode, some plugins have misleading status text</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-385">YETUS-385</a></td>
+      <td style="text-align: left">test plugin for author tag detection should have a way to opt-out of specific instances</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-378">YETUS-378</a></td>
+      <td style="text-align: left">flink, hbase, jmeter personalities custom tests need to be made qbt aware</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-326">YETUS-326</a></td>
+      <td style="text-align: left">Make releasedocmaker.py lint filters configurable</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Andrew Wang</td>
+      <td style="text-align: left">Andrew Wang</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-386">YETUS-386</a></td>
+      <td style="text-align: left">document –html-report-file and clean up htmlout's comments</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="other">OTHER:</h3>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-329">YETUS-329</a></td>
+      <td style="text-align: left">update docs generation to use rel/ tags</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build, website and documentation</td>
+      <td style="text-align: left">Sean Busbey</td>
+      <td style="text-align: left">Sean Busbey</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-379">YETUS-379</a></td>
+      <td style="text-align: left">Release 0.3.0</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Kengo Seki</td>
+      <td style="text-align: left">Kengo Seki</td>
+    </tr>
+  </tbody>
+</table>
+
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>

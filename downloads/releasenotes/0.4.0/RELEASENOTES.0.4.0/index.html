@@ -1,0 +1,242 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        
+<!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<h1 id="apache-yetus--040-release-notes">Apache Yetus  0.4.0 Release Notes</h1>
+
+<p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-390">YETUS-390</a></td>
+          <td><em>Major</em></td>
+          <td><strong>qbt needs an "abbreviated email" mode</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>Users:</p>
+
+<ul>
+  <li><code>--brief-report-file</code> allows for the creation of a much smaller, plain-text friendly report. See the qbt documentation for more information.</li>
+  <li>Filtered tests now show up as orange in those reports that support color.  Previously they were blue.</li>
+</ul>
+
+<p>Developers:</p>
+
+<ul>
+  <li>The <code>add_vote_table</code> API no longer accepts a null vote.</li>
+  <li>The vote table time is now in raw seconds rather than a display-able time.</li>
+  <li>Filtered subsystems will put -0 in the vote table if they failed instead of always putting 0.  If they do not fail (0 or +1), that vote is now kept.</li>
+  <li><code>module_status</code> now allows to update a module's status without requiring providing the other parameters.</li>
+</ul>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-341">YETUS-341</a></td>
+          <td><em>Major</em></td>
+          <td><strong>docker cleanup in sentinel mode doesn't know about Created</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>Developers:</p>
+
+<p>This changes the ordering of the DOCKER_CONTAINER_PURGE array.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-309">YETUS-309</a></td>
+          <td><em>Major</em></td>
+          <td><strong>pylint plugin false positives</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>The precommit plugin for pylint now ignores messages at the INFO level, which includes locally disabled warnings.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-461">YETUS-461</a></td>
+          <td><em>Minor</em></td>
+          <td><strong>Allow specifying exclusions for whitespace report</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Apache Yetus Precommit users can specify a list of filename regexes to ignore when checking for whitespace errors with the new command line arguments:</p>
+
+<ul>
+  <li><code>--whitespace-eol-ignore-list</code> to skip end-of-line whitespace checks</li>
+  <li><code>--whitespace-tabs-ignore-list</code> to skip checking for tabs</li>
+</ul>
+
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>

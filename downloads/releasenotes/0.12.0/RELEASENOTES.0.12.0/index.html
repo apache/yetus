@@ -1,0 +1,254 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        
+<!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<h1 id="apache-yetus--0120-release-notes">Apache Yetus  0.12.0 Release Notes</h1>
+
+<p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-915">YETUS-915</a></td>
+          <td><em>Critical</em></td>
+          <td><strong>Update GitHub vote emojis for usability by color blind folks</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>When configured to use emoji for plugin votes when posting feedback to GitHub, Yetus now ensures that those emojis have different shapes to designate meaning instead of just color differences.</p>
+
+<p>This change should allow users who have color-blindness to differentiate between meanings while scanning the result column.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-919">YETUS-919</a></td>
+          <td><em>Minor</em></td>
+          <td><strong>Support extra Docker build-args</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Adds a function <code>add_docker_build_arg</code> taking a key or key and value to export to the Docker build via <code>--build-arg</code></p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-936">YETUS-936</a></td>
+          <td><em>Blocker</em></td>
+          <td><strong>test-patch.sh does not do gradle</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Gradle support has been modified to support modern gradle layouts.  As such, this is an incompatible change for gradle.  Bootstrapping gradle is no longer supported; gradlew is expected to be there.  Patches that wish to upgrade gradle are now expected to just be a patch against the gradle components in the repo.</p>
+
+<ul>
+  <li>checkstyle should now work</li>
+  <li>$HOME/.gradle is no longer imported into docker containers to prevent cache corruption</li>
+  <li>a new <plugin>_postcleanup has been added. In the case of gradle, this now shuts down the gradle daemon</plugin></li>
+  <li>two new core routines have been added (escape_html/unescape_html) to cover some basic HTML entity resolution. These are not exhaustive but cover the most common ones seen.</li>
+  <li>GRADLE_ARGS is now GRADLEW_ARGS to match the functionality change.</li>
+</ul>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-943">YETUS-943</a></td>
+          <td><em>Minor</em></td>
+          <td><strong>Test patch fails to extract version information from a JDK11 jvm</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>This patch alters <code>report_jvm_version</code> to extract JVM vendor and version information from Java system properties. It now returns a string that is the concatenation of verdor and runtime versions.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-955">YETUS-955</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Update many of the binaries in Dockerfile</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Many of the versions of tools in the bundled Dockerfile have been upgraded.  Note that the configuration for those binaries may or may not be backward compatible.</p>
+
+<p>Also, the default the 'pylint' binary in the bundled Dockerfile has been switched to pylint3 to reflect that cpython version 2 is no longer supported upstream.  Setting <code>--pylint=pylint2</code> on the test-patch command line will use the older version of pylint, similar to previous releases.</p>
+
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>
