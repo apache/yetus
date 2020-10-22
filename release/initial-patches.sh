@@ -83,7 +83,7 @@ option_parse()
 }
 
 docker_run() {
-  docker run -i \
+  docker run -i --rm \
     -v "${PWD}:/src" \
     -v "${HOME}/.m2:${HOME}/.m2" \
     -u "${USER_ID}" \
