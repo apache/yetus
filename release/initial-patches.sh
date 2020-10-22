@@ -166,7 +166,7 @@ if [[ -n "${NEW_MAIN_VERSION}" ]]; then
   git checkout --force main
   git checkout -b "${JIRAISSUE}-${STARTING_BRANCH}"
   update_version "${OLD_BRANCH_VERSION}" "${NEW_MAIN_VERSION}"
-  git commit -a -m "${JIRAISSUE}. Bump main version to ${NEW_BRANCH_VERSION}"
+  git commit -a -m "${JIRAISSUE}. Bump main version to ${NEW_MAIN_VERSION}"
 
 fi
 
