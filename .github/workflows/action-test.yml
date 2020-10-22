@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ---
-name: Apache Yetus (Action Test)
+name: Action Test
 
 on: [push, pull_request]  # yamllint disable-line rule:truthy
 
@@ -43,7 +43,7 @@ jobs:
           githubtoken: ${{ secrets.GITHUB_TOKEN }}
           pylint: pylint2
           pip: pip2
-          testsfilter: checkstyle,javadoc
+          testsfilter: checkstyle,javadoc,test4tests
       - name: Artifact output
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
