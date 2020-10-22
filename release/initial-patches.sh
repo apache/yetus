@@ -96,6 +96,7 @@ docker_run() {
 cleanup() {
   git checkout --force "${STARTING_BRANCH}"
   git branch -D "${JIRAISSUE}-release"
+  git branch -D "${JIRAISSUE}-release"
   exit 1
 }
 
