@@ -17,6 +17,8 @@
 
 """ Generate releasenotes based upon JIRA """
 
+# pylint: disable=too-many-lines
+
 from __future__ import print_function
 import sys
 from glob import glob
@@ -75,7 +77,7 @@ ASF_LICENSE = '''
 -->
 '''
 
-def buildindex(title, asf_license):
+def indexbuilder(title, asf_license, format_string):
     """Write an index file for later conversion using mvn site"""
     versions = glob("[0-9]*.[0-9]*")
     versions.sort(key=LooseVersion, reverse=True)
@@ -85,16 +87,26 @@ def buildindex(title, asf_license):
         for version in versions:
             indexfile.write("* %s v%s\n" % (title, version))
             for k in ("Changelog", "Release Notes"):
-                indexfile.write("    * [%s](%s/%s.%s.html)\n" %
+                indexfile.write(format_string %
                                 (k, version, k.upper().replace(" ", ""),
                                  version))
+
+
+def buildprettyindex(title, asf_license):
+    """Write an index file for later conversion using middleman"""
+    indexbuilder(title, asf_license, "    * [%s](%s/%s.%s)\n")
+
+
+def buildindex(title, asf_license):
+    """Write an index file for later conversion using mvn site"""
+    indexbuilder(title, asf_license, "    * [%s](%s/%s.%s.html)\n")
 
 
 def buildreadme(title, asf_license):
     """Write an index file for Github using README.md"""
     versions = glob("[0-9]*.[0-9]*")
     versions.sort(key=LooseVersion, reverse=True)
-    with open("README." + EXTENSION, "w") as indexfile:
+    with open("README.md", "w") as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
         for version in versions:
@@ -109,8 +121,6 @@ class GetVersions(object): # pylint: disable=too-few-public-methods
     """ List of version strings """
 
     def __init__(self, versions, projects):
-        versions = versions
-        projects = projects
         self.newversions = []
         versions.sort(key=LooseVersion)
         print("Looking for %s through %s" % (versions[0], versions[-1]))
@@ -600,6 +610,11 @@ def parse_args(): # pylint: disable=too-many-branches
                       type="string",
                       help="projects in JIRA to include in releasenotes",
                       metavar="PROJECT")
+    parser.add_option("--prettyindex",
+                      dest="prettyindex",
+                      action="store_true",
+                      default=False,
+                      help="build an index file with pretty URLs")
     parser.add_option("-r",
                       "--range",
                       dest="range",
@@ -981,6 +996,9 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
     if options.index:
         buildindex(title, options.license)
         buildreadme(title, options.license)
+
+    if options.prettyindex:
+        buildprettyindex(title, options.license)
 
     if haderrors is True:
         sys.exit(1)
