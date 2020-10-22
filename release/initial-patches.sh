@@ -27,6 +27,13 @@ if [[ ! -d precommit ]]; then
   exit 1
 fi
 
+SYSTEM=$(uname -s)
+if [[ "${SYSTEM}" == Darwin ]]; then
+  SEDI=("-i" '')
+else
+  SEDI=("-i")
+fi
+
 #shellcheck source=precommit/src/main/shell/core.d/00-yetuslib.sh
 . precommit/src/main/shell/core.d/00-yetuslib.sh
 
@@ -125,7 +132,7 @@ update_version() {
 
   # *MOST* systems have sed -i these days
   while read -r file; do
-    sed -i "s,${oldversion},${newversion},g" "${file}"
+    sed "${SEDI[@]}" "s,${oldversion},${newversion},g" "${file}"
   done < <( find . -name 'pom.xml')
 }
 
@@ -155,7 +162,7 @@ update_version "${OLD_BRANCH_VERSION}" "${NEW_BRANCH_VERSION}"
 git commit -a -m "${JIRAISSUE}. Stage version ${NEW_BRANCH_VERSION}"
 
 if [[ -n "${NEW_MAIN_VERSION}" ]]; then
-
+  git checkout --force main
   git checkout -b "${JIRAISSUE}-${STARTING_BRANCH}"
   update_version "${OLD_BRANCH_VERSION}" "${NEW_MAIN_VERSION}"
 fi
