@@ -300,12 +300,12 @@ Comments added on a per line basis were only ever shipped with support on GitHub
 With GitHub Checks Annotations being the preferred way on GitHub for CI systems to make individual notes, the API requirements and surrounding support structure for line comments have also changed:</p>
 
 <ul>
-  <li>The unidiff line calculations (compute_unidiff)  has been removed.  This should greatly increase performance for large patches.</li>
-  <li>Relatedly, GITUNIDIFFLINES has been removed from the global variables.</li>
-  <li>(bugsystem)_linecoments and related functions should now expect and pass a column parameter. Log files should be in typical file:line[:column]:text format, where the missing column or 0 or "" will be used for no column/whole file.</li>
-  <li>BUGLINECOMMENTS is no longer wiped when doing a diff vs. patch.</li>
-  <li>(bugsystem)_linecomments will no longer receive comments grouped by file names.  Implementers will need to do their own grouping, if required.</li>
-  <li>A new (bugsystem)_linecomments_end will be called when all line comments have been processed if there is any final work that needs to be done.</li>
+  <li>The unidiff line calculations (<code>compute_unidiff</code>)  has been removed.  This should greatly increase performance for large patches.</li>
+  <li>Relatedly, <code>GITUNIDIFFLINES</code> has been removed from the global variables.</li>
+  <li><code>(bugsystem)_linecoments</code> and related functions should now expect and pass a column parameter. Log files should be in typical file:line[:column]:text format, where the missing column or 0 or "" will be used for no column/whole file.</li>
+  <li><code>BUGLINECOMMENTS</code> is no longer wiped when doing a diff vs. patch.</li>
+  <li><code>(bugsystem)_linecomments</code> will no longer receive comments grouped by file names.  Implementers will need to do their own grouping, if required.</li>
+  <li>A new <code>(bugsystem)_linecomments_end</code> will be called when all line comments have been processed if there is any final work that needs to be done.</li>
 </ul>
 
 <hr />
@@ -343,14 +343,14 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
   </li>
 </ul>
 
-<p>&lt;–! markdown –&gt;<br />
-Users:</p>
+<!-- markdown -->
+<p>Users:</p>
 
 <p>With this change, several plugins that did not generate line comments now do.</p>
 
 <p>Developers:</p>
 
-<p>The `generic_postlog_compare` / `generic_pre_handler` / `generic_post_handler` functions have been deprecated and replaced with `module_postlog_compare` / `module_pre_handler` / `module_post_handler` functions.  A new `root_postlog_compare` has been added that works similarly to `module_postlog_compare` for plug-ins that do not support the MODULE system.  Using `root_postlog_compare` makes writing plug-ins for static linters significantly easier.  See the associated APIs for more information.</p>
+<p>The <code>generic_postlog_compare</code> / <code>generic_pre_handler</code> / <code>generic_post_handler</code> functions have been deprecated and replaced with <code>module_postlog_compare</code> / <code>module_pre_handler</code> / <code>module_post_handler</code> functions.  A new <code>root_postlog_compare</code> has been added that works similarly to <code>module_postlog_compare</code> for plug-ins that do not support the MODULE system.  Using <code>root_postlog_compare</code> makes writing plug-ins for static linters significantly easier.  See the associated APIs for more information.</p>
 
 <hr />
 
