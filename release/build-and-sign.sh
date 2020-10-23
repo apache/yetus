@@ -193,7 +193,11 @@ makearelease()
   fi
 
   if [[ "${SIGN}" = true ]]; then
-    signflags=("-Psign" "-Dgpg.useagent=true")
+    signflags+=("-Psign" "-Dgpg.useagent=true" "-Dgpg.executable=gpg")
+  fi
+
+  if [[ "${ASFRELEASE}" = true ]]; then
+    signflags+=("-Papache-release")
   fi
 
   # let's start at the root
