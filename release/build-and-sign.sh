@@ -179,6 +179,9 @@ option_parse()
       exit 1
     fi
   fi
+
+  mkdir -p "${LOGDIR}"
+
 }
 
 makearelease()
@@ -195,8 +198,6 @@ makearelease()
 
   # let's start at the root
   pushd "${BASEDIR}" >/dev/null || exit 1
-
-  mkdir -p "${LOGDIR}"
 
   big_console_header "Cleaning the Source Tree"
 
@@ -223,7 +224,7 @@ makearelease()
     mvn --batch-mode site site:stage </dev/null
 }
 
-function signartifacts
+signartifacts()
 {
   declare i
   declare ret
@@ -271,6 +272,8 @@ startgpgagent
 
 makearelease
 releaseret=$?
+
+signartifacts
 
 stopgpgagent
 
