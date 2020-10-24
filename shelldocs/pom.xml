@@ -31,20 +31,7 @@
   <artifactId>shelldocs</artifactId>
   <description>API Documentation for Shell Scripts</description>
   <name>Apache Yetus - shelldocs</name>
-  <packaging>jar</packaging>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.python</groupId>
-      <artifactId>jython-slim</artifactId>
-      <version>${jython-slim.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.yetus</groupId>
-      <artifactId>audience-annotations</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <packaging>pom</packaging>
 
   <build>
 
@@ -57,23 +44,6 @@
     <plugins>
 
       <plugin>
-        <groupId>net.sf.mavenjython</groupId>
-        <artifactId>jython-compile-maven-plugin</artifactId>
-        <version>${jython-compile-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>jython</goal>
-            </goals>
-            <configuration>
-              <temporaryBuildDirectory>${project.build.directory}/jython-plugins-tmp/</temporaryBuildDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <dependencies>
           <dependency>
@@ -84,24 +54,6 @@
         </dependencies>
 
         <executions>
-
-          <execution>
-            <id>make-jar-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>org.apache.yetus.shelldocs.ShellDocs</mainClass>
-                </manifest>
-              </archive>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
 
           <execution>
             <id>build</id>
