@@ -64,7 +64,6 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <build-helper-maven-plugin.version>3.2.0</build-helper-maven-plugin.version>
     <checkstyle.version>8.36</checkstyle.version>
     <commons.io.version>2.6</commons.io.version>
     <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
@@ -322,15 +321,14 @@
   </reporting>
 
   <modules>
-    <module>yetus-minimaven-plugin</module>
     <module>yetus-assemblies</module>
     <module>audience-annotations-component</module>
+    <module>yetus-maven-plugin</module>
     <module>precommit</module>
     <module>releasedocmaker</module>
     <module>shelldocs</module>
     <module>asf-site-src</module>
     <module>yetus-dist</module>
-    <module>yetus-maven-plugin</module>
   </modules>
 
 </project>
