@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -17,7 +18,7 @@ load functions_test_helper
 
 @test "yetus_del_array_element (empty array)" {
   yetus_del_array_element ARRAY value
-  [ "${#ARRAY[@]}" = 0 ]
+  [ "${#ARRAY[@]}" -eq 0 ]
 }
 
 @test "yetus_del_array_element (not exist)" {
@@ -30,7 +31,7 @@ load functions_test_helper
 @test "yetus_add_array_element (single exist)" {
   ARRAY=("val1")
   yetus_del_array_element ARRAY val1
-  echo ">${ARRAY[@]}<"
+  echo ">${ARRAY[*]}<"
   [ "${#ARRAY[@]}" -eq 0 ]
 }
 
