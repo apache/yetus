@@ -31,20 +31,7 @@
   <artifactId>releasedocmaker</artifactId>
   <description>JIRA-based Changelog and Release Notes Generator</description>
   <name>Apache Yetus - releasedocmaker</name>
-  <packaging>jar</packaging>
-
-  <dependencies>
-    <dependency>
-      <groupId>org.python</groupId>
-      <artifactId>jython-slim</artifactId>
-      <version>${jython-slim.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.yetus</groupId>
-      <artifactId>audience-annotations</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-  </dependencies>
+  <packaging>pom</packaging>
 
   <build>
     <resources>
@@ -54,10 +41,6 @@
     </resources>
 
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-      </plugin>
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -100,45 +83,6 @@
             </configuration>
           </execution>
 
-          <execution>
-            <id>make-jar-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <archive>
-                <manifest>
-                  <mainClass>org.apache.yetus.releasedocmaker.ReleaseDocMaker</mainClass>
-                </manifest>
-              </archive>
-              <descriptors>
-                <descriptor>src/main/assemblies/jar-with-dependencies.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>net.sf.mavenjython</groupId>
-        <artifactId>jython-compile-maven-plugin</artifactId>
-        <version>${jython-compile-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>jython</goal>
-            </goals>
-            <configuration>
-              <temporaryBuildDirectory>${project.build.directory}/jython-plugins-tmp/</temporaryBuildDirectory>
-              <libraries>
-                <param>--index-url=https://pypi.python.org/simple/</param>
-                <param>python-dateutil</param>
-              </libraries>
-            </configuration>
-          </execution>
         </executions>
       </plugin>
 

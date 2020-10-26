@@ -26,8 +26,6 @@
   * [bin4libs](#bin4libs)
   * [symlink](#symlink)
   * [parallel-mkdirs](#parallel-mkdirs)
-* [releasedocmaker](#releasedocmaker)
-* [shelldocs](#shelldocs)
 
 <!-- /MarkdownTOC -->
 
@@ -87,7 +85,8 @@ The wrapper as written above makes sure that nearly all forms of referencing (re
 
 ### Licenses
 
-The `license` field translates to `licenses/NAME.txt` as the name of the file to load from the CLASSPATH.  The `ASL20` license is the Apache Software License v2.0.
+The `license` field translates to `licenses/NAME.txt` as the name of the file to load from the CLASSPATH.
+The `ASL20` license is the Apache Software License v2.0.
 
 If no license is wanted, then set `license` to the string `none`.
 
@@ -157,80 +156,3 @@ Available configuration options:
 | `goal` | the goal to use to create the directories | `generate-test-resources` |
 
 By default, `forkCount` is inherited from surefire and therefore follows the same rules as described in its [documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html).  Of special note is that 'C' (aka core) values are honored.
-
-# releasedocmaker
-
-This goal runs releasedocmaker without the need to download or build an Apache Yetus tarball.  Instead, yetus-maven-plugin contains all the necessary components in a native maven way!
-
-```xml
-      <plugin>
-        <groupId>org.apache.yetus</groupId>
-        <artifactId>yetus-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>rdm</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>releasedocmaker</goal>
-            </goals>
-            <configuration>
-              <projects>
-                <project>HADOOP</project>
-                <project>HDFS</project>
-                <project>MAPRED</project>
-                <project>YARN</project>
-              </projects>
-            </configuration>
-          </execution>
-        </plugin>
-```
-
-The configuration options generally map 1:1 to the `releasedocmaker` executable's options.  Unless otherwise specified, defaults are set by the actual executable.
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `baseUrl` | --baseurl | |
-| `dirversions` | boolean; same as --dirversions | false |
-| `fileversions` | boolean; same as --fileversions | false |
-| `incompatibleLabel` | --incompatiblelabel | |
-| `index` | boolean; --index | false  |
-| `license` | boolean; --license | false |
-| `lintFilters` | ArrayList; --lint | |
-| `outputDir` | --outputdir | `${project.build.directory}/generated-site/markdown` |
-| `projects` | ArrayList; --projects | `${project.name}` |
-| `projectTitle` | --projecttitle | |
-| `range` | boolean; --range | false |
-| `retries` | integer; --retries | |
-| `skipcredits` | boolean; --skipcredits | false |
-| `sortorder` | --sortorder | |
-| `sorttype` | --sorttype | |
-| `useToday` | --usetoday | false |
-| `versions` | ArrayList; --versions | `${project.version}` |
-
-# shelldocs
-
-Similar to the `releasedocmaker` goal, the `shelldocs` goal runs the Apache Yetus `shelldocs` utility against a given set of input files or directories and generates a single output MultiMarkdown file:
-
-```xml
-      <plugin>
-        <groupId>org.apache.yetus</groupId>
-        <artifactId>yetus-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>shelldocs</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>shelldocs</goal>
-            </goals>
-          </execution>
-        </plugin>
-```
-
-The configuration options generally map 1:1 to the `shelldocs` executable's options.  Unless otherwise specified, defaults are set by the actual executable.
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `lint` | boolean; --lint | false |
-| `output` | --output | `${project.build.directory}/generated-site/markdown/${project.name}.md` |
-| `inputs` | ArrayList; --input ... | *sh files located in`${project.basedir}/src/main/shell` |
-| `skipprnorep` | --skipprnorep | false |
