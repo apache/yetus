@@ -21,6 +21,11 @@ if [[ "${TRAVIS}" == true ]] &&
   # shellcheck disable=SC2034
   ROBOT=true
 
+  # Travis runs some ancient version of docker, so...
+  # shellcheck disable=SC2034
+  DOCKER_BUILDKIT_SETTING=false
+  unset DOCKER_BUILDKIT
+
   # shellcheck disable=SC2034
   if [[ -n "${ARTIFACTS_PATH}" ]]; then
     PATCH_DIR=${ARTIFACTS_PATH%%:*}
