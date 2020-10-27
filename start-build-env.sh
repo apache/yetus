@@ -20,6 +20,10 @@ ROOTDIR=$(cd -P -- "$(dirname -- "${BASH_SOURCE-$0}")" >/dev/null && pwd -P)
 
 YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-apache/yetus}
 
+# shellcheck disable=SC2034
+DOCKER_BUILDKIT=1
+export DOCKER_BUILDKIT
+
 # moving to the path of the Dockerfile reduces the context
 cd "${ROOTDIR}/precommit/src/main/shell/test-patch-docker"
 
