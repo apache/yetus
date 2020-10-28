@@ -39,9 +39,7 @@ None
 |:---------|:------|
 | `--github-api-url=<url>` | REST API URL (for GitHub Enterprise) |
 | `--github-base-url=<url>` | Non-REST API URL (for GitHub Enterprise) |
-| `--github-password=<pw>` | Password or OAuth 2.0 token to use for authentication |
 | `--github-repo=<repo>` | `username/repository` identifier |
-| `--github-user=<user>` | Username to use for authentication |
 | `--github-token=<token>` | Token used to perform read and write operations |
 
 # Docker Notes
