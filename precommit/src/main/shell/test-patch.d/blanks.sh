@@ -174,7 +174,7 @@ function blanks_postcompile
     else
       add_vote_table_v2 -1 blanks \
         "@@BASE@@/blanks-eol.txt" \
-        "${BUILDMODEMSG} has ${count} line(s) that end in blanks. Use git apply --blanks=fix <<patch_file>>. Refer https://git-scm.com/docs/git-apply"
+        "${BUILDMODEMSG} has ${count} line(s) that end in blanks. Use git apply --whitespace=fix <<patch_file>>. Refer https://git-scm.com/docs/git-apply"
     fi
 
     if [[ -n "${BUGLINECOMMENTS}" ]]; then
