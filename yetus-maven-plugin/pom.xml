@@ -61,61 +61,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>${build-helper-maven-plugin.version}</version>
-        <executions>
-          <execution>
-            <id>add-source</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>add-source</goal>
-            </goals>
-            <configuration>
-              <sources>
-                <source>../yetus-minimaven-plugin/src/main/resources</source>
-                <source>../yetus-minimaven-plugin/src/main/java/org/apache/yetus/maven/plugin/fileops</source>
-              </sources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-resource</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>../yetus-minimaven-plugin/src/main/resources</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>create-internal-zip</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <finalName>classes/yetus-bin</finalName>
-              <appendAssemblyId>false</appendAssemblyId>
-              <attach>false</attach>
-              <descriptors>
-                <descriptor>src/main/assemblies/yetus-maven-plugin.xml</descriptor>
-              </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
       <plugin>

@@ -91,7 +91,7 @@
 
       <plugin>
         <groupId>org.apache.yetus</groupId>
-        <artifactId>yetus-minimaven-plugin</artifactId>
+        <artifactId>yetus-maven-plugin</artifactId>
         <version>${project.version}</version>
         <executions>
           <execution>
