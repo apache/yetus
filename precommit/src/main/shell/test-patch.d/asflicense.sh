@@ -18,6 +18,8 @@
 
 add_test_type asflicense
 
+ASFLICENSE_RAT_JAR=/opt/apache-rat/apache-rat.jar
+
 function asflicense_usage
 {
   yetus_add_option "--asflicense-rat-excludes=<file>" "path to file containing exclusion patterns"
@@ -86,7 +88,7 @@ function asflicense_tests
       btfails=false
     ;;
     *)
-      if [[ -z "${ASFLICENSE_RAT_JAR}" ]]; then
+      if [[ ! -f "${ASFLICENSE_RAT_JAR}" ]]; then
         return 0
       fi
 
