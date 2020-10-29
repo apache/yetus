@@ -100,6 +100,18 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y ant \
     && rm -rf /var/lib/apt/lists/*
 
 ####
+# Install Apache Creadur RAT jar
+####
+RUN mkdir -p /opt/apache-rat \
+    && curl -f -s -L -o /tmp/rat.tgz \
+        'https://www.apache.org/dyn/closer.cgi?action=download&filename=/creadur/apache-rat-0.13/apache-rat-0.13-bin.tar.gz' \
+    && shasum -a 512 /tmp/rat.tgz \
+        | awk '$1!="2c1e12eace7b80a9b6373c2f5080fbf63d3fa8d9248f3a17bd05de961cd3ca3c4549817b8b7320a84f0c323194edad0abdb86bdfec3976227a228e2143e14a54" {exit(1)}' \
+    && tar --strip-components 1 -C /opt/apache-rat -xpzf /tmp/rat.tgz \
+    && rm /tmp/rat.tgz \
+    && mv /opt/apache-rat/apache-rat-0.13.jar /opt/apache-rat/apache-rat.jar
+
+####
 # Install GNU automake, GNU make, and related
 ####
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y autoconf automake libtool make \
