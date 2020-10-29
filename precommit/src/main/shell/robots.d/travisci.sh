@@ -21,6 +21,9 @@ if [[ "${TRAVIS}" == true ]] &&
   # shellcheck disable=SC2034
   ROBOT=true
 
+  DOCKER_BUILDKIT=0
+  export DOCKER_BUILDKIT
+
   # shellcheck disable=SC2034
   if [[ -n "${ARTIFACTS_PATH}" ]]; then
     PATCH_DIR=${ARTIFACTS_PATH%%:*}
