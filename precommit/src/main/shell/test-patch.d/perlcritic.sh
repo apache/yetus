@@ -75,7 +75,7 @@ function perlcritic_preapply
   pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
-      ${PERLCRITIC} -1 --verbose 1 "${i}" 2>/dev/null >> "${PATCH_DIR}/branch-perlcritic-result.txt"
+      "${PERLCRITIC}" --verbose 1 --nocolor "${i}" 2>/dev/null >> "${PATCH_DIR}/branch-perlcritic-result.txt"
     fi
   done
   popd >/dev/null || return 1
@@ -117,7 +117,7 @@ function perlcritic_postapply
   pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
-      ${PERLCRITIC} -1 --verbose 1 "${i}" 2>/dev/null >> "${PATCH_DIR}/patch-perlcritic-result.txt"
+      "${PERLCRITIC}" --verbose 1 --nocolor "${i}" 2>/dev/null >> "${PATCH_DIR}/patch-perlcritic-result.txt"
     fi
   done
   popd >/dev/null || return 1
