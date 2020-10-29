@@ -40,6 +40,7 @@ GITHUB_STATUS_RECOVERY_COUNTER=1
 GITHUB_STATUS_RECOVER_TOOL=false
 GITHUB_WRITE_COMMENT=false
 GITHUB_ANNOTATION_LIMIT=50
+GITHUB_STATUS_USE_HTMLREPORT=${GITHUB_STATUS_USE_HTMLREPORT:-true}
 declare -a GITHUB_AUTH
 
 # private globals...
@@ -54,6 +55,7 @@ function github_usage
   yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
   yetus_add_option "--github-write-comment" "Write final report as github comment (default: '${GITHUB_WRITE_COMMENT}')"
   yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
+  yetus_add_option "--github-status-use-htmlreport=<bool>" "Use htmlout for Github Status 'Details' link [default: ${GITHUB_STATUS_USE_HTMLREPORT}]"
 }
 
 function github_parse_args
@@ -89,6 +91,10 @@ function github_parse_args
       --github-use-emoji-vote)
         delete_parameter "${i}"
         GITHUB_USE_EMOJI_VOTE=true
+      ;;
+      --github-status-use-htmlreport=*)
+        delete_parameter "${i}"
+        GITHUB_STATUS_USE_HTMLREPORT=${i#*=}
       ;;
     esac
   done
@@ -184,6 +190,8 @@ function github_brute_force_repo_on_remote
 ## @description initialize github
 function github_initialize
 {
+  declare url
+
   if [[ -n "${GITHUB_TOKEN}" ]]; then
     GITHUB_AUTH=(-H "Authorization: token ${GITHUB_TOKEN}") # pragma: allowlist secret
   fi
@@ -205,6 +213,19 @@ function github_initialize
     popd >/dev/null|| return 1
     if [[ -n "${GITHUB_REPO}" ]]; then
       yetus_error "WARNING: Brute force says ${GITHUB_BASE_URL}/${GITHUB_REPO}"
+    fi
+  fi
+
+  if [[ ${GITHUB_STATUS_USE_HTMLREPORT} == true ]]; then
+    if ! verify_plugin_enabled htmlout; then
+      GITHUB_STATUS_USE_HTMLREPORT=false
+      yetus_error "WARNING: Disabling --github-status-use-htmlreport. htmlout plug-in is not enabled."
+    else
+      url=$(htmlout_reportname)
+      if [[ -z ${url} ]]; then
+        GITHUB_STATUS_USE_HTMLREPORT=false
+        yetus_error "WARNING: Disabling --github-status-use-htmlreport. Artifacts URL does not resolve/report is not relative."
+      fi
     fi
   fi
 
@@ -582,6 +603,7 @@ function github_end_checkrun
   declare tempfile="${PATCH_DIR}/ghcheckrun.$$.${RANDOM}"
   declare output="${PATCH_DIR}/ghcheckrun-final.json"
   declare conclusion
+  declare detailslink
 
   # don't need this under GHA
   if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
@@ -604,10 +626,18 @@ function github_end_checkrun
 
   finishdate=$(date +"%Y-%m-%dT%H:%M:%SZ")
 
+  # link to the html report if possible
+  if [[ ${GITHUB_STATUS_USE_HTMLREPORT} == true ]]; then
+    detailslink=$(htmlout_reportname)
+  else
+    detailslink="${BUILD_URL}${BUILD_URL_CONSOLE}"
+  fi
+
   {
     printf "{"
     echo "\"conclusion\":\"${conclusion}\","
     echo "\"status\": \"completed\","
+    echo "\"details_url\": \"${detailslink}\","
     echo "\"completed_at\": \"${finishdate}\""
     echo "}"
   } > "${tempfile}"
@@ -1054,6 +1084,7 @@ function github_finalreport
   declare ourstring
   declare -i i=0
   declare header
+  declare detailslink
 
   if [[ "${OFFLINE}" == true ]]; then
     return 0
@@ -1081,8 +1112,6 @@ function github_finalreport
   fi
 
   github_end_checkrun "${result}"
-
-  url=$(get_artifact_url)
 
   if [[ "${ROBOTTYPE}" ]]; then
     header="Apache Yetus(${ROBOTTYPE})"
@@ -1112,13 +1141,20 @@ function github_finalreport
       ((i=i+1))
     done
 
+    # link to the html report if possible
+    if [[ ${GITHUB_STATUS_USE_HTMLREPORT} == true ]]; then
+      detailslink=$(htmlout_reportname)
+    else
+      detailslink="${BUILD_URL}${BUILD_URL_CONSOLE}"
+    fi
+
     # did not find any logs, so just give a simple success status
     if [[ ${foundlogs} == false ]]; then
       if [[ ${warnings} == false ]]; then
         # build our REST post
         {
           echo "{\"state\": \"success\", "
-          echo "\"target_url\": \"${BUILD_URL}${BUILD_URL_CONSOLE}\","
+          echo "\"target_url\": \"${detailslink}\","
           echo "\"description\": \"passed\","
           echo "\"context\":\"${header}\"}"
         } > "${tempfile}"
@@ -1126,7 +1162,7 @@ function github_finalreport
         # build our REST post
         {
           echo "{\"state\": \"success\", "
-          echo "\"target_url\": \"${BUILD_URL}${BUILD_URL_CONSOLE}\","
+          echo "\"target_url\": \"${detailslink}\","
           echo "\"description\": \"passed with warnings\","
           echo "\"context\":\"${header}\"}"
         } > "${tempfile}"
@@ -1143,6 +1179,7 @@ function github_finalreport
   # - failure w/log
   # - success w/warning log
 
+  url=$(get_artifact_url)
   i=0
   until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')

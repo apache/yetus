@@ -34,6 +34,8 @@ if [[ "${BUILDKITE}" == true ]] &&
   ROBOTTYPE=buildkite
   # shellcheck disable=SC2034
   BUILD_URL="${BUILDKITE_BUILD_URL}"
+  # shellcheck disable=SC2034
+  GITHUB_STATUS_USE_HTMLREPORT="false"
 
   # shellcheck disable=SC2034
   if [[ "${BUILDKITE_PULL_REQUEST}" == false ]]; then
