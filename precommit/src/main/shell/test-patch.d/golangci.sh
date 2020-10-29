@@ -83,9 +83,11 @@ function golangcilint_exec
     gargs=("cat")
   fi
 
-  args=("--color=never")
+  args+=("--max-issues-per-linter=0")
+  args+=("--max-same-issues=0")
   args+=("--out-format=line-number")
   args+=("--print-issued-lines=false")
+  args+=("--color=never")
 
   if [[ -f "${GOLANGCI_CONFIG}" ]]; then
     args+=("--config" "${GOLANGCI_CONFIG}")
@@ -103,7 +105,7 @@ function golangcilint_exec
       echo "${p}${REPLY}" >> "${PATCH_DIR}/${repostatus}-golangcilint-result.txt"
     done < <("${GOLANGCI_LINT}" run "${args[@]}" ./... 2>&1 \
       | "${gargs[@]}" \
-      | sort -t : -k 1,1 -k 2,2n -k 3,3n)
+      | sort -t : -k 1,1 -k 2,2n -k 3,3n -k 4)
     popd >/dev/null || return 1
   done
   return 0
