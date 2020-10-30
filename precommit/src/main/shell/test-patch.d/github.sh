@@ -54,8 +54,6 @@ function github_parse_args
 {
   declare i
 
-  github_set_github_user
-
   for i in "$@"; do
     case ${i} in
       --github-api-url=*)
