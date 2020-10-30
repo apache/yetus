@@ -52,6 +52,10 @@ function buf_parse_args
       ;;
     esac
   done
+
+  # make sure this is relative and strip any ending /
+  BUF_BASEDIR=$(yetus_abs "${BUF_BASEDIR}")
+  BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BUF_BASEDIR}")
 }
 
 function buf_filefilter
@@ -131,19 +135,17 @@ function bufcompat_executor
     bufargs+=(--timeout "${BUF_TIMEOUT}")
   fi
 
-  if [[ -n "${BUF_BASEDIR}" ]]; then
-    pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
-  else
-    pushd "${BASEDIR}" >/dev/null || return 1
-  fi
+  pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
 
   if [[ "${repostatus}" == "branch" ]]; then
     "${BUF}" image build "${bufargs[@]}" -o "${PATCH_DIR}/buf-image.bin" 2>> "${PATCH_DIR}/${bufStderr}"
   elif [[ -f  "${PATCH_DIR}/buf-image.bin" ]]; then
     "${BUF}" check breaking "${bufargs[@]}" \
       --against-input "${PATCH_DIR}/buf-image.bin" \
+      2>> "${PATCH_DIR}/${bufStderr}" \
+    | "${AWK}" "{print \"${BUF_BASEDIR}/\"\$0}" \
       > "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" \
-      2>> "${PATCH_DIR}/${bufStderr}"
+
   fi
 
   popd >/dev/null || return 1
@@ -259,14 +261,11 @@ function buflint_executor
     bufargs+=(--timeout "${BUF_TIMEOUT}")
   fi
 
-  if [[ -n "${BUF_BASEDIR}" ]]; then
-    pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
-  else
-    pushd "${BASEDIR}" >/dev/null || return 1
-  fi
+  pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
 
-  "${BUF}" check lint  "${bufargs[@]}" 2>> "${PATCH_DIR}/${bufStderr}" | \
-    "${args[@]}" > "${PATCH_DIR}/${repostatus}-buflint-result.txt"
+  "${BUF}" check lint  "${bufargs[@]}" 2>> "${PATCH_DIR}/${bufStderr}" \
+    | "${AWK}" "{print \"${BUF_BASEDIR}/\"\$0}" \
+    | "${args[@]}" > "${PATCH_DIR}/${repostatus}-buflint-result.txt"
 
   popd >/dev/null || return 1
 
