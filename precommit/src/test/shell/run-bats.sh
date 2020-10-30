@@ -15,7 +15,7 @@
 # limitations under the License.
 
 targetdir=../../../target
-mkdir -p ${targetdir}/surefire-reports ${targetdir}/tap
+mkdir -p "${targetdir}/surefire-reports" "${targetdir}/tap"
 
 batsexe=$(command -v bats) 2>/dev/null
 

@@ -39,6 +39,10 @@ function shellcheck_filefilter
     # if it ends in an explicit .sh, then this is shell code.
     add_test shellcheck
     yetus_add_array_element SHELLCHECK_FILTERFILES "${filename}"
+  elif [[ ${filename} =~ \.bats$ ]]; then
+    # if it ends in an explicit .bats, then this is bats code
+    # which modern shellcheck can work with.
+    add_test shellcheck
   elif [[ ${BUILDTOOL} = maven && ${filename} =~ src/main/shell ]]; then
     # if it is maven and in src/main/shell, assume it's shell code
     add_test shellcheck
