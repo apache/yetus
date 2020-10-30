@@ -98,7 +98,7 @@ Pull requests that are made off of a specific branch will switch the test repo t
 ## GitHub Authentication
 
 Some operations depend upon authentication credentials.  The GitHub plug-in
-supports authentication via token or user name/passphrase.  Authentication is
+supports authentication via token.  Authentication is
 required for controlling the API query rate, accessing private repositories,
 reading private pull requests, updating GitHub Statuses (requires
 `repo:status` permissions), writing comments to PRs, and other functionality.
@@ -109,18 +109,6 @@ the appropriate documentation for your particular setup.
 ### GitHub Token
 
 The token is provided via the `--github-token` option.
-
-### GitHub Username/password
-
-    NOTE: GitHub is deprecating this format. It is kept here for backward compatibility
-    until such a time the format is completely removed from modern implementations.
-
-The user name is provided via the `--github-user` option or the GITHUB\_USER environment variable.  The default value for  GITHUB\_USER is the value of `--project` suffixed with QA.  For example,
-`--project=yetus` will set `GITHUB_USER=yetusqa`.
-
-The password is provided via the `--github-password` or GITHUB\_PASSWD environment variable.
-
-Both username and password options must be provided.
 
 # GitLab Specific
 
