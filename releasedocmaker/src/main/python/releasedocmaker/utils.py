@@ -172,7 +172,7 @@ class Outputs(object):
             self.others[key].write(pattern % both)
 
     def write_key_raw(self, key, input_string):
-        """ write everything withotu changes """
+        """ write everything without changes """
         self.base.write(input_string)
         if key in self.others:
             self.others[key].write(input_string)

@@ -117,7 +117,7 @@ if [[ ! -d ${HOME}/.gnupg ]]; then
 fi
 dockerargs+=(-v "${HOME}/.gnupg:/home/${USER_NAME}/.gnupg${V_OPTS:-}")
 
-# git opertions
+# git operations
 if [[ ! -d ${HOME}/.ssh ]]; then
   mkdir "${HOME}/.ssh"
 fi

@@ -852,7 +852,7 @@ function generate_stack
   exit 1
 }
 
-## @description  remove entries from paramater tracker
+## @description  remove entries from parameter tracker
 ## @audience     public
 ## @stability    stable
 ## @replaceable  no

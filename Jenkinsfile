@@ -64,7 +64,7 @@ pipeline {
                 USE_DOCKER_FLAG=${USE_DOCKER_FLAG:-true}
 
                 # clean and make a new directory for our output artifacts, temporary
-                # storage, etc just incase the workspace directory
+                # storage, etc just in case the workspace directory
                 # delete in post is removed
                 if [[ -d "${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}" ]]; then
                   rm -rf "${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}"
