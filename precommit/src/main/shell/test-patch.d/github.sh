@@ -33,8 +33,6 @@ GITHUB_API_URL="https://api.github.com"
 GITHUB_REPO=""
 
 # user settings
-GITHUB_PASSWD="${GITHUB_PASSWD-}"
-GITHUB_USER="${GITHUB_USER-}"
 GITHUB_TOKEN="${GITHUB_TOKEN-}"
 GITHUB_ISSUE=""
 GITHUB_USE_EMOJI_VOTE=false
@@ -43,25 +41,12 @@ declare -a GITHUB_AUTH
 # private globals...
 GITHUB_BRIDGED=false
 
-# Simple function to set a default GitHub user after PROJECT_NAME has been set
-function github_set_github_user
-{
-  if [[ -n "${PROJECT_NAME}" && ! "${PROJECT_NAME}" = unknown ]]; then
-    GITHUB_USER=${GITHUB_USER:-"${PROJECT_NAME}qa"}
-  fi
-}
-
 function github_usage
 {
-  github_set_github_user
-
   yetus_add_option "--github-api-url=<url>" "The URL of the API for github (default: '${GITHUB_API_URL}')"
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
-# Do not extract GITHUB_PASSWD environment variable
-  yetus_add_option "--github-password=<pw>" "Github password (or OAuth token) (default: 'GITHUB_PASSWD' environment variable)"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
-  yetus_add_option "--github-user=<user>" "Github user [default: ${GITHUB_USER}]"
   yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
 }
 
@@ -85,17 +70,9 @@ function github_parse_args
         delete_parameter "${i}"
         GITHUB_REPO=${i#*=}
       ;;
-      --github-password=*)
-        delete_parameter "${i}"
-        GITHUB_PASSWD=${i#*=}
-      ;;
       --github-token=*)
         delete_parameter "${i}"
         GITHUB_TOKEN=${i#*=}
-      ;;
-      --github-user=*)
-        delete_parameter "${i}"
-        GITHUB_USER=${i#*=}
       ;;
       --github-use-emoji-vote)
         delete_parameter "${i}"
@@ -181,9 +158,6 @@ function github_initialize
 
   if [[ -n "${GITHUB_TOKEN}" ]]; then
     GITHUB_AUTH=(-H "Authorization: token ${GITHUB_TOKEN}")
-  elif [[ -n "${GITHUB_USER}"
-     && -n "${GITHUB_PASSWD}" ]]; then
-    GITHUB_AUTH=(-u "${GITHUB_USER}:${GITHUB_PASSWD}")
   fi
 
   # if the default branch hasn't been set yet, ask GitHub
