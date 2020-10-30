@@ -81,6 +81,62 @@ function find_changed_files
   popd >/dev/null || return 1
 }
 
+
+## @description Determine directories with
+## @description changed content. Should be used with
+## @description static linters that don't care about
+## @description the build system.
+## @audience    private
+## @stability   evolving
+## @replaceable no
+## @return      None; sets ${CHANGED_DIRS}
+function find_changed_dirs
+{
+  declare f
+  declare -a newarray
+  declare dir
+
+  CHANGED_DIRS=()
+  for f in "${CHANGED_FILES[@]}"; do
+    dir=$(dirname "./${f}")
+    if [[ "${dir}" = . ]]; then
+      CHANGED_DIRS=('.')
+      continue
+    fi
+    yetus_add_array_element CHANGED_DIRS "${dir}"
+  done
+
+  if [[ "${#CHANGED_DIRS[@]}" -eq 1 ]]; then
+    return
+  fi
+
+  echo "${#CHANGED_DIRS[@]}"
+
+  newarray=()
+
+  for f in "${CHANGED_DIRS[@]}"; do
+    dir=${f%/*}
+    found=false
+    while [[ ${dir} != "." ]] && [[ ${found} = false ]]; do
+      if yetus_array_contains "${dir}" "${newarray[@]}"; then
+        found=true
+        continue
+      fi
+      if yetus_array_contains "${dir}" "${CHANGED_DIRS[@]}"; then
+        found=true
+        continue
+      fi
+      dir=${dir%/*}
+    done
+
+    if [[ "${found}" == false ]]; then
+      newarray+=("${f}")
+    fi
+  done
+
+  CHANGED_DIRS=("${newarray[@]}")
+}
+
 ## @description  Apply the EXCLUDE_PATHS to CHANGED_FILES
 ## @audience     private
 ## @stability    stable
@@ -92,7 +148,6 @@ function exclude_paths_from_changed_files
   declare p
   declare strip
   declare -a a
-
 
   # empty the existing list
   EXCLUDE_PATHS=()
@@ -148,6 +203,8 @@ function exclude_paths_from_changed_files
   done
 
   CHANGED_FILES=("${a[@]}")
+
+  find_changed_dirs
 }
 
 ## @description Check for directories to skip during

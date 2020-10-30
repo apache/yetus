@@ -43,6 +43,23 @@ linkchecker \
 result=$?
 echo "::endgroup::"
 
+echo "::group::codespell releasenotes"
+codespell \
+  --disable-colors \
+  --interactive 0 \
+  --quiet-level 2 \
+  ./asf-site-src/source/downloads/releasenotes \
+| sed -e 's,^./,,g'  \
+  > /tmp/codespell.txt
+
+while read -r; do
+  filename=$(echo "${REPLY}" | cut -f1 -d:)
+  line=$(echo "${REPLY}" | cut -f2 -d:)
+  msg=$(echo "${REPLY}" | cut -f3 -d:)
+  echo "::error file=${filename},line=${line}:: codespell: ${msg}"
+done < /tmp/codespell.txt
+echo "::endgroup::"
+
 #
 # urlname;parentname;base;result;warningstring;infostring;valid;url;line;column;name;dltime;size;checktime;cached;level;modified
 # in-page reference: $1
