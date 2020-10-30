@@ -27,7 +27,7 @@ echo "::endgroup::"
 
 echo "::group::tar"
 tar -C /tmp/website/html --strip-components 1 \
-  -xpf yetus-dist/target/artifacts/apache-yetus-*-SNAPSHOT-site.tar.gz
+  -xpf yetus-dist/target/artifacts/apache-yetus-*-site.tar.gz
 echo "::endgroup::"
 
 echo "::group::start apache httpd"
