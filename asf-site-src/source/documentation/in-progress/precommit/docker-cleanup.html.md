@@ -21,15 +21,25 @@
 
 <!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
 
+* [Description](#description)
 * [Usage](#usage)
+  * [Default Mode](#default-mode)
+  * [Sentinel Mode](#sentinel-mode)
 
 <!-- /MarkdownTOC -->
 
+# Description
+
 `docker-cleanup` is a command to perform precommit's Docker cleanup functionality outside of patch and build testing.
+It is designed to be run as a regularly automated job on CI systems that do not have their own Docker cleanup
+facilities.  It is built from the perspective that nothing on the system is permanent.  It supports many of the same
+options as `test-patch`'s [docker](../docker)-mode. Please see that page for more details.
 
 # Usage
 
-Executing `docker-cleanup` will perform the same Docker image as the `--robot` option.
+## Default Mode
+
+Executing `docker-cleanup` with no additional options will perform the same work as the `--robot` option.
 
 ```bash
 $ docker-cleanup
@@ -44,6 +54,8 @@ Deleted: sha256:1a96c79a0a9ab538c6c7765dc908eca3e689270b778d6ae2add558e89792a7d8
 ...
 
 ```
+
+## Sentinel Mode
 
 `docker-cleanup` also supports the `--sentinel` mode to kill and remove stale running containers:
 
