@@ -53,9 +53,11 @@ function buf_parse_args
     esac
   done
 
-  # make sure this is relative and strip any ending /
-  BUF_BASEDIR=$(yetus_abs "${BUF_BASEDIR}")
-  BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BUF_BASEDIR}")
+  if [[ -n "${BUF_BASEDIR}" ]]; then
+    # make sure this is relative and strip any ending /
+    BUF_BASEDIR=$(yetus_abs "${BUF_BASEDIR}")
+    BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BUF_BASEDIR}")
+  fi
 }
 
 function buf_filefilter
