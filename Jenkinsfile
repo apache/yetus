@@ -104,9 +104,6 @@ pipeline {
                 YETUS_ARGS+=(--jira-password="${JIRA_PASSWORD}")
                 YETUS_ARGS+=(--jira-user="${JIRA_USER}")
 
-                # disable per-line comments
-                YETUS_ARGS+=(--linecomments='')
-
                 # pylint settings
                 YETUS_ARGS+=('--pylint=pylint2')
 
@@ -167,6 +164,31 @@ pipeline {
   post {
     always {
       script {
+
+        // Publish status if it was missed
+        withCredentials([usernamePassword(credentialsId: 'apache-yetus-at-github.com',
+                         passwordVariable: 'GITHUB_TOKEN',
+                         usernameVariable: 'GITHUB_USER')]) {
+            sh '''#!/usr/bin/env bash
+
+                # enable writing back to Github
+                YETUS_ARGS+=(--github-token="${GITHUB_TOKEN}")
+                YETUS_ARGS+=("--patch-dir=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}")
+
+                if [[ "${USE_DEBUG_FLAG}" == true ]]; then
+                  YETUS_ARGS+=("--debug")
+                fi
+
+                # run test-patch from the source tree specified up above
+                TESTPATCHBIN=${WORKSPACE}/src/precommit/src/main/shell/github-status-recovery.sh
+
+                # execute! (we are using bash instead of the
+                # bin in case the perms get messed up)
+                /usr/bin/env bash "${TESTPATCHBIN}" "${YETUS_ARGS[@]}" ${EXTRA_ARGS} || true
+
+                '''
+        }
+
         // Publish JUnit results
         try {
             junit "${env.YETUS_RELATIVE_PATCHDIR}/junit-report.xml"
