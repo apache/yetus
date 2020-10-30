@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+1
+2
+3
+
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -13,25 +16,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-load functions_test_helper
-
-@test "yetus_add_array_element (empty)" {
-  yetus_add_array_element ARRAY value
-  [ "${ARRAY[0]}" = value ]
-}
-
-@test "yetus_add_array_element (exist)" {
-  ARRAY=("val2")
-  yetus_add_array_element ARRAY val1
-  [ "${ARRAY[0]}" = val2 ]
-  [ "${ARRAY[1]}" = val1 ]
-}
-
-@test "yetus_add_array_element (double exist)" {
-  ARRAY=("val2" "val1")
-  yetus_add_array_element ARRAY val3
-  [ "${ARRAY[0]}" = val2 ]
-  [ "${ARRAY[1]}" = val1 ]
-  [ "${ARRAY[2]}" = val3 ]
-}

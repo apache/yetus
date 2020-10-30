@@ -16,22 +16,22 @@
 
 load functions_test_helper
 
-@test "yetus_add_array_element (empty)" {
-  yetus_add_array_element ARRAY value
-  [ "${ARRAY[0]}" = value ]
+@test "yetus_file_to_array (empty)" {
+  run yetus_file_to_array ARRAY "nonexistent"
+  [ "${status}" = 1 ]
 }
 
-@test "yetus_add_array_element (exist)" {
-  ARRAY=("val2")
-  yetus_add_array_element ARRAY val1
-  [ "${ARRAY[0]}" = val2 ]
-  [ "${ARRAY[1]}" = val1 ]
+@test "yetus_file_to_array (basic read)" {
+  run yetus_file_to_array ARRAY "${TESTRESOURCES}/arrayfiletest.txt"
+  [ "${status}" = 0 ]
 }
 
-@test "yetus_add_array_element (double exist)" {
-  ARRAY=("val2" "val1")
-  yetus_add_array_element ARRAY val3
-  [ "${ARRAY[0]}" = val2 ]
-  [ "${ARRAY[1]}" = val1 ]
-  [ "${ARRAY[2]}" = val3 ]
+@test "yetus_file_to_array (contents)" {
+  yetus_file_to_array ARRAY "${TESTRESOURCES}/arrayfiletest.txt"
+  [ "${ARRAY[0]}" = 1 ]
+}
+
+@test "yetus_file_to_array (count)" {
+  yetus_file_to_array ARRAY "${TESTRESOURCES}/arrayfiletest.txt"
+  [ "${#ARRAY[@]}" -eq 3 ]
 }

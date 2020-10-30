@@ -14,40 +14,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-setup() {
-  RELTMP="${BATS_TEST_DIRNAME}/../../../target/test-dir/bats.$$.${RANDOM}"
-  mkdir -p "${RELTMP}"
-  TMP=$(cd -P -- "${RELTMP}" >/dev/null && pwd -P)
-  export TMP
-  TESTBINDIR=$(cd -P -- "$(pwd)" >/dev/null && pwd -P)
+load functions_test_helper
 
-  echo "bindir: ${TESTBINDIR}" 2>&1
-
-  tmpres="${BATS_TEST_DIRNAME}/../resources"
+@test "yetus_array_to_comma (empty)" {
   # shellcheck disable=SC2034
-  TESTRESOURCES=$(cd -P -- "${tmpres}" >/dev/null && pwd -P)
-
-  mkdir -p "${TMP}"
-
-  # shellcheck disable=SC2034
-  QATESTMODE=true
-
-  # shellcheck disable=SC1090
-  . "${BATS_TEST_DIRNAME}/../../main/shell/core.d/00-yetuslib.sh"
-  # shellcheck disable=SC1090
-  . "${BATS_TEST_DIRNAME}/../../main/shell/core.d/01-common.sh"
-  pushd "${TMP}" >/dev/null || return 1
+  ARRAY=()
+  run yetus_array_to_comma ARRAY
+  [ "${output}" = "" ]
 }
 
-teardown() {
-  popd >/dev/null || return 1
-  rm -rf "${TMP}"
+@test "yetus_array_to_comma (one)" {
+  # shellcheck disable=SC2034
+  ARRAY=(one)
+  run yetus_array_to_comma ARRAY
+  [ "${output}" = "one" ]
 }
 
-strstr() {
-  if [ "${1#*$2}" != "${1}" ]; then
-    echo true
-  else
-    echo false
-  fi
+@test "yetus_array_to_comma (two)" {
+  # shellcheck disable=SC2034
+  ARRAY=(one two)
+  run yetus_array_to_comma ARRAY
+  [ "${output}" = "one,two" ]
+}
+
+@test "yetus_array_to_comma (three)" {
+  # shellcheck disable=SC2034
+  ARRAY=(one two three)
+  run yetus_array_to_comma ARRAY
+  [ "${output}" = "one,two,three" ]
 }

@@ -255,7 +255,7 @@ function yetus_array_to_comma
 }
 
 ## @description  Convert a file to an array.
-## @description  Comments on the beginning of the line are stripped.
+## @description  Comments on the beginning of the line and emtpy lines are stripped.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
@@ -280,11 +280,11 @@ function yetus_file_to_array
     # work due to the variable only being present in
     # the subshell.  So MUST force the grep into the
     # subshell...
-    mapfile -t a < <("${GREP:-grep}" -v -e '^#' "${filename}" )
+    mapfile -t a < <("${GREP:-grep}" -v -e '^#' -e '^$' "${filename}" )
   else
     while read -r line; do
       a+=("${line}")
-    done < <("${GREP:-grep}" -v -e '^#' "${filename}")
+    done < <("${GREP:-grep}" -v -e '^#' -e '^$' "${filename}")
   fi
   eval "${var}=(\"\${a[@]}\")"
   return 0
@@ -464,7 +464,11 @@ function yetus_sort_and_unique_array
   fi
 }
 
-## @description  find the deepest entry of a directory array
+## @description  find the deepest entry of a directory array.
+## @description  this is different than yetus_relative_dir because
+## @description  the provided directory array provides where the
+## @description  directory breaks may occur rather than every
+## @description  directory being a potential cut off point.
 ## @description  NOTE: array and filename MUST be absolute paths
 ## @audience     public
 ## @stability    stable

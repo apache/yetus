@@ -16,22 +16,35 @@
 
 load functions_test_helper
 
-@test "yetus_add_array_element (empty)" {
-  yetus_add_array_element ARRAY value
-  [ "${ARRAY[0]}" = value ]
+@test "yetus_sort_and_unique_array (empty)" {
+  yetus_sort_and_unique_array ARRAY
 }
 
-@test "yetus_add_array_element (exist)" {
-  ARRAY=("val2")
-  yetus_add_array_element ARRAY val1
-  [ "${ARRAY[0]}" = val2 ]
-  [ "${ARRAY[1]}" = val1 ]
+@test "yetus_sort_and_unique_array (single value)" {
+  ARRAY=("value")
+  yetus_sort_and_unique_array ARRAY
 }
 
-@test "yetus_add_array_element (double exist)" {
-  ARRAY=("val2" "val1")
-  yetus_add_array_element ARRAY val3
-  [ "${ARRAY[0]}" = val2 ]
-  [ "${ARRAY[1]}" = val1 ]
-  [ "${ARRAY[2]}" = val3 ]
+@test "yetus_sort_and_unique_array (multiple value)" {
+  ARRAY=("b" "c" "a")
+  preifsod=$(echo "${IFS}" | od -c)
+  yetus_sort_and_unique_array ARRAY
+  postifsod=$(echo "${IFS}" | od -c)
+
+  [ "${ARRAY[0]}" = "a" ]
+  [ "${ARRAY[1]}" = "b" ]
+  [ "${ARRAY[2]}" = "c" ]
+  [ "${preifsod}" = "${postifsod}" ]
+}
+
+@test "yetus_sort_and_unique_array (multiple duplicate values)" {
+  ARRAY=("b" "c" "b" "a" "a" "c")
+  preifsod=$(echo "${IFS}" | od -c)
+  yetus_sort_and_unique_array ARRAY
+  postifsod=$(echo "${IFS}" | od -c)
+
+  [ "${ARRAY[0]}" = "a" ]
+  [ "${ARRAY[1]}" = "b" ]
+  [ "${ARRAY[2]}" = "c" ]
+  [ "${preifsod}" = "${postifsod}" ]
 }
