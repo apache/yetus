@@ -197,4 +197,4 @@ By default, test-patch will pass -Ptest-patch to Maven. This will allow you to c
 
 Maven will test eclipse and site if maven is being used as the build tool and appropriate files trigger them.
 
-Maven will trigger add a maven install test when the `maven_add_install` function has been used and the related tests are requierd. Plug-ins that need to run maven before MUST call it as part of their respective initialize functions, otherwise maven may fail unexpectedly.  All Apache Yetus provided plug-ins that require maven will trigger the maven install functionality.
+Maven will trigger add a maven install test when the `maven_add_install` function has been used and the related tests are required. Plug-ins that need to run maven before MUST call it as part of their respective initialize functions, otherwise maven may fail unexpectedly.  All Apache Yetus provided plug-ins that require maven will trigger the maven install functionality.

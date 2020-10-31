@@ -340,7 +340,7 @@ RUN curl -sSL \
 
 ####
 # YETUS CUT HERE
-# Anthing after the above line is ignored by Yetus, so could
+# Anything after the above line is ignored by Yetus, so could
 # include other requirements not needed by your development
 # (but not build) environment
 ###

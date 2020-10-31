@@ -614,7 +614,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 1. Type the tag that you just pushed into the 'tag' box.
 1. Use categories 'Code quality' and 'Continuous integration'
 1. Release Title should reflect the version
-1. Describe this release should be a cut-down version of the anouncement email (drop SHA and direct download links. main page, github actions, and release notes should be mentioned)
+1. Describe this release should be a cut-down version of the announcement email (drop SHA and direct download links. main page, github actions, and release notes should be mentioned)
 1. Mark 'This is a pre-release'
 1. Verify everything looks good.
 1. Publish release

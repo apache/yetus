@@ -42,4 +42,4 @@ The naming of the patch should be in (JIRA).(patch number).patch or, if it needs
 Below are guides meant to give you help accomplishing specific tasks for the project:
 
 * [Maintaining the Yetus Website](website) - walks through how to view the website locally, update various static and generated pages, and render the html for publishing.
-* [Working with Release Candiates](releases) - covers managing the release process, validating proposed release candidates, and publishing project approved artifacts.
+* [Working with Release Candidates](releases) - covers managing the release process, validating proposed release candidates, and publishing project approved artifacts.
