@@ -36,6 +36,8 @@ STARTINGDIR=$(pwd)
 USER_PARAMS=("$@")
 #shellcheck disable=SC2034
 QATESTMODE=false
+#shellcheck disable=SC2034
+ISODATESTART=$(date +"%Y-%m-%dT%H:%M:%SZ")
 
 ## @description import core library routines
 ## @audience private
