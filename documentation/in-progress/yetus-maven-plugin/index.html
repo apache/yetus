@@ -134,8 +134,6 @@
       <li><a href="#parallel-mkdirs">parallel-mkdirs</a></li>
     </ul>
   </li>
-  <li><a href="#releasedocmaker">releasedocmaker</a></li>
-  <li><a href="#shelldocs">shelldocs</a></li>
 </ul>
 
 <!-- /MarkdownTOC -->
@@ -229,7 +227,8 @@
 
 <h3 id="licenses">Licenses</h3>
 
-<p>The <code>license</code> field translates to <code>licenses/NAME.txt</code> as the name of the file to load from the CLASSPATH.  The <code>ASL20</code> license is the Apache Software License v2.0.</p>
+<p>The <code>license</code> field translates to <code>licenses/NAME.txt</code> as the name of the file to load from the CLASSPATH.<br />
+The <code>ASL20</code> license is the Apache Software License v2.0.</p>
 
 <p>If no license is wanted, then set <code>license</code> to the string <code>none</code>.</p>
 
@@ -345,181 +344,6 @@
 </table>
 
 <p>By default, <code>forkCount</code> is inherited from surefire and therefore follows the same rules as described in its <a href="https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html">documentation</a>.  Of special note is that 'C' (aka core) values are honored.</p>
-
-<h1 id="releasedocmaker">releasedocmaker</h1>
-
-<p>This goal runs releasedocmaker without the need to download or build an Apache Yetus tarball.  Instead, yetus-maven-plugin contains all the necessary components in a native maven way!</p>
-
-<div class="highlight"><pre class="highlight xml"><code>      <span class="nt">&lt;plugin&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.yetus<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>yetus-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;executions&gt;</span>
-          <span class="nt">&lt;execution&gt;</span>
-            <span class="nt">&lt;id&gt;</span>rdm<span class="nt">&lt;/id&gt;</span>
-            <span class="nt">&lt;phase&gt;</span>pre-site<span class="nt">&lt;/phase&gt;</span>
-            <span class="nt">&lt;goals&gt;</span>
-              <span class="nt">&lt;goal&gt;</span>releasedocmaker<span class="nt">&lt;/goal&gt;</span>
-            <span class="nt">&lt;/goals&gt;</span>
-            <span class="nt">&lt;configuration&gt;</span>
-              <span class="nt">&lt;projects&gt;</span>
-                <span class="nt">&lt;project&gt;</span>HADOOP<span class="nt">&lt;/project&gt;</span>
-                <span class="nt">&lt;project&gt;</span>HDFS<span class="nt">&lt;/project&gt;</span>
-                <span class="nt">&lt;project&gt;</span>MAPRED<span class="nt">&lt;/project&gt;</span>
-                <span class="nt">&lt;project&gt;</span>YARN<span class="nt">&lt;/project&gt;</span>
-              <span class="nt">&lt;/projects&gt;</span>
-            <span class="nt">&lt;/configuration&gt;</span>
-          <span class="nt">&lt;/execution&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-</code></pre></div>
-<p>The configuration options generally map 1:1 to the <code>releasedocmaker</code> executable's options.  Unless otherwise specified, defaults are set by the actual executable.</p>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th>Option</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>baseUrl</code></td>
-      <td>–baseurl</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>dirversions</code></td>
-      <td>boolean; same as –dirversions</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>fileversions</code></td>
-      <td>boolean; same as –fileversions</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>incompatibleLabel</code></td>
-      <td>–incompatiblelabel</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>index</code></td>
-      <td>boolean; –index</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>license</code></td>
-      <td>boolean; –license</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>lintFilters</code></td>
-      <td>ArrayList; –lint</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>outputDir</code></td>
-      <td>–outputdir</td>
-      <td><code>${project.build.directory}/generated-site/markdown</code></td>
-    </tr>
-    <tr>
-      <td><code>projects</code></td>
-      <td>ArrayList; –projects</td>
-      <td><code>${project.name}</code></td>
-    </tr>
-    <tr>
-      <td><code>projectTitle</code></td>
-      <td>–projecttitle</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>range</code></td>
-      <td>boolean; –range</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>retries</code></td>
-      <td>integer; –retries</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>skipcredits</code></td>
-      <td>boolean; –skipcredits</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>sortorder</code></td>
-      <td>–sortorder</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>sorttype</code></td>
-      <td>–sorttype</td>
-      <td> </td>
-    </tr>
-    <tr>
-      <td><code>useToday</code></td>
-      <td>–usetoday</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>versions</code></td>
-      <td>ArrayList; –versions</td>
-      <td><code>${project.version}</code></td>
-    </tr>
-  </tbody>
-</table>
-
-<h1 id="shelldocs">shelldocs</h1>
-
-<p>Similar to the <code>releasedocmaker</code> goal, the <code>shelldocs</code> goal runs the Apache Yetus <code>shelldocs</code> utility against a given set of input files or directories and generates a single output MultiMarkdown file:</p>
-
-<div class="highlight"><pre class="highlight xml"><code>      <span class="nt">&lt;plugin&gt;</span>
-        <span class="nt">&lt;groupId&gt;</span>org.apache.yetus<span class="nt">&lt;/groupId&gt;</span>
-        <span class="nt">&lt;artifactId&gt;</span>yetus-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-        <span class="nt">&lt;executions&gt;</span>
-          <span class="nt">&lt;execution&gt;</span>
-            <span class="nt">&lt;id&gt;</span>shelldocs<span class="nt">&lt;/id&gt;</span>
-            <span class="nt">&lt;phase&gt;</span>pre-site<span class="nt">&lt;/phase&gt;</span>
-            <span class="nt">&lt;goals&gt;</span>
-              <span class="nt">&lt;goal&gt;</span>shelldocs<span class="nt">&lt;/goal&gt;</span>
-            <span class="nt">&lt;/goals&gt;</span>
-          <span class="nt">&lt;/execution&gt;</span>
-        <span class="nt">&lt;/plugin&gt;</span>
-</code></pre></div>
-<p>The configuration options generally map 1:1 to the <code>shelldocs</code> executable's options.  Unless otherwise specified, defaults are set by the actual executable.</p>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th>Option</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>lint</code></td>
-      <td>boolean; –lint</td>
-      <td>false</td>
-    </tr>
-    <tr>
-      <td><code>output</code></td>
-      <td>–output</td>
-      <td><code>${project.build.directory}/generated-site/markdown/${project.name}.md</code></td>
-    </tr>
-    <tr>
-      <td><code>inputs</code></td>
-      <td>ArrayList; –input …</td>
-      <td>*sh files located in<code>${project.basedir}/src/main/shell</code></td>
-    </tr>
-    <tr>
-      <td><code>skipprnorep</code></td>
-      <td>–skipprnorep</td>
-      <td>false</td>
-    </tr>
-  </tbody>
-</table>
 
     </div>
       

@@ -131,7 +131,9 @@
 
 <h1 id="description">Description</h1>
 
-<p>Runs the <a href="http://creadur.apache.org">Apache Creadur</a> project's <a href="http://creadur.apache.org/rat/">Rat</a> code to verify software licensing.  Currently, <code>ant</code>, <code>gradle</code>, and <code>maven</code> have built-in support. For other build tools, the rat jar will need to be provided.</p>
+<p>Runs the <a href="http://creadur.apache.org">Apache Creadur</a> project's <a href="http://creadur.apache.org/rat/">Rat</a> code to verify software licensing.<br />
+Currently, <code>ant</code>, <code>gradle</code>, and <code>maven</code> have built-in support.  The Apache Yetus container image also provides the jar file in /opt/apache-rat.<br />
+For other build tools/scenarios, the rat jar will need to be provided.</p>
 
 <h1 id="environment-variables">Environment Variables</h1>
 
@@ -152,8 +154,8 @@
       <td style="text-align: left">When running rat outside of a build tool, specify the location of the exclusion file</td>
     </tr>
     <tr>
-      <td style="text-align: left"><code>--asflicense-rat-jar=&lt;path</code></td>
-      <td style="text-align: left">When running rat outside of a build tool, specify the location of the Java jar file to execute</td>
+      <td style="text-align: left"><code>--asflicense-rat-jar=&lt;path&gt;</code></td>
+      <td style="text-align: left">When running rat outside of a build tool, specify the location of the Java jar file to execute. Defaults to /opt/apache-rat/apache-rat.jar</td>
     </tr>
   </tbody>
 </table>

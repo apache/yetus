@@ -1649,7 +1649,7 @@
   <li>Description</li>
 </ul>
 
-<p>find the deepest entry of a directory array NOTE: array and filename MUST be absolute paths</p>
+<p>find the deepest entry of a directory array. this is different than yetus_relative_dir because the provided directory array provides where the directory breaks may occur rather than every directory being a potential cut off point. NOTE: array and filename MUST be absolute paths</p>
 
 <ul>
   <li>Returns</li>
@@ -2167,7 +2167,7 @@
   <li>Description</li>
 </ul>
 
-<p>Convert a file to an array. Comments on the beginning of the line are stripped.</p>
+<p>Convert a file to an array. Comments on the beginning of the line and emtpy lines are stripped.</p>
 
 <ul>
   <li>Returns</li>
