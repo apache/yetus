@@ -305,7 +305,7 @@ class Jira(object):
         return self.incompat
 
     def get_important(self):
-        """ get importat flag """
+        """ get important flag """
         if self.important is None:
             field = self.parent.field_id_map['Flags']
             self.important = False

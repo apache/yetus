@@ -147,7 +147,7 @@ function github_breakup_url
   fi
 }
 
-## @description initalize github
+## @description initialize github
 function github_initialize
 {
   if [[ -z "${GITHUB_REPO}" ]]; then
@@ -733,7 +733,7 @@ function github_finalreport
 
   # Customize the message based upon type of passing:
   # - if there were no warnings, then just put a single message
-  # - if there were warningss, but no logs, then just mention warnings
+  # - if there were warnings, but no logs, then just mention warnings
   # - if there were warnings and logs, handle in the next section
   if [[ "${result}" == 0 ]]; then
     i=0
@@ -782,7 +782,7 @@ function github_finalreport
   # give a separate status for each:
   # - failure
   # - failure w/log
-  # - successs w/warning log
+  # - success w/warning log
 
   i=0
   until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do

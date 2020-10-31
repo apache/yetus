@@ -23,8 +23,8 @@ The [Yetus Precommit build, patch, and CI suite](precommit) allows projects to c
 
 # Yetus Release Doc Maker
 
-The Release Documentation Maker allows projects to generate nicely formated Markdown Changelogs and Release Notes based upon JIRA. You can view that
-documenation [here](releasedocmaker). See also the [yetus-maven-plugin](#yetus-maven-plugin) for Apache Maven-specific information.
+The Release Documentation Maker allows projects to generate nicely formatted Markdown Changelogs and Release Notes based upon JIRA. You can view that
+documentation [here](releasedocmaker). See also the [yetus-maven-plugin](#yetus-maven-plugin) for Apache Maven-specific information.
 
 # Yetus Shelldocs
 

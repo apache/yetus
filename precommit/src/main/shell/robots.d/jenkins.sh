@@ -32,7 +32,7 @@ if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]] &&
   USER_PARAMS+=("--empty-patch")
 
   # if we are running in an Jenkins docker container
-  # spawed by using agent, then there is a good chance
+  # spawned by using agent, then there is a good chance
   # that the user running the test is in a bad state:
   # no password entry, no home directory, etc.
   if [[ "${HOME}" == / ]]; then

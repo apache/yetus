@@ -29,7 +29,7 @@
 
 # Usage
 
-Executing `docker-cleanup` will peform the same Docker image as the `--robot` option.
+Executing `docker-cleanup` will perform the same Docker image as the `--robot` option.
 
 ```bash
 $ docker-cleanup

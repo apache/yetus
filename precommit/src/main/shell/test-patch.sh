@@ -1294,7 +1294,7 @@ function git_checkout
 }
 
 ## @description  Confirm the given branch is a git reference
-## @descriptoin  or a valid gitXYZ commit hash
+## @description  or a valid gitXYZ commit hash
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -2394,7 +2394,7 @@ function runtests
 
 ## @description  Calculate the differences between the specified files
 ## @description  using just the column+ messages (third+ column in a
-## @descriptoin  colon delimated flie) and output it to stdout.
+## @description  colon delimated file) and output it to stdout.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
@@ -2439,7 +2439,7 @@ function column_calcdiffs
 
 ## @description  Calculate the differences between the specified files
 ## @description  using just the error messages (last column in a
-## @descriptoin  colon delimated flie) and output it to stdout.
+## @description  colon delimated file) and output it to stdout.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no
@@ -2516,7 +2516,7 @@ function calcdiffs
   fi
 }
 
-## @description generate a standarized calcdiff status message
+## @description generate a standardized calcdiff status message
 ## @audience    public
 ## @stability   evolving
 ## @replaceable no

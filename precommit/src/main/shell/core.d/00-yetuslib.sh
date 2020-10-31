@@ -255,7 +255,7 @@ function yetus_array_to_comma
 }
 
 ## @description  Convert a file to an array.
-## @description  Comments on the beginning of the line and emtpy lines are stripped.
+## @description  Comments on the beginning of the line and empty lines are stripped.
 ## @audience     public
 ## @stability    evolving
 ## @replaceable  no

@@ -306,7 +306,7 @@ function dockercmd
   "${DOCKERCMD}" "${subcmd}" "$@"
 }
 
-## @description  Convet docker's time format to ctime
+## @description  Convert docker's time format to ctime
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
@@ -777,7 +777,7 @@ function docker_run_image
     --tag "${patchimagename}" \
     "${randir}" >/dev/null
   retval=$?
-  popd >/dev/null || retun 1
+  popd >/dev/null || return 1
 
   rm -rf "${randir}"
 

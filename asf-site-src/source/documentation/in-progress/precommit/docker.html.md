@@ -76,7 +76,7 @@ Additionally, if bash v4 and Linux is in use, a separate process is launched to 
 
 # Privileged Mode
 
-In some cases, the work being preformed inside the Docker container requires extra permissions.  Using the `--docker-privd` option enables Docker's extended privileges to the container.
+In some cases, the work being performed inside the Docker container requires extra permissions.  Using the `--docker-privd` option enables Docker's extended privileges to the container.
 
 # Docker in Docker
 
