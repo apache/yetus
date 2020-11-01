@@ -41,7 +41,7 @@ Some projects have complex shell functions that act as APIs. `shelldocs` provide
 
 # Requirements
 
-* Python 2.7
+* Python 3.8
 
 # Function Annotations
 

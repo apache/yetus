@@ -22,8 +22,7 @@ PRECOMMITDIR=precommit/src/main/shell
   --mvn-custom-repos \
   --mvn-custom-repos-dir=/tmp/yetus-m2 \
   --patch-dir=/tmp/yetus-out \
-  --tests-filter=checkstyle,javadoc,rubocop,test4tests \
+  --tests-filter=checkstyle,test4tests \
   --docker \
-  --pylint=pylint2 \
   --dockerfile="${PRECOMMITDIR}/test-patch-docker/Dockerfile" \
   --docker-cache-from=apache/yetus-base:main,ubuntu:focal

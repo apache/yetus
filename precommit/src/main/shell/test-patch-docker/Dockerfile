@@ -324,40 +324,6 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         yamllint==1.24.2 \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3
-
-######
-# Install python, pylint2, and yamllint
-######
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
-        python2 \
-        python-backports.functools-lru-cache \
-        python-bcrypt \
-        python-cffi \
-        python-cryptography \
-        python-dateutil \
-        python-dev \
-        python-enum34 \
-        python-pkg-resources \
-        python-setuptools \
-        python-singledispatch \
-        python-six \
-        python-yaml \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
-    && python2 /tmp/get-pip.py \
-    && rm /tmp/get-pip.py /usr/local/bin/pip \
-    && pip2 install -v \
-        astroid==1.6.5 \
-        configparser==4.0.2 \
-        isort==4.3.21 \
-        pylint==1.9.2 \
-    && rm -rf /root/.cache \
-    && mv /usr/local/bin/pylint /usr/local/bin/pylint2
-
-#####
-# all of the world's python2 code stopped working, right?
-#####
 RUN ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint
 
 ####

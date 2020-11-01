@@ -28,8 +28,7 @@ yetus_task:
              --java-home=/usr/lib/jvm/java-8-openjdk-amd64
              --junit-report-xml=/tmp/yetus-out/junit.xml
              --plugins=all
-             --pylint=pylint2
-             --tests-filter=checkstyle,javadoc,rubocop,test4tests
+             --tests-filter=checkstyle,test4tests
   always:
     junit_artifacts:
       path: "yetus-out/junit.xml"

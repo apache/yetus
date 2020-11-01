@@ -37,7 +37,7 @@ by reading [Middleman's excellent documentation](https://middlemanapp.com/basics
 
     NOTE: You MUST have run `mvn install` at least once prior to running `mvn site`.
 
-The following steps assume you have a working ruby 2.3+ environment setup:
+The following steps assume you have a working ruby 2.7+ environment setup:
 
 ```bash
 $ sudo gem install bundler
@@ -45,7 +45,7 @@ $ cd asf-site-src
 $ bundle install
 ```
 
-and a working Python 2.7 environment for [releasedocmaker](/documentation/in-progress/releasedocmaker/).
+and a working Python 3.8 environment for [releasedocmaker](/documentation/in-progress/releasedocmaker/).
 
 ## Make changes in asf-site-src/source
 

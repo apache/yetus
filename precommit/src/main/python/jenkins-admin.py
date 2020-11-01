@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-#pylint: disable=invalid-name
+#!/usr/bin/env python3
+# pylint: disable=invalid-name
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -18,48 +18,37 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
 """ Process patch file attachments from JIRA using a query """
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 from tempfile import NamedTemporaryFile
 from xml.etree import ElementTree
-import base64
-import httplib
 import os
 import re
 import sys
-import urllib2
+import requests
+
 
 def http_get(resource, ignore_error=False, username=None, password=None):
     """ get the contents of a URL """
-    request = urllib2.Request(resource)
-    if username and password:
-        base64string = base64.b64encode('%s:%s' % (username, password))
-        request.add_header("Authorization", "Basic %s" % base64string)
+
     try:
-        response = urllib2.urlopen(request)
-    except urllib2.HTTPError, http_err:
-        code = http_err.code
-        print '%s returns HTTP error %d: %s' \
-              % (resource, code, http_err.reason)
+        if username and password:
+            response = requests.get(resource, auth=(username, password))
+        else:
+            response = requests.get(resource)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as http_err:
+        errstr = str(http_err)
+        print(
+            f'%{resource} returns HTTP error %{response.status_code}: %{errstr}\n'
+        )
         if ignore_error:
             return ''
-        else:
-            print 'Aborting.'
-            sys.exit(1)
-    except urllib2.URLError, url_err:
-        print 'Error contacting %s: %s' % (resource, url_err.reason)
-        if ignore_error:
-            return ''
-        else:
-            raise url_err
-    except httplib.BadStatusLine, err:
-        if ignore_error:
-            return ''
-        else:
-            raise err
-    return response.read()
+        print('Aborting.')
+        sys.exit(1)
+    return response.text
+
 
 def parse_jira_data(filename):
     """ returns a map of (project, issue) => attachment id """
@@ -88,9 +77,10 @@ def parse_jira_data(filename):
             result[jiraissue] = attachmentids[-1]
     return result
 
-def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-locals
+
+def main():  #pylint: disable=too-many-branches, too-many-statements, too-many-locals
     """ main program """
-    parser = OptionParser(prog='jenkins-admin')
+    parser = ArgumentParser(prog='jenkins-admin')
     if os.getenv('JENKINS_URL'):
         parser.set_defaults(jenkinsurl=os.getenv('JENKINS_URL'))
     if os.getenv('JOB_NAME'):
@@ -99,40 +89,61 @@ def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-lo
         parser.set_defaults(jenkinsJobName='PreCommit-Admin')
 
     parser.set_defaults(jenkinsJobTemplate='PreCommit-{project}')
-    parser.add_option('--initialize', action='store_true',
-                      dest='jenkinsInit',
-                      help='Start a new patch_tested.txt file')
-    parser.add_option('--jenkins-jobname', type='string',
-                      dest='jenkinsJobName',
-                      help='PreCommit-Admin JobName', metavar='JOB_NAME')
-    parser.add_option('--jenkins-project-template', type='string',
-                      dest='jenkinsJobTemplate',
-                      help='Template for project jobs',
-                      metavar='TEMPLATE')
-    parser.add_option('--jenkins-token', type='string',
-                      dest='jenkinsToken', help='Jenkins Token',
-                      metavar='TOKEN')
-    parser.add_option('--jenkins-url', type='string', dest='jenkinsurl'
-                      , help='Jenkins base URL', metavar='URL')
-    parser.add_option(
+    parser.add_argument('--initialize',
+                        action='store_true',
+                        dest='jenkinsInit',
+                        help='Start a new patch_tested.txt file')
+    parser.add_argument('--jenkins-jobname',
+                        type=str,
+                        dest='jenkinsJobName',
+                        help='PreCommit-Admin JobName',
+                        metavar='JOB_NAME')
+    parser.add_argument('--jenkins-project-template',
+                        type=str,
+                        dest='jenkinsJobTemplate',
+                        help='Template for project jobs',
+                        metavar='TEMPLATE')
+    parser.add_argument('--jenkins-token',
+                        type=str,
+                        dest='jenkinsToken',
+                        help='Jenkins Token',
+                        metavar='TOKEN')
+    parser.add_argument('--jenkins-url',
+                        type=str,
+                        dest='jenkinsurl',
+                        help='Jenkins base URL',
+                        metavar='URL')
+    parser.add_argument(
         '--jenkins-url-override',
-        type='string',
+        type=str,
         dest='jenkinsurloverrides',
         action='append',
         help='Project specific Jenkins base URL',
         metavar='PROJECT=URL',
-        )
-    parser.add_option('--jira-filter', type='string', dest='jiraFilter',
-                      help='JIRA filter URL', metavar='URL')
-    parser.add_option('--jira-user', type='string', dest='jiraUser',
-                      help='JIRA username')
-    parser.add_option('--jira-password', type='string', dest='jiraPassword',
-                      help='JIRA password')
-    parser.add_option('--live', dest='live', action='store_true',
-                      help='Submit Job to jenkins')
-    parser.add_option('--max-history', dest='history', type='int',
-                      help='Maximum history to store', default=5000)
-    parser.add_option(
+    )
+    parser.add_argument('--jira-filter',
+                        type=str,
+                        dest='jiraFilter',
+                        help='JIRA filter URL',
+                        metavar='URL')
+    parser.add_argument('--jira-user',
+                        type=str,
+                        dest='jiraUser',
+                        help='JIRA username')
+    parser.add_argument('--jira-password',
+                        type=str,
+                        dest='jiraPassword',
+                        help='JIRA password')
+    parser.add_argument('--live',
+                        dest='live',
+                        action='store_true',
+                        help='Submit Job to jenkins')
+    parser.add_argument('--max-history',
+                        dest='history',
+                        type=int,
+                        help='Maximum history to store',
+                        default=5000)
+    parser.add_argument(
         '-V',
         '--version',
         dest='release_version',
@@ -140,14 +151,13 @@ def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-lo
         default=False,
         help="display version information for jenkins-admin and exit.")
 
-    (options, args) = parser.parse_args() #pylint: disable=unused-variable
+    options = parser.parse_args()
 
     # Handle the version string right away and exit
     if options.release_version:
-        with open(
-            os.path.join(
-                os.path.dirname(__file__), "../../VERSION"), 'r') as ver_file:
-            print ver_file.read()
+        with open(os.path.join(os.path.dirname(__file__), "../../VERSION"),
+                  'r') as ver_file:
+            print(ver_file.read())
         sys.exit(0)
 
     token_frag = ''
@@ -158,36 +168,39 @@ def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-lo
     if not options.jiraFilter:
         parser.error('ERROR: --jira-filter is a required argument.')
     if not options.jenkinsurl:
-        parser.error('ERROR: --jenkins-url or the JENKINS_URL environment variable is required.'
-                    )
+        parser.error(
+            'ERROR: --jenkins-url or the JENKINS_URL environment variable is required.'
+        )
     if options.history < 0:
-        parser.error('ERROR: --max-history must be 0 or a positive integer.'
-                    )
+        parser.error('ERROR: --max-history must be 0 or a positive integer.')
     jenkinsurloverrides = {}
     if options.jenkinsurloverrides:
         for override in options.jenkinsurloverrides:
             if '=' not in override:
-                parser.error('Invalid Jenkins Url Override: '
-                             + override)
+                parser.error('Invalid Jenkins Url Override: ' + override)
             (project, url) = override.split('=', 1)
             jenkinsurloverrides[project.upper()] = url
     tempfile = NamedTemporaryFile(delete=False)
     try:
         jobloghistory = None
         if not options.jenkinsInit:
-            jobloghistory = http_get(options.jenkinsurl
-                                     + '/job/%s/lastSuccessfulBuild/artifact/patch_tested.txt'
-                                     % options.jenkinsJobName, True)
+            jobloghistory = http_get(
+                options.jenkinsurl +
+                '/job/%s/lastSuccessfulBuild/artifact/patch_tested.txt' %
+                options.jenkinsJobName, True)
 
             # if we don't have a successful build available try the last build
 
             if not jobloghistory:
-                jobloghistory = http_get(options.jenkinsurl
-                                         + '/job/%s/lastCompletedBuild/artifact/patch_tested.txt'
-                                         % options.jenkinsJobName)
+                jobloghistory = http_get(
+                    options.jenkinsurl +
+                    '/job/%s/lastCompletedBuild/artifact/patch_tested.txt' %
+                    options.jenkinsJobName)
             jobloghistory = jobloghistory.strip().split('\n')
             if 'TESTED ISSUES' not in jobloghistory[0]:
-                print 'Downloaded patch_tested.txt control file may be corrupted. Failing.'
+                print(
+                    'Downloaded patch_tested.txt control file may be corrupted. Failing.'
+                )
                 sys.exit(1)
 
         # we are either going to write a new one or rewrite the old one
@@ -204,12 +217,13 @@ def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-lo
         else:
             joblog.write('TESTED ISSUES\n')
         joblog.flush()
-        rssdata = http_get(options.jiraFilter, False, options.jiraUser, options.jiraPassword)
-        tempfile.write(rssdata)
+        rssdata = http_get(options.jiraFilter, False, options.jiraUser,
+                           options.jiraPassword)
+        tempfile.write(rssdata.encode('utf-8'))
         tempfile.flush()
-        for (key, attachment) in parse_jira_data(tempfile.name).items():
+        for (key, attachment) in list(parse_jira_data(tempfile.name).items()):
             (project, issue) = key
-            if jenkinsurloverrides.has_key(project):
+            if jenkinsurloverrides.get(project):
                 url = jenkinsurloverrides[project]
             else:
                 url = options.jenkinsurl
@@ -223,28 +237,29 @@ def main(): #pylint: disable=too-many-branches, too-many-statements, too-many-lo
                 'project': project,
                 'issue': issue,
                 'attachment': attachment,
-                }
+            }
             jenkinsurl = jenkinsurltemplate.format(**url_args)
 
             # submit job
 
             jobname = '%s-%s,%s' % (project, issue, attachment)
             if not jobloghistory or jobname not in jobloghistory:
-                print jobname + ' has not been processed, submitting'
+                print(jobname + ' has not been processed, submitting')
                 joblog.write(jobname + '\n')
                 joblog.flush()
                 if options.live:
                     http_get(jenkinsurl, True)
                 else:
-                    print 'GET ' + jenkinsurl
+                    print('GET ' + jenkinsurl)
             else:
-                print jobname + ' has been processed, ignoring'
+                print(jobname + ' has been processed, ignoring')
         joblog.close()
     finally:
         if options.live:
             os.remove(tempfile.name)
         else:
-            print 'JIRA Data is located: ' + tempfile.name
+            print('JIRA Data is located: ' + tempfile.name)
+
 
 if __name__ == '__main__':
     main()
