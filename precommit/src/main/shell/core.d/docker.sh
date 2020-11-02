@@ -16,6 +16,8 @@
 
 DOCKERMODE=false
 DOCKERCMD=$(command -v docker 2>/dev/null)
+DOCKER_BUILDKIT_SETTING=${DOCKER_BUILDKIT_SETTING:-true}
+unset DOCKER_BUILDKIT
 DOCKER_ID=${RANDOM}
 DOCKER_DESTRUCTIVE=true
 DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
@@ -62,6 +64,7 @@ function docker_usage
     yetus_add_option "--docker" "Spawn a docker container"
   fi
   yetus_add_option "--dockercmd=<file>" "Command to use as docker executable (default: '${DOCKERCMD}')"
+  yetus_add_option "--docker-buildkit=<bool>" "Set the Docker BuildKit availability (default: ${DOCKER_BUILDKIT_SETTING})'"
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
     yetus_add_option "--docker-bash-debug=<bool>" "Enable bash -x mode running in a container (default: ${YETUS_DOCKER_BASH_DEBUG})"
     yetus_add_option "--docker-cache-from=<image>" "Comma delimited images to use as a cache when building"
@@ -98,6 +101,10 @@ function docker_parse_args
         delete_parameter "${i}"
         YETUS_DOCKER_BASH_DEBUG=${i#*=}
         add_docker_env YETUS_DOCKER_BASH_DEBUG
+      ;;
+      --docker-buildkit=*)
+        delete_parameter "${i}"
+        DOCKER_BUILDKIT_SETTING=${i#*=}
       ;;
       --docker-cache-from=*)
         delete_parameter "${i}"
@@ -638,6 +645,10 @@ function docker_run_image
 
   big_console_header "Docker Image Creation"
   start_clock
+
+  if [[ "${DOCKER_BUILDKIT_SETTING}" == true ]]; then
+    export DOCKER_BUILDKIT=1
+  fi
 
   if [[ -n "${DOCKER_PLATFORM}" ]]; then
     dockplat=('--platform' "${DOCKER_PLATFORM}")

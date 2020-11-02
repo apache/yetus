@@ -16,6 +16,10 @@
 
 GIT_URL=$(git config --get remote.origin.url)
 
+# shellcheck disable=SC2034
+DOCKER_BUILDKIT=1
+export DOCKER_BUILDKIT
+
 # Build the -base image
 docker build \
   --label "git-commit-sha=${SOURCE_COMMIT}" \
