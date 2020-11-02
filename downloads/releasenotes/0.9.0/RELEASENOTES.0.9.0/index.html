@@ -203,7 +203,7 @@
   <li><code>--git-shallow</code> may be used to pre-warn that the local checkout is shallow/other branches are not available.</li>
   <li><code>--git-offline</code> may be used to pre-warn that remote repositories are not available/pulls will fail.</li>
   <li><code>--offline</code> sets <code>--git-offline</code> as well.</li>
-  <li>As a result of that work, git repositories that require authentication, are non-HTTP-based, and various other configurations should be much better understood and hanlded much more appropriately.</li>
+  <li>As a result of that work, git repositories that require authentication, are non-HTTP-based, and various other configurations should be much better understood and handled much more appropriately.</li>
   <li>precommit will now attempt to guess what build tool a repository may be using.  This may be overridden by specifying the build tool with <code>--build-tool</code> set to the appropriate plugin, including <code>nobuild</code> to disable build tools altogether.</li>
   <li>If Apache Yetus is launched in a Docker container under a Jenkins pipeline as the agent definition, <code>${HOME}</code> should now be set to somewhere valid if it isn't valid.  This will enable Apache Maven and other utilities that would otherwise crash due to broken homes.</li>
 </ul>
@@ -252,7 +252,7 @@
 <h1 id="end-users-incompatible-changes">End Users: Incompatible Changes</h1>
 
 <ul>
-  <li>The minimum Docker version is now version 17.xx.  It was prevously 6.xx.</li>
+  <li>The minimum Docker version is now version 17.xx.  It was previously 6.xx.</li>
   <li><code>--dockeronfail</code> is no longer supported.</li>
   <li><code>ANT_ARGS</code>, <code>ANT_OPTS</code>, and <code>MAVEN_OPTS</code> are now honored.  Before they were always overwritten.</li>
   <li><code>yetus/tp-(number)</code> images are now removed after normal completion.</li>

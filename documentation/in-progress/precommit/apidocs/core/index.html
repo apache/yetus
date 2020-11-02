@@ -172,6 +172,8 @@
   </li>
   <li>Public/Evolving/Not Replaceable
     <ul>
+      <li><a href="#bugsystem_linecomments_queue">bugsystem_linecomments_queue</a></li>
+      <li><a href="#bugsystem_linecomments_trigger">bugsystem_linecomments_trigger</a></li>
       <li><a href="#guess_build_tool">guess_build_tool</a></li>
       <li><a href="#list_plugins">list_plugins</a></li>
       <li><a href="#plugin_usage_output">plugin_usage_output</a></li>
@@ -1258,7 +1260,7 @@
   <li>Description</li>
 </ul>
 
-<p>remove entries from paramater tracker</p>
+<p>remove entries from parameter tracker</p>
 
 <ul>
   <li>Returns</li>
@@ -1811,6 +1813,92 @@
 </table>
 
 <h2 id="publicevolvingnot-replaceable">Public/Evolving/Not Replaceable</h2>
+<h3 id="bugsystem_linecomments_queue"><code>bugsystem_linecomments_queue</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>bugsystem_linecomments_queue plugin filename
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Queue up comments to write into bug systems that have code review support, if such support enabled/available. File should be in the form of "file:line[:column]:comment"</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="bugsystem_linecomments_trigger"><code>bugsystem_linecomments_trigger</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>bugsystem_linecomments_trigger
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Write all of the bugsystem linecomments</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
 <h3 id="guess_build_tool"><code>guess_build_tool</code></h3>
 
 <ul>
@@ -2167,7 +2255,7 @@
   <li>Description</li>
 </ul>
 
-<p>Convert a file to an array. Comments on the beginning of the line and emtpy lines are stripped.</p>
+<p>Convert a file to an array. Comments on the beginning of the line and empty lines are stripped.</p>
 
 <ul>
   <li>Returns</li>

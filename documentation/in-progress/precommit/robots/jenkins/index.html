@@ -190,9 +190,26 @@ for the optimal <code>test-patch</code> experience.  Configure up to the "Config
         <span class="n">sh</span> <span class="s1">'''test-patch --github-token="${GITHUB_TOKEN}" (other options)'''</span>
 <span class="o">...</span>
 </code></pre></div>
-<p>Doing so will enable in many circumstances a bit more functionality, such as<br />
-GitHub Statuses.</p>
+<p>Doing so will enable in many circumstances a bit more functionality, such as GitHub Statuses.</p>
 
+<h2 id="enabling-github-status-recovery">Enabling GitHub Status Recovery</h2>
+
+<p>If the Apache Yetus section of your job typically runs longer than 1 hour and you use GitHub as the primary bugsystem,<br />
+it is recommend to use the <code>github-status-recovery</code> utility in the <code>post</code> section of your <code>Jenkinsfile</code>. For example:</p>
+
+<div class="highlight"><pre class="highlight groovy"><code>  <span class="n">post</span> <span class="o">{</span>
+    <span class="n">always</span> <span class="o">{</span>
+      <span class="n">script</span> <span class="o">{</span>
+        <span class="c1">// Publish status if it was missed</span>
+        <span class="n">withCredentials</span><span class="o">([</span><span class="n">usernamePassword</span><span class="o">(</span><span class="nl">credentialsId:</span> <span class="n">github</span><span class="o">-</span><span class="n">app</span><span class="err">'</span><span class="o">,</span>
+                         <span class="nl">passwordVariable:</span> <span class="s1">'GITHUB_TOKEN'</span><span class="o">,</span>
+                         <span class="nl">usernameVariable:</span> <span class="s1">'GITHUB_USER'</span><span class="o">)])</span> <span class="o">{</span>
+            <span class="n">sh</span> <span class="s1">'''github-status-recovery --patch-dir="${PATCH_DIR}"" --github-token="${GITHUB_TOKEN}"'''</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</code></pre></div>
 <p>See also:</p>
 
 <ul>

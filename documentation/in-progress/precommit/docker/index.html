@@ -134,11 +134,20 @@
       <li><a href="#pulling-a-docker-tag">Pulling a Docker tag</a></li>
       <li><a href="#using-a-cache">Using a cache</a></li>
       <li><a href="#platforms">Platforms</a></li>
+      <li><a href="#container-directory">Container Directory</a></li>
     </ul>
   </li>
   <li><a href="#resource-controls">Resource Controls</a></li>
   <li><a href="#privileged-mode">Privileged Mode</a></li>
   <li><a href="#docker-in-docker">Docker in Docker</a></li>
+  <li><a href="#cleaning-the-docker-environment">Cleaning the Docker Environment</a>
+    <ul>
+      <li><a href="#images">Images</a></li>
+      <li><a href="#containers">Containers</a></li>
+      <li><a href="#dry-running-cleaning">Dry Running Cleaning</a></li>
+      <li><a href="#standalone-facility">Standalone Facility</a></li>
+    </ul>
+  </li>
 </ul>
 
 <!-- /MarkdownTOC -->
@@ -177,6 +186,12 @@
 
 <p>When either building or pull an image, test-patch supports the <code>--docker-platform</code> flag to pass in the Docker <code>--platform</code> flag.  This allows you full control over what kind of image the software either creates or fetches.</p>
 
+<h2 id="container-directory">Container Directory</h2>
+
+<p>By default, precommit will use <code>/precommit</code> as the directory where it will store any necessary components that are<br />
+not provided by other flags in system (such as <code>--basedir</code> or <code>--patch-dir</code>).  If that directory conflicts with some other<br />
+need, then the <code>--docker-work-dir</code> option may be provided to set a different path.</p>
+
 <h1 id="resource-controls">Resource Controls</h1>
 
 <p>Docker's <code>--memory</code> flag is supported via the <code>--dockermemlimit</code> option.  This enables the container's memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See <a href="https://docs.docker.com/engine/admin/resource_constraints/">the Docker documentation</a> for more details. Apache Yetus also sets the <code>--oom-score-adj</code> to 500 in order to offer itself as the first processes to be killed if memory is low.</p>
@@ -185,7 +200,7 @@
 
 <h1 id="privileged-mode">Privileged Mode</h1>
 
-<p>In some cases, the work being preformed inside the Docker container requires extra permissions.  Using the <code>--docker-privd</code> option enables Docker's extended privileges to the container.</p>
+<p>In some cases, the work being performed inside the Docker container requires extra permissions.  Using the <code>--docker-privd</code> option enables Docker's extended privileges to the container.</p>
 
 <h1 id="docker-in-docker">Docker in Docker</h1>
 
@@ -193,6 +208,96 @@
 
 <div class="highlight"><pre class="highlight plaintext"><code>NOTE: Using --dockerind requires the availability of the `stat` command that supports either -c '%g' (GNU form) or -f '%g' (BSD form).
 </code></pre></div>
+<h1 id="cleaning-the-docker-environment">Cleaning the Docker Environment</h1>
+
+<p>With the growing use of Docker for CI purposes, so is the growing need to help manage the Docker environment.  Stale, large<br />
+caches and stuck containers are a common problem when tests go haywire.  In order to help combat that, Apache Yetus includes<br />
+facilities as part of precommit to help keep these things under control.  By default, none of these cleaning actions occur.<br />
+However if the system is in <a href="../robots">Robot</a>-mode or <code>--sentinel</code> is used, carefully controlled cleaning will happen.</p>
+
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: Docker volumes are not managed by Apache Yetus.
+</code></pre></div>
+<h2 id="images">Images</h2>
+
+<p>For container images, there are three modes.  Each mode increases the amount of coverage that Apache Yetus will use to<br />
+remove images.</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: center">Mode</th>
+      <th style="text-align: center">Images Types</th>
+      <th style="text-align: center">Time Frame</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">default</td>
+      <td style="text-align: center">all</td>
+      <td style="text-align: center">NA</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--robot</code></td>
+      <td style="text-align: center">dangling, label=org.apache.yetus</td>
+      <td style="text-align: center">1 week</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--sentinel</code></td>
+      <td style="text-align: center">all</td>
+      <td style="text-align: center">1 week</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Before it begins, Apache Yetus will show the contents of <code>docker images</code> so that there is a history of what was in<br />
+the cache. This also helps determine what was deleted later.  Next, it finds images that fall within the time frame of<br />
+the given mode. Then it will untag those images and followed by trying to remove them by sha.  If an<br />
+image is in use, an error will be reported but ignored by Apache Yetus. It is an information message to help give the user<br />
+an idea of what is happening under the hood.</p>
+
+<h2 id="containers">Containers</h2>
+
+<p>For containers there are two modes:</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: center">Mode</th>
+      <th style="text-align: center">Images Types</th>
+      <th style="text-align: center">Time Frame</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">default</td>
+      <td style="text-align: center">all</td>
+      <td style="text-align: center">NA</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code>--sentinel</code></td>
+      <td style="text-align: center">all</td>
+      <td style="text-align: center">24 hours</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Under just plain <code>--robot</code>, containers are left alone.  Under <code>--sentinel</code>, containers (regardless of state) are<br />
+killed after 24 hours.</p>
+
+<p>Just as with images, Apache Yetus will report all the running containers on the system.  Then it will, if<br />
+necessary, send a <code>docker kill</code> followed by a <code>docker rm</code> remove any containers that are over the runtime<br />
+limit.</p>
+
+<h2 id="dry-running-cleaning">Dry Running Cleaning</h2>
+
+<p>To see what the system would have done, the <code>--dockerdelrep</code> option is provided to report, but not act, on deletions.</p>
+
+<h2 id="standalone-facility">Standalone Facility</h2>
+
+<p>By popular demand, Apache Yetus provides the <a href="../docker-cleanup">docker-cleanup</a> program to perform these functions<br />
+outside of running jobs.  This program is useful for CI systems that do not regularly run Apache Yetus or for<br />
+simply consolidating the maintenance into one location.</p>
+
     </div>
       
 <div class="container">
