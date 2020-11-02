@@ -90,8 +90,27 @@ for the optimal `test-patch` experience.  Configure up to the "Configuring the G
 ...
 ```
 
-Doing so will enable in many circumstances a bit more functionality, such as
-GitHub Statuses.
+Doing so will enable in many circumstances a bit more functionality, such as GitHub Statuses.
+
+## Enabling GitHub Status Recovery
+
+If the Apache Yetus section of your job typically runs longer than 1 hour and you use GitHub as the primary bugsystem,
+it is recommend to use the `github-status-recovery` utility in the `post` section of your `Jenkinsfile`. For example:
+
+```groovy
+  post {
+    always {
+      script {
+        // Publish status if it was missed
+        withCredentials([usernamePassword(credentialsId: github-app',
+                         passwordVariable: 'GITHUB_TOKEN',
+                         usernameVariable: 'GITHUB_USER')]) {
+            sh '''github-status-recovery --patch-dir="${PATCH_DIR}"" --github-token="${GITHUB_TOKEN}"'''
+        }
+      }
+    }
+  }
+```
 
 See also:
 
