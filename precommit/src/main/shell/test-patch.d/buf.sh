@@ -58,6 +58,11 @@ function buf_parse_args
     BUF_BASEDIR=$(yetus_abs "${BUF_BASEDIR}")
     BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BUF_BASEDIR}")
   fi
+
+  # forcibly setting return 0 because otherwise
+  # return yetus_relative_dir's return value
+  # which breaks things usually
+  return 0
 }
 
 function buf_filefilter
