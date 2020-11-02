@@ -76,7 +76,9 @@ If `--robot` is specified without an instance, a random number is generated and 
 
 # Sentinel Mode
 
-If stuck Docker containers are a problem, a more aggressive robot may be enabled with the `--sentinel` option.  This option enables killing containers that have been running for over 24 hours as well.
+If stuck Docker containers are a problem, a more aggressive robot may be enabled with the `--sentinel` option.  This option
+enables killing containers that have been running for over 24 hours as well. See the documentation on [docker](../docker)
+for more information.
 
 # Continuous Improvement
 
