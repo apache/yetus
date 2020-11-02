@@ -29,6 +29,7 @@
   * [Using a cache](#using-a-cache)
   * [Platforms](#platforms)
   * [Container Directory](#container-directory)
+* [BuildKit](#buildkit)
 * [Resource Controls](#resource-controls)
 * [Privileged Mode](#privileged-mode)
 * [Docker in Docker](#docker-in-docker)
@@ -79,6 +80,11 @@ When either building or pull an image, test-patch supports the `--docker-platfor
 By default, precommit will use `/precommit` as the directory where it will store any necessary components that are
 not provided by other flags in system (such as `--basedir` or `--patch-dir`).  If that directory conflicts with some other
 need, then the `--docker-work-dir` option may be provided to set a different path.
+
+# BuildKit
+
+By default, precommit will enable [Docker BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)
+unless told otherwise with `--docker-buildkit=false` or if the CI system has known limitations.
 
 # Resource Controls
 
