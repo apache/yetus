@@ -68,6 +68,8 @@ function setup_defaults
 
   common_defaults
   GLOBALTIMER=$("${AWK}" 'BEGIN {srand(); print srand()}')
+  # shellcheck disable=SC2034
+  ISODATESTART=$(date +"%Y-%m-%dT%H:%M:%SZ")
 
   set_yetus_version
 
@@ -2177,118 +2179,6 @@ function check_unittests
   return 0
 }
 
-## @description  Queue up comments to write into bug systems
-## @description  that have code review support, if such support
-## @description  enabled/available.
-## @description  File should be in the form of "file:line[:column]:comment"
-## @audience     public
-## @stability    evolving
-## @replaceable  no
-## @param        plugin
-## @param        filename
-function bugsystem_linecomments_queue
-{
-  declare plugin=$1
-  declare fn=$2
-  declare line
-  declare linenum
-  declare text
-  declare columncheck
-  declare column
-  declare rol
-  declare file
-
-  if [[ -z "${BUGLINECOMMENTS}" ]]; then
-    return 0
-  fi
-
-  for line in "${VOTE_FILTER[@]}"; do
-    if [[ "${plugin}" == "${line}" ]]; then
-      return 0
-    fi
-  done
-
-  pushd "${BASEDIR}" >/dev/null || return 1
-  while read -r line; do
-    file=${line%%:*}
-
-    if [[ ! -e "${file}" ]]; then
-      continue
-    fi
-
-    rol=${line/#${file}:}
-    if [[ "${file}" =~ ^\./ ]]; then
-      file=${file:2}
-    fi
-
-    linenum=${rol%%:*}
-    rol=${rol/#${linenum}:}
-    columncheck=${rol%%:*}
-    if [[ "${columncheck}" =~ ^[0-9]+$ ]]; then
-      column=${columncheck}
-      text=${rol/#${column}:}
-    else
-      column="0"
-      text=${rol}
-    fi
-
-    echo "${file}:${linenum}:${column}:${plugin}:${text}" >> "${PATCH_DIR}/linecomments-in.txt"
-
-  done < "${fn}"
-
-  popd >/dev/null || return 1
-
-}
-
-## @description  Write all of the bugsystem linecomments
-## @audience     public
-## @stability    evolving
-## @replaceable  no
-function bugsystem_linecomments_trigger
-{
-  declare plugin
-  declare fn
-  declare line
-  declare linenum
-  declare text
-  declare column
-
-  if [[ ! -f "${PATCH_DIR}/linecomments-in.txt" ]]; then
-    return 0
-  fi
-
-  # sort the file such that all files and lines are now next to each other
-  sort -k1,1 -k2,2n -k3,3n -k4,4 "${PATCH_DIR}/linecomments-in.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
-
-  while read -r line;do
-    fn=${line%%:*}
-    rol=${line/#${fn}:}
-    linenum=${rol%%:*}
-    rol=${rol/#${linenum}:}
-    column=${rol%%:*}
-    rol=${rol/#${column}:}
-    plugin=${rol%%:*}
-    text=${rol/#${plugin}:}
-
-    for bugs in ${BUGLINECOMMENTS}; do
-      if declare -f "${bugs}_linecomments" >/dev/null;then
-        "${bugs}_linecomments" "${fn}" "${linenum}" "${column}" "${plugin}" "${text}"
-      fi
-    done
-  done < "${PATCH_DIR}/linecomments-sorted.txt"
-
-  for bugs in ${BUGLINECOMMENTS}; do
-    if declare -f "${bugs}_linecomments_end" >/dev/null;then
-      "${bugs}_linecomments_end"
-    fi
-  done
-
-  if [[ "${YETUS_SHELL_SCRIPT_DEBUG}" = true ]]; then
-    yetus_debug "Keeping linecomments files for debugging"
-  else
-    rm "${PATCH_DIR}/linecomments-in.txt" "${PATCH_DIR}/linecomments-sorted.txt"
-  fi
-}
 
 ## @description  Write the final output to the selected bug system
 ## @audience     private

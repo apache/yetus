@@ -36,6 +36,8 @@ GITHUB_REPO=""
 GITHUB_TOKEN="${GITHUB_TOKEN-}"
 GITHUB_ISSUE=""
 GITHUB_USE_EMOJI_VOTE=false
+GITHUB_STATUS_RECOVERY_COUNTER=1
+GITHUB_STATUS_RECOVER_TOOL=false
 declare -a GITHUB_AUTH
 
 # private globals...
@@ -47,7 +49,9 @@ function github_usage
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
-  yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
+  if [[ "${GITHUB_STATUS_RECOVER_TOOL}" == false ]]; then
+    yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
+  fi
 }
 
 function github_parse_args
@@ -454,6 +458,129 @@ function github_locate_patch
   esac
 }
 
+## @description Generate a Github Check Run ID
+## @stability evolving
+## @audience  private
+function github_start_checkrun
+{
+  declare tempfile="${PATCH_DIR}/ghcheckrun.$$.${RANDOM}"
+  declare output="${PATCH_DIR}/ghcheckrun.json"
+
+  if [[ -z "${GITHUB_SHA}" ]]; then
+    GITHUB_SHA=$("${GREP}" \"sha\" "${PATCH_DIR}/github-pull.json" 2>/dev/null \
+      | head -1 \
+      | cut -f4 -d\")
+  fi
+
+  if [[ -z "${GITHUB_SHA}" ]]; then
+    return 0
+  fi
+
+  # don't need this under GHA
+  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
+    return 0
+  fi
+
+  if [[ "${OFFLINE}" == true ]]; then
+    return 0
+  fi
+
+  if [[ "${#GITHUB_AUTH[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  {
+    printf "{"
+    echo "\"name\":\"Apache Yetus ${ROBOTTYPE}\","
+    echo "\"head_sha\": \"${GITHUB_SHA}\","
+    echo "\"details_url\": \"${BUILD_URL}${BUILD_URL_CONSOLE}\","
+    echo "\"external_id\": \"${INSTANCE}\","
+    echo "\"status\": \"in_progress\","
+    echo "\"started_at\": \"${ISODATESTART}\""
+    # external_id  instance_id?
+    # status queued, in_progress, completed
+    # started_at ISO-8601
+    # conclusion , required for status=completed, completed_at=value
+    #  success, failure, neutral, cancelled, skipped, timed_out, action_required
+    # completed_at  ISO-8601
+    # output  see github docs @ https://docs.github.com/en/rest/reference/checks#update-a-check-run
+    echo "}"
+  } > "${tempfile}"
+
+  "${CURL}" --silent --fail -X POST \
+    -H "Accept: application/vnd.github.antiope-preview+json" \
+    -H "Content-Type: application/json" \
+     "${GITHUB_AUTH[@]}" \
+    -d @"${tempfile}" \
+    --location \
+    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/check-runs" \
+    --output "${output}" 2>/dev/null
+
+  GITHUB_CHECK_RUN_ID=$("${GREP}" \"id\" "${output}" 2>/dev/null \
+    | head -1 \
+    | cut -f2 -d: \
+    | cut -f1 -d,)
+  GITHUB_CHECK_RUN_ID=${GITHUB_CHECK_RUN_ID// /}
+}
+
+## @description Generate a Github Check Run ID
+## @stability evolving
+## @audience  private
+function github_end_checkrun
+{
+  declare result=$1
+  declare tempfile="${PATCH_DIR}/ghcheckrun.$$.${RANDOM}"
+  declare output="${PATCH_DIR}/ghcheckrun-final.json"
+  declare conclusion
+
+  # don't need this under GHA
+  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
+    return 0
+  fi
+
+  if [[ "${OFFLINE}" == true ]]; then
+    return 0
+  fi
+
+  if [[ "${#GITHUB_AUTH[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ "${result}" -eq 0 ]]; then
+    conclusion="success"
+  else
+    conclusion="failure"
+  fi
+
+  finishdate=$(date +"%Y-%m-%dT%H:%M:%SZ")
+
+  {
+    printf "{"
+    echo "\"conclusion\":\"${conclusion}\","
+    echo "\"status\": \"completed\","
+    echo "\"completed_at\": \"${finishdate}\""
+    echo "}"
+  } > "${tempfile}"
+
+  "${CURL}" --fail --silent -X PATCH \
+    -H "Accept: application/vnd.github.antiope-preview+json" \
+    -H "Content-Type: application/json" \
+     "${GITHUB_AUTH[@]}" \
+    -d @"${tempfile}" \
+    --location \
+    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/check-runs/${GITHUB_CHECK_RUN_ID}" \
+    --output "${output}" 2>/dev/null
+  rm "${tempfile}"
+}
+
+## @description Write a Github Checks Annotation
+## @param     filename
+## @param     linenum
+## @param     column
+## @param     plugin
+## @param     text
+## @stability evolving
+## @audience  private
 function github_linecomments
 {
   declare file=$1
@@ -462,6 +589,10 @@ function github_linecomments
   declare plugin=$4
   shift 4
   declare text=$*
+  declare tempfile="${PATCH_DIR}/ghcomment.$$.${RANDOM}"
+  declare header
+  declare -a linehandler
+  declare -a colhandler
 
   if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
     if [[ -z "${column}" ]] || [[ "${column}" == 0 ]]; then
@@ -471,6 +602,69 @@ function github_linecomments
     fi
     return 0
   fi
+
+  if [[ "${OFFLINE}" == true ]]; then
+    echo "Github Plugin: Running in offline, comment skipped."
+    return 0
+  fi
+
+  if [[ "${#GITHUB_AUTH[@]}" -eq 0 ]]; then
+    return 0
+  fi
+
+  if [[ -z "${GITHUB_CHECK_RUN_ID}" ]]; then
+    if ! github_start_checkrun; then
+      yetus_error "ERROR: Cannot generate a Github Check Run ID"
+      return 1
+    fi
+  fi
+
+  linehandler=(\"start_line\": "${linenum},")
+  linehandler+=(\"end_line\": "${linenum},")
+
+  if [[ -z "${column}" ]] || [[ "${column}" == 0 ]]; then
+    colhandler=()
+  else
+    colhandler=(\"start_column\": "${column},")
+    colhandler+=(\"end_column\": "${column},")
+  fi
+
+  newtext=$(echo "${text[*]}" | "${SED}" -e 's,\\,\\\\,g' \
+        -e 's,\",\\\",g' \
+        -e 's,$,\\r\\n,g' \
+      | tr -d '\n')
+
+  if [[ "${ROBOTTYPE}" ]]; then
+    header="Apache Yetus(${ROBOTTYPE})"
+  else
+    header="Apache Yetus"
+  fi
+
+  cat <<EOF > "${tempfile}"
+{
+  "output": {
+    "title": "${header}",
+    "summary": "Precommit Problem",
+    "annotations" : [{
+      "path": "${file}",
+      ${linehandler[@]}
+      ${colhandler[@]}
+      "annotation_level": "failure",
+      "message": "${newtext}"
+    }]
+  }
+}
+EOF
+
+  "${CURL}" --fail -X PATCH \
+    -H "Accept: application/vnd.github.antiope-preview+json" \
+    -H "Content-Type: application/json" \
+     "${GITHUB_AUTH[@]}" \
+    -d @"${tempfile}" \
+    --silent --location \
+    "${GITHUB_API_URL}/repos/${GITHUB_REPO}/check-runs/${GITHUB_CHECK_RUN_ID}" \
+    2>/dev/null
+  rm "${tempfile}"
 }
 
 ## @description Write the contents of a file to github
@@ -663,10 +857,15 @@ function github_write_comment
 ## @stability    evolving
 ## @replaceable  no
 ## @param        runresult
-function github_status_write()
+function github_status_write
 {
   declare filename=$1
   declare retval=0
+  declare recoverydir="${PATCH_DIR}/github-status-retry/${GITHUB_REPO}/${GIT_BRANCH_SHA}"
+
+  if [[ "${OFFLINE}" == true ]]; then
+    return 0
+  fi
 
   if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
     echo "Github Plugin: no credentials provided to write a status."
@@ -684,8 +883,56 @@ function github_status_write()
 
   retval=$?
   if [[ ${retval} -gt 0 ]]; then
-    echo "githubstatus-report: Failed to write status. Maybe the credential does not have write access to repo:status."
+    yetus_error "ERROR: Failed to write github status. Token expired or missing repo:status write?"
+    if [[ "${GITHUB_STATUS_RECOVER_TOOL}" == false ]]; then
+      mkdir -p "${recoverydir}"
+      cp -p "${tempfile}" "${recoverydir}/${GITHUB_STATUS_RECOVERY_COUNTER}.json"
+      ((GITHUB_STATUS_RECOVERY_COUNTER=GITHUB_STATUS_RECOVERY_COUNTER+1))
+    fi
   fi
+  return ${retval}
+}
+
+## @description  Write a github status
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+function github_status_recovery
+{
+  declare filename
+  declare retval=0
+  declare retrydir
+
+  # get the first filename
+  filename=$(find "${PATCH_DIR}/github-status-retry" -type f -name '1.json' 2>/dev/null)
+
+  if [[ -z "${filename}" ]]; then
+    echo "No retry directory found in ${PATCH_DIR}. Maybe it was successful?"
+    return 0
+  fi
+
+  retrydir="${filename##*/github-status-retry/}"
+  GITHUB_REPO=$(echo "${retrydir}" | cut -f1-2 -d/)
+  GIT_BRANCH_SHA=$(echo "${retrydir}" | cut -f3 -d/)
+
+
+  github_initialize
+
+  if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
+    echo "Github Plugin: no credentials provided to write a status."
+    return 1
+  fi
+
+  while read -r; do
+    github_status_write "${REPLY}"
+    retval=$?
+  done < <(find "${PATCH_DIR}/github-status-retry" -type f)
+
+  if [[ "${GITHUB_CHECK_ANNOTATIONS}" == true ]]; then
+    bugsystem_linecomments_trigger
+  fi
+
   return ${retval}
 }
 
@@ -711,6 +958,10 @@ function github_finalreport
   declare -i i=0
   declare header
 
+  if [[ "${OFFLINE}" == true ]]; then
+    return 0
+  fi
+
   big_console_header "Adding GitHub Statuses"
 
   if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
@@ -722,6 +973,8 @@ function github_finalreport
     echo "Unknown GIT_BRANCH_SHA defined. Skipping."
     return 0
   fi
+
+  github_end_checkrun "${result}"
 
   url=$(get_artifact_url)
 

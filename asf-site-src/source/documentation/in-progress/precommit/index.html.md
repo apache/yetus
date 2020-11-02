@@ -156,6 +156,7 @@ Language Support, Licensing, and more:
 capacities without needing to use the full `test-patch` runtime:
 
 * [docker-cleanup](docker-cleanup) - safe removal of Docker resources for multi-executor CI systems
+* [github-status-recovery](github-status-recovery) - Apache Yetus status on GitHub, even for long running jobs
 * [jenkins-admin](admin) - Jenkins<->JIRA patch bridge
 * [qbt](qbt) - Quality Build Tool, for branch-specific testing
 * [smart-apply-patch](smart-apply-patch) - CLI manipulation and query of patch files, PRs, and more
