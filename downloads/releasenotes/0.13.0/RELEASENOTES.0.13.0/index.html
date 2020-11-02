@@ -617,6 +617,25 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
 <!-- markdown -->
 <p>The new <code>github-status-recovery</code> program is a way to feed GitHub results from an already executed precommit run.  It requires a GitHub App token to populate the GitHub Checks and GitHub Statuses data.</p>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1054">YETUS-1054</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Support buildkit</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>precommit now defaults to using Docker BuildKit (with the notable exception of Travis CI).  To disable, use <code>--docker-buildkit=false</code>.</p>
+
 
     </div>
       

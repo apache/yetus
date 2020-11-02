@@ -25,13 +25,13 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="../../../../../assets/css/bootstrap.css" rel="stylesheet">
-        <link href="../../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
-        <link href="../../../../../assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="../../../../../assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="../../../../../assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
       
@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -121,27 +121,37 @@
   under the License.
 -->
 
-<h1 id="robots-travis-ci">Robots: Travis CI</h1>
+<h1 id="github-status-recovery">GitHub Status Recovery</h1>
 
-<p>TRIGGER: ${TRAVIS}=true</p>
-
-<p>Travis CI support will update the local checked out source repository to include references to all branches and tags</p>
-
-<p>If <code>${ARTIFACTS_PATH}</code> is configured, then <code>--patch-dir</code> is set to the first listed directory path.  However, links to the location logs must still be configured manually.</p>
-
-<p>Personalities will override the auto-detected Github repository information.  It may be necessary to manually configure it in your <code>.travis.yml</code> file.</p>
-
-<p>As of this writing, it is not possible to make the Travis CI build environment use the Apache Yetus pre-built docker<br />
-images without using <code>docker run</code> in the before_install phase.  Therefore, using the image is the same as described<br />
-in the <a href="../../../../../yetus-docker-image">Apache Yetus Docker Hub Images</a> page.</p>
-
-<div class="highlight"><pre class="highlight plaintext"><code>NOTE: As of this writing (2020-10-31), Travis CI does not support Docker BuildKit.  It is disabled by default.
-</code></pre></div>
-<p>See also:</p>
+<!-- MarkdownTOC levels="1,2,3" autolink="true" indent="  " bullets="*" bracket="round" -->
 
 <ul>
-  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.travis.yml">.travis.yml</a> for some tips and tricks.</li>
+  <li><a href="#problem-statement">Problem Statement</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#disabling-annotations">Disabling Annotations</a></li>
 </ul>
+
+<!-- /MarkdownTOC -->
+
+<h1 id="problem-statement">Problem Statement</h1>
+
+<p>For CI systems that use GitHub outside of GitHub Actions, they may make available a GitHub Checks token.<br />
+Unfortunately, as of this writing (2020-10-30), GitHub sets the expiry of such a token to 1 hour.<br />
+For some users of Apache Yetus, their precommit job may take longer than one hour.  In order to workaround<br />
+this limitation, the <code>github-status-recovery</code> program may be used.</p>
+
+<h1 id="usage">Usage</h1>
+
+<p>The usage is relatively simple:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>github-status-recovery <span class="nt">--patch-dir</span><span class="o">=</span>&lt;pre-existing patch directory&gt; <span class="nt">--github-token</span><span class="o">=</span>&lt;token&gt;
+</code></pre></div>
+<p>If the previous run of <code>test-patch</code> failed to write the status, <code>github-status-recovery</code> will<br />
+re-process the saved JSON files as well as write GitHub Checks Annotations if they exist.</p>
+
+<h1 id="disabling-annotations">Disabling Annotations</h1>
+
+<p>If for some reason you do not wish annotations to be written, they may be disabled with <code>--github-annotations=false</code>.</p>
 
     </div>
       

@@ -137,6 +137,7 @@
       <li><a href="#container-directory">Container Directory</a></li>
     </ul>
   </li>
+  <li><a href="#buildkit">BuildKit</a></li>
   <li><a href="#resource-controls">Resource Controls</a></li>
   <li><a href="#privileged-mode">Privileged Mode</a></li>
   <li><a href="#docker-in-docker">Docker in Docker</a></li>
@@ -191,6 +192,11 @@
 <p>By default, precommit will use <code>/precommit</code> as the directory where it will store any necessary components that are<br />
 not provided by other flags in system (such as <code>--basedir</code> or <code>--patch-dir</code>).  If that directory conflicts with some other<br />
 need, then the <code>--docker-work-dir</code> option may be provided to set a different path.</p>
+
+<h1 id="buildkit">BuildKit</h1>
+
+<p>By default, precommit will enable <a href="https://docs.docker.com/develop/develop-images/build_enhancements/">Docker BuildKit</a><br />
+unless told otherwise with <code>--docker-buildkit=false</code> or if the CI system has known limitations.</p>
 
 <h1 id="resource-controls">Resource Controls</h1>
 
