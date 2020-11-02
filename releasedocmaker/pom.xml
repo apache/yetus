@@ -34,6 +34,7 @@
   <packaging>pom</packaging>
 
   <build>
+
     <resources>
       <resource>
         <directory>src/main/python</directory>

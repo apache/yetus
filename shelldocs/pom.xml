@@ -35,9 +35,9 @@
 
   <build>
 
-  <resources>
-    <resource>
-      <directory>src/main/python</directory>
+    <resources>
+      <resource>
+        <directory>src/main/python</directory>
       </resource>
     </resources>
 
