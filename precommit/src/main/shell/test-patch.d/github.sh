@@ -663,7 +663,7 @@ function github_linecomments
   ((GITHUB_ANNOTATION_LIMIT=GITHUB_ANNOTATION_LIMIT - 1))
 
   if [[ ${GITHUB_ANNOTATION_LIMIT} -eq 0 ]]; then
-    yetus_error "WARNING: GitHub annotations limit (${GITHUB_ANNOTATION_LIMIT}) reached."
+    yetus_error "WARNING: GitHub annotations limit reached."
     return 0
   fi
 
