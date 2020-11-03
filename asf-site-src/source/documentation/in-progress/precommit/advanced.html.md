@@ -102,11 +102,14 @@ Similarly, there are other functions that may be defined during the test-patch r
 
 Plug-ins are imported from several key directories:
 
-* core.d is an internal-to-Yetus directory that first loads the basic Apache Yetus library, followed by the common routines used by all of the precommit shell code.  This order is dictated by prefixing the plug-in files with a number.  Other files in this directory are loaded in shell collated order.
+* core.d is an internal-to-Yetus directory that first loads the basic Apache Yetus library, followed by the common routines used
+by all of the precommit shell code.  This order is dictated by prefixing the plug-in files with a number.  Other files in this directory are loaded in shell collated order.
 
-* personality contains bundled personalities for various projects.  These will be imported individually based upon either a project name or if specifically identified with the `--personality` flag.
+* robots.d is an internal-to-Yetus directory that has all of the built-in support for various CI and automated testing systems.
 
 * test-patch.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.
+
+Additionally, project-specific settings and features may be autoloaded via the `.yetus/personality.sh` file. (See [Personalities](#personalities) below.)
 
 If the `--skip-system-plugins` flag is passed, then only core.d is imported.
 
@@ -142,11 +145,12 @@ add_test_type <pluginname>
 
 ## Configuring for Other Projects
 
-It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project `personality` should be added that enacts these custom rules.
+It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it
+comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project `personality` should be added that
+enacts these custom rules.  By default, personalities are loaded from `.yetus/personality.sh` but may also be
+given via the `--personality` option.
 
-A personality consists of two functions. One that determines which test types to run and another that allows a project to dictate ordering rules, flags, and profiles on a per-module, per-test run.
-
-There can be only **one** of each personality function defined.
+At its core, a personality consists of usually several function definitions that `test-patch` knows about:
 
 ## Global Definitions
 

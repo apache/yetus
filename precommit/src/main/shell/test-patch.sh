@@ -997,6 +997,10 @@ function parse_args
   cd "${STARTINGDIR}" || cleanup_and_exit 1
   BASEDIR=$(yetus_abs "${BASEDIR}")
 
+  if [[ -z "${PERSONALITY}" ]] && [[ -f "${BASEDIR}/.yetus/personality.sh" ]]; then
+    PERSONALITY="${BASEDIR}/.yetus/personality.sh"
+  fi
+
   if [[ -n ${USER_PATCH_DIR} ]]; then
     PATCH_DIR="${USER_PATCH_DIR}"
   fi
@@ -1048,6 +1052,8 @@ function parse_args
 
   if [[ -n "${USER_PLUGIN_DIR}" ]]; then
     USER_PLUGIN_DIR=$(yetus_abs "${USER_PLUGIN_DIR}")
+  elif [[ -d "${BASEDIR}/.yetus/plugins" ]]; then
+    USER_PLUGIN_DIR="${BASEDIR}/.yetus/plugins"
   fi
 
   GITDIFFLINES="${PATCH_DIR}/gitdifflines.txt"

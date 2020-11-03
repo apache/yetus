@@ -246,6 +246,17 @@ function parse_args
   # we need absolute dir for ${BASEDIR}
   cd "${STARTINGDIR}" || cleanup_and_exit 1
   BASEDIR=$(yetus_abs "${BASEDIR}")
+
+  if [[ -z "${PERSONALITY}" ]] && [[ -f "${BASEDIR}/.yetus/personality.sh" ]]; then
+    PERSONALITY="${BASEDIR}/.yetus/personality.sh"
+  fi
+
+  if [[ -n "${USER_PLUGIN_DIR}" ]]; then
+    USER_PLUGIN_DIR=$(yetus_abs "${USER_PLUGIN_DIR}")
+  elif [[ -d "${BASEDIR}/.yetus/plugins" ]]; then
+    USER_PLUGIN_DIR="${BASEDIR}/.yetus/plugins"
+  fi
+
 }
 
 ## @description  generate reports on the given patch file

@@ -402,7 +402,9 @@ $ test-patch --plugins=all --tests-filter=checkstyle,javadoc (other options)
 
 # Project-specific Capabilities
 
-Due to the extensible nature of the system, `test-patch` allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.) There are two ways to specify which personality to use:
+Due to the extensible nature of the system, `test-patch` allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.)
+Simply create a `.yetus/personality.sh` in the root of the source tree and `test-patch` will automatically load it. Or, if you'd like to override it,
+use the `--personality` option:
 
 ## Direct Method
 
