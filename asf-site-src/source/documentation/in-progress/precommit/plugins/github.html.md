@@ -37,6 +37,7 @@ None
 
 | Option | Notes |
 |:---------|:------|
+| `--github-annotations-limit=<int>` | Max number of GitHub Checks Annotations to attempt |
 | `--github-api-url=<url>` | REST API URL (for GitHub Enterprise) |
 | `--github-base-url=<url>` | Non-REST API URL (for GitHub Enterprise) |
 | `--github-repo=<repo>` | `username/repository` identifier |
