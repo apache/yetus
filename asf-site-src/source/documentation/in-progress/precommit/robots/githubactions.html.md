@@ -79,7 +79,7 @@ Options currently supported are:
 | javahome | same as `--java-home`          | `/usr/lib/jvm/java-11-openjdk-amd64`  | [Java-related plug-ins](../../plugins/javac) |
 | patchdir | same as `--patch-dir`       | NONE  |[Usage Introduction](../../usage-intro) |
 | pip | same as `--pylint-pip`              | pip3  |  [pylint plug-in](../../plugins/pylint) |
-| plugins | same as `--plugins`             | all,-asflicense,-author,-findbugs,-gitlabcilint,-shelldocs  | [Usage Introduction](../../usage-intro) |
+| plugins | same as `--plugins`             | all,-asflicense,-author,-shelldocs  | [Usage Introduction](../../usage-intro) |
 | project | same as `--project`             | Auto-set based upon the repository name  | [Usage Introduction](../../usage-intro) |
 | pylint | same as `--pylint`               | pylint3  | [pylint plug-in](../../plugins/pylint) |
 | reapermode | same as `--reapermode`       | kill  | [Advanced Usage](../../advanced) |

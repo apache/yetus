@@ -112,8 +112,8 @@ RUN mkdir -p /opt/apache-rat \
 #####
 FROM yetusbase AS spotbugs
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.1.2/spotbugs-4.1.2.tgz -o spotbugs.tgz \
-    && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.1.2/spotbugs-4.1.2.tgz.sha1 -o spotbugs.tgz.sha1 \
+RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.2.2/spotbugs-4.2.2.tgz -o spotbugs.tgz \
+    && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.2.2/spotbugs-4.2.2.tgz.sha1 -o spotbugs.tgz.sha1 \
     && echo -n "  spotbugs.tgz" >> spotbugs.tgz.sha1 \
     && shasum -c spotbugs.tgz.sha1 \
     && mkdir -p /opt/spotbugs \
@@ -268,16 +268,6 @@ RUN add-apt-repository -y \
     && apt-get -q update && apt-get -q install --no-install-recommends -y docker-ce \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-######
-# Install findbugs
-######
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y findbugs \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-ENV FINDBUGS_HOME /usr
-
-
 
 ######
 # Install maven

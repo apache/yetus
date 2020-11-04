@@ -337,9 +337,6 @@ function maven_modules_worker
   UNSUPPORTED_TEST=false
 
   case ${tst} in
-    findbugs)
-      modules_workers "${repostatus}" findbugs test-compile findbugs:findbugs -DskipTests=true
-    ;;
     compile)
       modules_workers "${repostatus}" compile clean test-compile -DskipTests=true
     ;;
@@ -521,7 +518,6 @@ function maven_builtin_personality_file_tests
 
   if [[ ${filename} =~ \.java$ ]]; then
     add_test spotbugs
-    add_test findbugs
   fi
 }
 
