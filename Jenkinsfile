@@ -94,9 +94,6 @@ pipeline {
                 # enable writing back to Github
                 YETUS_ARGS+=(--github-token="${GITHUB_TOKEN}")
 
-                # use emoji as vote result on GitHub
-                YETUS_ARGS+=(--github-use-emoji-vote)
-
                 YETUS_ARGS+=(--java-home=/usr/lib/jvm/java-8-openjdk-amd64)
 
                 # enable writing back to ASF JIRA
