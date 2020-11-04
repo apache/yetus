@@ -892,7 +892,6 @@ function docker_signal_handler
 function docker_handler
 {
   declare plugin
-  declare person
 
   ## @description  strip paths for display
   ## @audience     private
@@ -920,11 +919,6 @@ function docker_handler
 
   if [[ -n "${BUILD_URL}" ]]; then
     USER_PARAMS+=("--build-url=${BUILD_URL}")
-  fi
-
-  if [[ -f "${PERSONALITY}" ]]; then
-    person=$(strippaths "${PERSONALITY}")
-    USER_PARAMS+=("--tpperson=${person}")
   fi
 
   USER_PARAMS+=("--tpglobaltimer=${GLOBALTIMER}")

@@ -37,9 +37,6 @@
   * [Generic URLs](#generic-urls)
 * [Excluding Files](#excluding-files)
 * ["Warn-only" Test Results](#warn-only-test-results)
-* [Project-specific Capabilities](#project-specific-capabilities)
-  * [Direct Method](#direct-method)
-  * [Project Method](#project-method)
 * [Fork Bomb Protection](#fork-bomb-protection)
 * [MultiJDK](#multijdk)
 * [Docker](#docker)
@@ -399,26 +396,6 @@ $ test-patch --plugins=all --tests-filter=checkstyle,javadoc (other options)
 ```
 
 ... will always force the `checkstyle` and `javadoc` tests to never vote -1.
-
-# Project-specific Capabilities
-
-Due to the extensible nature of the system, `test-patch` allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.) There are two ways to specify which personality to use:
-
-## Direct Method
-
-```bash
-$ test-patch --plugins=all --personality=(filename)
-```
-
-This tells `test-patch` to use the personality in the given file.
-
-## Project Method
-
-However, `test-patch` can detect if it is a personality that is in its "personality" directory based upon the project name:
-
-```bash
-$ test-patch --plugins=all --project=(project)
-```
 
 # Fork Bomb Protection
 

@@ -33,7 +33,6 @@ function common_defaults
   EXCLUDE_PATHS=()
   IGNORE_UNKNOWN_OPTIONS=false
   ROBOTTYPE=""
-  LOAD_SYSTEM_PLUGINS=true
   #shellcheck disable=SC2034
   OFFLINE=false
   GIT_ASKPASS=${GIT_ASKPASS:-/bin/true}
@@ -68,7 +67,6 @@ function common_defaults
   #shellcheck disable=SC2034
   TESTTYPES=()
   TESTFORMATS=()
-  USER_PLUGIN_DIR=""
   #shellcheck disable=SC2034
   VERSION_DATA=()
 
@@ -210,6 +208,7 @@ function common_args
       ;;
       --project=*)
         delete_parameter "${i}"
+        #shellcheck disable=SC2034
         PROJECT_NAME=${i#*=}
       ;;
       --report-unknown-options=*)
@@ -221,10 +220,6 @@ function common_args
         delete_parameter "${i}"
         RSYNC=${i#*=}
       ;;
-      --skip-system-plugins)
-        delete_parameter "${i}"
-        LOAD_SYSTEM_PLUGINS=false
-      ;;
       --sed-cmd=*)
         delete_parameter "${i}"
         SED=${i#*=}
@@ -235,10 +230,6 @@ function common_args
         # things end up needing it later, it's better to just put it here
         #shellcheck disable=SC2034
         STAT=${i#*=}
-      ;;
-      --user-plugins=*)
-        delete_parameter "${i}"
-        USER_PLUGIN_DIR=${i#*=}
       ;;
       --version)
         delete_parameter "${i}"
@@ -557,35 +548,19 @@ function importplugins
 
   #BUG: this will break horribly if there are spaces in the paths. :(
 
-  if [[ ${LOAD_SYSTEM_PLUGINS} == "true" ]]; then
-    if [[ -d "${BINDIR}/test-patch.d" ]]; then
-      #shellcheck disable=SC2206
-      files=(${BINDIR}/test-patch.d/*.sh)
-    fi
+  if [[ -d "${BINDIR}/test-patch.d" ]]; then
+    files+=("${BINDIR}/test-patch.d"/*.sh)
   fi
 
-  if [[ -n "${USER_PLUGIN_DIR}" && -d "${USER_PLUGIN_DIR}" ]]; then
-    yetus_debug "Loading user provided plugins from ${USER_PLUGIN_DIR}"
-    #shellcheck disable=SC2206
-    files+=(${USER_PLUGIN_DIR}/*.sh)
+  if [[ -d "${BASEDIR}/.yetus/plugins.d" ]]; then
+    yetus_debug "Loading user provided plugins from .yetus/plugins.d"
+    files+=("${BASEDIR}/.yetus/plugins.d"/*.sh)
   fi
 
-  if [[ -n ${PERSONALITY} && ! -f ${PERSONALITY} ]]; then
-    yetus_error "ERROR: Can't find ${PERSONALITY} to import."
-    unset PERSONALITY
-  fi
-
-  if [[ -z ${PERSONALITY}
-      && -f "${BINDIR}/personality/${PROJECT_NAME}.sh"
-      && ${LOAD_SYSTEM_PLUGINS} = "true" ]]; then
-    yetus_debug "Using project personality."
-    PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-  fi
-
-  if [[ -n ${PERSONALITY} && -f ${PERSONALITY} ]]; then
-    yetus_debug "Importing ${PERSONALITY}"
+  if [[ -f "${BASEDIR}/.yetus/personality.sh" ]]; then
+    yetus_debug "Using .yetus/personality.sh"
     # shellcheck disable=SC1090
-    . "${PERSONALITY}"
+    . "${BASEDIR}/.yetus/personality.sh"
   fi
 
   for i in "${files[@]}"; do

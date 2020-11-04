@@ -126,11 +126,8 @@ function yetus_usage
   yetus_add_option "--modulelist=<list>" "Specify additional modules to test (comma delimited)"
   yetus_add_option "--offline" "Avoid connecting to the Internet"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/yetus-(random))"
-  yetus_add_option "--personality=<file>" "The personality file to load"
   yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found)"
   yetus_add_option "--project=<name>" "The short name for project currently using test-patch (default 'yetus')"
-  yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
-  yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
   yetus_reset_usage

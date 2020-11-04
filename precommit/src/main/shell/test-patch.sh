@@ -312,10 +312,10 @@ function prepopulate_footer
   add_footer_table "uname" "${unamea}"
   add_footer_table "Build tool" "${BUILDTOOL}"
 
-  if [[ -n ${REEXECPERSONALITY} ]]; then
-    add_footer_table "Personality" "${REEXECPERSONALITY}"
-  elif [[ -n ${PERSONALITY} ]]; then
-    add_footer_table "Personality" "${PERSONALITY}"
+  if [[ -f "${BASEDIR}/.yetus/personality.sh" ]]; then
+    add_footer_table "Personality" "Enabled"
+  else
+    add_footer_table "Personality" "Disabled"
   fi
 
   add_footer_table "git revision" "${PATCH_BRANCH} / ${GIT_BRANCH_SHA}"
@@ -669,7 +669,6 @@ function yetus_usage
   yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: '${jdktlist}')"
   yetus_add_option "--offline" "Avoid connecting to the network"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
-  yetus_add_option "--personality=<file>" "The personality file to load"
   yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found) e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
   yetus_add_option "--proclimit=<num>" "Limit on the number of processes (default: ${PROC_LIMIT})"
   yetus_add_option "--project=<name>" "The short name for project currently using test-patch (default 'yetus')"
@@ -677,13 +676,11 @@ function yetus_usage
   yetus_add_option "--resetrepo" "Forcibly clean the repo"
   yetus_add_option "--run-tests" "Run all relevant tests below the base directory"
   yetus_add_option "--skip-dirs=<list>" "Skip following directories for module finding"
-  yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
   yetus_add_option "--summarize=<bool>" "Allow tests to summarize results"
   yetus_add_option "--test-parallel=<bool>" "Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   yetus_add_option "--test-threads=<int>" "Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
   yetus_add_option "--tests-filter=<list>" "Lists of tests to turn failures into warnings"
   yetus_add_option "--unit-test-filter-file=<file>" "The unit test filter file to load"
-  yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
   yetus_add_option "--version" "Print release version information and exit"
 
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
@@ -855,10 +852,6 @@ function parse_args
         delete_parameter "${i}"
         RELOCATE_PATCH_DIR=true;
       ;;
-      --personality=*)
-        delete_parameter "${i}"
-        PERSONALITY=${i#*=}
-      ;;
       --proclimit=*)
         delete_parameter "${i}"
         PROC_LIMIT=${i#*=}
@@ -922,10 +915,6 @@ function parse_args
       --tpinstance=*)
         delete_parameter "${i}"
         INSTANCE=${i#*=}
-      ;;
-      --tpperson=*)
-        delete_parameter "${i}"
-        REEXECPERSONALITY=${i#*=}
       ;;
       --tpreexectimer=*)
         delete_parameter "${i}"
@@ -1046,17 +1035,8 @@ function parse_args
     yetus_add_array_element EXEC_MODES UnitTests
   fi
 
-  if [[ -n "${USER_PLUGIN_DIR}" ]]; then
-    USER_PLUGIN_DIR=$(yetus_abs "${USER_PLUGIN_DIR}")
-  fi
-
   GITDIFFLINES="${PATCH_DIR}/gitdifflines.txt"
   GITDIFFCONTENT="${PATCH_DIR}/gitdiffcontent.txt"
-
-  if [[ "${REEXECED}" = true
-     && -f "${PATCH_DIR}/precommit/personality/provided.sh" ]]; then
-    PERSONALITY="${PATCH_DIR}/precommit/personality/provided.sh"
-  fi
 }
 
 ## @description  Switch BUILDMODE. Callers are responsible for setting
@@ -1458,9 +1438,7 @@ function apply_patch_file
   return 0
 }
 
-## @description  copy the test-patch binary bits to a new working dir,
-## @description  setting USER_PLUGIN_DIR and PERSONALITY to the new
-## @description  locations.
+## @description  copy the test-patch binary bits to a new working dir.
 ## @description  this is used for test-patch in docker and reexec mode
 ## @audience     private
 ## @stability    evolving
@@ -1479,8 +1457,6 @@ function copytpbits
   fi
 
   pushd "${STARTINGDIR}" >/dev/null || return 1
-  mkdir -p "${PATCH_DIR}/precommit/user-plugins"
-  mkdir -p "${PATCH_DIR}/precommit/personality"
   mkdir -p "${PATCH_DIR}/precommit/test-patch-docker"
 
   # copy our entire universe, preserving links, etc.
@@ -1490,24 +1466,10 @@ function copytpbits
 
   echo "${VERSION}" > "${PATCH_DIR}/precommit/VERSION"
 
-  if [[ -n "${USER_PLUGIN_DIR}"
-    && -d "${USER_PLUGIN_DIR}"  ]]; then
-    yetus_debug "copying '${USER_PLUGIN_DIR}' over to ${PATCH_DIR}/precommit/user-plugins"
-    cp -pr "${USER_PLUGIN_DIR}"/. \
-      "${PATCH_DIR}/precommit/user-plugins"
-  fi
-  # Set to be relative to ${PATCH_DIR}/precommit
-  USER_PLUGIN_DIR="${PATCH_DIR}/precommit/user-plugins"
-
   if [[ -n ${EXCLUDE_PATHS_FILE}
     && -f ${EXCLUDE_PATHS_FILE} ]]; then
     yetus_debug "copying '${EXCLUDE_PATHS_FILE}' over to '${PATCH_DIR}/precommit/excluded.txt'"
     cp -pr "${EXCLUDE_PATHS_FILE}" "${PATCH_DIR}/precommit/excluded.txt"
-  fi
-  if [[ -n ${PERSONALITY}
-    && -f ${PERSONALITY} ]]; then
-    yetus_debug "copying '${PERSONALITY}' over to '${PATCH_DIR}/precommit/personality/provided.sh'"
-    cp -pr "${PERSONALITY}" "${PATCH_DIR}/precommit/personality/provided.sh"
   fi
 
   if [[ -n ${UNIT_TEST_FILTER_FILE}
@@ -1579,9 +1541,14 @@ function check_reexec
   # any test-patch sensitive bits
   # if so, we need to copy the universe
   # after patching it (copy=true)
+  #
+  # Note that we don't actually copy the .yetus stuff
+  # but we still need it here to trigger re-exec in
+  # the non-docker case
+  #
   for testdir in "${BINDIR}" \
-      "${PERSONALITY}" \
-      "${USER_PLUGIN_DIR}" \
+      "${BASEDIR}/.yetus/personality.sh" \
+      "${BASEDIR}/.yetus/plugins.d" \
       "${DOCKERFILE}"; do
     tpdir=$(yetus_relative_dir "${BASEDIR}" "${testdir}")
     # shellcheck disable=SC2181
@@ -1647,9 +1614,7 @@ function check_reexec
       --patch-dir="${PATCH_DIR}" \
       --tpglobaltimer="${GLOBALTIMER}" \
       --tpreexectimer="${TIMER}" \
-      --personality="${PERSONALITY}" \
-      --tpinstance="${INSTANCE}" \
-      --user-plugins="${USER_PLUGIN_DIR}"
+      --tpinstance="${INSTANCE}"
   fi
 }
 
