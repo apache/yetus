@@ -961,6 +961,7 @@ function github_status_write
       mkdir -p "${recoverydir}"
       cp -p "${tempfile}" "${recoverydir}/${GITHUB_STATUS_RECOVERY_COUNTER}.json"
       ((GITHUB_STATUS_RECOVERY_COUNTER=GITHUB_STATUS_RECOVERY_COUNTER+1))
+      echo "${RESULT}" > "${PATCH_DIR}/github-status-retry/finalresult.txt"
     fi
   fi
   return ${retval}
@@ -986,6 +987,8 @@ function github_status_recovery
     return 0
   fi
 
+  big_console_header "Attempting GitHub Status Recovery"
+
   retrydir="${filename##*/github-status-retry/}"
   ghr=$(echo "${retrydir}" | cut -f1-2 -d/)
   GITHUB_REPO=${GITHUB_REPO:-${ghr}}
@@ -1008,14 +1011,18 @@ function github_status_recovery
     return 1
   fi
 
-  while read -r; do
-    github_status_write "${REPLY}"
-    retval=$?
-  done < <(find "${PATCH_DIR}/github-status-retry" -type f)
+  RESULT=$(cat "${PATCH_DIR}/github-status-retry/finalresult.txt")
 
   if [[ "${GITHUB_CHECK_ANNOTATIONS}" == true ]]; then
     bugsystem_linecomments_trigger
   fi
+
+  while read -r; do
+    github_status_write "${REPLY}"
+    retval=$?
+  done < <(find "${PATCH_DIR}/github-status-retry" -type f -name '*.json')
+
+  github_end_checkrun "${RESULT}"
 
   return ${retval}
 }
