@@ -184,6 +184,8 @@ function github_initialize
     GITHUB_AUTH=(-H "Authorization: token ${GITHUB_TOKEN}")
   fi
 
+  GITHUB_REPO=${GITHUB_REPO:-${GITHUB_REPO_DEFAULT}}
+
   if [[ -z "${GITHUB_REPO}" ]]; then
     yetus_error "WARNING: --github-repo not autodetermined or provided. Brute forcing."
     pushd "${BASEDIR}" >/dev/null || return 1
