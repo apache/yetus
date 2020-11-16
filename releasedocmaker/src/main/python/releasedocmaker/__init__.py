@@ -566,14 +566,10 @@ class Linter:
 
 def parse_args():  # pylint: disable=too-many-branches
     """Parse command-line arguments with optparse."""
-    usage = "usage: %prog [OPTIONS] " + \
-            "--project PROJECT [--project PROJECT] " + \
-            "--version VERSION [--version VERSION2 ...]"
     parser = ArgumentParser(
-        usage=usage,
+        prog='releasedocmaker',
         epilog=
-        "Markdown-formatted CHANGELOG and RELEASENOTES files will be stored"
-        " in a directory named after the highest version provided.")
+        "--project and --version may be given multiple times.")
     parser.add_argument("--dirversions",
                         dest="versiondirs",
                         action="store_true",

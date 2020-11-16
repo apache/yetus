@@ -409,10 +409,10 @@ def write_output(filename, functions):
 def main():
     '''main entry point'''
     parser = ArgumentParser(
-        usage="usage: %prog [--skipprnorep] " + "[--output OUTFILE|--lint] " +
-        "--input INFILE " + "[--input INFILE ...]",
+        prog='shelldocs',
         epilog="You can mark a file to be ignored by shelldocs by adding"
-        " 'SHELLDOC-IGNORE' as comment in its own line.")
+        " 'SHELLDOC-IGNORE' as comment in its own line. "+
+        "--input may be given multiple times.")
     parser.add_argument("-o",
                         "--output",
                         dest="outfile",
