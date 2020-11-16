@@ -148,7 +148,7 @@ function asflicense_tests
 
     # shellcheck disable=SC2016
     "${GREP}" '\!?????' "${PATCH_DIR}/patch-asflicense.txt" \
-      | "${SED}" -e "s,${BASEDIR},,g" -e "s, \!????? ,,g" \
+      | "${SED}" -e "s,${BASEDIR}/,,g" -e "s, \!????? ,,g" \
       | "${AWK}" '{print $1":1:Missing Apache License"}' \
     >>  "${PATCH_DIR}/results-asflicense.txt"
     add_vote_table_v2 -1 asflicense \
