@@ -63,10 +63,7 @@ function bugsystem_linecomments_queue
     fi
 
     rol=${line/#${file}:}
-    if [[ "${file}" =~ ^\./ ]]; then
-      file=${file:2}
-    fi
-
+    file=${file#./}
     linenum=${rol%%:*}
     rol=${rol/#${linenum}:}
     columncheck=${rol%%:*}
@@ -109,6 +106,7 @@ function bugsystem_linecomments_trigger
 
   while read -r line;do
     fn=${line%%:*}
+    fn=${fn#./}  # strip off any leading ./
     rol=${line/#${fn}:}
     linenum=${rol%%:*}
     rol=${rol/#${linenum}:}
