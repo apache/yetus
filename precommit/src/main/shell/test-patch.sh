@@ -1443,6 +1443,9 @@ function apply_patch_file
 
   if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
     add_vote_table_v2 '-0' patch "" "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
+    if [[ "${GITHUB_ACTIONS}" == true ]]; then
+      echo "::warning::Used diff version. Binary files and potentially other changes not applied. Try a rebase and/or squashing commits."
+    fi
     big_console_header "Applying diff to ${PATCH_BRANCH}"
   else
     big_console_header "Applying patch to ${PATCH_BRANCH}"
@@ -1452,6 +1455,9 @@ function apply_patch_file
     echo "PATCH APPLICATION FAILED"
     ((RESULT = RESULT + 1))
     add_vote_table_v2 -1 patch "" "${PATCH_OR_ISSUE} does not apply to ${PATCH_BRANCH}. Rebase required? Wrong Branch? See ${PATCH_NAMING_RULE} for help."
+    if [[ "${GITHUB_ACTIONS}" == true ]]; then
+      echo "::error::Cannot apply PR on top of ${PATCH_BRANCH}. Verify the branch, try a rebase, and/or squashing commits."
+    fi
     bugsystem_finalreport 1
     cleanup_and_exit 1
   fi
