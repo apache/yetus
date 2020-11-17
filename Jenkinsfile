@@ -101,9 +101,6 @@ pipeline {
                 YETUS_ARGS+=(--jira-password="${JIRA_PASSWORD}")
                 YETUS_ARGS+=(--jira-user="${JIRA_USER}")
 
-                # pylint settings
-                YETUS_ARGS+=('--pylint=pylint2')
-
                 # auto-kill any surefire stragglers during unit test runs
                 YETUS_ARGS+=(--reapermode=report)
 
@@ -122,7 +119,7 @@ pipeline {
 
                 # don't let these tests cause -1s because we aren't really paying that
                 # much attention to them
-                YETUS_ARGS+=("--tests-filter=checkstyle,javadoc,rubocop,test4tests")
+                YETUS_ARGS+=("--tests-filter=checkstyle,test4tests")
 
                 if [[ "${USE_DEBUG_FLAG}" == true ]]; then
                   YETUS_ARGS+=("--debug")

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -14,28 +14,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """ Generate releasenotes based upon JIRA """
 
 # pylint: disable=too-many-lines
 
-from __future__ import print_function
-import sys
-from glob import glob
-from optparse import OptionParser
-from time import gmtime, strftime, sleep
-from distutils.version import LooseVersion
 import errno
+import http.client
+import json
 import os
 import re
 import shutil
-import urllib
-import urllib2
-import httplib
-import json
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+from pprint import pprint
+from glob import glob
+from argparse import ArgumentParser
+from time import gmtime, strftime, sleep
+
 sys.dont_write_bytecode = True
-# pylint: disable=wrong-import-position,relative-import
-from utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
+# pylint: disable=wrong-import-position
+from .utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
 # pylint: enable=wrong-import-position
 
 try:
@@ -44,6 +45,27 @@ except ImportError:
     print("This script requires python-dateutil module to be installed. " \
           "You can install it using:\n\t pip install python-dateutil")
     sys.exit(1)
+
+# These are done in order of preference as to which one seems to be
+# more up-to-date at any given point in time.  And yes, it is
+# ironic that packaging is usually the last one to be
+# correct.
+
+try:
+    from pip._vendor.packaging.version import LegacyVersion as PythonVersion
+except ImportError:
+    try:
+        from setuptools._vendor.packaging.version import LegacyVersion as PythonVersion
+    except ImportError:
+        try:
+            from pkg_resources._vendor.packaging.version import LegacyVersion as PythonVersion
+        except ImportError:
+            try:
+                from packaging.version import LegacyVersion as PythonVersion
+            except ImportError:
+                print(
+                    "This script requires a packaging module to be installed.")
+                sys.exit(1)
 
 RELEASE_VERSION = {}
 
@@ -77,19 +99,20 @@ ASF_LICENSE = '''
 -->
 '''
 
+
 def indexbuilder(title, asf_license, format_string):
     """Write an index file for later conversion using mvn site"""
     versions = glob("[0-9]*.[0-9]*")
-    versions.sort(key=LooseVersion, reverse=True)
+    versions = sorted(versions, reverse=True, key=PythonVersion)
     with open("index" + EXTENSION, "w") as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
         for version in versions:
             indexfile.write("* %s v%s\n" % (title, version))
             for k in ("Changelog", "Release Notes"):
-                indexfile.write(format_string %
-                                (k, version, k.upper().replace(" ", ""),
-                                 version))
+                indexfile.write(
+                    format_string %
+                    (k, version, k.upper().replace(" ", ""), version))
 
 
 def buildprettyindex(title, asf_license):
@@ -105,7 +128,7 @@ def buildindex(title, asf_license):
 def buildreadme(title, asf_license):
     """Write an index file for Github using README.md"""
     versions = glob("[0-9]*.[0-9]*")
-    versions.sort(key=LooseVersion, reverse=True)
+    versions = sorted(versions, reverse=True, key=PythonVersion)
     with open("README.md", "w") as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
@@ -113,16 +136,15 @@ def buildreadme(title, asf_license):
             indexfile.write("* %s v%s\n" % (title, version))
             for k in ("Changelog", "Release Notes"):
                 indexfile.write("    * [%s](%s/%s.%s%s)\n" %
-                                (k, version, k.upper().replace(" ", ""),
-                                 version, EXTENSION))
+                                (k, version, k.upper().replace(
+                                    " ", ""), version, EXTENSION))
 
 
-class GetVersions(object): # pylint: disable=too-few-public-methods
+class GetVersions:  # pylint: disable=too-few-public-methods
     """ List of version strings """
-
     def __init__(self, versions, projects):
         self.newversions = []
-        versions.sort(key=LooseVersion)
+        versions = sorted(versions, key=PythonVersion)
         print("Looking for %s through %s" % (versions[0], versions[-1]))
         newversions = set()
         for project in projects:
@@ -130,18 +152,20 @@ class GetVersions(object): # pylint: disable=too-few-public-methods
               "/rest/api/2/project/%s/versions" % project.upper()
             try:
                 resp = get_jira(url)
-            except (urllib2.HTTPError, urllib2.URLError, httplib.BadStatusLine):
+            except (urllib.error.HTTPError, urllib.error.URLError,
+                    http.client.BadStatusLine):
                 sys.exit(1)
 
             datum = json.loads(resp.read())
             for data in datum:
-                newversions.add(data['name'])
+                newversions.add(PythonVersion(data['name']))
         newlist = list(newversions.copy())
-        newlist.append(versions[0])
-        newlist.append(versions[-1])
-        newlist.sort(key=LooseVersion)
-        start_index = newlist.index(versions[0])
-        end_index = len(newlist) - 1 - newlist[::-1].index(versions[-1])
+        newlist.append(PythonVersion(versions[0]))
+        newlist.append(PythonVersion(versions[-1]))
+        newlist = sorted(newlist)
+        start_index = newlist.index(PythonVersion(versions[0]))
+        end_index = len(newlist) - 1 - newlist[::-1].index(
+            PythonVersion(versions[-1]))
         for newversion in newlist[start_index + 1:end_index]:
             if newversion in newversions:
                 print("Adding %s to the list" % newversion)
@@ -152,32 +176,8 @@ class GetVersions(object): # pylint: disable=too-few-public-methods
         return self.newversions
 
 
-class Version(object):
-    """Represents a version number"""
-
-    def __init__(self, data):
-        self.mod = False
-        self.data = data
-        found = re.match(r'^((\d+)(\.\d+)*).*$', data)
-        if found:
-            self.parts = [int(p) for p in found.group(1).split('.')]
-        else:
-            self.parts = []
-        # backfill version with zeros if missing parts
-        self.parts.extend((0,) * (3 - len(self.parts)))
-
-    def __str__(self):
-        if self.mod:
-            return '.'.join([str(p) for p in self.parts])
-        return self.data
-
-    def __cmp__(self, other):
-        return cmp(self.parts, other.parts)
-
-
-class Jira(object):
+class Jira:
     """A single JIRA"""
-
     def __init__(self, data, parent):
         self.key = data['key']
         self.fields = data['fields']
@@ -226,8 +226,8 @@ class Jira(object):
     def get_components(self):
         """ Get the component(s) """
         if self.fields['components']:
-            return ", ".join([comp['name'] for comp in self.fields['components']
-                             ])
+            return ", ".join(
+                [comp['name'] for comp in self.fields['components']])
         return ""
 
     def get_summary(self):
@@ -258,26 +258,25 @@ class Jira(object):
             ret = mid['key']
         return to_unicode(ret)
 
-    def __cmp__(self, other):
-        result = 0
+    def __lt__(self, other):
 
         if SORTTYPE == 'issueid':
             # compare by issue name-number
             selfsplit = self.get_id().split('-')
             othersplit = other.get_id().split('-')
-            result = cmp(selfsplit[0], othersplit[0])
-            if result == 0:
-                result = cmp(int(selfsplit[1]), int(othersplit[1]))
+            result = selfsplit[0] < othersplit[0]
+            if not result:
+                result = int(selfsplit[1]) < int(othersplit[1])
                 # dec is supported for backward compatibility
                 if SORTORDER in ['dec', 'desc']:
-                    result *= -1
+                    result = not result
 
         elif SORTTYPE == 'resolutiondate':
             dts = dateutil.parser.parse(self.fields['resolutiondate'])
             dto = dateutil.parser.parse(other.fields['resolutiondate'])
-            result = cmp(dts, dto)
+            result = dts < dto
             if SORTORDER == 'newer':
-                result *= -1
+                result = not result
 
         return result
 
@@ -317,16 +316,16 @@ class Jira(object):
         return self.important
 
 
-class JiraIter(object):
+class JiraIter:
     """An Iterator of JIRAs"""
-
     @staticmethod
     def collect_fields():
         """send a query to JIRA and collect field-id map"""
         try:
             resp = get_jira(JIRA_BASE_URL + "/rest/api/2/field")
             data = json.loads(resp.read())
-        except (urllib2.HTTPError, urllib2.URLError, httplib.BadStatusLine, ValueError):
+        except (urllib.error.HTTPError, urllib.error.URLError,
+                http.client.BadStatusLine, ValueError):
             sys.exit(1)
         field_id_map = {}
         for part in data:
@@ -342,9 +341,11 @@ class JiraIter(object):
         jql = "project in ('%s') and \
                fixVersion in ('%s') and \
                resolution = Fixed" % (pjs, ver)
-        params = urllib.urlencode({'jql': jql,
-                                   'startAt': pos,
-                                   'maxResults': count})
+        params = urllib.parse.urlencode({
+            'jql': jql,
+            'startAt': pos,
+            'maxResults': count
+        })
         return JiraIter.load_jira(params, 0)
 
     @staticmethod
@@ -352,12 +353,12 @@ class JiraIter(object):
         """send query to JIRA and collect with retries"""
         try:
             resp = get_jira(JIRA_BASE_URL + "/rest/api/2/search?%s" % params)
-        except (urllib2.URLError, httplib.BadStatusLine) as err:
+        except (urllib.error.URLError, http.client.BadStatusLine) as err:
             return JiraIter.retry_load(err, params, fail_count)
 
         try:
             data = json.loads(resp.read())
-        except httplib.IncompleteRead as err:
+        except http.client.IncompleteRead as err:
             return JiraIter.retry_load(err, params, fail_count)
         return data
 
@@ -370,9 +371,8 @@ class JiraIter(object):
             print("Connection failed %d times. Retrying." % (fail_count))
             sleep(1)
             return JiraIter.load_jira(params, fail_count)
-        else:
-            print("Connection failed %d times. Aborting." % (fail_count))
-            sys.exit(1)
+        print("Connection failed %d times. Aborting." % (fail_count))
+        sys.exit(1)
 
     @staticmethod
     def collect_jiras(ver, projects):
@@ -384,7 +384,8 @@ class JiraIter(object):
         while pos < end:
             data = JiraIter.query_jira(ver, projects, pos)
             if 'error_messages' in data:
-                print("JIRA returns error message: %s" % data['error_messages'])
+                print("JIRA returns error message: %s" %
+                      data['error_messages'])
                 sys.exit(1)
             pos = data['startAt'] + data['maxResults']
             end = data['total']
@@ -409,19 +410,20 @@ class JiraIter(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         """ get next """
-        data = self.iter.next()
+        data = next(self.iter)
         j = Jira(data, self)
         return j
 
 
-class Linter(object):
+class Linter:
     """Encapsulates lint-related functionality.
     Maintains running lint statistics about JIRAs."""
 
-    _valid_filters = ["incompatible", "important", "version", "component",
-                      "assignee"]
+    _valid_filters = [
+        "incompatible", "important", "version", "component", "assignee"
+    ]
 
     def __init__(self, version, options):
         self._warning_count = 0
@@ -429,8 +431,8 @@ class Linter(object):
         self._lint_message = ""
         self._version = version
 
-        self._filters = dict(zip(self._valid_filters, [False] * len(
-            self._valid_filters)))
+        self._filters = dict(
+            list(zip(self._valid_filters, [False] * len(self._valid_filters))))
 
         self.enabled = False
         self._parse_options(options)
@@ -439,12 +441,12 @@ class Linter(object):
     def add_parser_options(parser):
         """Add Linter options to passed optparse parser."""
         filter_string = ", ".join("'" + f + "'" for f in Linter._valid_filters)
-        parser.add_option(
+        parser.add_argument(
             "-n",
             "--lint",
             dest="lint",
             action="append",
-            type="string",
+            type=str,
             help="Specify lint filters. Valid filters are " + filter_string +
             ". " + "'all' enables all lint filters. " +
             "Multiple filters can be specified comma-delimited and " +
@@ -535,7 +537,8 @@ class Linter(object):
         if not self.enabled:
             return
         if not jira.get_release_note():
-            if self._filters["incompatible"] and jira.get_incompatible_change():
+            if self._filters["incompatible"] and jira.get_incompatible_change(
+            ):
                 self._warning_count += 1
                 self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
                                 (sanitize_text(jira.get_id()))
@@ -561,67 +564,64 @@ class Linter(object):
                             % (" and ".join(error_message), jira.get_id())
 
 
-def parse_args(): # pylint: disable=too-many-branches
+def parse_args():  # pylint: disable=too-many-branches
     """Parse command-line arguments with optparse."""
-    usage = "usage: %prog [OPTIONS] " + \
-            "--project PROJECT [--project PROJECT] " + \
-            "--version VERSION [--version VERSION2 ...]"
-    parser = OptionParser(
-        usage=usage,
+    parser = ArgumentParser(
+        prog='releasedocmaker',
         epilog=
-        "Markdown-formatted CHANGELOG and RELEASENOTES files will be stored"
-        " in a directory named after the highest version provided.")
-    parser.add_option("--dirversions",
-                      dest="versiondirs",
-                      action="store_true",
-                      default=False,
-                      help="Put files in versioned directories")
-    parser.add_option("--empty",
-                      dest="empty",
-                      action="store_true",
-                      default=False,
-                      help="Create empty files when no issues")
-    parser.add_option("--extension",
-                      dest="extension",
-                      default=EXTENSION,
-                      type="string",
-                      help="Set the file extension of created Markdown files")
-    parser.add_option("--fileversions",
-                      dest="versionfiles",
-                      action="store_true",
-                      default=False,
-                      help="Write files with embedded versions")
-    parser.add_option("-i",
-                      "--index",
-                      dest="index",
-                      action="store_true",
-                      default=False,
-                      help="build an index file")
-    parser.add_option("-l",
-                      "--license",
-                      dest="license",
-                      action="store_true",
-                      default=False,
-                      help="Add an ASF license")
-    parser.add_option("-p",
-                      "--project",
-                      dest="projects",
-                      action="append",
-                      type="string",
-                      help="projects in JIRA to include in releasenotes",
-                      metavar="PROJECT")
-    parser.add_option("--prettyindex",
-                      dest="prettyindex",
-                      action="store_true",
-                      default=False,
-                      help="build an index file with pretty URLs")
-    parser.add_option("-r",
-                      "--range",
-                      dest="range",
-                      action="store_true",
-                      default=False,
-                      help="Given versions are a range")
-    parser.add_option(
+        "--project and --version may be given multiple times.")
+    parser.add_argument("--dirversions",
+                        dest="versiondirs",
+                        action="store_true",
+                        default=False,
+                        help="Put files in versioned directories")
+    parser.add_argument("--empty",
+                        dest="empty",
+                        action="store_true",
+                        default=False,
+                        help="Create empty files when no issues")
+    parser.add_argument(
+        "--extension",
+        dest="extension",
+        default=EXTENSION,
+        type=str,
+        help="Set the file extension of created Markdown files")
+    parser.add_argument("--fileversions",
+                        dest="versionfiles",
+                        action="store_true",
+                        default=False,
+                        help="Write files with embedded versions")
+    parser.add_argument("-i",
+                        "--index",
+                        dest="index",
+                        action="store_true",
+                        default=False,
+                        help="build an index file")
+    parser.add_argument("-l",
+                        "--license",
+                        dest="license",
+                        action="store_true",
+                        default=False,
+                        help="Add an ASF license")
+    parser.add_argument("-p",
+                        "--project",
+                        dest="projects",
+                        action="append",
+                        type=str,
+                        help="projects in JIRA to include in releasenotes",
+                        metavar="PROJECT")
+    parser.add_argument("--prettyindex",
+                        dest="prettyindex",
+                        action="store_true",
+                        default=False,
+                        help="build an index file with pretty URLs")
+    parser.add_argument("-r",
+                        "--range",
+                        dest="range",
+                        action="store_true",
+                        default=False,
+                        help="Given versions are a range")
+    parser.add_argument(
         "--sortorder",
         dest="sortorder",
         metavar="TYPE",
@@ -629,67 +629,72 @@ def parse_args(): # pylint: disable=too-many-branches
         # dec is supported for backward compatibility
         choices=["asc", "dec", "desc", "newer", "older"],
         help="Sorting order for sort type (default: %s)" % SORTORDER)
-    parser.add_option("--sorttype",
-                      dest="sorttype",
-                      metavar="TYPE",
-                      default=SORTTYPE,
-                      choices=["resolutiondate", "issueid"],
-                      help="Sorting type for issues (default: %s)" % SORTTYPE)
-    parser.add_option(
+    parser.add_argument("--sorttype",
+                        dest="sorttype",
+                        metavar="TYPE",
+                        default=SORTTYPE,
+                        choices=["resolutiondate", "issueid"],
+                        help="Sorting type for issues (default: %s)" %
+                        SORTTYPE)
+    parser.add_argument(
         "-t",
         "--projecttitle",
         dest="title",
-        type="string",
+        type=str,
         help="Title to use for the project (default is Apache PROJECT)")
-    parser.add_option("-u",
-                      "--usetoday",
-                      dest="usetoday",
-                      action="store_true",
-                      default=False,
-                      help="use current date for unreleased versions")
-    parser.add_option("-v",
-                      "--version",
-                      dest="versions",
-                      action="append",
-                      type="string",
-                      help="versions in JIRA to include in releasenotes",
-                      metavar="VERSION")
-    parser.add_option(
+    parser.add_argument("-u",
+                        "--usetoday",
+                        dest="usetoday",
+                        action="store_true",
+                        default=False,
+                        help="use current date for unreleased versions")
+    parser.add_argument("-v",
+                        "--version",
+                        dest="versions",
+                        action="append",
+                        type=str,
+                        help="versions in JIRA to include in releasenotes",
+                        metavar="VERSION")
+    parser.add_argument(
         "-V",
         dest="release_version",
         action="store_true",
         default=False,
         help="display version information for releasedocmaker and exit.")
-    parser.add_option("-O",
-                      "--outputdir",
-                      dest="output_directory",
-                      action="append",
-                      type="string",
-                      help="specify output directory to put release docs to.")
-    parser.add_option("-B",
-                      "--baseurl",
-                      dest="base_url",
-                      action="append",
-                      type="string",
-                      help="specify base URL of the JIRA instance.")
-    parser.add_option(
+    parser.add_argument(
+        "-O",
+        "--outputdir",
+        dest="output_directory",
+        action="append",
+        type=str,
+        help="specify output directory to put release docs to.")
+    parser.add_argument("-B",
+                        "--baseurl",
+                        dest="base_url",
+                        action="append",
+                        type=str,
+                        help="specify base URL of the JIRA instance.")
+    parser.add_argument(
         "--retries",
         dest="retries",
         action="append",
-        type="int",
+        type=int,
         help="Specify how many times to retry connection for each URL.")
-    parser.add_option(
+    parser.add_argument(
         "--skip-credits",
         dest="skip_credits",
         action="store_true",
         default=False,
-        help="While creating release notes skip the 'reporter' and 'contributor' columns")
-    parser.add_option("-X",
-                      "--incompatiblelabel",
-                      dest="incompatible_label",
-                      default="backward-incompatible",
-                      type="string",
-                      help="Specify the label to indicate backward incompatibility.")
+        help=
+        "While creating release notes skip the 'reporter' and 'contributor' columns"
+    )
+    parser.add_argument(
+        "-X",
+        "--incompatiblelabel",
+        dest="incompatible_label",
+        default="backward-incompatible",
+        type=str,
+        help="Specify the label to indicate backward incompatibility.")
 
     Linter.add_parser_options(parser)
 
@@ -697,13 +702,12 @@ def parse_args(): # pylint: disable=too-many-branches
         parser.print_help()
         sys.exit(1)
 
-    (options, _) = parser.parse_args()
+    options = parser.parse_args()
 
     # Handle the version string right away and exit
     if options.release_version:
-        with open(
-            os.path.join(
-                os.path.dirname(__file__), "../VERSION"), 'r') as ver_file:
+        with open(os.path.join(os.path.dirname(__file__), "../VERSION"),
+                  'r') as ver_file:
             print(ver_file.read())
         sys.exit(0)
 
@@ -726,19 +730,21 @@ def parse_args(): # pylint: disable=too-many-branches
 
     if options.range or len(options.versions) > 1:
         if not options.versiondirs and not options.versionfiles:
-            parser.error("Multiple versions require either --fileversions or --dirversions")
+            parser.error(
+                "Multiple versions require either --fileversions or --dirversions"
+            )
 
     return options
 
 
-def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-locals
+def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-locals
     """ hey, it's main """
-    global JIRA_BASE_URL #pylint: disable=global-statement
-    global BACKWARD_INCOMPATIBLE_LABEL #pylint: disable=global-statement
-    global SORTTYPE #pylint: disable=global-statement
-    global SORTORDER #pylint: disable=global-statement
-    global NUM_RETRIES #pylint: disable=global-statement
-    global EXTENSION #pylint: disable=global-statement
+    global JIRA_BASE_URL  #pylint: disable=global-statement
+    global BACKWARD_INCOMPATIBLE_LABEL  #pylint: disable=global-statement
+    global SORTTYPE  #pylint: disable=global-statement
+    global SORTORDER  #pylint: disable=global-statement
+    global NUM_RETRIES  #pylint: disable=global-statement
+    global EXTENSION  #pylint: disable=global-statement
 
     options = parse_args()
 
@@ -753,7 +759,7 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
                 pass
             else:
                 print("Unable to create output directory %s: %u, %s" % \
-                        (options.output_directory, exc.errno, exc.message))
+                        (options.output_directory, exc.errno, exc.strerror))
                 sys.exit(1)
         os.chdir(options.output_directory)
 
@@ -769,11 +775,10 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
     projects = options.projects
 
     if options.range is True:
-        versions = [Version(v)
-                    for v in GetVersions(options.versions, projects).getlist()]
+        versions = GetVersions(options.versions, projects).getlist()
     else:
-        versions = [Version(v) for v in options.versions]
-    versions.sort()
+        versions = [PythonVersion(v) for v in options.versions]
+    versions = sorted(versions)
 
     SORTTYPE = options.sorttype
     SORTORDER = options.sortorder
@@ -793,7 +798,8 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
         linter = Linter(vstr, options)
         jlist = sorted(JiraIter(vstr, projects))
         if not jlist and not options.empty:
-            print("There is no issue which has the specified version: %s" % version)
+            print("There is no issue which has the specified version: %s" %
+                  version)
             continue
 
         if vstr in RELEASE_VERSION:
@@ -807,57 +813,67 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
             os.mkdir(vstr)
 
         if options.versionfiles and options.versiondirs:
-            reloutputs = Outputs("%(ver)s/RELEASENOTES.%(ver)s%(ext)s",
-                                 "%(ver)s/RELEASENOTES.%(key)s.%(ver)s%(ext)s", [],
-                                 {"ver": version,
-                                  "date": reldate,
-                                  "title": title,
-                                  "ext": EXTENSION})
+            reloutputs = Outputs(
+                "%(ver)s/RELEASENOTES.%(ver)s%(ext)s",
+                "%(ver)s/RELEASENOTES.%(key)s.%(ver)s%(ext)s", [], {
+                    "ver": version,
+                    "date": reldate,
+                    "title": title,
+                    "ext": EXTENSION
+                })
             choutputs = Outputs("%(ver)s/CHANGELOG.%(ver)s%(ext)s",
                                 "%(ver)s/CHANGELOG.%(key)s.%(ver)s%(ext)s", [],
-                                {"ver": version,
-                                 "date": reldate,
-                                 "title": title,
-                                 "ext": EXTENSION})
+                                {
+                                    "ver": version,
+                                    "date": reldate,
+                                    "title": title,
+                                    "ext": EXTENSION
+                                })
         elif options.versiondirs:
             reloutputs = Outputs("%(ver)s/RELEASENOTES%(ext)s",
-                                 "%(ver)s/RELEASENOTES.%(key)s%(ext)s", [],
-                                 {"ver": version,
-                                  "date": reldate,
-                                  "title": title,
-                                  "ext": EXTENSION})
+                                 "%(ver)s/RELEASENOTES.%(key)s%(ext)s", [], {
+                                     "ver": version,
+                                     "date": reldate,
+                                     "title": title,
+                                     "ext": EXTENSION
+                                 })
             choutputs = Outputs("%(ver)s/CHANGELOG%(ext)s",
-                                "%(ver)s/CHANGELOG.%(key)s%(ext)s", [],
-                                {"ver": version,
-                                 "date": reldate,
-                                 "title": title,
-                                 "ext": EXTENSION})
+                                "%(ver)s/CHANGELOG.%(key)s%(ext)s", [], {
+                                    "ver": version,
+                                    "date": reldate,
+                                    "title": title,
+                                    "ext": EXTENSION
+                                })
         elif options.versionfiles:
             reloutputs = Outputs("RELEASENOTES.%(ver)s%(ext)s",
-                                 "RELEASENOTES.%(key)s.%(ver)s%(ext)s", [],
-                                 {"ver": version,
-                                  "date": reldate,
-                                  "title": title,
-                                  "ext": EXTENSION})
+                                 "RELEASENOTES.%(key)s.%(ver)s%(ext)s", [], {
+                                     "ver": version,
+                                     "date": reldate,
+                                     "title": title,
+                                     "ext": EXTENSION
+                                 })
             choutputs = Outputs("CHANGELOG.%(ver)s%(ext)s",
-                                "CHANGELOG.%(key)s.%(ver)s%(ext)s", [],
-                                {"ver": version,
-                                 "date": reldate,
-                                 "title": title,
-                                 "ext": EXTENSION})
+                                "CHANGELOG.%(key)s.%(ver)s%(ext)s", [], {
+                                    "ver": version,
+                                    "date": reldate,
+                                    "title": title,
+                                    "ext": EXTENSION
+                                })
         else:
             reloutputs = Outputs("RELEASENOTES%(ext)s",
-                                 "RELEASENOTES.%(key)s%(ext)s", [],
-                                 {"ver": version,
-                                  "date": reldate,
-                                  "title": title,
-                                  "ext": EXTENSION})
-            choutputs = Outputs("CHANGELOG%(ext)s",
-                                "CHANGELOG.%(key)s%(ext)s", [],
-                                {"ver": version,
-                                 "date": reldate,
-                                 "title": title,
-                                 "ext": EXTENSION})
+                                 "RELEASENOTES.%(key)s%(ext)s", [], {
+                                     "ver": version,
+                                     "date": reldate,
+                                     "title": title,
+                                     "ext": EXTENSION
+                                 })
+            choutputs = Outputs("CHANGELOG%(ext)s", "CHANGELOG.%(key)s%(ext)s",
+                                [], {
+                                    "ver": version,
+                                    "date": reldate,
+                                    "title": title,
+                                    "ext": EXTENSION
+                                })
 
         if options.license is True:
             reloutputs.write_all(ASF_LICENSE)
@@ -915,8 +931,8 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
                 if not jira.get_release_note():
                     line = '\n**WARNING: No release note provided for this change.**\n\n'
                 else:
-                    line = '\n%s\n\n' % (
-                        processrelnote(jira.get_release_note()))
+                    line = '\n%s\n\n' % (processrelnote(
+                        jira.get_release_note()))
                 reloutputs.write_key_raw(jira.get_project(), line)
 
             linter.lint(jira)
@@ -945,25 +961,29 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
             choutputs.write_all("### INCOMPATIBLE CHANGES:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(incompatlist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(incompatlist, options.skip_credits,
+                                 JIRA_BASE_URL)
 
         if importantlist:
             choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(importantlist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(importantlist, options.skip_credits,
+                                 JIRA_BASE_URL)
 
         if newfeaturelist:
             choutputs.write_all("\n\n### NEW FEATURES:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(newfeaturelist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(newfeaturelist, options.skip_credits,
+                                 JIRA_BASE_URL)
 
         if improvementlist:
             choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(improvementlist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(improvementlist, options.skip_credits,
+                                 JIRA_BASE_URL)
 
         if buglist:
             choutputs.write_all("\n\n### BUG FIXES:\n\n")
@@ -981,13 +1001,15 @@ def main(): # pylint: disable=too-many-statements, too-many-branches, too-many-l
             choutputs.write_all("\n\n### SUB-TASKS:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(subtasklist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(subtasklist, options.skip_credits,
+                                 JIRA_BASE_URL)
 
         if tasklist or otherlist:
             choutputs.write_all("\n\n### OTHER:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(otherlist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(otherlist, options.skip_credits,
+                                 JIRA_BASE_URL)
             choutputs.write_list(tasklist, options.skip_credits, JIRA_BASE_URL)
 
         choutputs.write_all("\n\n")

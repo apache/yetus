@@ -53,9 +53,9 @@ In order to solve these problems, `releasedocmaker` was written to automatically
 
 # Requirements
 
-* Python 2.7 with dateutil extension
+* Python 3.8 with dateutil extension
 
-dateutil may be installed via pip:  `pip2 install python-dateutil`
+dateutil may be installed via pip:  `pip3 install python-dateutil`
 
 # Basic Usage
 

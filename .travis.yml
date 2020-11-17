@@ -32,10 +32,9 @@ script:
     --patch-dir=/tmp/yetus-out
     --java-home=/usr/lib/jvm/java-8-openjdk-amd64
     --plugins=all
-    --pylint=pylint2
     --docker-cache-from=apache/yetus:main
     --html-report-file=/tmp/yetus-out/report.html
     --console-report-file=/tmp/yetus-out/console.txt
     --brief-report-file=/tmp/yetus-out/brief.txt
     --bugcomments=briefreport,htmlout
-    --tests-filter=checkstyle,javadoc,rubocop,test4tests
+    --tests-filter=checkstyle,test4tests
