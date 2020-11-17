@@ -325,6 +325,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3
 RUN ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint
+RUN ln -s /usr/local/bin/pip3 /usr/local/bin/pip
 
 ####
 # Install ruby and associated bits
