@@ -203,8 +203,6 @@ function exclude_paths_from_changed_files
   done
 
   CHANGED_FILES=("${a[@]}")
-
-  find_changed_dirs
 }
 
 ## @description Check for directories to skip during
