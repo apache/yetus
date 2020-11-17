@@ -319,6 +319,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm /usr/local/bin/pip /tmp/get-pip.py \
     && pip3 install -v \
         astroid==2.4.2 \
+        git+https://github.com/codespell-project/codespell.git@8d8d4ae2bbd24a91d1a9bd8aec25c9f86724c280 \
         docker-compose==1.26.2 \
         pylint==2.5.3 \
         yamllint==1.24.2 \
@@ -344,7 +345,6 @@ RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
 # user's can always override these as needed
 ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
 ENV BUNDLE_PATH /var/tmp/.bundler-gems
-
 
 ###
 # Install npm and JSHint

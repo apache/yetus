@@ -181,7 +181,7 @@ after_configuration do # rubocop:disable Metrics/BlockLength
 
   # For Precommit we regenerate source files so they can be rendered.
   # we rely on a symlink. to avoid an error from the file watcher, our target
-  # has to be outside of hte asf-site-src directory.
+  # has to be outside of the asf-site-src directory.
   # TODO when we can, update to middleman 4 so we can use multiple source dirs
   # instead of symlinks
   FileUtils.mkdir_p 'target/in-progress/precommit/apidocs/'
