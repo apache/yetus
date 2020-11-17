@@ -41,9 +41,7 @@ jobs:
           patchdir: ./out
           buildtool: maven
           githubtoken: ${{ secrets.GITHUB_TOKEN }}
-          pylint: pylint2
-          pip: pip2
-          testsfilter: checkstyle,javadoc,test4tests
+          testsfilter: checkstyle,test4tests
       - name: Artifact output
         if: ${{ always() }}
         uses: actions/upload-artifact@v2

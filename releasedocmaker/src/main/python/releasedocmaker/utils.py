@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -15,20 +15,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """ Utility methods used by releasedocmaker """
 
-from __future__ import print_function
 import base64
 import os
 import re
-import urllib2
+import urllib.request
+import urllib.error
+import urllib.parse
 import sys
 import json
-import httplib
+import http.client
 sys.dont_write_bytecode = True
 
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
+
 
 def get_jira(jira_url):
     """ Provide standard method for fetching content from apache jira and
@@ -38,14 +39,15 @@ def get_jira(jira_url):
     username = os.environ.get('RDM_JIRA_USERNAME')
     password = os.environ.get('RDM_JIRA_PASSWORD')
 
-    req = urllib2.Request(jira_url)
+    req = urllib.request.Request(jira_url)
     if username and password:
-        basicauth = base64.encodestring("%s:%s" % (username, password)).replace('\n', '')
+        basicauth = base64.b64encode("%s:%s" % (username, password)).replace(
+            '\n', '')
         req.add_header('Authorization', 'Basic %s' % basicauth)
 
     try:
-        response = urllib2.urlopen(req)
-    except urllib2.HTTPError as http_err:
+        response = urllib.request.urlopen(req)
+    except urllib.error.HTTPError as http_err:
         code = http_err.code
         print("JIRA returns HTTP error %d: %s. Aborting." % \
               (code, http_err.msg))
@@ -59,11 +61,11 @@ def get_jira(jira_url):
         except ValueError:
             print("FATAL: Could not parse json response from server.")
         sys.exit(1)
-    except urllib2.URLError as url_err:
+    except urllib.error.URLError as url_err:
         print("Error contacting JIRA: %s\n" % jira_url)
         print("Reason: %s" % url_err.reason)
         raise url_err
-    except httplib.BadStatusLine as err:
+    except http.client.BadStatusLine as err:
         raise err
     return response
 
@@ -78,22 +80,15 @@ def format_components(input_string):
         ret = "."
     return sanitize_markdown(re.sub(NAME_PATTERN, "", ret))
 
-def encode_utf8(input_string):
-    """ Return the string encoded as UTF-8.
-        This is necessary for handling markdown in Python. """
-    return input_string.encode('utf-8')
-
 
 def sanitize_markdown(input_string):
     """ Sanitize Markdown input so it can be handled by Python.
 
         The expectation is that the input is already valid Markdown,
         so no additional escaping is required. """
-    input_string = encode_utf8(input_string)
-    input_string = input_string.replace("\r", "")
+    input_string = input_string.replace('\r', '')
     input_string = input_string.rstrip()
     return input_string
-
 
 
 def sanitize_text(input_string):
@@ -122,7 +117,7 @@ def sanitize_text(input_string):
     output_string = ""
     for char in input_string:
         out = char
-        if char in escapes:
+        if escapes.get(char):
             out = escapes[char]
         output_string += out
 
@@ -144,12 +139,11 @@ def to_unicode(obj):
     """ convert string to unicode """
     if obj is None:
         return ""
-    return unicode(obj)
+    return str(obj)
 
 
-class Outputs(object):
+class Outputs:
     """Several different files to output to at the same time"""
-
     def __init__(self, base_file_name, file_name_pattern, keys, params=None):
         if params is None:
             params = {}
@@ -175,12 +169,12 @@ class Outputs(object):
         """ write everything without changes """
         self.base.write(input_string)
         if key in self.others:
-            self.others[key].write(input_string)
+            self.others[key].write(input_string.decode("utf-8"))
 
     def close(self):
         """ close all the outputs """
         self.base.close()
-        for value in self.others.values():
+        for value in list(self.others.values()):
             value.close()
 
     def write_list(self, mylist, skip_credits, base_url):
@@ -192,13 +186,14 @@ class Outputs(object):
             else:
                 line = '| [{id}]({base_url}/browse/{id}) | {summary} |  ' \
                        '{priority} | {component} | {reporter} | {assignee} |\n'
-            args = {'id': encode_utf8(jira.get_id()),
-                    'base_url': base_url,
-                    'summary': sanitize_text(jira.get_summary()),
-                    'priority': sanitize_text(jira.get_priority()),
-                    'component': format_components(jira.get_components()),
-                    'reporter': sanitize_text(jira.get_reporter()),
-                    'assignee': sanitize_text(jira.get_assignee())
-                   }
+            args = {
+                'id': jira.get_id(),
+                'base_url': base_url,
+                'summary': sanitize_text(jira.get_summary()),
+                'priority': sanitize_text(jira.get_priority()),
+                'component': format_components(jira.get_components()),
+                'reporter': sanitize_text(jira.get_reporter()),
+                'assignee': sanitize_text(jira.get_assignee())
+            }
             line = line.format(**args)
             self.write_key_raw(jira.get_project(), line)

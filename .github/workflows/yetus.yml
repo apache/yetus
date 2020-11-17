@@ -52,7 +52,6 @@ jobs:
           --plugins=all
           --proclimit=2000
           --project=yetus
-          --pylint=pylint2
           --tests-filter=checkstyle,javadoc,rubocop,test4tests
       - name: Artifact output
         if: ${{ always() }}

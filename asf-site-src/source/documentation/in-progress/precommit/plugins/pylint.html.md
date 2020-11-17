@@ -45,8 +45,7 @@ None
 
 # Docker Notes
 
-The default Apache Yetus image comes with `pip2`/`pylint2` for Python 2.x support and `pip3`/`pylint3` for Python 3.x support.
-The `pip` and `pylint` point to the Python 3.x versions.
+None
 
 # Developer Notes
 
