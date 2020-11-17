@@ -23,12 +23,12 @@ CODESPELL_TIMER=0
 CODESPELL=${CODESPELL:-$(command -v codespell 2>/dev/null)}
 CODESPELL_X_FILE=".codespellignorelines"
 
-function github_usage
+function codespell_usage
 {
   yetus_add_option "--codespell-exclude-lines=<file>" "Lines to ignore via codespell -x (default: '${CODESPELL_X_FILE}')"
 }
 
-function github_parse_args
+function codespell_parse_args
 {
   declare i
 
@@ -41,7 +41,11 @@ function github_parse_args
     esac
   done
 
+  pushd "${BASEDIR}" >/dev/null || return 1
   CODESPELL_X_FILE=$(yetus_abs "${CODESPELL_X_FILE}")
+  popd >/dev/null || return 1
+
+  return 0
 }
 
 function codespell_filefilter
@@ -71,23 +75,18 @@ function codespell_logic
   # files, but this should at least cut back on the runtime
 
   if [[ -f "${CODESPELL_X_FILE}" ]]; then
-    codespellargs=(-x "${CODESPELL_X_FILE}")
+    codespellargs=("--exclude-file" "${CODESPELL_X_FILE}")
   fi
 
-  for i in "${CHANGED_DIRS[@]}"; do
-    if [[ -f "${i}" ]]; then
-      # specifically add ./ because otherwise the .codespellrc file gets weird
-      "${CODESPELL}" \
-        --disable-colors \
-        --interactive 0 \
-        --quiet-level 2 \
-        "${codespellargs[@]}" \
-        "./${i}" \
-      | "${SED}" -e 's,^./,,g' \
-        >> "${PATCH_DIR}/${repostatus}-codespell-tmp.txt" \
-        2>/dev/null
-    fi
-  done
+  # specifically add ./ because otherwise the .codespellrc file gets weird
+  "${CODESPELL}" \
+    --disable-colors \
+    --interactive 0 \
+    --quiet-level 2 \
+    "${codespellargs[@]}" \
+    "./${i}" \
+  | "${SED}" -e 's,^./,,g' \
+    >> "${PATCH_DIR}/${repostatus}-codespell-tmp.txt"
 
   for i in "${CHANGED_FILES[@]}"; do
     "${GREP}" -E "^${i}:" \
@@ -147,7 +146,7 @@ function codespell_postapply
     "${PATCH_DIR}/patch-codespell-result.txt"
 }
 
-function codespell_postcompile
+function codespell_precompile
 {
   declare repostatus=$1
 
