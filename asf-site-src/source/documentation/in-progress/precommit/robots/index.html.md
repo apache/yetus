@@ -47,6 +47,7 @@
 The following systems are detected automatically when run in one of these environments:
 
 * [Azure Pipelines](azurepipelines)
+* [Buildkite](buildkite)
 * [Circle CI](circleci)
 * [Cirrus CI](cirrusci)
 * [GitHub Actions](githubactions)
