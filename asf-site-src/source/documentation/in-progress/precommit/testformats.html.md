@@ -45,4 +45,4 @@ Using the results stored by pluginname\_process\_tests, write them to the test r
 
 # Example
 
-For an example of how to write a test-format plugin, you can look at [junit plugin](https://github.com/apache/yetus/blob/main/precommit/test-patch.d/junit.sh) bundled in Apache Yetus.
+For an example of how to write a test-format plugin, you can look at [junit plugin](https://github.com/apache/yetus/blob/main/precommit/plugins.d/junit.sh) bundled in Apache Yetus.

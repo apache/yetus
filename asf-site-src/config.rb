@@ -151,7 +151,7 @@ def precommit_shelldocs(apidocs_dir, source_dir)
   # primary API
   shelldocs("#{apidocs_dir}/test-patch.html.md", ["#{source_dir}/test-patch.sh"])
   # plugins API
-  shelldocs("#{apidocs_dir}/plugins.html.md", Dir.glob("#{source_dir}/test-patch.d/*.sh"))
+  shelldocs("#{apidocs_dir}/plugins.html.md", Dir.glob("#{source_dir}/plugins.d/*.sh"))
 end
 
 # Add in apidocs rendered by other parts of the repo
