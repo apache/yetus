@@ -109,6 +109,7 @@ These plug-ins are native to Apace Yetus and are (usually!) always available:
 Automation and Isolation:
 
 * [Azure Pipelines](robots/azurepipelines)
+* [Buildkite](robots/buildkite)
 * [Circle CI](robots/circleci)
 * [Cirrus CI](robots/cirrusci)
 * [Docker](docker) version 1.7.0+
