@@ -123,7 +123,7 @@
 
 <h1 id="name">Name</h1>
 
-<p>pylint</p>
+<p>codespell</p>
 
 <h1 id="category">Category</h1>
 
@@ -131,7 +131,11 @@
 
 <h1 id="description">Description</h1>
 
-<p>Runs <a href="http://pylint.org/">pylint</a> against Python code.</p>
+<p>Runs <a href="https://github.com/codespell-project/codespell">codespell</a> on the repository.</p>
+
+<p>Due to how <code>codespell</code> executes, <code>./</code> is prefixed onto paths at runtime.  This prefixing is<br />
+to be a bit more consistent with how one would run it from the command line such<br />
+that <code>.codespellrc</code> is easier to manage.</p>
 
 <h1 id="environment-variables">Environment Variables</h1>
 
@@ -148,24 +152,8 @@
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: left"><code>--pylint=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>pylint</code> binary if it is not on the path.  Default is 'pylint'.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-pip-cmd=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>pip</code> binary for install requirements.txt files.  Default is 'pip'.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-rcfile=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>.pylintrc</code> file to override <code>pylint</code> default.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-requirements=&lt;bool&gt;</code></td>
-      <td style="text-align: left">Process any <code>requirements.txt</code> file.  Default is 'false'.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-use-user=&lt;bool&gt;</code></td>
-      <td style="text-align: left">Use <code>--user</code> for processing the <code>requirements.txt</code> file.  Default is 'true'.</td>
+      <td style="text-align: left"><code>--codespell-exclude-lines=&lt;file&gt;</code></td>
+      <td style="text-align: left">File of lines that codespell should ignore (defaults to <code>.codespellignorelines</code>)</td>
     </tr>
   </tbody>
 </table>

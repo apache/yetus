@@ -121,62 +121,31 @@
   under the License.
 -->
 
-<h1 id="name">Name</h1>
+<h1 id="robots-buildkite">Robots: Buildkite</h1>
 
-<p>pylint</p>
+<p>TRIGGER: ${BUILDKITE}=true</p>
 
-<h1 id="category">Category</h1>
+<p>The recommended configuration is to have Apache Yetus installed on the host running the build agent.</p>
 
-<p>Test</p>
+<p>If <code>buildkite-agent</code> is available and working, then artifacts will be automatically uploaded and an<br />
+annotation added to the build console if <code>buildkiteannotate</code> bugsystem is enabled.<br />
+If <code>${ARTIFACTS_PATH}</code> is configured, then <code>--patch-dir</code> is set to the first listed directory path<br />
+with a <code>/yetus</code> suffix. However, links to the location logs must still be configured manually.</p>
 
-<h1 id="description">Description</h1>
+<h1 id="buildkite-annotations">Buildkite Annotations</h1>
 
-<p>Runs <a href="http://pylint.org/">pylint</a> against Python code.</p>
+<p>If precommit is running in a mode such that <code>buildkite-agent</code> isn't available (e.g., using the Apache Yetus container image)<br />
+the <code>buildkite-annotation-recovery</code> tool may be used to send the annotations and artifacts to Buildkite:</p>
 
-<h1 id="environment-variables">Environment Variables</h1>
+<p>The usage is simple:</p>
 
-<p>None</p>
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>buildkite-recovery <span class="nt">--patch-dir</span><span class="o">=</span>&lt;pre-existing patch directory&gt;
+</code></pre></div>
+<p>See also:</p>
 
-<h1 id="options">Options</h1>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th style="text-align: left">Option</th>
-      <th style="text-align: left">Notes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><code>--pylint=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>pylint</code> binary if it is not on the path.  Default is 'pylint'.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-pip-cmd=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>pip</code> binary for install requirements.txt files.  Default is 'pip'.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-rcfile=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>.pylintrc</code> file to override <code>pylint</code> default.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-requirements=&lt;bool&gt;</code></td>
-      <td style="text-align: left">Process any <code>requirements.txt</code> file.  Default is 'false'.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--pylint-use-user=&lt;bool&gt;</code></td>
-      <td style="text-align: left">Use <code>--user</code> for processing the <code>requirements.txt</code> file.  Default is 'true'.</td>
-    </tr>
-  </tbody>
-</table>
-
-<h1 id="docker-notes">Docker Notes</h1>
-
-<p>None</p>
-
-<h1 id="developer-notes">Developer Notes</h1>
-
-<p>None</p>
+<ul>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/.buildkite">.buildkite</a> for some tips and tricks.</li>
+</ul>
 
     </div>
       
