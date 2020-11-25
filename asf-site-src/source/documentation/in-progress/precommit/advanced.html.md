@@ -27,8 +27,8 @@
   * [Plug-in Importation](#plug-in-importation)
   * [Test Plug-ins](#test-plug-ins)
 * [Personalities](#personalities)
-  * [Configuring for Other Projects](#configuring-for-other-projects)
-  * [Global Definitions](#global-definitions)
+  * [Global Settings](#global-settings)
+  * [Custom Argument Parsing](#custom-argument-parsing)
   * [Test Determination](#test-determination)
   * [Module & Profile Determination](#module--profile-determination)
   * [Enabling Plug-ins](#enabling-plug-ins)
@@ -46,7 +46,7 @@ The reaper will run after every 'external' command that is printed on the consol
 
 # Plug-ins
 
-test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
+test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called plugins.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
 
 ## Common Plug-in Functions
 
@@ -106,7 +106,7 @@ Plug-ins are imported from several key directories:
 
 * personality contains bundled personalities for various projects.  These will be imported individually based upon either a project name or if specifically identified with the `--personality` flag.
 
-* test-patch.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.
+* plugins.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.
 
 If the `--skip-system-plugins` flag is passed, then only core.d is imported.
 
@@ -140,25 +140,26 @@ add_test_type <pluginname>
 
 # Personalities
 
-## Configuring for Other Projects
-
 It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project `personality` should be added that enacts these custom rules.
 
-A personality consists of two functions. One that determines which test types to run and another that allows a project to dictate ordering rules, flags, and profiles on a per-module, per-test run.
+A personality consists of one or more functions.
 
 There can be only **one** of each personality function defined.
 
-## Global Definitions
+## Global Settings
 
 Globals for personalities should be defined in the `personality_globals` function.  This function is called *after* the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:
 
 ```bash
 function personality_globals
 {
-  PATCH_BRANCH_DEFAULT=main
   GITHUB_REPO="apache/yetus"
+  PATCH_BRANCH_DEFAULT=main
+  PROJECT_NAME="yetus"
 }
 ```
+
+## Custom Argument Parsing
 
 Additionally, a personality may require some outside help from the user.  The `personality_parse_args`
 function is called almost immediately after the personality is loaded and plug-ins parse arguments.
@@ -170,7 +171,7 @@ function personality_parse_args
 }
 ```
 
-It is important to note that this function is called AFTER personality_globals.
+It is important to note that this function is called AFTER `personality_globals`.
 
 ## Test Determination
 
@@ -193,6 +194,9 @@ function personality_file_tests
 ```
 
 The `add_test` function is used to activate the standard tests.  Additional plug-ins (such as checkstyle), will get queried on their own.
+
+This function may also be defined as `PROJECT_NAME_personality_file_tests`, where `PROJECT_NAME` matches the value passed via `--project`
+or autodetermined by various means.  The `PROJECT_NAME` version takes precedence over the generic version.
 
 ## Module & Profile Determination
 
@@ -242,6 +246,9 @@ function personality_modules
 ```
 
 This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.
+
+This function may also be defined as `PROJECT_NAME_personality_modules`, where `PROJECT_NAME` matches the value passed via `--project`
+or autodetermined by various means.  The `PROJECT_NAME` version takes precedence over the generic version.
 
 ## Enabling Plug-ins
 

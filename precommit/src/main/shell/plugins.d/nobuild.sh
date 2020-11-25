@@ -17,6 +17,7 @@
 # SHELLDOC-IGNORE
 
 # A simple build system that doesn't actually build anything
+# if you are building your own, this file acts as a great template!
 
 add_build_tool nobuild
 
@@ -32,15 +33,15 @@ function nobuild_executor
 
 function nobuild_modules_worker
 {
-  local status=$1
-  local testtype=$2
+  declare status=$1
+  declare testtype=$2
   modules_workers "${status}" "${testtype}"
 }
 
 function nobuild_builtin_personality_modules
 {
-  local status=$1
-  local testtype=$2
+  declare status=$1
+  declare testtype=$2
   yetus_debug "built-in personality for no build system: ${status} ${testtype}"
 
   clear_personality_queue
@@ -51,7 +52,7 @@ function nobuild_builtin_personality_modules
 
 function nobuild_builtin_personality_file_tests
 {
-  local filename=$1
+  declare filename=$1
 
   yetus_debug "Using built-in no build system personality_file_tests."
   yetus_debug "    given file ${filename}"

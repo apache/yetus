@@ -154,7 +154,7 @@ function cmake_precompile
     big_console_header "cmake CMakeLists.txt: ${BUILDMODE}"
   fi
 
-  personality_modules "${repostatus}" CMakeLists.txt
+  personality_modules_wrapper "${repostatus}" CMakeLists.txt
 
   modules_workers "${repostatus}" CMakeLists.txt @@@MODULEDIR@@@
   result=$?
