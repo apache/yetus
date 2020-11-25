@@ -116,7 +116,7 @@ function autoconf_precompile
     big_console_header "autoconf verification: ${BUILDMODE}"
   fi
 
-  personality_modules "${repostatus}" autoreconf
+  personality_modules_wrapper "${repostatus}" autoreconf
 
   pushd "${BASEDIR}" >/dev/null || return 1
   echo_and_redirect "${PATCH_DIR}/${repostatus}-autoconf-autoreconf" autoreconf -fi
@@ -144,7 +144,7 @@ function autoconf_precompile
     fi
   fi
 
-  personality_modules "${repostatus}" configure
+personality_modules_wrapper "${repostatus}" configure
 
   pushd "${BASEDIR}" >/dev/null || return 1
   #shellcheck disable=SC2086

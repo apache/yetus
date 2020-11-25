@@ -371,7 +371,7 @@ function checkstyle_preapply
 
   start_clock
 
-  personality_modules branch checkstyle
+  personality_modules_wrapper branch checkstyle
   checkstyle_runner branch
   result=$?
   modules_messages branch checkstyle true
@@ -405,7 +405,7 @@ function checkstyle_postapply
 
   start_clock
 
-  personality_modules patch checkstyle
+personality_modules_wrapper patch checkstyle
   checkstyle_runner patch
   result=$?
 

@@ -210,6 +210,7 @@ function common_args
       ;;
       --project=*)
         delete_parameter "${i}"
+        #shellcheck disable=SC2034
         PROJECT_NAME=${i#*=}
       ;;
       --report-unknown-options=*)
@@ -283,6 +284,21 @@ function common_args
     yetus_error "ERROR: ${GIT} v1.7.3 or higher is required (found ${version})."
     exit 1
   fi
+
+  # we need absolute dir for ${BASEDIR}
+  if ! cd "${STARTINGDIR}"; then
+    yetus_error "ERROR: Launch directory disappeared?!?"
+    cleanup_and_exit 1
+  fi
+  BASEDIR=$(yetus_abs "${BASEDIR}")
+
+  if [[ ! -d "${BASEDIR}" ]]; then
+    yetus_error "ERROR: --basedir is not a directory."
+    cleanup_and_exit 1
+  fi
+
+  PERSONALITY="${BASEDIR}/.yetus/personality.sh"
+  USER_PLUGIN_DIR="${BASEDIR}/.yetus/plugins.d"
 }
 
 ## @description  List all installed plug-ins, regardless of whether
@@ -544,7 +560,7 @@ function delete_build_tool
   yetus_del_array_element BUILDTOOLS "${1}"
 }
 
-## @description  Import content from test-patch.d and optionally
+## @description  Import content from plugins.d and optionally
 ## @description  from user provided plugin directory
 ## @audience     private
 ## @stability    evolving
@@ -555,37 +571,23 @@ function importplugins
   local plugin
   local files=()
 
-  #BUG: this will break horribly if there are spaces in the paths. :(
+  #BUG: this will break horribly if there are spaces in the file names. :(
 
   if [[ ${LOAD_SYSTEM_PLUGINS} == "true" ]]; then
-    if [[ -d "${BINDIR}/test-patch.d" ]]; then
-      #shellcheck disable=SC2206
-      files=(${BINDIR}/test-patch.d/*.sh)
+    if [[ -d "${BINDIR}/plugins.d" ]]; then
+      files=("${BINDIR}/plugins.d"/*.sh)
     fi
   fi
 
-  if [[ -n "${USER_PLUGIN_DIR}" && -d "${USER_PLUGIN_DIR}" ]]; then
+  if [[ -d "${USER_PLUGIN_DIR}" ]]; then
     yetus_debug "Loading user provided plugins from ${USER_PLUGIN_DIR}"
-    #shellcheck disable=SC2206
-    files+=(${USER_PLUGIN_DIR}/*.sh)
+    files+=("${USER_PLUGIN_DIR}"/*.sh)
   fi
 
-  if [[ -n ${PERSONALITY} && ! -f ${PERSONALITY} ]]; then
-    yetus_error "ERROR: Can't find ${PERSONALITY} to import."
-    unset PERSONALITY
-  fi
-
-  if [[ -z ${PERSONALITY}
-      && -f "${BINDIR}/personality/${PROJECT_NAME}.sh"
-      && ${LOAD_SYSTEM_PLUGINS} = "true" ]]; then
-    yetus_debug "Using project personality."
-    PERSONALITY="${BINDIR}/personality/${PROJECT_NAME}.sh"
-  fi
-
-  if [[ -n ${PERSONALITY} && -f ${PERSONALITY} ]]; then
+  if [[ -f ${PERSONALITY} ]]; then
     yetus_debug "Importing ${PERSONALITY}"
     # shellcheck disable=SC1090
-    . "${PERSONALITY}"
+    files+=("${PERSONALITY}")
   fi
 
   for i in "${files[@]}"; do
@@ -596,6 +598,7 @@ function importplugins
     fi
   done
 
+  # activate any replacement tests
   for i in "${TESTTYPES[@]}"; do
     if declare -f "${i}_deprecate_test_type" >/dev/null; then
       "${i}_deprecate_test_type"

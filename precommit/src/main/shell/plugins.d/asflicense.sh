@@ -71,7 +71,7 @@ function asflicense_tests
 
   start_clock
 
-  personality_modules patch asflicense
+  personality_modules_wrapper patch asflicense
   case ${BUILDTOOL} in
     ant)
       modules_workers patch asflicense releaseaudit

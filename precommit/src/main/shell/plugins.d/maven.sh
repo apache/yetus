@@ -606,7 +606,7 @@ function mvnsite_postcompile
     big_console_header "maven site verification: ${BUILDMODE}"
   fi
 
-  personality_modules "${repostatus}" mvnsite
+  personality_modules_wrapper "${repostatus}" mvnsite
   modules_workers "${repostatus}" mvnsite clean site site:stage
   result=$?
   modules_messages "${repostatus}" mvnsite true
@@ -651,7 +651,7 @@ function maven_precompile
     big_console_header "maven install: ${BUILDMODE}"
   fi
 
-  personality_modules "${repostatus}" mvninstall
+  personality_modules_wrapper "${repostatus}" mvninstall
   modules_workers "${repostatus}" mvninstall -fae \
     clean install \
     -DskipTests=true -Dmaven.javadoc.skip=true \

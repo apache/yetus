@@ -681,13 +681,13 @@ function yetus_usage
   yetus_add_option "--resetrepo" "Forcibly clean the repo"
   yetus_add_option "--run-tests" "Run all relevant tests below the base directory"
   yetus_add_option "--skip-dirs=<list>" "Skip following directories for module finding"
-  yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/test-patch.d"
+  yetus_add_option "--skip-system-plugins" "Do not load plugins from ${BINDIR}/plugins.d"
   yetus_add_option "--summarize=<bool>" "Allow tests to summarize results"
   yetus_add_option "--test-parallel=<bool>" "Run multiple tests in parallel (default false in developer mode, true in Jenkins mode)"
   yetus_add_option "--test-threads=<int>" "Number of tests to run in parallel (default defined in ${PROJECT_NAME} build)"
   yetus_add_option "--tests-filter=<list>" "Lists of tests to turn failures into warnings"
   yetus_add_option "--unit-test-filter-file=<file>" "The unit test filter file to load"
-  yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. see test-patch.d for examples (default empty)"
+  yetus_add_option "--user-plugins=<dir>" "A directory of user provided plugins. (default: ${USER_PLUGIN_DIR})"
   yetus_add_option "--version" "Print release version information and exit"
 
   yetus_generic_columnprinter "${YETUS_OPTION_USAGE[@]}"
@@ -995,14 +995,6 @@ function parse_args
     yetus_add_array_element EXEC_MODES Re-exec
     add_vote_table_v2 0 reexec "" "Precommit patch detected."
     start_clock
-  fi
-
-  # we need absolute dir for ${BASEDIR}
-  cd "${STARTINGDIR}" || cleanup_and_exit 1
-  BASEDIR=$(yetus_abs "${BASEDIR}")
-
-  if [[ -n ${USER_PATCH_DIR} ]]; then
-    PATCH_DIR="${USER_PATCH_DIR}"
   fi
 
   # we need absolute dir for PATCH_DIR
@@ -1424,7 +1416,7 @@ function determine_needed_tests
 
   for i in "${CHANGED_FILES[@]}"; do
     yetus_debug "Determining needed tests for ${i}"
-    personality_file_tests "${i}"
+    personality_file_tests_wrapper "${i}"
 
     for plugin in "${TESTTYPES[@]}" ${BUILDTOOL}; do
       if declare -f "${plugin}_filefilter" >/dev/null 2>&1; then
@@ -2129,7 +2121,7 @@ function check_unittests
       jdk=${jdk// /}
     fi
 
-    personality_modules patch unit
+    personality_modules_wrapper patch unit
     "${BUILDTOOL}_modules_worker" patch unit
 
     ((result=result+$?))
@@ -2522,7 +2514,7 @@ function module_pre_handler
       JAVA_HOME=${jdkindex}
     fi
 
-    personality_modules branch "${testtype}"
+    personality_modules_wrapper branch "${testtype}"
     "${BUILDTOOL}_modules_worker" branch "${testtype}"
 
     ((result=result + $?))
@@ -2763,7 +2755,7 @@ function module_post_handler
     fi
 
     if [[ ${need2run} = true ]]; then
-      personality_modules "${codebase}" "${testtype}"
+      personality_modules_wrapper "${codebase}" "${testtype}"
       "${BUILDTOOL}_modules_worker" "${codebase}" "${testtype}"
 
       if [[ ${UNSUPPORTED_TEST} = true ]]; then
@@ -2839,7 +2831,7 @@ function compile_nonjvm
   declare multijdkmode=${2:-false}
   declare jdkindex=0
 
-  personality_modules "${codebase}" compile
+  personality_modules_wrapper "${codebase}" compile
   "${BUILDTOOL}_modules_worker" "${codebase}" compile
   modules_messages "${codebase}" compile true
 
@@ -2998,7 +2990,7 @@ function distclean
     fi
   done
 
-  personality_modules branch distclean
+  personality_modules_wrapper branch distclean
   "${BUILDTOOL}_modules_worker" branch distclean
   (( result = result + $? ))
 

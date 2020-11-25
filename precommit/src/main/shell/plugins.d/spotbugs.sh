@@ -139,7 +139,7 @@ function spotbugs_runner
   declare retval
 
 
-  personality_modules "${name}" "${SPOTBUGS_MODE}"
+  personality_modules_wrapper "${name}" "${SPOTBUGS_MODE}"
 
   "${BUILDTOOL}_modules_worker" "${name}" "${SPOTBUGS_MODE}"
 
