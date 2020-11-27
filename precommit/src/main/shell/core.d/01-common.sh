@@ -588,6 +588,11 @@ function importplugins
     yetus_debug "Importing ${PERSONALITY}"
     # shellcheck disable=SC1090
     files+=("${PERSONALITY}")
+  else
+    if [[ "${PERSONALITY}" != "${BASEDIR}/.yetus/personality.sh" ]]; then
+      yetus_error "ERROR: ${PERSONALITY} does not exist."
+      exit 1
+    fi
   fi
 
   for i in "${files[@]}"; do
