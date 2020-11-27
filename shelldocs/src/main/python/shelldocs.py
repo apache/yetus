@@ -78,7 +78,8 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
         self.name = None
         self.audience = None
         self.stability = None
-        self.replaceb = None
+        self.replacetext = None
+        self.replaceb = False
         self.returnt = None
         self.desc = None
         self.params = None
@@ -91,7 +92,7 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
             if self.stability == other.stability:
                 if self.replaceb == other.replaceb:
                     return self.name < other.name
-                if self.replaceb == "Yes":
+                if self.replaceb:
                     return True
             else:
                 if self.stability == "Stable":
@@ -106,7 +107,8 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
         self.name = None
         self.audience = None
         self.stability = None
-        self.replaceb = None
+        self.replacetext = None
+        self.replaceb = False
         self.returnt = None
         self.desc = None
         self.params = None
@@ -165,13 +167,14 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
 
     def setreplace(self, text):
         '''set the replacement state'''
-        self.replaceb = docstrip("replaceable", text)
-        self.replaceb = self.replaceb.capitalize()
+        self.replacetext = docstrip("replaceable", text)
+        if self.replacetext.capitalize() == "Yes":
+            self.replaceb = True
 
     def getreplace(self):
         '''get the replacement state'''
-        if self.replaceb == "Yes":
-            return self.replaceb
+        if self.replaceb:
+            return "Yes"
         return "No"
 
     def getinter(self):
@@ -258,17 +261,17 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
         getfuncs = {
             "audience": self.getaudience,
             "stability": self.getstability,
-            "replaceable": self.getreplace,
+            "replaceable": self.replacetext,
         }
         validvalues = {
             "audience": ("Public", "Private"),
             "stability": ("Stable", "Evolving"),
-            "replaceable": ("Yes", "No"),
+            "replaceable": ("yes", "no"),
         }
         messages = []
         for attr in ("audience", "stability", "replaceable"):
             value = getfuncs[attr]()
-            if value == "None":
+            if value == "None" and attr != 'replaceable':
                 messages.append("%s:%u: ERROR: function %s has no @%s" %
                                 (self.getfilename(), self.getlinenum(),
                                  self.getname(), attr.lower()))
@@ -381,8 +384,9 @@ def write_output(filename, functions):
     """ write the markdown file """
     try:
         directory = os.path.dirname(filename)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        if directory:
+            if not os.path.exists(directory):
+                os.makedirs(directory)
     except OSError as exc:
         if exc.errno == errno.EEXIST and os.path.isdir(directory):
             pass
@@ -411,7 +415,7 @@ def main():
     parser = ArgumentParser(
         prog='shelldocs',
         epilog="You can mark a file to be ignored by shelldocs by adding"
-        " 'SHELLDOC-IGNORE' as comment in its own line. "+
+        " 'SHELLDOC-IGNORE' as comment in its own line. " +
         "--input may be given multiple times.")
     parser.add_argument("-o",
                         "--output",
