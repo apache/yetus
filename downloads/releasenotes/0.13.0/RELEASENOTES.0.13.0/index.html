@@ -163,16 +163,7 @@
 <p>This change moves the default Apache Yetus docker image to a new version of Ubuntu as well as upgrades many, many bundled components to new releases.  Users utilizing the docker image should upgrade carefully!</p>
 
 <p>Early removal notice:</p>
-
 <ul>
-  <li>Python 2.x support.  It will be removed from:
-    <ul>
-      <li>Docker image</li>
-      <li>precommit</li>
-      <li>releasedocmaker</li>
-      <li>shelldocs</li>
-    </ul>
-  </li>
   <li>FindBugs support; please migrate to SpotBugs.</li>
 </ul>
 
@@ -269,7 +260,7 @@
 </ul>
 
 <!-- markdown -->
-<p>This change replaces the Apache Yetus comment with (GitHub Status)[https://docs.github.com/en/rest/reference/repos#statuses] notifications.  Note that your GitHub Token requires repo:status write or better privileges.</p>
+<p>This change replaces the Apache Yetus comment with <a href="https://docs.github.com/en/rest/reference/repos#statuses">GitHub Status</a> notifications.  Note that your GitHub Token requires repo:status write or better privileges.</p>
 
 <hr />
 
@@ -288,7 +279,7 @@
 </ul>
 
 <!-- markdown -->
-<p>The apache/yetus docker image now defaults to running test-patch.</p>
+<p>The apache/yetus docker image now defaults to running <code>test-patch</code>.</p>
 
 <hr />
 
@@ -327,12 +318,13 @@
 
 <!-- markdown -->
 <p>Users:<br />
-Comments added on a per line basis were only ever shipped with support on GitHub, only on PRs, and was rarely used due to being very noisy.  That functionality has been removed and replaced with GitHub Checks Annotations when run under GitHub Actions with support for both branches and PRs.  Future/other changes may re-introduce support for non-GitHub Actions. Any 3rd party plug-ins that support line-level comments will need to be updated to support the new API.</p>
+Comments added on a per line basis were only ever shipped with support on GitHub, only on PRs, and was rarely used due to being very noisy.  That functionality has been removed and replaced with <a href="https://github.blog/2018-12-14-introducing-check-runs-and-annotations/">GitHub Checks Annotations</a> when run under <a href="https://github.com/features/actions">GitHub Actions</a> with support for both branches and PRs.   Any 3rd party plug-ins that support line-level comments will need to be updated to support the new API and file naming conventions in order to be compatible.</p>
 
 <p>Developers:<br />
 With GitHub Checks Annotations being the preferred way on GitHub for CI systems to make individual notes, the API requirements and surrounding support structure for line comments have also changed:</p>
 
 <ul>
+  <li>File names MUST be relative to <code>BASEDIR</code>.</li>
   <li>The unidiff line calculations (<code>compute_unidiff</code>)  has been removed.  This should greatly increase performance for large patches.</li>
   <li>Relatedly, <code>GITUNIDIFFLINES</code> has been removed from the global variables.</li>
   <li><code>(bugsystem)_linecoments</code> and related functions should now expect and pass a column parameter. Log files should be in typical file:line[:column]:text format, where the missing column or 0 or "" will be used for no column/whole file.</li>
@@ -539,7 +531,7 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
 </ul>
 
 <!-- markdown -->
-<p>The website now has links to all of the changelogs and releasenotes of every Apache Yetus release!</p>
+<p>The website now has <a href="https://yetus.apache.org/downloads/releasenotes/">links to all of the changelogs and release notes</a> of every Apache Yetus release!</p>
 
 <hr />
 
@@ -558,7 +550,7 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
 </ul>
 
 <!-- markdown -->
-<p>The jython versions of releasedocmaker and shelldocs have been removed.  The releasedocmaker and shelldocs features of yetus-maven-plugin have been removed.</p>
+<p>The jython versions of <code>releasedocmaker</code> and <code>shelldocs</code> have been removed.  The <code>releasedocmaker</code> and <code>shelldocs</code> features of <code>yetus-maven-plugin</code> have been removed.</p>
 
 <hr />
 
@@ -577,7 +569,7 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
 </ul>
 
 <!-- markdown -->
-<p>The Docker image now as the Apache Creadur RAT jar.  This change should allow for the <code>asflicense</code> plug-in for <code>test-patch</code> to work out of the box.</p>
+<p>The Docker image now has the Apache Creadur RAT jar included.  This change should allow for the <code>asflicense</code> plug-in for <code>test-patch</code> to work out of the box.</p>
 
 <hr />
 
@@ -673,7 +665,7 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
 </ul>
 
 <!-- markdown -->
-<p>Codespell is now supported to provide spell checking for source trees.</p>
+<p><a href="https://github.com/codespell-project/codespell">Codespell</a> is now supported to provide spell checking for source trees.</p>
 
 <hr />
 
@@ -694,6 +686,42 @@ With GitHub Checks Annotations being the preferred way on GitHub for CI systems 
 <!-- markdown -->
 
 <p><a href="https://buildkite.com">Buildkite</a> is now supported as a robot.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1072">YETUS-1072</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Rework personalities and some plug-in handling</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>Users:</p>
+<ul>
+  <li>Precommit's bundled personalities have been removed as they are all out of date.</li>
+  <li>Personalities will be loaded from <code>.yetus/personality.sh</code> by default.</li>
+  <li>User-plugins will be loaded from<code>.yetus/plugins.d</code> by default.</li>
+  <li>The <code>test-patch.d</code> directory has been renamed to <code>plugins.</code></li>
+  <li><code>--project</code> can no longer be used to load a personality from a plugin directory.</li>
+</ul>
+
+<p>Developers:</p>
+<ul>
+  <li>BASEDIR is now absolute'd sooner.</li>
+  <li>PERSONALITY and USER_PLUGIN_DIR will almost always have a value now.</li>
+  <li>PERSONALITY is now guaranteed to load after plugins.</li>
+  <li><code>personality_modules</code> and <code>personality_file_tests</code> are no longer defined by default.  Instead, plugins, core code, etc, (basically, anything not a personality) should call <code>personality_modules_wrapper</code> and <code>personality_file_tests_wrapper</code>. These functions will be redirect to the correct function.</li>
+  <li>PROJECT_NAME_* is now honored for loading many of the personality-specific functions.</li>
+</ul>
 
 
     </div>

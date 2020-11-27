@@ -136,8 +136,8 @@
   </li>
   <li><a href="#personalities">Personalities</a>
     <ul>
-      <li><a href="#configuring-for-other-projects">Configuring for Other Projects</a></li>
-      <li><a href="#global-definitions">Global Definitions</a></li>
+      <li><a href="#global-settings">Global Settings</a></li>
+      <li><a href="#custom-argument-parsing">Custom Argument Parsing</a></li>
       <li><a href="#test-determination">Test Determination</a></li>
       <li><a href="#module--profile-determination">Module &amp; Profile Determination</a></li>
       <li><a href="#enabling-plug-ins">Enabling Plug-ins</a></li>
@@ -158,7 +158,7 @@
 
 <h1 id="plug-ins">Plug-ins</h1>
 
-<p>test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called test-patch.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.</p>
+<p>test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called plugins.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.</p>
 
 <h2 id="common-plug-in-functions">Common Plug-in Functions</h2>
 
@@ -241,7 +241,7 @@
     <p>personality contains bundled personalities for various projects.  These will be imported individually based upon either a project name or if specifically identified with the <code>--personality</code> flag.</p>
   </li>
   <li>
-    <p>test-patch.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.</p>
+    <p>plugins.d contains all of the optional, bundled plug-ins.  These are imported last and in shell collated order.</p>
   </li>
 </ul>
 
@@ -290,24 +290,25 @@
 
 <h1 id="personalities">Personalities</h1>
 
-<h2 id="configuring-for-other-projects">Configuring for Other Projects</h2>
-
 <p>It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project <code>personality</code> should be added that enacts these custom rules.</p>
 
-<p>A personality consists of two functions. One that determines which test types to run and another that allows a project to dictate ordering rules, flags, and profiles on a per-module, per-test run.</p>
+<p>A personality consists of one or more functions.</p>
 
 <p>There can be only <strong>one</strong> of each personality function defined.</p>
 
-<h2 id="global-definitions">Global Definitions</h2>
+<h2 id="global-settings">Global Settings</h2>
 
 <p>Globals for personalities should be defined in the <code>personality_globals</code> function.  This function is called <em>after</em> the other plug-ins have been imported.  This allows one to configure any settings for plug-ins that have been imported safely:</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>personality_globals
 <span class="o">{</span>
-  <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>main
   <span class="nv">GITHUB_REPO</span><span class="o">=</span><span class="s2">"apache/yetus"</span>
+  <span class="nv">PATCH_BRANCH_DEFAULT</span><span class="o">=</span>main
+  <span class="nv">PROJECT_NAME</span><span class="o">=</span><span class="s2">"yetus"</span>
 <span class="o">}</span>
 </code></pre></div>
+<h2 id="custom-argument-parsing">Custom Argument Parsing</h2>
+
 <p>Additionally, a personality may require some outside help from the user.  The <code>personality_parse_args</code><br />
 function is called almost immediately after the personality is loaded and plug-ins parse arguments.</p>
 
@@ -316,7 +317,7 @@ function is called almost immediately after the personality is loaded and plug-i
   <span class="nb">echo</span> <span class="s2">"</span><span class="nv">$*</span><span class="s2">"</span>
 <span class="o">}</span>
 </code></pre></div>
-<p>It is important to note that this function is called AFTER personality_globals.</p>
+<p>It is important to note that this function is called AFTER <code>personality_globals</code>.</p>
 
 <h2 id="test-determination">Test Determination</h2>
 
@@ -337,6 +338,9 @@ function is called almost immediately after the personality is loaded and plug-i
 <span class="o">}</span>
 </code></pre></div>
 <p>The <code>add_test</code> function is used to activate the standard tests.  Additional plug-ins (such as checkstyle), will get queried on their own.</p>
+
+<p>This function may also be defined as <code>PROJECT_NAME_personality_file_tests</code>, where <code>PROJECT_NAME</code> matches the value passed via <code>--project</code><br />
+or autodetermined by various means.  The <code>PROJECT_NAME</code> version takes precedence over the generic version.</p>
 
 <h2 id="module--profile-determination">Module &amp; Profile Determination</h2>
 
@@ -382,6 +386,9 @@ function is called almost immediately after the personality is loaded and plug-i
 
 </code></pre></div>
 <p>This function will tell test-patch that when the javadoc test is being run, do the documentation build at the base of the source repository and make sure the -DskipTests flag is passed to our build tool.</p>
+
+<p>This function may also be defined as <code>PROJECT_NAME_personality_modules</code>, where <code>PROJECT_NAME</code> matches the value passed via <code>--project</code><br />
+or autodetermined by various means.  The <code>PROJECT_NAME</code> version takes precedence over the generic version.</p>
 
 <h2 id="enabling-plug-ins">Enabling Plug-ins</h2>
 

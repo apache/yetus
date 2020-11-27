@@ -161,8 +161,8 @@
       <li><a href="#yetus_debug">yetus_debug</a></li>
       <li><a href="#yetus_error">yetus_error</a></li>
       <li><a href="#yetus_find_deepest_directory">yetus_find_deepest_directory</a></li>
-      <li><a href="#yetus_run_and_redirect">yetus_run_and_redirect</a></li>
       <li><a href="#yetus_get_ctime">yetus_get_ctime</a></li>
+      <li><a href="#yetus_run_and_redirect">yetus_run_and_redirect</a></li>
     </ul>
   </li>
   <li>Public/Evolving/Replaceable
@@ -176,6 +176,8 @@
       <li><a href="#bugsystem_linecomments_trigger">bugsystem_linecomments_trigger</a></li>
       <li><a href="#guess_build_tool">guess_build_tool</a></li>
       <li><a href="#list_plugins">list_plugins</a></li>
+      <li><a href="#personality_file_tests_wrapper">personality_file_tests_wrapper</a></li>
+      <li><a href="#personality_modules_wrapper">personality_modules_wrapper</a></li>
       <li><a href="#plugin_usage_output">plugin_usage_output</a></li>
       <li><a href="#reaper_add_name">reaper_add_name</a></li>
       <li><a href="#yetus_add_header">yetus_add_header</a></li>
@@ -1682,25 +1684,25 @@
   </tbody>
 </table>
 
-<h3 id="yetus_run_and_redirect"><code>yetus_run_and_redirect</code></h3>
+<h3 id="yetus_get_ctime"><code>yetus_get_ctime</code></h3>
 
 <ul>
   <li>Synopsis</li>
 </ul>
 
-<div class="highlight"><pre class="highlight plaintext"><code>yetus_run_and_redirect filename command [..]
+<div class="highlight"><pre class="highlight plaintext"><code>yetus_get_ctime
 </code></pre></div>
 <ul>
   <li>Description</li>
 </ul>
 
-<p>run the command, sending stdout and stderr to the given filename</p>
+<p>Get the date in ctime format</p>
 
 <ul>
   <li>Returns</li>
 </ul>
 
-<p>$?</p>
+<p>ctime</p>
 
 <table class="table table-bordered table-striped">
   <thead>
@@ -1725,25 +1727,25 @@
   </tbody>
 </table>
 
-<h3 id="yetus_get_ctime"><code>yetus_get_ctime</code></h3>
+<h3 id="yetus_run_and_redirect"><code>yetus_run_and_redirect</code></h3>
 
 <ul>
   <li>Synopsis</li>
 </ul>
 
-<div class="highlight"><pre class="highlight plaintext"><code>yetus_get_ctime
+<div class="highlight"><pre class="highlight plaintext"><code>yetus_run_and_redirect filename command [..]
 </code></pre></div>
 <ul>
   <li>Description</li>
 </ul>
 
-<p>Get the date in ctime format</p>
+<p>run the command, sending stdout and stderr to the given filename</p>
 
 <ul>
   <li>Returns</li>
 </ul>
 
-<p>ctime</p>
+<p>$?</p>
 
 <table class="table table-bordered table-striped">
   <thead>
@@ -1955,6 +1957,92 @@
 </ul>
 
 <p>List all installed plug-ins, regardless of whether they have been enabled</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="personality_file_tests_wrapper"><code>personality_file_tests_wrapper</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>personality_file_tests_wrapper
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Pick a personality_file_tests function tests that build support should call this to make sure they get queued correct by the personality or the build tool</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="personality_modules_wrapper"><code>personality_modules_wrapper</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>personality_modules_wrapper
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Pick a personality_modules function tests that build support should call this to make sure they get queued correct by the personality or the build tool</p>
 
 <ul>
   <li>Returns</li>

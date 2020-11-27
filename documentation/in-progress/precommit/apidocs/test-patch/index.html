@@ -162,6 +162,8 @@
       <li><a href="#error_calcdiffs">error_calcdiffs</a></li>
       <li><a href="#generic_calcdiff_status">generic_calcdiff_status</a></li>
       <li><a href="#generic_logfilter">generic_logfilter</a></li>
+      <li><a href="#generic_post_handler">generic_post_handler</a></li>
+      <li><a href="#generic_postlog_compare">generic_postlog_compare</a></li>
       <li><a href="#generic_pre_handler">generic_pre_handler</a></li>
       <li><a href="#initialize">initialize</a></li>
       <li><a href="#module_post_handler">module_post_handler</a></li>
@@ -173,10 +175,8 @@
       <li><a href="#modules_reset">modules_reset</a></li>
       <li><a href="#modules_restore">modules_restore</a></li>
       <li><a href="#modules_workers">modules_workers</a></li>
-      <li><a href="#personality_enqueue_module">personality_enqueue_module</a></li>
-      <li><a href="#generic_post_handler">generic_post_handler</a></li>
-      <li><a href="#generic_postlog_compare">generic_postlog_compare</a></li>
       <li><a href="#patchfiletests">patchfiletests</a></li>
+      <li><a href="#personality_enqueue_module">personality_enqueue_module</a></li>
       <li><a href="#root_postlog_compare">root_postlog_compare</a></li>
     </ul>
   </li>
@@ -1545,6 +1545,92 @@
   </tbody>
 </table>
 
+<h3 id="generic_post_handler"><code>generic_post_handler</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>generic_post_handler
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Deprecated. Use module_post_handler instead.</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="generic_postlog_compare"><code>generic_postlog_compare</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>generic_postlog_compare
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Deprecated. Use module_postlog_compare instead.</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
 <h3 id="generic_pre_handler"><code>generic_pre_handler</code></h3>
 
 <ul>
@@ -2028,135 +2114,6 @@
   </tbody>
 </table>
 
-<h3 id="personality_enqueue_module"><code>personality_enqueue_module</code></h3>
-
-<ul>
-  <li>Synopsis</li>
-</ul>
-
-<div class="highlight"><pre class="highlight plaintext"><code>personality_enqueue_module module profiles/flags/etc
-</code></pre></div>
-<ul>
-  <li>Description</li>
-</ul>
-
-<p>Build the queue for tests</p>
-
-<ul>
-  <li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th style="text-align: left">Classification</th>
-      <th style="text-align: left">Level</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">Audience</td>
-      <td style="text-align: left">Public</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Stability</td>
-      <td style="text-align: left">Evolving</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Replaceable</td>
-      <td style="text-align: left">No</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="generic_post_handler"><code>generic_post_handler</code></h3>
-
-<ul>
-  <li>Synopsis</li>
-</ul>
-
-<div class="highlight"><pre class="highlight plaintext"><code>generic_post_handler
-</code></pre></div>
-<ul>
-  <li>Description</li>
-</ul>
-
-<p>Deprecated. Use module_post_handler instead.</p>
-
-<ul>
-  <li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th style="text-align: left">Classification</th>
-      <th style="text-align: left">Level</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">Audience</td>
-      <td style="text-align: left">Public</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Stability</td>
-      <td style="text-align: left">Evolving</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Replaceable</td>
-      <td style="text-align: left">No</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="generic_postlog_compare"><code>generic_postlog_compare</code></h3>
-
-<ul>
-  <li>Synopsis</li>
-</ul>
-
-<div class="highlight"><pre class="highlight plaintext"><code>generic_postlog_compare
-</code></pre></div>
-<ul>
-  <li>Description</li>
-</ul>
-
-<p>Deprecated. Use module_postlog_compare instead.</p>
-
-<ul>
-  <li>Returns</li>
-</ul>
-
-<p>Nothing</p>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th style="text-align: left">Classification</th>
-      <th style="text-align: left">Level</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left">Audience</td>
-      <td style="text-align: left">Public</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Stability</td>
-      <td style="text-align: left">Evolving</td>
-    </tr>
-    <tr>
-      <td style="text-align: left">Replaceable</td>
-      <td style="text-align: left">No</td>
-    </tr>
-  </tbody>
-</table>
-
 <h3 id="patchfiletests"><code>patchfiletests</code></h3>
 
 <ul>
@@ -2178,6 +2135,49 @@
 <p>0 on success</p>
 
 <p>1 on failure</p>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">Classification</th>
+      <th style="text-align: left">Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Audience</td>
+      <td style="text-align: left">Public</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Stability</td>
+      <td style="text-align: left">Evolving</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Replaceable</td>
+      <td style="text-align: left">No</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="personality_enqueue_module"><code>personality_enqueue_module</code></h3>
+
+<ul>
+  <li>Synopsis</li>
+</ul>
+
+<div class="highlight"><pre class="highlight plaintext"><code>personality_enqueue_module module profiles/flags/etc
+</code></pre></div>
+<ul>
+  <li>Description</li>
+</ul>
+
+<p>Build the queue for tests</p>
+
+<ul>
+  <li>Returns</li>
+</ul>
+
+<p>Nothing</p>
 
 <table class="table table-bordered table-striped">
   <thead>
