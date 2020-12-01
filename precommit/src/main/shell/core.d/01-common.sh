@@ -587,7 +587,7 @@ function importplugins
   if [[ -f ${PERSONALITY} ]]; then
     yetus_debug "Importing ${PERSONALITY}"
     # shellcheck disable=SC1090
-    files+=("${PERSONALITY}")
+    . "${PERSONALITY}"
   else
     if [[ "${PERSONALITY}" != "${BASEDIR}/.yetus/personality.sh" ]]; then
       yetus_error "ERROR: ${PERSONALITY} does not exist."
