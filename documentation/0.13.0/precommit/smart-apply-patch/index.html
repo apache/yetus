@@ -1,0 +1,219 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<h1 id="smart-apply-patch">smart-apply-patch</h1>
+
+<!-- MarkdownTOC levels="1,2,3" autolink="true" indent="  " bullets="*" bracket="round" -->
+
+<ul>
+  <li><a href="#local-file">Local File</a></li>
+  <li><a href="#remote-files-and-bug-systems">Remote Files and Bug Systems</a></li>
+  <li><a href="#dry-run">Dry-run</a></li>
+  <li><a href="#committer-mode">Committer Mode</a></li>
+  <li><a href="#patch-reporting">Patch Reporting</a></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
+<p><code>smart-apply-patch</code> is a command to help apply patches easily.  It uses the same plug-ins and many of the same options as test-patch.  This means that it can, for example, fetch patches from JIRA and apply them to a local source tree.</p>
+
+<h1 id="local-file">Local File</h1>
+
+<p>Its simplest form is used when a patch is stored in a local file:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch patch
+</code></pre></div>
+<p>This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.</p>
+
+<h1 id="remote-files-and-bug-systems">Remote Files and Bug Systems</h1>
+
+<p><code>smart-apply-patch</code> supports many of the same switches and configurations<br />
+that <code>test-patch</code> does.  Using those switches means that, for example, it is possible to pull and apply a GitHub PR very easily:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--plugins</span><span class="o">=</span>github <span class="nt">--github-repo</span> apache/yetus GH:3000
+</code></pre></div>
+<p><code>smart-apply-patch</code> will do all the work of downloading, verifying, and applying just as <code>test-patch</code> would.</p>
+
+<h1 id="dry-run">Dry-run</h1>
+
+<p>Perhaps you just want to see if the patch even applies without changing your local repo.  The <code>--dry-run</code> option will just test for applicability:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--dry-run</span> patch
+</code></pre></div>
+<h1 id="committer-mode">Committer Mode</h1>
+
+<p>For committers of projects, there is a special mode:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--committer</span> patch
+</code></pre></div>
+<p>that in addition to applying the patch will also attempt to:</p>
+
+<ul>
+  <li>use <code>--whitespace=fix</code> mode</li>
+  <li>add all newly created files in the repo</li>
+  <li>use <code>--signoff</code> and commit the change via git-am</li>
+</ul>
+
+<h1 id="patch-reporting">Patch Reporting</h1>
+
+<p>For speciality CI needs, it may be useful to just have access to Apache Yetus'<br />
+ability to interpret changes and then do your own actions based upon that<br />
+content.  <code>smart-apply-patch</code> has two options that expose that functionality<br />
+for highly customized CI needs:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--plugins</span><span class="o">=</span>gitlab <span class="nt">--changedfilesreport</span><span class="o">=</span>/tmp/myfile.txt GL:100
+</code></pre></div>
+<p>This command will download GitLab merge request #100, process it, and write a<br />
+file called <code>/tmp/myfile.txt</code> that lists the files that were changed.</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--build-tool</span><span class="o">=</span>maven <span class="nt">--plugins</span><span class="o">=</span>maven <span class="nt">--changedmodulesreport</span><span class="o">=</span>/tmp/mymodules.txt /tmp/file.patch
+</code></pre></div>
+<p>Similarly, this option will return the module list from <code>/tmp/file.patch</code>.<br />
+Or, perhaps you simply want to know the deepest directory with a change?</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--build-tool</span><span class="o">=</span>maven <span class="nt">--plugins</span><span class="o">=</span>maven <span class="nt">--changedunionreport</span><span class="o">=</span>/tmp/base.txt http://example.com/patch
+</code></pre></div>
+<p>If you want to generate these reports without actually applying it (where<br />
+possible), then the <code>--reports-only</code> option is available:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>smart-apply-patch <span class="nt">--reports-only</span> <span class="nt">--changedfilesreport</span><span class="o">=</span>/tmp/myfile.txt /tmp/file.patch
+</code></pre></div>
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>

@@ -1,0 +1,243 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.10.0/">Docs for v0.10.0</a></li>
+                      <li><a href="/documentation/0.11.1/">Docs for v0.11.1</a></li>
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<h1 id="robots-jenkins">Robots: Jenkins</h1>
+
+<p>TRIGGER: ${JENKINS_URL}=(anything)  ,  ${EXECUTOR_NUMBER}=(anything)</p>
+
+<p>Jenkins is extremely open-ended and, given multiple executors, does not run workflows in isolation.  As a result, many more configuration options generally need to be configured as it is not safe or may be surprising to users for test-patch to auto-determine some settings.  By default, Jenkins will trigger a full build.</p>
+
+<p>There is some support for a few well known environment variables:</p>
+
+<ul>
+  <li><code>${CHANGE_URL}</code> or <code>${ghprbPullLink}</code> will set the patch location as well as trigger some extra handling if 'github' or 'gitlab' appear in the string.</li>
+  <li><code>${GIT_URL}</code> will trigger the same extra handling if 'github' or 'gitlab' appear in the string.</li>
+  <li>If <code>${ghprbPullId}</code> is set, then test-patch will configure itself for a Github-style PR.</li>
+</ul>
+
+<p>To use the pre-built Apache Yetus Docker image from docker hub as the build environment, use the following snippet in the <code>Jenkinsfile</code>, substituting the tag for the version of Apache Yetus that should be used and replacing the JAVA_HOME with the appropriate version as bundled mentioned in the Dockerfile:</p>
+
+<div class="highlight"><pre class="highlight groovy"><code><span class="n">pipeline</span> <span class="o">{</span>
+  <span class="n">agent</span> <span class="o">{</span>
+    <span class="n">docker</span> <span class="o">{</span>
+      <span class="n">image</span> <span class="s1">'apache/yetus:0.9.0'</span>
+      <span class="n">args</span> <span class="s1">'-v /var/run/docker.sock:/var/run/docker.sock'</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="n">environment</span> <span class="o">{</span>
+    <span class="n">JAVA_HOME</span> <span class="o">=</span> <span class="s1">'/usr/lib/jvm/java-8-openjdk-amd64'</span>
+  <span class="o">}</span>
+
+<span class="o">}</span>
+
+</code></pre></div>
+<p>Experience has shown that certain Jenkins + Java + OS combinations have problems sending signals to child processes.  In the case of Apache Yetus, this may result in aborted or workflows that timeout not being properly killed.  <code>test-patch</code> will write two files in the patch directory that may be helpful to combat this situation if it applies to your particular configuration.  <code>pidfile.txt</code> contains the main <code>test-patch</code> process id and <code>cidfile.txt</code> contains the docker container id.  These will not be present on a successful exit.  In Pipeline code, it should look something similar to this:</p>
+
+<div class="highlight"><pre class="highlight groovy"><code>    <span class="n">post</span> <span class="o">{</span>
+      <span class="n">cleanup</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">script</span> <span class="o">{</span>
+          <span class="n">sh</span> <span class="s1">'''
+            if [ -f "${env.PATCH_DIR}/pidfile.txt" ]; then
+              kill `cat "${env.PATCH_DIR}/pidfile.txt"` || true
+              sleep 5
+            fi
+            if [ -f "${env.PATCH_DIR}/cidfile.txt" ]; then
+              docker kill `cat "${env.PATCH_DIR}/cidfile.txt"` || true
+              sleep 5
+            fi
+            '''</span>
+            <span class="o">...</span>
+            <span class="n">deletedir</span><span class="o">()</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div>
+<h2 id="github-token-support">GitHub Token Support</h2>
+
+<p>Using the Jenkins Credential system, one can provide a specific personal access token<br />
+to use with GitHub.  However, it is recommended that Jenkins be configured to act as<br />
+a GitHub application as per the<br />
+<a href="https://docs.cloudbees.com/docs/cloudbees-jenkins-platform/latest/github-app-auth">Cloudbees documentation</a><br />
+for the optimal <code>test-patch</code> experience.  Configure up to the "Configuring the GitHub Organization" and then, using the Jenkins credential system, pass the GitHub App's token to <code>test-patch</code>. For example:</p>
+
+<div class="highlight"><pre class="highlight groovy"><code><span class="o">...</span>
+        <span class="n">withCredentials</span><span class="o">([</span><span class="n">usernamePassword</span><span class="o">(</span><span class="nl">credentialsId:</span> <span class="s1">'github-app'</span><span class="o">,</span>
+                         <span class="nl">passwordVariable:</span> <span class="s1">'GITHUB_TOKEN'</span><span class="o">,</span>
+                         <span class="nl">usernameVariable:</span> <span class="s1">'GITHUB_USER'</span><span class="o">)])</span> <span class="o">{</span>
+<span class="o">...</span>
+
+        <span class="n">sh</span> <span class="s1">'''test-patch --github-token="${GITHUB_TOKEN}" (other options)'''</span>
+<span class="o">...</span>
+</code></pre></div>
+<p>Doing so will enable in many circumstances a bit more functionality, such as GitHub Statuses.</p>
+
+<h2 id="enabling-github-status-recovery">Enabling GitHub Status Recovery</h2>
+
+<p>If the Apache Yetus section of your job typically runs longer than 1 hour and you use GitHub as the primary bugsystem,<br />
+it is recommend to use the <code>github-status-recovery</code> utility in the <code>post</code> section of your <code>Jenkinsfile</code>. For example:</p>
+
+<div class="highlight"><pre class="highlight groovy"><code>  <span class="n">post</span> <span class="o">{</span>
+    <span class="n">always</span> <span class="o">{</span>
+      <span class="n">script</span> <span class="o">{</span>
+        <span class="c1">// Publish status if it was missed</span>
+        <span class="n">withCredentials</span><span class="o">([</span><span class="n">usernamePassword</span><span class="o">(</span><span class="nl">credentialsId:</span> <span class="n">github</span><span class="o">-</span><span class="n">app</span><span class="err">'</span><span class="o">,</span>
+                         <span class="nl">passwordVariable:</span> <span class="s1">'GITHUB_TOKEN'</span><span class="o">,</span>
+                         <span class="nl">usernameVariable:</span> <span class="s1">'GITHUB_USER'</span><span class="o">)])</span> <span class="o">{</span>
+            <span class="n">sh</span> <span class="s1">'''github-status-recovery --patch-dir="${PATCH_DIR}"" --github-token="${GITHUB_TOKEN}"'''</span>
+        <span class="o">}</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+</code></pre></div>
+<p>See also:</p>
+
+<ul>
+  <li>Apache Yetus' source tree <a href="https://github.com/apache/yetus/blob/main/Jenkinsfile">Jenkinsfile</a> for some tips and tricks.</li>
+  <li><a href="../../admin">precommit-admin</a>, for special utilities built for Jenkins.</li>
+  <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+Branch+Source+Plugin">GitHub Branch Source Plugin</a></li>
+  <li><a href="https://wiki.jenkins.io/display/JENKINS/GitHub+pull+request+builder+plugin">GitHub Pull Request Builder Plugin</a></li>
+  <li><code>https://{your local server}/env-vars.html/</code></li>
+  <li><a href="https://cd.foundation/blog/2020/04/22/from-jenkins-github-app-authentication-support-released/">From Jenkins – GitHub App authentication support released</a></li>
+  <li><a href="https://docs.cloudbees.com/docs/cloudbees-jenkins-platform/latest/github-app-auth">Jenkins - Using GitHub App authentication</a></li>
+</ul>
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>
