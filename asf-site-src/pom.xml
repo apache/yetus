@@ -47,28 +47,6 @@
         <executions>
           <!-- AUTOMATED_EDIT_BEGIN -->
           <execution>
-            <id>0.10.0</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>symlink</goal>
-            </goals>
-            <configuration>
-              <target>../../target/0.10.0</target>
-              <newLink>${basedir}/source/documentation/0.10.0</newLink>
-            </configuration>
-          </execution>
-          <execution>
-            <id>0.10.0.html.md</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>symlink</goal>
-            </goals>
-            <configuration>
-              <target>../../target/0.10.0.html.md</target>
-              <newLink>${basedir}/source/documentation/0.10.0.html.md</newLink>
-            </configuration>
-          </execution>
-          <execution>
             <id>0.11.1</id>
             <phase>pre-site</phase>
             <goals>
@@ -110,6 +88,28 @@
             <configuration>
               <target>../../target/0.12.0.html.md</target>
               <newLink>${basedir}/source/documentation/0.12.0.html.md</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.13.0</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.13.0</target>
+              <newLink>${basedir}/source/documentation/0.13.0</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>0.13.0.html.md</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../target/0.13.0.html.md</target>
+              <newLink>${basedir}/source/documentation/0.13.0.html.md</newLink>
             </configuration>
           </execution>
           <!-- AUTOMATED_EDIT_END -->

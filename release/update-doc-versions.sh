@@ -51,7 +51,7 @@ option_parse()
         usage
         exit
       ;;
-      --VERSION=*)
+      --version=*)
         VERSION=${i#*=}
       ;;
     esac
