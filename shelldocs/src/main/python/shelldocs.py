@@ -177,6 +177,10 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
             return "Yes"
         return "No"
 
+    def getreplacetext(self):
+        '''get the replacement state text'''
+        return self.replacetext
+
     def getinter(self):
         '''get the function state'''
         return self.getaudience(), self.getstability(), self.getreplace()
@@ -261,12 +265,12 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
         getfuncs = {
             "audience": self.getaudience,
             "stability": self.getstability,
-            "replaceable": self.getreplace,
+            "replaceable": self.getreplacetext,
         }
         validvalues = {
             "audience": ("Public", "Private"),
             "stability": ("Stable", "Evolving"),
-            "replaceable": ("Yes", "No"),
+            "replaceable": ("yes", "no"),
         }
         messages = []
         for attr in ("audience", "stability", "replaceable"):
