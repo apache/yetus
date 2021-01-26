@@ -261,12 +261,12 @@ class ShellFunction:  # pylint: disable=too-many-public-methods, too-many-instan
         getfuncs = {
             "audience": self.getaudience,
             "stability": self.getstability,
-            "replaceable": self.replacetext,
+            "replaceable": self.getreplace,
         }
         validvalues = {
             "audience": ("Public", "Private"),
             "stability": ("Stable", "Evolving"),
-            "replaceable": ("yes", "no"),
+            "replaceable": ("Yes", "No"),
         }
         messages = []
         for attr in ("audience", "stability", "replaceable"):
