@@ -182,10 +182,17 @@ RUN go get -u github.com/mgechev/revive
 
 ####
 # checkmake (Makefile linter)
+#
+# requires go 1.15 as of 2021-03-02
+#
 ####
 FROM yetusbase AS checkmake
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN go get -u github.com/mrtazz/checkmake
+RUN apt-get -q update \
+    && apt-get -q install --no-install-recommends -y golang-1.15 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && /usr/lib/go-1.15/bin/go get -u github.com/mrtazz/checkmake
 
 ####
 # golangci-lint (Multi-tool golang linter)
