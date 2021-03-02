@@ -52,7 +52,7 @@ function github_usage
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
-  yetus_add_option "--github-write-comment" "Write final report as github comment instead of github status (default: '${GITHUB_WRITE_COMMENT}')"
+  yetus_add_option "--github-write-comment" "Write final report as github comment (default: '${GITHUB_WRITE_COMMENT}')"
   yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
 }
 
@@ -1061,7 +1061,6 @@ function github_finalreport
 
   if [[ "${GITHUB_WRITE_COMMENT}" == true ]]; then
     github_finalreport_as_comment result
-    return 0
   fi
 
   big_console_header "Adding GitHub Statuses"
