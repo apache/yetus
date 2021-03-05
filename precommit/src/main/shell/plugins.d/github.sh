@@ -1060,7 +1060,7 @@ function github_finalreport
   fi
 
   if [[ "${GITHUB_WRITE_COMMENT}" == true ]]; then
-    github_finalreport_as_comment result
+    github_finalreport_as_comment "${result}"
   fi
 
   big_console_header "Adding GitHub Statuses"
