@@ -205,7 +205,7 @@ You should see output similar to this:
 BUILDTOOLS:
   nobuild ant autoconf cmake gradle make maven
 TESTTYPES:
-  asflicense author cc checkmake checkstyle dupname golang golangcilint hadolint javac javadoc jshint markdownlint mvnsite pathlen perlcritic prototool pylint revive rubocop scalac scaladoc shellcheck shelldocs findbugs test4tests unitveto whitespace xml yamllint
+  asflicense author blanks buf cc checkmake checkstyle dupname golang golangcilint hadolint javac javadoc jshint markdownlint mvnsite pathlen perlcritic pylint revive rubocop scalac scaladoc shellcheck shelldocs test4tests unitveto xml yamllint
 BUGSYSTEMS:
   briefreport bugzilla github gitlab htmlout jira junit slack
 TESTFORMATS:
@@ -234,10 +234,10 @@ $ test-patch --plugins="all" <other options>
 `--plugins` also allows some basic "arithmetic":
 
 ```bash
-$ test-patch --plugins="all,-checkstyle,-findbugs" <other options>
+$ test-patch --plugins="all,-checkstyle,-spotbugs" <other options>
 ```
 
-This will enable all plug-ins for potential usage, except for `checkstyle` and `findbugs`.
+This will enable all plug-ins for potential usage, except for `checkstyle` and `spotbugs`.
 
 **NOTE: Many examples in this section will use `--plugins=all`. Users should set the `--plugins` option as appropriate.**
 

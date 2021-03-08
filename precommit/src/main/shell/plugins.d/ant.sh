@@ -111,9 +111,6 @@ function ant_modules_worker
   UNSUPPORTED_TEST=false
 
   case ${tst} in
-    findbugs)
-      modules_workers "${repostatus}" findbugs findbugs
-    ;;
     compile)
       modules_workers "${repostatus}" compile
     ;;
@@ -216,7 +213,6 @@ function ant_builtin_personality_file_tests
 
   if [[ ${filename} =~ \.java$ ]]; then
     add_test spotbugs
-    add_test findbugs
   fi
 }
 

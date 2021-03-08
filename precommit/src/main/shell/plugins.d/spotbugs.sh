@@ -19,29 +19,8 @@
 SPOTBUGS_HOME=${SPOTBUGS_HOME:-}
 ANT_SPOTBUGSXML=${ANT_SPOTBUGSXML:-}
 SPOTBUGS_WARNINGS_FAIL_PRECHECK=false
-SPOTBUGS_TABLE_DUPE=false
-
-if [[ -z "${SPOTBUGS_HOME}" && -n "${FINDBUGS_HOME}" ]]; then
-  SPOTBUGS_MODE=findbugs
-else
-  SPOTBUGS_MODE=spotbugs
-fi
 
 add_test_type spotbugs
-
-function spotbugs_deprecate_test_type
-{
-  if [[ "${SPOTBUGS_MODE}" == spotbugs ]]; then
-    if replace_test_type spotbugs findbugs; then
-      yetus_error "WARNING: Found both spotbugs and findbugs. Disabling findbugs."
-      SPOTBUGS_TABLE_DUPE=true
-    fi
-  else
-    if replace_test_type findbugs spotbugs; then
-      yetus_error "WARNING: spotbugs has deprecated findbugs, but only found findbugs."
-    fi
-  fi
-}
 
 function spotbugs_usage
 {
@@ -73,12 +52,8 @@ function spotbugs_parse_args
 ## @replaceable  no
 function spotbugs_initialize
 {
-  if [[ "${SPOTBUGS_MODE}" == findbugs ]]; then
-    FINDBUGS_HOME=${SPOTBUGS_HOME:-${FINDBUGS_HOME}}
-  fi
-
   if declare -f maven_add_install >/dev/null 2>&1; then
-    maven_add_install "${SPOTBUGS_MODE}"
+    maven_add_install "spotbugs"
   fi
 }
 
@@ -89,8 +64,8 @@ function spotbugs_filefilter
   if [[ ${BUILDTOOL} == maven
     || ${BUILDTOOL} == ant ]]; then
     if [[ ${filename} =~ \.java$
-      || ${filename} =~ (^|/)${SPOTBUGS_MODE}-exclude.xml$ ]]; then
-      add_test "${SPOTBUGS_MODE}"
+      || ${filename} =~ (^|/)spotbugs-exclude.xml$ ]]; then
+      add_test "spotbugs"
     fi
   fi
 }
@@ -101,7 +76,7 @@ function spotbugs_precheck
   declare status=0
 
   if [[ -z ${SPOTBUGS_HOME} ]]; then
-    yetus_error "SPOTBUGS_HOME (or FINDBUGS_HOME) was not specified."
+    yetus_error "SPOTBUGS_HOME was not specified."
     status=1
   else
     for exec in computeBugHistory \
@@ -115,8 +90,8 @@ function spotbugs_precheck
     done
   fi
   if [[ ${status} == 1 ]]; then
-    add_vote_table_v2 0 "${SPOTBUGS_MODE}" "" "${SPOTBUGS_MODE} executables are not available."
-    delete_test "${SPOTBUGS_MODE}"
+    add_vote_table_v2 0 "spotbugs" "" "spotbugs executables are not available."
+    delete_test "spotbugs"
   fi
 }
 
@@ -139,21 +114,17 @@ function spotbugs_runner
   declare retval
 
 
-  personality_modules_wrapper "${name}" "${SPOTBUGS_MODE}"
+  personality_modules_wrapper "${name}" "spotbugs"
 
-  "${BUILDTOOL}_modules_worker" "${name}" "${SPOTBUGS_MODE}"
+  "${BUILDTOOL}_modules_worker" "${name}" "spotbugs"
 
   if [[ ${UNSUPPORTED_TEST} = true ]]; then
     return 0
   fi
 
   echo ""
-  echo "Building ${SPOTBUGS_MODE} database(s) using ${SPOTBUGS_HOME} for executables."
+  echo "Building spotbugs database(s) using ${SPOTBUGS_HOME} for executables."
   echo ""
-
-  if [[ "${SPOTBUGS_TABLE_DUPE}" == true ]] && [[ "${name}" == branch ]]; then
-    add_vote_table_v2 0 spotbugs "" "Both FindBugs and SpotBugs are enabled, using SpotBugs."
-  fi
 
   #shellcheck disable=SC2153
   until [[ ${i} -eq ${#MODULE[@]} ]]; do
@@ -173,7 +144,7 @@ function spotbugs_runner
 
     case ${BUILDTOOL} in
       maven)
-        targetfile="${SPOTBUGS_MODE}Xml.xml"
+        targetfile="spotbugsXml.xml"
       ;;
       ant)
         targetfile="${ANT_SPOTBUGSXML}"
@@ -187,10 +158,10 @@ function spotbugs_runner
       files+=("${line}")
     done < <(find . -name "${targetfile}")
 
-    warnings_file="${PATCH_DIR}/${name}-${SPOTBUGS_MODE}-${fn}-warnings"
+    warnings_file="${PATCH_DIR}/${name}-spotbugs-${fn}-warnings"
 
     if [[ "${#files[@]}" -lt 1 ]]; then
-      module_status "${i}" 0 "" "${name}/${module} no ${SPOTBUGS_MODE} output file (${targetfile})"
+      module_status "${i}" 0 "" "${name}/${module} no spotbugs output file (${targetfile})"
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -215,14 +186,14 @@ function spotbugs_runner
     if [[ ${retval} != 0 ]]; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
-      module_status "${i}" -1 "" "${name}/${module} cannot run setBugDatabaseInfo from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${name}/${module} cannot run setBugDatabaseInfo from spotbugs"
       ((result=result+1))
       ((i=i+1))
       continue
     fi
 
     if [[ ! -f "${warnings_file}.xml" ]]; then
-      module_status "${i}" 0 "" "${name}/${module} no data in SpotBugs/FindBugs output file (${targetfile})"
+      module_status "${i}" 0 "" "${name}/${module} no data in SpotBugs output file (${targetfile})"
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -233,7 +204,7 @@ function spotbugs_runner
       "${warnings_file}.html"; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
-      module_status "${i}" -1 "" "${name}/${module} cannot run convertXmlToText from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${name}/${module} cannot run convertXmlToText from spotbugs"
       ((result=result+1))
     fi
 
@@ -243,7 +214,7 @@ function spotbugs_runner
         | cut -f2 -d\" \
         | cut -f1 -d\" )
       if [[ -n ${SPOTBUGS_VERSION} ]]; then
-        add_version_data "${SPOTBUGS_MODE}" "${SPOTBUGS_VERSION}"
+        add_version_data "spotbugs" "${SPOTBUGS_VERSION}"
       fi
     fi
 
@@ -269,21 +240,17 @@ function spotbugs_preapply
   declare result=0
   declare msg
 
-  if ! verify_needed_test "${SPOTBUGS_MODE}"; then
+  if ! verify_needed_test "spotbugs"; then
     return 0
   fi
 
-  big_console_header "${SPOTBUGS_MODE} detection: ${PATCH_BRANCH}"
+  big_console_header "spotbugs detection: ${PATCH_BRANCH}"
 
   spotbugs_runner branch
   result=$?
 
   if [[ ${UNSUPPORTED_TEST} = true ]]; then
     return 0
-  fi
-
-  if [[ "${SPOTBUGS_MODE}" == findbugs ]]; then
-    add_vote_table_v2 0 spotbugs "" "Used deprecated FindBugs config; considering switching to SpotBugs."
   fi
 
   until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
@@ -302,7 +269,7 @@ function spotbugs_preapply
       module=root
     fi
 
-    warnings_file="${PATCH_DIR}/branch-${SPOTBUGS_MODE}-${fn}-warnings"
+    warnings_file="${PATCH_DIR}/branch-spotbugs-${fn}-warnings"
     if [[ ! -f "${warnings_file}.xml" ]]; then
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${modindex}]=${savestop}
@@ -318,14 +285,14 @@ function spotbugs_preapply
         | "${AWK}" '{print $1}')
 
     if [[ ${module_spotbugs_warnings} -gt 0 ]] ; then
-      msg="${module} in ${PATCH_BRANCH} has ${module_spotbugs_warnings} extant ${SPOTBUGS_MODE} warnings."
+      msg="${module} in ${PATCH_BRANCH} has ${module_spotbugs_warnings} extant spotbugs warnings."
       if [[ "${SPOTBUGS_WARNINGS_FAIL_PRECHECK}" = "true" ]]; then
-        module_status "${modindex}" -1 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
+        module_status "${modindex}" -1 "branch-spotbugs-${fn}-warnings.html" "${msg}"
         ((result=result+1))
       elif [[ "${BUILDMODE}" = full ]]; then
-        module_status "${modindex}" -1 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
+        module_status "${modindex}" -1 "branch-spotbugs-${fn}-warnings.html" "${msg}"
         ((result=result+1))
-        populate_test_table "${SPOTBUGS_MODE}" "module:${module}"
+        populate_test_table "spotbugs" "module:${module}"
         #shellcheck disable=SC2162
         while read line; do
           firstpart=$(echo "${line}" | cut -f2 -d:)
@@ -333,7 +300,7 @@ function spotbugs_preapply
           add_test_table "" "${firstpart}:${secondpart}"
         done < <("${SPOTBUGS_HOME}/bin/convertXmlToText" "${warnings_file}.xml")
       else
-        module_status "${modindex}" 0 "branch-${SPOTBUGS_MODE}-${fn}-warnings.html" "${msg}"
+        module_status "${modindex}" 0 "branch-spotbugs-${fn}-warnings.html" "${msg}"
       fi
     fi
 
@@ -341,7 +308,7 @@ function spotbugs_preapply
     MODULE_STATUS_TIMER[${modindex}]=${savestop}
     ((modindex=modindex+1))
   done
-  modules_messages branch "${SPOTBUGS_MODE}" true
+  modules_messages branch "spotbugs" true
 
   if [[ ${result} != 0 ]]; then
     return 1
@@ -376,11 +343,11 @@ function spotbugs_postinstall
   declare summarize=true
   declare statstring
 
-  if ! verify_needed_test "${SPOTBUGS_MODE}"; then
+  if ! verify_needed_test "spotbugs"; then
     return 0
   fi
 
-  big_console_header "${SPOTBUGS_MODE} detection: ${BUILDMODE}"
+  big_console_header "spotbugs detection: ${BUILDMODE}"
 
   spotbugs_runner patch
 
@@ -407,9 +374,9 @@ function spotbugs_postinstall
       module=root
     fi
 
-    combined_xml="${PATCH_DIR}/combined-${SPOTBUGS_MODE}-${fn}.xml"
-    branchxml="${PATCH_DIR}/branch-${SPOTBUGS_MODE}-${fn}-warnings.xml"
-    patchxml="${PATCH_DIR}/patch-${SPOTBUGS_MODE}-${fn}-warnings.xml"
+    combined_xml="${PATCH_DIR}/combined-spotbugs-${fn}.xml"
+    branchxml="${PATCH_DIR}/branch-spotbugs-${fn}-warnings.xml"
+    patchxml="${PATCH_DIR}/patch-spotbugs-${fn}-warnings.xml"
 
     if [[ -f "${branchxml}" ]]; then
       # shellcheck disable=SC2016
@@ -422,11 +389,11 @@ function spotbugs_postinstall
       branchxml=${patchxml}
     fi
 
-    newbugsbase="${PATCH_DIR}/new-${SPOTBUGS_MODE}-${fn}"
-    fixedbugsbase="${PATCH_DIR}/fixed-${SPOTBUGS_MODE}-${fn}"
+    newbugsbase="${PATCH_DIR}/new-spotbugs-${fn}"
+    fixedbugsbase="${PATCH_DIR}/fixed-spotbugs-${fn}"
 
     if [[ ! -f "${branchxml}" ]] && [[ ! -f "${patchxml}" ]]; then
-      module_status "${i}" 0 "" "${module} has no data from ${SPOTBUGS_MODE}"
+      module_status "${i}" 0 "" "${module} has no data from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -441,7 +408,7 @@ function spotbugs_postinstall
             -output "${combined_xml}" \
             "${branchxml}" \
             "${patchxml}"; then
-      module_status "${i}" -1 "" "${module} cannot run computeBugHistory from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run computeBugHistory from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -462,7 +429,7 @@ function spotbugs_postinstall
         "${combined_xml}" "${newbugsbase}.xml" | ${AWK} '{print $1}')
     retval=$?
     if [[ ${retval} != 0 ]]; then
-      module_status "${i}" -1 "" "${module} cannot run filterBugs (#1) from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run filterBugs (#1) from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -476,7 +443,7 @@ function spotbugs_postinstall
         "${combined_xml}" "${fixedbugsbase}.xml" | ${AWK} '{print $1}')
     retval=$?
     if [[ ${retval} != 0 ]]; then
-      module_status "${i}" -1 "" "${module} cannot run filterBugs (#2) from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run filterBugs (#2) from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -489,7 +456,7 @@ function spotbugs_postinstall
 
     if ! "${SPOTBUGS_HOME}/bin/convertXmlToText" -html "${newbugsbase}.xml" \
         "${newbugsbase}.html"; then
-      module_status "${i}" -1 "" "${module} cannot run convertXmlToText from ${SPOTBUGS_MODE}"
+      module_status "${i}" -1 "" "${module} cannot run convertXmlToText from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
       MODULE_STATUS_TIMER[${i}]=${savestop}
@@ -499,7 +466,7 @@ function spotbugs_postinstall
     fi
 
     if [[ ${add_warnings} -gt 0 ]] ; then
-      populate_test_table FindBugs "module:${module}"
+      populate_test_table SpotBugs "module:${module}"
       #shellcheck disable=SC2162
       while read line; do
         firstpart=$(echo "${line}" | cut -f2 -d:)
@@ -507,7 +474,7 @@ function spotbugs_postinstall
         add_test_table "" "${firstpart}:${secondpart}"
       done < <("${SPOTBUGS_HOME}/bin/convertXmlToText" "${newbugsbase}.xml")
 
-      module_status "${i}" -1 "new-${SPOTBUGS_MODE}-${fn}.html" "${module} ${statstring}"
+      module_status "${i}" -1 "new-spotbugs-${fn}.html" "${module} ${statstring}"
       ((result=result+1))
     elif [[ ${fixed_warnings} -gt 0 ]]; then
       module_status "${i}" +1 "" "${module} ${statstring}"
@@ -519,7 +486,7 @@ function spotbugs_postinstall
     ((i=i+1))
   done
 
-  modules_messages patch ${SPOTBUGS_MODE} "${summarize}"
+  modules_messages patch spotbugs "${summarize}"
   if [[ ${result} != 0 ]]; then
     return 1
   fi
@@ -535,53 +502,4 @@ function spotbugs_rebuild
   else
     spotbugs_postinstall
   fi
-}
-
-
-##
-## To be removed:  FindBugs instead of SpotBugs
-##
-
-add_test_type findbugs
-
-function findbugs_usage
-{
-  yetus_add_option "--findbugs-home=<dir>" "Findbugs home directory (default \${FINDBUGS_HOME})"
-  yetus_add_option "--findbugs-strict-precheck" "If there are Findbugs warnings during precheck, fail"
-}
-
-function findbugs_parse_args
-{
-  declare i
-
-  for i in "$@"; do
-    case ${i} in
-    --findbugs-home=*)
-      delete_parameter "${i}"
-      SPOTBUGS_HOME=${i#*=}
-    ;;
-    --findbugs-strict-precheck)
-      delete_parameter "${i}"
-      SPOTBUGS_WARNINGS_FAIL_PRECHECK=true
-    ;;
-    esac
-  done
-}
-
-function findbugs_initialize
-{
-  SPOTBUGS_MODE="findbugs"
-  ANT_SPOTBUGSXML=${ANT_FINDBUGSXML}
-  SPOTBUGS_HOME=${FINDBUGS_HOME}
-  spotbugs_initialize "$@"
-}
-
-function findbugs_filefilter
-{
-  spotbugs_initialize "$@"
-}
-
-function findbugs_rebuild
-{
-  spotbugs_rebuild "$@"
 }

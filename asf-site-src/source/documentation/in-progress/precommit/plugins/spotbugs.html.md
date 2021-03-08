@@ -23,14 +23,11 @@ spotbugs
 
 # Category
 
-One or more of:
-
 Test
 
 # Description
 
-Runs the Java-based [SpotBugs](https://spotbugs.github.io/) utility or, in deprecated mode, the FindBugs utility.
-Only one of `spotbugs` or `findbugs` may be active at a time, with `spotbugs` taking precedent.
+Runs the Java-based [SpotBugs](https://spotbugs.github.io/) utility.
 
 # Environment Variables
 
@@ -42,8 +39,6 @@ Only one of `spotbugs` or `findbugs` may be active at a time, with `spotbugs` ta
 
 | Option | Notes |
 |:---------|:------|
-| `--findbugs-home==<dir>` | (DEPRECATED) FindBugs home directory. There is no default. |
-| `--findbugs-strict-precheck` | (DEPRECATED) Fail patch testing if `findbugs` determines a failure before even applying the patch |
 | `--spotbugs-home==<dir>` | SpotBugs home directory. There is no default. |
 | `--spotbugs-strict-precheck` | Fail patch testing if `spotbugs` determines a failure before even applying the patch |
 

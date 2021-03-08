@@ -183,10 +183,10 @@ function personality_file_tests
   local filename=$1
 
   if [[ ${filename} =~ \.java$ ]]; then
-    add_test findbugs
     add_test javac
     add_test javadoc
     add_test mvninstall
+    add_test spotbugs
     add_test unit
   fi
 
@@ -255,7 +255,7 @@ or autodetermined by various means.  The `PROJECT_NAME` version takes precedence
 Personalities can set the base list of plug-ins to enable and disable for their project via the `personality_plugins` function. Just call it with the same pattern as the `--plugins` command line option:
 
 ```bash
-personality_plugins "all,-checkstyle,-findbugs,-asflicense"
+personality_plugins "all,-checkstyle,-spotbugs,-asflicense"
 ```
 
 This list is used if the user does not provide a list of plug-ins.

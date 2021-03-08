@@ -228,6 +228,5 @@ function gradle_builtin_personality_file_tests
 
   if [[ ${filename} =~ \.java$ ]]; then
     add_test spotbugs
-    add_test findbugs
   fi
 }
