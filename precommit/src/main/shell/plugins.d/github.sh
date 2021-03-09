@@ -35,9 +35,10 @@ GITHUB_REPO=""
 # user settings
 GITHUB_TOKEN="${GITHUB_TOKEN-}"
 GITHUB_ISSUE=""
-#GITHUB_USE_EMOJI_VOTE=false
+GITHUB_USE_EMOJI_VOTE=false
 GITHUB_STATUS_RECOVERY_COUNTER=1
 GITHUB_STATUS_RECOVER_TOOL=false
+GITHUB_WRITE_COMMENT=false
 GITHUB_ANNOTATION_LIMIT=50
 declare -a GITHUB_AUTH
 
@@ -51,9 +52,8 @@ function github_usage
   yetus_add_option "--github-base-url=<url>" "The URL of the github server (default:'${GITHUB_BASE_URL}')"
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
-  #if [[ "${GITHUB_STATUS_RECOVER_TOOL}" == false ]]; then
-  #  yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
-  #fi
+  yetus_add_option "--github-write-comment" "Write final report as github comment (default: '${GITHUB_WRITE_COMMENT}')"
+  yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
 }
 
 function github_parse_args
@@ -82,10 +82,14 @@ function github_parse_args
         delete_parameter "${i}"
         GITHUB_TOKEN=${i#*=}
       ;;
- #     --github-use-emoji-vote)
- #       delete_parameter "${i}"
- #       GITHUB_USE_EMOJI_VOTE=true
- #     ;;
+      --github-write-comment)
+        delete_parameter "${i}"
+        GITHUB_WRITE_COMMENT=true
+      ;;
+      --github-use-emoji-vote)
+        delete_parameter "${i}"
+        GITHUB_USE_EMOJI_VOTE=true
+      ;;
     esac
   done
 }
@@ -779,147 +783,147 @@ function github_write_comment
   return ${retval}
 }
 
-# @description  Print out the finished details to the Github PR
-# @audience     private
-# @stability    evolving
-# @replaceable  no
-# @param        runresult
-# function github_finalreport
-# {
-#   declare result=$1
-#   declare i
-#   declare commentfile=${PATCH_DIR}/gitcommentfile.$$
-#   declare comment
-#   declare url
-#   declare ela
-#   declare subs
-#   declare logfile
-#   declare calctime
-#   declare vote
-#   declare emoji
+## @description  Print out the finished details to the Github PR
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+function github_finalreport_as_comment
+{
+  declare result=$1
+  declare i
+  declare commentfile=${PATCH_DIR}/gitcommentfile.$$
+  declare comment
+  declare url
+  declare ela
+  declare subs
+  declare logfile
+  declare calctime
+  declare vote
+  declare emoji
 
-#   rm "${commentfile}" 2>/dev/null
+  rm "${commentfile}" 2>/dev/null
 
-#   if [[ ${ROBOT} = "false"
-#      || -z ${GITHUB_ISSUE} ]] ; then
-#     return 0
-#   fi
+  if [[ ${ROBOT} = "false"
+     || -z ${GITHUB_ISSUE} ]] ; then
+    return 0
+  fi
 
-#   url=$(get_artifact_url)
+  url=$(get_artifact_url)
 
-#   big_console_header "Adding comment to Github"
+  big_console_header "Adding comment to Github"
 
-#   if [[ ${result} == 0 ]]; then
-#     echo ":confetti_ball: **+1 overall**" >> "${commentfile}"
-#   else
-#     echo ":broken_heart: **-1 overall**" >> "${commentfile}"
-#   fi
-#   printf '\n\n\n\n' >>  "${commentfile}"
+  if [[ ${result} == 0 ]]; then
+    echo ":confetti_ball: **+1 overall**" >> "${commentfile}"
+  else
+    echo ":broken_heart: **-1 overall**" >> "${commentfile}"
+  fi
+  printf '\n\n\n\n' >>  "${commentfile}"
 
-#   i=0
-#   until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
-#     printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
-#     ((i=i+1))
-#   done
+  i=0
+  until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
+    printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
+    ((i=i+1))
+  done
 
-#   {
-#     printf '\n\n'
-#     echo "| Vote | Subsystem | Runtime |  Logfile | Comment |"
-#     echo "|:----:|----------:|--------:|:--------:|:-------:|"
-#   } >> "${commentfile}"
+  {
+    printf '\n\n'
+    echo "| Vote | Subsystem | Runtime |  Logfile | Comment |"
+    echo "|:----:|----------:|--------:|:--------:|:-------:|"
+  } >> "${commentfile}"
 
-#   i=0
-#   until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
-#     ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
-#     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
-#     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
-#     ela=$(echo "${ourstring}" | cut -f4 -d\|)
-#     calctime=$(clock_display "${ela}")
-#     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
-#     comment=$(echo "${ourstring}"  | cut -f6 -d\|)
+  i=0
+  until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
+    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
+    subs=$(echo "${ourstring}"  | cut -f3 -d\|)
+    ela=$(echo "${ourstring}" | cut -f4 -d\|)
+    calctime=$(clock_display "${ela}")
+    logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+    comment=$(echo "${ourstring}"  | cut -f6 -d\|)
 
-#     if [[ "${vote}" = "H" ]]; then
-#       echo "|||| _${comment}_ |" >> "${commentfile}"
-#       ((i=i+1))
-#       continue
-#     fi
+    if [[ "${vote}" = "H" ]]; then
+      echo "|||| _${comment}_ |" >> "${commentfile}"
+      ((i=i+1))
+      continue
+    fi
 
-#     if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
-#       emoji=""
-#       case ${vote} in
-#         1|"+1")
-#           emoji="+1 :green_heart:"
-#         ;;
-#         -1)
-#           emoji="-1 :x:"
-#         ;;
-#         0)
-#           emoji="+0 :ok:"
-#         ;;
-#         -0)
-#           emoji="-0 :warning:"
-#         ;;
-#         H)
-#           # this never gets called (see above) but this is here so others know the color is taken
-#           emoji=""
-#         ;;
-#         *)
-#           # usually this should not happen but let's keep the old vote result if it happens
-#           emoji=${vote}
-#         ;;
-#       esac
-#     else
-#       emoji="${vote}"
-#     fi
+    if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
+      emoji=""
+      case ${vote} in
+        1|"+1")
+          emoji="+1 :green_heart:"
+        ;;
+        -1)
+          emoji="-1 :x:"
+        ;;
+        0)
+          emoji="+0 :ok:"
+        ;;
+        -0)
+          emoji="-0 :warning:"
+        ;;
+        H)
+          # this never gets called (see above) but this is here so others know the color is taken
+          emoji=""
+        ;;
+        *)
+          # usually this should not happen but let's keep the old vote result if it happens
+          emoji=${vote}
+        ;;
+      esac
+    else
+      emoji="${vote}"
+    fi
 
-#     if [[ -n "${logfile}" ]]; then
-#       t1=${logfile/@@BASE@@/}
-#       t2=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
-#       t2="[${t1}](${t2})"
-#     else
-#       t2=""
-#     fi
+    if [[ -n "${logfile}" ]]; then
+      t1=${logfile/@@BASE@@/}
+      t2=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+      t2="[${t1}](${t2})"
+    else
+      t2=""
+    fi
 
-#     printf '| %s | %s | %s | %s | %s |\n' \
-#       "${emoji}" \
-#       "${subs}" \
-#       "${calctime}" \
-#       "${t2}" \
-#       "${comment}" \
-#       >> "${commentfile}"
+    printf '| %s | %s | %s | %s | %s |\n' \
+      "${emoji}" \
+      "${subs}" \
+      "${calctime}" \
+      "${t2}" \
+      "${comment}" \
+      >> "${commentfile}"
 
-#     ((i=i+1))
-#   done
+    ((i=i+1))
+  done
 
-#   if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
-#     {
-#       printf '\n\n'
-#       echo "| Reason | Tests |"
-#       echo "|-------:|:------|"
-#     } >> "${commentfile}"
-#     i=0
-#     until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
-#       echo "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
-#       ((i=i+1))
-#     done
-#   fi
+  if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
+    {
+      printf '\n\n'
+      echo "| Reason | Tests |"
+      echo "|-------:|:------|"
+    } >> "${commentfile}"
+    i=0
+    until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
+      echo "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
+      ((i=i+1))
+    done
+  fi
 
-#   {
-#     printf '\n\n'
-#     echo "| Subsystem | Report/Notes |"
-#     echo "|----------:|:-------------|"
-#   } >> "${commentfile}"
+  {
+    printf '\n\n'
+    echo "| Subsystem | Report/Notes |"
+    echo "|----------:|:-------------|"
+  } >> "${commentfile}"
 
-#   i=0
-#   until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
-#     comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
-#     printf '%s\n' "${comment}" >> "${commentfile}"
-#     ((i=i+1))
-#   done
-#   printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
+  i=0
+  until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
+    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
+    printf '%s\n' "${comment}" >> "${commentfile}"
+    ((i=i+1))
+  done
+  printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
 
-#   github_write_comment "${commentfile}"
-# }
+  github_write_comment "${commentfile}"
+}
 
 ## @description  Write a github status
 ## @audience     private
@@ -1053,6 +1057,10 @@ function github_finalreport
 
   if [[ "${OFFLINE}" == true ]]; then
     return 0
+  fi
+
+  if [[ "${GITHUB_WRITE_COMMENT}" == true ]]; then
+    github_finalreport_as_comment "${result}"
   fi
 
   big_console_header "Adding GitHub Statuses"
