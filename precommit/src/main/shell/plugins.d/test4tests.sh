@@ -41,7 +41,7 @@ function test4tests_patchfile
   start_clock
 
   for i in "${CHANGED_FILES[@]}"; do
-    if [[ ${i} =~ (^|/)test/ ]]; then
+    if [[ ${i} =~ (^|/)tests?/ ]]; then
       ((testReferences=testReferences + 1))
     fi
   done
