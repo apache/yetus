@@ -43,7 +43,7 @@ None
 | Option | Notes |
 |:---------|:------|
 | `--blanks-eol-ignore-file=<file>` | File containing regexs of files/dirs to ignore EOL blanks. Defaults to `.yetus/blanks-eol.txt` |
-| `--blanks-tabs-ignore-file=<file>` | File containing regexs of files/dirs to ignore tabs. Defaults to `.yetus/blanks-eol.txt` |
+| `--blanks-tabs-ignore-file=<file>` | File containing regexs of files/dirs to ignore tabs. Defaults to `.yetus/blanks-tabs.txt` |
 
 # Docker Notes
 
