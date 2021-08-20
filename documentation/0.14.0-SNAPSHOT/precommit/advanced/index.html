@@ -328,10 +328,10 @@ function is called almost immediately after the personality is loaded and plug-i
   <span class="nb">local </span><span class="nv">filename</span><span class="o">=</span><span class="nv">$1</span>
 
   <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">=</span>~ <span class="se">\.</span>java<span class="nv">$ </span><span class="o">]]</span><span class="p">;</span> <span class="k">then
-    </span>add_test findbugs
-    add_test javac
+    </span>add_test javac
     add_test javadoc
     add_test mvninstall
+    add_test spotbugs
     add_test unit
   <span class="k">fi</span>
 
@@ -394,7 +394,7 @@ or autodetermined by various means.  The <code>PROJECT_NAME</code> version takes
 
 <p>Personalities can set the base list of plug-ins to enable and disable for their project via the <code>personality_plugins</code> function. Just call it with the same pattern as the <code>--plugins</code> command line option:</p>
 
-<div class="highlight"><pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-findbugs,-asflicense"</span>
+<div class="highlight"><pre class="highlight shell"><code>personality_plugins <span class="s2">"all,-checkstyle,-spotbugs,-asflicense"</span>
 </code></pre></div>
 <p>This list is used if the user does not provide a list of plug-ins.</p>
 

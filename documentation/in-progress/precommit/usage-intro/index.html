@@ -314,7 +314,7 @@ Total Elapsed <span class="nb">time</span>:   0m 01s
 <div class="highlight"><pre class="highlight plaintext"><code>BUILDTOOLS:
   nobuild ant autoconf cmake gradle make maven
 TESTTYPES:
-  asflicense author cc checkmake checkstyle dupname golang golangcilint hadolint javac javadoc jshint markdownlint mvnsite pathlen perlcritic prototool pylint revive rubocop scalac scaladoc shellcheck shelldocs findbugs test4tests unitveto whitespace xml yamllint
+  asflicense author blanks buf cc checkmake checkstyle dupname golang golangcilint hadolint javac javadoc jshint markdownlint mvnsite pathlen perlcritic pylint revive rubocop scalac scaladoc shellcheck shelldocs test4tests unitveto xml yamllint
 BUGSYSTEMS:
   briefreport bugzilla github gitlab htmlout jira junit slack
 TESTFORMATS:
@@ -339,9 +339,9 @@ TESTFORMATS:
 </code></pre></div>
 <p><code>--plugins</code> also allows some basic "arithmetic":</p>
 
-<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--plugins</span><span class="o">=</span><span class="s2">"all,-checkstyle,-findbugs"</span> &lt;other options&gt;
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--plugins</span><span class="o">=</span><span class="s2">"all,-checkstyle,-spotbugs"</span> &lt;other options&gt;
 </code></pre></div>
-<p>This will enable all plug-ins for potential usage, except for <code>checkstyle</code> and <code>findbugs</code>.</p>
+<p>This will enable all plug-ins for potential usage, except for <code>checkstyle</code> and <code>spotbugs</code>.</p>
 
 <p><strong>NOTE: Many examples in this section will use <code>--plugins=all</code>. Users should set the <code>--plugins</code> option as appropriate.</strong></p>
 

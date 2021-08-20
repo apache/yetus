@@ -25,13 +25,13 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="../../../../../assets/css/bootstrap.css" rel="stylesheet">
-        <link href="../../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
-        <link href="../../../../../assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="../../../../../assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="../../../../../assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
   </head>
     <body>
       
@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -102,84 +102,127 @@
 </div>
 
       <div class="container">
-        <!---
-  Licensed to the Apache Software Foundation (ASF) under one
-  or more contributor license agreements.  See the NOTICE file
-  distributed with this work for additional information
-  regarding copyright ownership.  The ASF licenses this file
-  to you under the Apache License, Version 2.0 (the
-  "License"); you may not use this file except in compliance
-  with the License.  You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-  Unless required by applicable law or agreed to in writing,
-  software distributed under the License is distributed on an
-  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, either express or implied.  See the License for the
-  specific language governing permissions and limitations
-  under the License.
+        
+<!---
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 -->
+<h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h1 id="name">Name</h1>
+<h2 id="release-0140---unreleased-as-of-2021-08-19">Release 0.14.0 - Unreleased (as of 2021-08-19)</h2>
 
-<p>spotbugs</p>
-
-<h1 id="category">Category</h1>
-
-<p>Test</p>
-
-<h1 id="description">Description</h1>
-
-<p>Runs the Java-based <a href="https://spotbugs.github.io/">SpotBugs</a> utility.</p>
-
-<h1 id="environment-variables">Environment Variables</h1>
+<h3 id="important-issues">IMPORTANT ISSUES:</h3>
 
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th style="text-align: left">Variable</th>
-      <th style="text-align: left">Passed to Docker</th>
-      <th style="text-align: left">Notes</th>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: left"><code>SPOTBUGS_HOME</code></td>
-      <td style="text-align: left">NO</td>
-      <td style="text-align: left">Used to determine the location of the SpotBugs installation</td>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1057">YETUS-1057</a></td>
+      <td style="text-align: left">Remove findbugs support</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
     </tr>
   </tbody>
 </table>
 
-<h1 id="options">Options</h1>
+<h3 id="improvements">IMPROVEMENTS:</h3>
 
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
-      <th style="text-align: left">Option</th>
-      <th style="text-align: left">Notes</th>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td style="text-align: left"><code>--spotbugs-home==&lt;dir&gt;</code></td>
-      <td style="text-align: left">SpotBugs home directory. There is no default.</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--spotbugs-strict-precheck</code></td>
-      <td style="text-align: left">Fail patch testing if <code>spotbugs</code> determines a failure before even applying the patch</td>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1102">YETUS-1102</a></td>
+      <td style="text-align: left">Add an option to comment to GitHub PR</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Akira Ajisaka</td>
     </tr>
   </tbody>
 </table>
 
-<h1 id="docker-notes">Docker Notes</h1>
+<h3 id="bug-fixes">BUG FIXES:</h3>
 
-<p>None</p>
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th style="text-align: left">JIRA</th>
+      <th style="text-align: left">Summary</th>
+      <th style="text-align: left">Priority</th>
+      <th style="text-align: left">Component</th>
+      <th style="text-align: left">Reporter</th>
+      <th style="text-align: left">Contributor</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1099">YETUS-1099</a></td>
+      <td style="text-align: left">shelldocs –lint option fails</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">ShellDocs</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1104">YETUS-1104</a></td>
+      <td style="text-align: left">checkmake failing to build</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1106">YETUS-1106</a></td>
+      <td style="text-align: left">Detect CMake test changes</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Gautham Banasandra</td>
+      <td style="text-align: left">Gautham Banasandra</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1116">YETUS-1116</a></td>
+      <td style="text-align: left">Documentation for blank-test incorrect</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Michel Onstein</td>
+      <td style="text-align: left">Michel Onstein</td>
+    </tr>
+  </tbody>
+</table>
 
-<h1 id="developer-notes">Developer Notes</h1>
-
-<p>None</p>
 
     </div>
       
