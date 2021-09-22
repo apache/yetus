@@ -1017,9 +1017,6 @@ function parse_args
       EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
     elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE}" ]]; then
       EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE}")
-    else
-      yetus_error "WARNING: Excluded paths file (${EXCLUDE_PATHS_FILE}}) does not exist (yet?)."
-      unset EXCLUDE_PATHS_FILE
     fi
   fi
 
@@ -3016,8 +3013,7 @@ function start_coprocessors
   if [[ "${BASH_VERSINFO[0]}" -gt 3 ]]; then
 
     for filename in "${BINDIR}/coprocs.d"/*; do
-      # shellcheck disable=SC1091
-      # shellcheck source=coprocs.d/process_counter.sh
+      # shellcheck source=SCRIPTDIR/coprocs.d/process_counter.sh
       . "${filename}"
     done
 
@@ -3236,9 +3232,8 @@ function import_core
   declare filename
 
   for filename in "${BINDIR}/core.d"/*; do
-    # shellcheck disable=SC1091
-    # shellcheck source=core.d/00-yetuslib.sh
-    # shellcheck source=core.d/01-common.sh
+    # shellcheck source=SCRIPTDIR/core.d/00-yetuslib.sh
+    # shellcheck source=SCRIPTDIR/core.d/01-common.sh
     . "${filename}"
   done
 }

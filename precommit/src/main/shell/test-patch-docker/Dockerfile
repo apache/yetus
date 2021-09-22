@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 ###############
 #
 # Example Apache Yetus Dockerfile that includes all functionality supported
@@ -40,40 +39,44 @@ ENV DEBCONF_TERSE true
 # Adding libffi-dev for all the programming languages
 # that take advantage of it.
 ######
+# hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
-    apt-transport-https \
-    apt-utils \
-    ca-certificates \
-    curl \
-    dirmngr \
-    git \
-    gpg \
-    gpg-agent \
-    libffi-dev \
-    locales \
-    pkg-config \
-    rsync \
-    software-properties-common \
-    ssh-client \
-    xz-utils \
+        apt-transport-https \
+        apt-utils \
+        ca-certificates \
+        curl \
+        dirmngr \
+        git \
+        gpg \
+        gpg-agent \
+        libffi-dev \
+        locales \
+        pkg-config \
+        rsync \
+        software-properties-common \
+        ssh-client \
+        xz-utils \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 ###
 # Set the locale
 ###
+#hadolint ignore=DL3059
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 ####
-# Install GNU C/C++ (everything generally needs this)
+# Install GNU C/C++ and GNU make (everything generally needs this)
 ####
+# hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         g++ \
         gcc \
         libc-dev \
+        make \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -82,7 +85,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # helper utility in parallel. go bins are typically
 # statically linked, so this is perfectly safe.
 ###
-# hadolint ignore=DL3008
+# hadolint ignore=DL3008,DL3059
 RUN add-apt-repository -y ppa:longsleep/golang-backports \
     && apt-get -q update \
     && apt-get -q install --no-install-recommends -y golang-go \
@@ -97,23 +100,25 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 # Install Apache Creadur RAT jar
 ####
 FROM yetusbase AS apacherat
+ARG APACHE_RAT_VERSION=0.13
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/apache-rat \
     && curl -f -s -L -o /tmp/rat.tgz \
-        'https://www.apache.org/dyn/closer.cgi?action=download&filename=/creadur/apache-rat-0.13/apache-rat-0.13-bin.tar.gz' \
+        "https://dlcdn.apache.org/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz" \
     && shasum -a 512 /tmp/rat.tgz \
         | awk '$1!="2c1e12eace7b80a9b6373c2f5080fbf63d3fa8d9248f3a17bd05de961cd3ca3c4549817b8b7320a84f0c323194edad0abdb86bdfec3976227a228e2143e14a54" {exit(1)}' \
     && tar --strip-components 1 -C /opt/apache-rat -xpzf /tmp/rat.tgz \
     && rm /tmp/rat.tgz \
-    && mv /opt/apache-rat/apache-rat-0.13.jar /opt/apache-rat/apache-rat.jar
+    && mv /opt/apache-rat/apache-rat-$APACHE_RAT_VERSION.jar /opt/apache-rat/apache-rat.jar
 
 #####
 # Install SpotBugs
 #####
 FROM yetusbase AS spotbugs
+ARG SPOTBUGS_VERSION=4.4.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.2.2/spotbugs-4.2.2.tgz -o spotbugs.tgz \
-    && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/4.2.2/spotbugs-4.2.2.tgz.sha1 -o spotbugs.tgz.sha1 \
+RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz -o spotbugs.tgz \
+    && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz.sha1 -o spotbugs.tgz.sha1 \
     && echo -n "  spotbugs.tgz" >> spotbugs.tgz.sha1 \
     && shasum -c spotbugs.tgz.sha1 \
     && mkdir -p /opt/spotbugs \
@@ -126,37 +131,40 @@ ENV SPOTBUGS_HOME /opt/spotbugs
 # Install shellcheck (shell script lint)
 ####
 FROM yetusbase AS shellcheck
+ARG SHELLCHECK_VERSION=0.7.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
-    https://github.com/koalaman/shellcheck/releases/download/v0.7.1/shellcheck-v0.7.1.linux.x86_64.tar.xz \
+    https://github.com/koalaman/shellcheck/releases/download/v$SHELLCHECK_VERSION/shellcheck-v$SHELLCHECK_VERSION.linux.x86_64.tar.xz \
         | tar --strip-components 1 --wildcards -xJf - '*/shellcheck' \
     && chmod a+rx shellcheck \
     && mv shellcheck /bin/shellcheck \
     && shasum -a 512 /bin/shellcheck \
-    | awk '$1!="aae813283d49f18f95a205dca1c5184267d07534a08abc952ebea1958fee06f8a0207373b6770a083079ba875458ea9da443f2b9910a50dcd93b935048bc14f5" {exit(1)}'
+    | awk '$1!="0977b3d34f6e7e6d5c95ba46ca648ab55a6168e6304484d0daffefb0724c2309f9b0a2c8121d72ddcee977ba5614a5e7e83efc419b294600e0f73d748ec263a0" {exit(1)}'
 
 ####
 # Install hadolint (dockerfile lint)
 ####
 FROM yetusbase AS hadolint
+ARG HADOLINT_VERSION=2.7.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
-        https://github.com/hadolint/hadolint/releases/download/v1.18.0/hadolint-Linux-x86_64 \
+        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-x86_64 \
         -o /bin/hadolint \
     && chmod a+rx /bin/hadolint \
     && shasum -a 512 /bin/hadolint \
-    | awk '$1!="df27253d374c143a606483b07a26234ac7b4bca40b4eba53e79609c81aa70146e7d5c145f90dcec71d6d1aad1048b7d9d2de68d92284f48a735d04d19c5c5559" {exit(1)}'
+    | awk '$1!="176eb3fd9f6a3cb9eda7f23b69a98069ea77cefc2078cf6234ebb3cb45897078934ee6925bec32b6e5c10915e8ff39bf24ebec36f37b226a2c8c4068a456ee30" {exit(1)}'
 
 ####
 # Install buf (protobuf lint)
 ####
 FROM yetusbase AS buf
+ARG BUF_VERSION=0.56.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
-      https://github.com/bufbuild/buf/releases/download/v0.21.0/buf-Linux-x86_64.tar.gz \
+      https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-x86_64.tar.gz \
       -o buf.tar.gz \
-    && shasum -a 256 buf.tar.gz \
-    | awk '$1!="95aba62ac0ecc5a9120cc58c65cdcc85038633a816bddfe8398c5ae3b32803f1" {exit(1)}' \
+    && shasum -a 512 buf.tar.gz \
+    | awk '$1!="52b8ef7ba924b6679d59134df0765fe456749e83a9842ce289875489261b62b5261a21fc9849a22778a6afb3c5fcc6e86b856e06d1b62564d794c3e8f4da10ca" {exit(1)}' \
     && tar -xzf buf.tar.gz -C /usr/local --strip-components 1 \
     && rm buf.tar.gz
 
@@ -164,8 +172,9 @@ RUN curl -sSL \
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
 FROM yetusbase AS bats
+ARG BATS_VERSION=1.4.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN git clone --branch v1.2.1 \
+RUN git clone --branch v$BATS_VERSION \
       https://github.com/bats-core/bats-core.git \
       /tmp/bats-core \
     && /tmp/bats-core/install.sh /opt/bats \
@@ -187,19 +196,23 @@ RUN go get -u github.com/mgechev/revive
 #
 ####
 FROM yetusbase AS checkmake
+ARG CHECKMAKE_VERSION=8915bd40945dd20b153cfcecb787ecdb5020ba38
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN apt-get -q update \
-    && apt-get -q install --no-install-recommends -y golang-1.15 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && /usr/lib/go-1.15/bin/go get -u github.com/mrtazz/checkmake
+ENV BUILDER_NAME='Apache Yetus'
+ENV BUILDER_EMAIL='dev@apache.yetus.org'
+RUN git clone \
+      https://github.com/mrtazz/checkmake.git /tmp/checkmake \
+    && git -C /tmp/checkmake checkout $CHECKMAKE_VERSION \
+    && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 make -C /tmp/checkmake binaries \
+    && make -C /tmp/checkmake test
 
 ####
 # golangci-lint (Multi-tool golang linter)
 ####
 FROM yetusbase as golangci
+ARG GOLANGCILINT_VERSION=1.42.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v1.31.0)
+RUN (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v$GOLANGCILINT_VERSION)
 
 ########
 #
@@ -219,6 +232,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ####
 # OpenJDK 8
 ####
+# hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y openjdk-8-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -228,6 +242,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y openjdk-8
 # NOTE: This default only works when Apache Yetus is launched
 # _in_ the container and not outside of it!
 ####
+# hadolint ignore=DL3008,DL3059
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y default-jre-headless openjdk-11-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
@@ -239,20 +254,23 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
 ####
 # Install ant
 ####
+# hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y ant \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 ####
-# Install GNU automake, GNU make, and related
+# Install GNU automake and related
 ####
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y autoconf automake libtool make \
+# hadolint ignore=DL3008,DL3059
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y autoconf automake libtool \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 ####
 # Install cmake
 ####
+# hadolint ignore=DL3008,DL3059
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y cmake \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -260,7 +278,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y cmake \
 ###
 # Install docker
 ###
+# hadolint ignore=DL3059
 RUN curl -sSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+# hadolint ignore=DL3008,DL3059
 RUN add-apt-repository -y \
    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
@@ -272,6 +292,7 @@ RUN add-apt-repository -y \
 ######
 # Install maven
 ######
+# hadolint ignore=DL3008,DL3059
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y maven \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -279,6 +300,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y maven \
 ######
 # Install perl
 ######
+# hadolint ignore=DL3008,DL3059
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         perl \
         libperl-critic-perl \
@@ -289,7 +311,12 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # Install python3 and pylint3
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
-# hadolint ignore=DL3008,DL3013
+ARG PY3_ASTROID_VERSION=2.8.0
+ARG PY3_CODESPELL_VERSION=2.1.0
+ARG PY3_DOCKER_COMPOSE=1.29.2
+ARG PY3_PYLINT_VERSION=2.11.1
+ARG PY3_YAMLLINT_VERSION=1.26.3
+# hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3 \
         python3-bcrypt \
@@ -314,29 +341,33 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
     && python3 /tmp/get-pip.py \
     && rm /usr/local/bin/pip /tmp/get-pip.py \
-    && pip3 install -v \
-        astroid==2.4.2 \
-        git+https://github.com/codespell-project/codespell.git@8d8d4ae2bbd24a91d1a9bd8aec25c9f86724c280 \
-        docker-compose==1.26.2 \
-        pylint==2.5.3 \
-        yamllint==1.24.2 \
+    && pip3 install --no-cache-dir -v \
+        astroid==$PY3_ASTROID_VERSION \
+        codespell==$PY3_CODESPELL_VERSION \
+        docker-compose==$PY3_DOCKER_COMPOSE \
+        pylint==$PY3_PYLINT_VERSION \
+        yamllint==$PY3_YAMLLINT_VERSION \
     && rm -rf /root/.cache \
-    && mv /usr/local/bin/pylint /usr/local/bin/pylint3
-RUN ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint
-RUN ln -s /usr/local/bin/pip3 /usr/local/bin/pip
+    && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \
+    && ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint \
+    && ln -s /usr/local/bin/pip3 /usr/local/bin/pip
 
 ####
 # Install ruby and associated bits
 ###
+ARG RUBY_BUNDLER_VERSION=2.2.27
+ARG RUBY_RAKE_VERSION=13.0.3
+ARG RUBY_RUBOCOP_VERSION=1.21.0
+# hadolint ignore=DL3008
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && apt-get -q update && apt-get -q install --no-install-recommends -y \
        ruby \
        ruby-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && gem install rake -v 13.0.1 \
-    && gem install rubocop -v 0.90.0 \
-    && gem install bundler -v 2.1.4 \
+    && gem install bundler -v $RUBY_BUNDLER_VERSION \
+    && gem install rake -v $RUBY_RAKE_VERSION \
+    && gem install rubocop -v $RUBY_RUBOCOP_VERSION \
     && rm -rf /root/.gem
 # set some reasonable defaults for ruby
 # user's can always override these as needed
@@ -346,12 +377,16 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 ###
 # Install npm and JSHint
 ###
+ARG JSHINT_VERSION=2.13.1
+ARG MARKDOWNLINTCLI_VERSION=0.28.1
 # hadolint ignore=DL3008
 RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get -q install --no-install-recommends -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && npm install -g jshint@2.12.0 markdownlint-cli@0.23.2 \
+    && npm install -g \
+        jshint@$JSHINT_VERSION \
+        markdownlint-cli@0$MARKDOWNLINTCLI_VERSION \
     && rm -rf /root/.npm
 
 #####
@@ -367,7 +402,7 @@ COPY --from=bats /opt/bats /opt/bats
 RUN ln -s /opt/bats/bin/bats /usr/local/bin/bats
 
 COPY --from=revive /root/go/bin/* /usr/local/bin
-COPY --from=checkmake /root/go/bin/* /usr/local/bin
+COPY --from=checkmake /tmp/checkmake/checkmake /usr/local/bin
 COPY --from=golangci /root/go/bin/* /usr/local/bin
 
 ####

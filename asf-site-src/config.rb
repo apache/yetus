@@ -60,10 +60,6 @@ page '.htaccess.apache', layout: false
 
 # classes needed to publish our api docs
 class CopyInPlaceResource < ::Middleman::Sitemap::Resource
-  def initialize(sitemap, dest, src)
-    super(sitemap, dest, src)
-  end
-
   def binary?
     true
   end

@@ -52,6 +52,7 @@ jobs:
           --plugins=all
           --proclimit=2000
           --project=yetus
+          --spotbugs-home=/opt/spotbugs
           --tests-filter=checkstyle,javadoc,rubocop,test4tests
       - name: Artifact output
         if: ${{ always() }}

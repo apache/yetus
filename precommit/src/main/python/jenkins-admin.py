@@ -20,6 +20,11 @@
 #
 """ Process patch file attachments from JIRA using a query """
 
+#
+# we actually want native encoding so tell pylint to be quiet
+#
+# pylint: disable=unspecified-encoding
+
 from argparse import ArgumentParser
 from tempfile import NamedTemporaryFile
 from xml.etree import ElementTree
@@ -155,14 +160,15 @@ def main():  #pylint: disable=too-many-branches, too-many-statements, too-many-l
 
     # Handle the version string right away and exit
     if options.release_version:
-        with open(os.path.join(os.path.dirname(__file__), "../../VERSION"),
-                  'r') as ver_file:
+        with open(
+                os.path.join(os.path.dirname(__file__), "..", "..",
+                             "VERSION")) as ver_file:
             print(ver_file.read())
         sys.exit(0)
 
     token_frag = ''
     if options.jenkinsToken:
-        token_frag = 'token=%s' % options.jenkinsToken
+        token_frag = f'token={options.jenkinsToken}'
     else:
         token_frag = 'token={project}-token'
     if not options.jiraFilter:
@@ -180,22 +186,21 @@ def main():  #pylint: disable=too-many-branches, too-many-statements, too-many-l
                 parser.error('Invalid Jenkins Url Override: ' + override)
             (project, url) = override.split('=', 1)
             jenkinsurloverrides[project.upper()] = url
-    tempfile = NamedTemporaryFile(delete=False)
+    tempfile = NamedTemporaryFile(delete=False)  # pylint: disable=consider-using-with
     try:
         jobloghistory = None
         if not options.jenkinsInit:
+            lsb = 'lastSuccessfulBuild/artifact/patch_tested.txt'
+            lcb = 'lastCompletedBuild/artifact/patch_tested.txt'
             jobloghistory = http_get(
-                options.jenkinsurl +
-                '/job/%s/lastSuccessfulBuild/artifact/patch_tested.txt' %
-                options.jenkinsJobName, True)
+                f'{options.jenkinsurl}/job/{options.jenkinsJobName}/{lsb}',
+                True)
 
             # if we don't have a successful build available try the last build
 
             if not jobloghistory:
                 jobloghistory = http_get(
-                    options.jenkinsurl +
-                    '/job/%s/lastCompletedBuild/artifact/patch_tested.txt' %
-                    options.jenkinsJobName)
+                    f'{options.jenkinsurl}/job/{options.jenkinsJobName}/{lcb}')
             jobloghistory = jobloghistory.strip().split('\n')
             if 'TESTED ISSUES' not in jobloghistory[0]:
                 print(
@@ -205,7 +210,7 @@ def main():  #pylint: disable=too-many-branches, too-many-statements, too-many-l
 
         # we are either going to write a new one or rewrite the old one
 
-        joblog = open('patch_tested.txt', 'w+')
+        joblog = open('patch_tested.txt', 'w+')  # pylint: disable=consider-using-with
 
         if jobloghistory:
             if len(jobloghistory) > options.history:
@@ -242,7 +247,7 @@ def main():  #pylint: disable=too-many-branches, too-many-statements, too-many-l
 
             # submit job
 
-            jobname = '%s-%s,%s' % (project, issue, attachment)
+            jobname = f'{project}-{issue},{attachment}'
             if not jobloghistory or jobname not in jobloghistory:
                 print(jobname + ' has not been processed, submitting')
                 joblog.write(jobname + '\n')

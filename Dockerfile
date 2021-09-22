@@ -23,7 +23,7 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod a+rx /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-# hadolint ignore=DL3003
+# hadolint ignore=DL3003,DL3059
 RUN cd /ysrc \
     && mvn clean install -DskipTests \
     && rm -rf /.m2 \

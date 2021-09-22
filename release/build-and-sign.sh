@@ -27,7 +27,7 @@ if [[ ! -d precommit ]]; then
   exit 1
 fi
 
-#shellcheck source=precommit/src/main/shell/core.d/00-yetuslib.sh
+#shellcheck source=SCRIPTDIR/../precommit/src/main/shell/core.d/00-yetuslib.sh
 . precommit/src/main/shell/core.d/00-yetuslib.sh
 
 BINDIR=$(yetus_abs "${thisdir}")

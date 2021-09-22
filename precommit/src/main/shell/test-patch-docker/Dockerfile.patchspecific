@@ -27,18 +27,22 @@ ARG DOCKER_SOCKET_GID
 ARG DOCKER_WORK_DIR
 
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" || true
-RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
+# hadolint ignore=DL3059
+RUN useradd -l -g "${GROUP_ID}" -u "${USER_ID}" -m "${USER_NAME}" || true
 
 # docker socket handling.  unless /etc/group is mounted, we have to do this.
-
+# hadolint ignore=DL3059
 RUN if [ "${DOCKER_SOCKET_GID}" != -1 ]; then (groupadd --non-unique --gid ${DOCKER_SOCKET_GID} dockersock && adduser "${USER_NAME}" dockersock ) || true; fi
 
-RUN mkdir -p ${DOCKER_WORK_DIR}/extras
-RUN chmod a+rwx ${DOCKER_WORK_DIR}/extras
+# hadolint ignore=DL3059
+RUN mkdir -p ${DOCKER_WORK_DIR}/extras \
+    && chmod a+rwx ${DOCKER_WORK_DIR}/extras
 COPY user_params.txt ${DOCKER_WORK_DIR}/user_params.txt
 COPY launch-test-patch.sh /launch-test-patch.sh
 RUN chown -R "${USER_NAME}":"${GROUP_ID}" ${DOCKER_WORK_DIR} /launch-test-patch.sh || true
+# hadolint ignore=DL3059
 RUN chmod a+rx /launch-test-patch.sh
+# hadolint ignore=DL3059
 RUN chown -R "${USER_NAME}" "/home/${USER_NAME}" || true
 ENV HOME "/home/${USER_NAME}"
 USER ${USER_NAME}

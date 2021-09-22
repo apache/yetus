@@ -64,13 +64,13 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
 
-    <checkstyle.version>8.36</checkstyle.version>
-    <commons.io.version>2.6</commons.io.version>
+    <checkstyle.version>9.0</checkstyle.version>
+    <commons.io.version>2.7</commons.io.version>
     <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
     <jdiff.version>1.0.9</jdiff.version>
-    <maven-checkstyle-plugin.version>3.1.1</maven-checkstyle-plugin.version>
-    <maven-project-info-reports-plugin.version>3.1.1</maven-project-info-reports-plugin.version>
-    <spotbugs-maven-plugin.version>4.0.4</spotbugs-maven-plugin.version>
+    <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
+    <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
+    <spotbugs-maven-plugin.version>4.4.1</spotbugs-maven-plugin.version>
 
     <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
 

@@ -707,6 +707,7 @@ function docker_run_image
       fi
     fi
 
+    # shellcheck disable=SC2030
     (
       if [[ -z "${lines}" ]]; then
         cat "${DOCKERFILE}"
@@ -715,6 +716,7 @@ function docker_run_image
       fi
     ) > "${buildfile}"
 
+    # shellcheck disable=SC2031
     if [[ ${lines} -gt 0 ]]; then
       if [[ "${DOCKER_VERSION[0]}" -lt 1 ]] || \
        [[ "${DOCKER_VERSION[0]}" -lt 2 && "${DOCKER_VERSION[1]}" -lt 38 ]]; then

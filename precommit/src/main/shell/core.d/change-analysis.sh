@@ -172,7 +172,7 @@ function exclude_paths_from_changed_files
     if [[ -f "${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
       EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE_SAVEOFF}")
     elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
-      EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EEXCLUDE_PATHS_FILE_SAVEOFF}")
+      EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE_SAVEOFF}")
     fi
 
     # if it exists, process, otherwise just return because nothing

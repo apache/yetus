@@ -20,6 +20,7 @@ declare -a OVERWRITEARGS
 # adding it as a common function library here is a-ok
 
 #shellcheck disable=SC1090
+#shellcheck source=SCRIPTDIR/../core.d/00-yetuslib.sh
 source "${PATCH_DIR}/precommit/core.d/00-yetuslib.sh"
 
 if ! yetus_file_to_array OVERWRITEARGS "${DOCKER_WORK_DIR}/user_params.txt"; then
