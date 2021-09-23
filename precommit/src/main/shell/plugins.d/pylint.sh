@@ -25,14 +25,17 @@ PYLINT=${PYLINT:-$(command -v pylint 2>/dev/null)}
 PYLINT_PIP_CMD=$(command -v pip 2>/dev/null)
 PYLINT_REQUIREMENTS=false
 PYLINT_PIP_USER=true
+PYLINT_IGNORE_BAD_OPTION_VALUE=true
 
 function pylint_usage
 {
   yetus_add_option "--pylint=<file>" "Filename of the pylint executable (default: ${PYLINT})"
+  yetus_add_option "--pylint-ignore-bad-option-value=<bool>" "Ignore 'bad-option-value' errors (default: ${PYLINT_IGNORE_BAD_OPTION_VALUE})"
   yetus_add_option "--pylint-pip-cmd=<file>" "Command to use for pip when installing requirements.txt (default: ${PYLINT_PIP_CMD})"
   yetus_add_option "--pylint-rcfile=<file>" "pylint configuration file"
   yetus_add_option "--pylint-requirements=<bool>" "pip install requirements.txt (default: ${PYLINT_REQUIREMENTS})"
   yetus_add_option "--pylint-use-user=<bool>" "Use --user for the requirements.txt (default: ${PYLINT_PIP_USER})"
+
 }
 
 function pylint_parse_args
@@ -44,6 +47,10 @@ function pylint_parse_args
     --pylint=*)
       delete_parameter "${i}"
       PYLINT=${i#*=}
+    ;;
+    --pylint-ignore-bad-option-value=*)
+      delete_parameter "${i}"
+      PYLINT_IGNORE_BAD_OPTION_VALUE=${i#*=}
     ;;
     --pylint-pip-cmd=*)
       delete_parameter "${i}"
@@ -158,6 +165,14 @@ function pylint_executor
         2>>"${PATCH_DIR}/${pylintStderr}"
     fi
   done
+
+  if [[ ${PYLINT_IGNORE_BAD_OPTION_VALUE} == "true" ]]; then
+    "${GREP}" -v 'bad-option-value' \
+      "${PATCH_DIR}/${repostatus}-pylint-result.tmp" \
+      > "${PATCH_DIR}/${repostatus}-pylint-result.tmp.1"
+    mv "${PATCH_DIR}/${repostatus}-pylint-result.tmp.1" \
+      "${PATCH_DIR}/${repostatus}-pylint-result.tmp"
+  fi
 
   # pylint likes to put extra headers and
   # stuff, so need to look specifically for our content
