@@ -26,6 +26,7 @@ import urllib.parse
 import sys
 import json
 import http.client
+
 sys.dont_write_bytecode = True
 
 NAME_PATTERN = re.compile(r' \([0-9]+\)')
@@ -41,16 +42,15 @@ def get_jira(jira_url):
 
     req = urllib.request.Request(jira_url)
     if username and password:
-        basicauth = base64.b64encode("%s:%s" % (username, password)).replace(
+        basicauth = base64.b64encode(f"{username}:{password}").replace(
             '\n', '')
-        req.add_header('Authorization', 'Basic %s' % basicauth)
+        req.add_header('Authorization', f'Basic {basicauth}')
 
     try:
-        response = urllib.request.urlopen(req)
+        response = urllib.request.urlopen(req)  # pylint: disable=consider-using-with
     except urllib.error.HTTPError as http_err:
         code = http_err.code
-        print("JIRA returns HTTP error %d: %s. Aborting." % \
-              (code, http_err.msg))
+        print(f"JIRA returns HTTP error {code}: {http_err.msg}. Aborting.")
         error_response = http_err.read()
         try:
             error_response = json.loads(error_response)
@@ -62,8 +62,8 @@ def get_jira(jira_url):
             print("FATAL: Could not parse json response from server.")
         sys.exit(1)
     except urllib.error.URLError as url_err:
-        print("Error contacting JIRA: %s\n" % jira_url)
-        print("Reason: %s" % url_err.reason)
+        print(f"Error contacting JIRA: {jira_url}\n")
+        print(f"Reason: {url_err.reason}")
         raise url_err
     except http.client.BadStatusLine as err:
         raise err
@@ -99,7 +99,7 @@ def sanitize_text(input_string):
 
       Calls sanitize_markdown at the end as a final pass.
     """
-    escapes = dict()
+    escapes = {}
     # See: https://daringfireball.net/projects/markdown/syntax#backslash
     # We only escape a subset of special characters. We ignore characters
     # that only have significance at the start of a line.
@@ -148,22 +148,23 @@ class Outputs:
         if params is None:
             params = {}
         self.params = params
-        self.base = open(base_file_name % params, 'w')
+        self.base = open(base_file_name % params, 'w', encoding='utf-8')  # pylint: disable=consider-using-with
         self.others = {}
         for key in keys:
             both = dict(params)
             both['key'] = key
-            self.others[key] = open(file_name_pattern % both, 'w')
+            filename = file_name_pattern % both
+            self.others[key] = open(filename, 'w', encoding='utf-8')  # pylint: disable=consider-using-with
 
     def write_all(self, pattern):
         """ write everything given a pattern """
         both = dict(self.params)
         both['key'] = ''
         self.base.write(pattern % both)
-        for key in self.others:
+        for key, filehandle in self.others.items():
             both = dict(self.params)
             both['key'] = key
-            self.others[key].write(pattern % both)
+            filehandle.write(pattern % both)
 
     def write_key_raw(self, key, input_string):
         """ write everything without changes """

@@ -16,12 +16,12 @@
 # limitations under the License.
 """ Generate releasenotes based upon JIRA """
 
-# pylint: disable=too-many-lines
-
 import errno
 import http.client
 import json
+import logging
 import os
+import pathlib
 import re
 import shutil
 import sys
@@ -29,53 +29,22 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from pprint import pprint
 from glob import glob
 from argparse import ArgumentParser
 from time import gmtime, strftime, sleep
 
 sys.dont_write_bytecode = True
 # pylint: disable=wrong-import-position
+from .getversions import GetVersions, PythonVersion
+from .jira import (Jira, JiraIter, Linter, RELEASE_VERSION, SORTTYPE,
+                   SORTORDER, BACKWARD_INCOMPATIBLE_LABEL, NUM_RETRIES)
 from .utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
 # pylint: enable=wrong-import-position
-
-try:
-    import dateutil.parser
-except ImportError:
-    print("This script requires python-dateutil module to be installed. " \
-          "You can install it using:\n\t pip install python-dateutil")
-    sys.exit(1)
 
 # These are done in order of preference as to which one seems to be
 # more up-to-date at any given point in time.  And yes, it is
 # ironic that packaging is usually the last one to be
 # correct.
-
-try:
-    from pip._vendor.packaging.version import LegacyVersion as PythonVersion
-except ImportError:
-    try:
-        from setuptools._vendor.packaging.version import LegacyVersion as PythonVersion
-    except ImportError:
-        try:
-            from pkg_resources._vendor.packaging.version import LegacyVersion as PythonVersion
-        except ImportError:
-            try:
-                from packaging.version import LegacyVersion as PythonVersion
-            except ImportError:
-                print(
-                    "This script requires a packaging module to be installed.")
-                sys.exit(1)
-
-RELEASE_VERSION = {}
-
-JIRA_BASE_URL = "https://issues.apache.org/jira"
-SORTTYPE = 'resolutiondate'
-SORTORDER = 'older'
-NUM_RETRIES = 5
-
-# label to be used to mark an issue as Incompatible change.
-BACKWARD_INCOMPATIBLE_LABEL = 'backward-incompatible'
 
 EXTENSION = '.md'
 
@@ -104,11 +73,11 @@ def indexbuilder(title, asf_license, format_string):
     """Write an index file for later conversion using mvn site"""
     versions = glob("[0-9]*.[0-9]*")
     versions = sorted(versions, reverse=True, key=PythonVersion)
-    with open("index" + EXTENSION, "w") as indexfile:
+    with open("index" + EXTENSION, "w", encoding='utf-8') as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
         for version in versions:
-            indexfile.write("* %s v%s\n" % (title, version))
+            indexfile.write(f"* {title} v{version}\n")
             for k in ("Changelog", "Release Notes"):
                 indexfile.write(
                     format_string %
@@ -129,447 +98,33 @@ def buildreadme(title, asf_license):
     """Write an index file for Github using README.md"""
     versions = glob("[0-9]*.[0-9]*")
     versions = sorted(versions, reverse=True, key=PythonVersion)
-    with open("README.md", "w") as indexfile:
+    with open("README.md", "w", encoding='utf-8') as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
         for version in versions:
-            indexfile.write("* %s v%s\n" % (title, version))
+            indexfile.write(f"* {title} v{version}\n")
             for k in ("Changelog", "Release Notes"):
-                indexfile.write("    * [%s](%s/%s.%s%s)\n" %
-                                (k, version, k.upper().replace(
-                                    " ", ""), version, EXTENSION))
+                indexfile.write(
+                    f"    * [{k}]({version}/{k.upper().replace(' ', '')}.{version}{EXTENSION})\n"
+                )
 
 
-class GetVersions:  # pylint: disable=too-few-public-methods
-    """ List of version strings """
-    def __init__(self, versions, projects):
-        self.newversions = []
-        versions = sorted(versions, key=PythonVersion)
-        print("Looking for %s through %s" % (versions[0], versions[-1]))
-        newversions = set()
-        for project in projects:
-            url = JIRA_BASE_URL + \
-              "/rest/api/2/project/%s/versions" % project.upper()
-            try:
-                resp = get_jira(url)
-            except (urllib.error.HTTPError, urllib.error.URLError,
-                    http.client.BadStatusLine):
-                sys.exit(1)
+def getversion():
+    """ print the version file"""
+    versionfile = pathlib.Path(__file__).resolve().parent.joinpath('VERSION')
+    if versionfile.exists():
+        with open(versionfile, encoding='utf-8') as ver_file:
+            version = ver_file.read()
+        return version
 
-            datum = json.loads(resp.read())
-            for data in datum:
-                newversions.add(PythonVersion(data['name']))
-        newlist = list(newversions.copy())
-        newlist.append(PythonVersion(versions[0]))
-        newlist.append(PythonVersion(versions[-1]))
-        newlist = sorted(newlist)
-        start_index = newlist.index(PythonVersion(versions[0]))
-        end_index = len(newlist) - 1 - newlist[::-1].index(
-            PythonVersion(versions[-1]))
-        for newversion in newlist[start_index + 1:end_index]:
-            if newversion in newversions:
-                print("Adding %s to the list" % newversion)
-                self.newversions.append(newversion)
-
-    def getlist(self):
-        """ Get the list of versions """
-        return self.newversions
-
-
-class Jira:
-    """A single JIRA"""
-    def __init__(self, data, parent):
-        self.key = data['key']
-        self.fields = data['fields']
-        self.parent = parent
-        self.notes = None
-        self.incompat = None
-        self.reviewed = None
-        self.important = None
-
-    def get_id(self):
-        """ get the Issue ID """
-        return to_unicode(self.key)
-
-    def get_description(self):
-        """ get the description """
-        return to_unicode(self.fields['description'])
-
-    def get_release_note(self):
-        """ get the release note field """
-        if self.notes is None:
-            field = self.parent.field_id_map['Release Note']
-            if field in self.fields:
-                self.notes = to_unicode(self.fields[field])
-            elif self.get_incompatible_change() or self.get_important():
-                self.notes = self.get_description()
-            else:
-                self.notes = ""
-        return self.notes
-
-    def get_priority(self):
-        """ Get the priority """
-        ret = ""
-        pri = self.fields['priority']
-        if pri is not None:
-            ret = pri['name']
-        return to_unicode(ret)
-
-    def get_assignee(self):
-        """ Get the assignee """
-        ret = ""
-        mid = self.fields['assignee']
-        if mid is not None:
-            ret = mid['displayName']
-        return to_unicode(ret)
-
-    def get_components(self):
-        """ Get the component(s) """
-        if self.fields['components']:
-            return ", ".join(
-                [comp['name'] for comp in self.fields['components']])
-        return ""
-
-    def get_summary(self):
-        """ Get the summary """
-        return self.fields['summary']
-
-    def get_type(self):
-        """ Get the Issue type """
-        ret = ""
-        mid = self.fields['issuetype']
-        if mid is not None:
-            ret = mid['name']
-        return to_unicode(ret)
-
-    def get_reporter(self):
-        """ Get the issue reporter """
-        ret = ""
-        mid = self.fields['reporter']
-        if mid is not None:
-            ret = mid['displayName']
-        return to_unicode(ret)
-
-    def get_project(self):
-        """ get the project """
-        ret = ""
-        mid = self.fields['project']
-        if mid is not None:
-            ret = mid['key']
-        return to_unicode(ret)
-
-    def __lt__(self, other):
-
-        if SORTTYPE == 'issueid':
-            # compare by issue name-number
-            selfsplit = self.get_id().split('-')
-            othersplit = other.get_id().split('-')
-            result = selfsplit[0] < othersplit[0]
-            if not result:
-                result = int(selfsplit[1]) < int(othersplit[1])
-                # dec is supported for backward compatibility
-                if SORTORDER in ['dec', 'desc']:
-                    result = not result
-
-        elif SORTTYPE == 'resolutiondate':
-            dts = dateutil.parser.parse(self.fields['resolutiondate'])
-            dto = dateutil.parser.parse(other.fields['resolutiondate'])
-            result = dts < dto
-            if SORTORDER == 'newer':
-                result = not result
-
-        return result
-
-    def get_incompatible_change(self):
-        """ get incompatible flag """
-        if self.incompat is None:
-            field = self.parent.field_id_map['Hadoop Flags']
-            self.reviewed = False
-            self.incompat = False
-            if field in self.fields:
-                if self.fields[field]:
-                    for flag in self.fields[field]:
-                        if flag['value'] == "Incompatible change":
-                            self.incompat = True
-                        if flag['value'] == "Reviewed":
-                            self.reviewed = True
-            else:
-                # Custom field 'Hadoop Flags' is not defined,
-                # search for 'backward-incompatible' label
-                field = self.parent.field_id_map['Labels']
-                if field in self.fields and self.fields[field]:
-                    if BACKWARD_INCOMPATIBLE_LABEL in self.fields[field]:
-                        self.incompat = True
-                        self.reviewed = True
-        return self.incompat
-
-    def get_important(self):
-        """ get important flag """
-        if self.important is None:
-            field = self.parent.field_id_map['Flags']
-            self.important = False
-            if field in self.fields:
-                if self.fields[field]:
-                    for flag in self.fields[field]:
-                        if flag['value'] == "Important":
-                            self.important = True
-        return self.important
-
-
-class JiraIter:
-    """An Iterator of JIRAs"""
-    @staticmethod
-    def collect_fields():
-        """send a query to JIRA and collect field-id map"""
-        try:
-            resp = get_jira(JIRA_BASE_URL + "/rest/api/2/field")
-            data = json.loads(resp.read())
-        except (urllib.error.HTTPError, urllib.error.URLError,
-                http.client.BadStatusLine, ValueError):
-            sys.exit(1)
-        field_id_map = {}
-        for part in data:
-            field_id_map[part['name']] = part['id']
-        return field_id_map
-
-    @staticmethod
-    def query_jira(ver, projects, pos):
-        """send a query to JIRA and collect
-        a certain number of issue information"""
-        count = 100
-        pjs = "','".join(projects)
-        jql = "project in ('%s') and \
-               fixVersion in ('%s') and \
-               resolution = Fixed" % (pjs, ver)
-        params = urllib.parse.urlencode({
-            'jql': jql,
-            'startAt': pos,
-            'maxResults': count
-        })
-        return JiraIter.load_jira(params, 0)
-
-    @staticmethod
-    def load_jira(params, fail_count):
-        """send query to JIRA and collect with retries"""
-        try:
-            resp = get_jira(JIRA_BASE_URL + "/rest/api/2/search?%s" % params)
-        except (urllib.error.URLError, http.client.BadStatusLine) as err:
-            return JiraIter.retry_load(err, params, fail_count)
-
-        try:
-            data = json.loads(resp.read())
-        except http.client.IncompleteRead as err:
-            return JiraIter.retry_load(err, params, fail_count)
-        return data
-
-    @staticmethod
-    def retry_load(err, params, fail_count):
-        """Retry connection up to NUM_RETRIES times."""
-        print(err)
-        fail_count += 1
-        if fail_count <= NUM_RETRIES:
-            print("Connection failed %d times. Retrying." % (fail_count))
-            sleep(1)
-            return JiraIter.load_jira(params, fail_count)
-        print("Connection failed %d times. Aborting." % (fail_count))
-        sys.exit(1)
-
-    @staticmethod
-    def collect_jiras(ver, projects):
-        """send queries to JIRA and collect all issues
-        that belongs to given version and projects"""
-        jiras = []
-        pos = 0
-        end = 1
-        while pos < end:
-            data = JiraIter.query_jira(ver, projects, pos)
-            if 'error_messages' in data:
-                print("JIRA returns error message: %s" %
-                      data['error_messages'])
-                sys.exit(1)
-            pos = data['startAt'] + data['maxResults']
-            end = data['total']
-            jiras.extend(data['issues'])
-
-            if ver not in RELEASE_VERSION:
-                for issue in data['issues']:
-                    for fix_version in issue['fields']['fixVersions']:
-                        if 'releaseDate' in fix_version:
-                            RELEASE_VERSION[fix_version['name']] = fix_version[
-                                'releaseDate']
-        return jiras
-
-    def __init__(self, version, projects):
-        self.version = version
-        self.projects = projects
-        self.field_id_map = JiraIter.collect_fields()
-        ver = str(version).replace("-SNAPSHOT", "")
-        self.jiras = JiraIter.collect_jiras(ver, projects)
-        self.iter = self.jiras.__iter__()
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        """ get next """
-        data = next(self.iter)
-        j = Jira(data, self)
-        return j
-
-
-class Linter:
-    """Encapsulates lint-related functionality.
-    Maintains running lint statistics about JIRAs."""
-
-    _valid_filters = [
-        "incompatible", "important", "version", "component", "assignee"
-    ]
-
-    def __init__(self, version, options):
-        self._warning_count = 0
-        self._error_count = 0
-        self._lint_message = ""
-        self._version = version
-
-        self._filters = dict(
-            list(zip(self._valid_filters, [False] * len(self._valid_filters))))
-
-        self.enabled = False
-        self._parse_options(options)
-
-    @staticmethod
-    def add_parser_options(parser):
-        """Add Linter options to passed optparse parser."""
-        filter_string = ", ".join("'" + f + "'" for f in Linter._valid_filters)
-        parser.add_argument(
-            "-n",
-            "--lint",
-            dest="lint",
-            action="append",
-            type=str,
-            help="Specify lint filters. Valid filters are " + filter_string +
-            ". " + "'all' enables all lint filters. " +
-            "Multiple filters can be specified comma-delimited and " +
-            "filters can be negated, e.g. 'all,-component'.")
-
-    def _parse_options(self, options):
-        """Parse options from optparse."""
-
-        if options.lint is None or not options.lint:
-            return
-        self.enabled = True
-
-        # Valid filter specifications are
-        # self._valid_filters, negations, and "all"
-        valid_list = self._valid_filters
-        valid_list += ["-" + v for v in valid_list]
-        valid_list += ["all"]
-        valid = set(valid_list)
-
-        enabled = []
-        disabled = []
-
-        for opt in options.lint:
-            for token in opt.split(","):
-                if token not in valid:
-                    print("Unknown lint filter '%s', valid options are: %s" % \
-                            (token, ", ".join(v for v in sorted(valid))))
-                    sys.exit(1)
-                if token.startswith("-"):
-                    disabled.append(token[1:])
-                else:
-                    enabled.append(token)
-
-        for eopt in enabled:
-            if eopt == "all":
-                for filt in self._valid_filters:
-                    self._filters[filt] = True
-            else:
-                self._filters[eopt] = True
-        for disopt in disabled:
-            self._filters[disopt] = False
-
-    def had_errors(self):
-        """Returns True if a lint error was encountered, else False."""
-        return self._error_count > 0
-
-    def message(self):
-        """Return summary lint message suitable for printing to stdout."""
-        if not self.enabled:
-            return None
-        return self._lint_message + \
-               "\n=======================================" + \
-               "\n%s: Error:%d, Warning:%d \n" % \
-               (self._version, self._error_count, self._warning_count)
-
-    def _check_missing_component(self, jira):
-        """Return if JIRA has a 'missing component' lint error."""
-        if not self._filters["component"]:
-            return False
-
-        if jira.fields['components']:
-            return False
-        return True
-
-    def _check_missing_assignee(self, jira):
-        """Return if JIRA has a 'missing assignee' lint error."""
-        if not self._filters["assignee"]:
-            return False
-
-        if jira.fields['assignee'] is not None:
-            return False
-        return True
-
-    def _check_version_string(self, jira):
-        """Return if JIRA has a version string lint error."""
-        if not self._filters["version"]:
-            return False
-
-        field = jira.parent.field_id_map['Fix Version/s']
-        for ver in jira.fields[field]:
-            found = re.match(r'^((\d+)(\.\d+)*).*$|^(\w+\-\d+)$', ver['name'])
-            if not found:
-                return True
-        return False
-
-    def lint(self, jira):
-        """Run lint check on a JIRA."""
-        if not self.enabled:
-            return
-        if not jira.get_release_note():
-            if self._filters["incompatible"] and jira.get_incompatible_change(
-            ):
-                self._warning_count += 1
-                self._lint_message += "\nWARNING: incompatible change %s lacks release notes." % \
-                                (sanitize_text(jira.get_id()))
-            if self._filters["important"] and jira.get_important():
-                self._warning_count += 1
-                self._lint_message += "\nWARNING: important issue %s lacks release notes." % \
-                                (sanitize_text(jira.get_id()))
-
-        if self._check_version_string(jira):
-            self._warning_count += 1
-            self._lint_message += "\nWARNING: Version string problem for %s " % jira.get_id(
-            )
-
-        if self._check_missing_component(jira) or self._check_missing_assignee(
-                jira):
-            self._error_count += 1
-            error_message = []
-            if self._check_missing_component(jira):
-                error_message.append("component")
-            if self._check_missing_assignee(jira):
-                error_message.append("assignee")
-            self._lint_message += "\nERROR: missing %s for %s " \
-                            % (" and ".join(error_message), jira.get_id())
+    return 'Unknown'
 
 
 def parse_args():  # pylint: disable=too-many-branches
     """Parse command-line arguments with optparse."""
     parser = ArgumentParser(
         prog='releasedocmaker',
-        epilog=
-        "--project and --version may be given multiple times.")
+        epilog="--project and --version may be given multiple times.")
     parser.add_argument("--dirversions",
                         dest="versiondirs",
                         action="store_true",
@@ -628,14 +183,13 @@ def parse_args():  # pylint: disable=too-many-branches
         default=SORTORDER,
         # dec is supported for backward compatibility
         choices=["asc", "dec", "desc", "newer", "older"],
-        help="Sorting order for sort type (default: %s)" % SORTORDER)
+        help=f"Sorting order for sort type (default: {SORTORDER})")
     parser.add_argument("--sorttype",
                         dest="sorttype",
                         metavar="TYPE",
                         default=SORTTYPE,
                         choices=["resolutiondate", "issueid"],
-                        help="Sorting type for issues (default: %s)" %
-                        SORTTYPE)
+                        help=f"Sorting type for issues (default: {SORTTYPE})")
     parser.add_argument(
         "-t",
         "--projecttitle",
@@ -673,6 +227,7 @@ def parse_args():  # pylint: disable=too-many-branches
                         dest="base_url",
                         action="append",
                         type=str,
+                        default='https://issues.apache.org/jira',
                         help="specify base URL of the JIRA instance.")
     parser.add_argument(
         "--retries",
@@ -706,9 +261,7 @@ def parse_args():  # pylint: disable=too-many-branches
 
     # Handle the version string right away and exit
     if options.release_version:
-        with open(os.path.join(os.path.dirname(__file__), "../VERSION"),
-                  'r') as ver_file:
-            print(ver_file.read())
+        logging.info(getversion())
         sys.exit(0)
 
     # Validate options
@@ -717,11 +270,8 @@ def parse_args():  # pylint: disable=too-many-branches
             parser.error("At least one version needs to be supplied")
         if options.projects is None:
             parser.error("At least one project needs to be supplied")
-        if options.base_url is not None:
-            if len(options.base_url) > 1:
-                parser.error("Only one base URL should be given")
-            else:
-                options.base_url = options.base_url[0]
+        if options.base_url is None:
+            parser.error("Base URL must be defined")
         if options.output_directory is not None:
             if len(options.output_directory) > 1:
                 parser.error("Only one output directory should be given")
@@ -737,9 +287,18 @@ def parse_args():  # pylint: disable=too-many-branches
     return options
 
 
+def generate_changelog_line_md(base_url, jira):
+    ''' take a jira object and generate the changelog line in md'''
+    sani_jira_id = sanitize_text(jira.get_id())
+    sani_prio = sanitize_text(jira.get_priority())
+    sani_summ = sanitize_text(jira.get_summary())
+    line = f'* [{sani_jira_id}](' + f'{base_url}/browse/{sani_jira_id})'
+    line += f'| *{sani_prio}* | **{sani_summ}**\n'
+    return line
+
+
 def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-locals
     """ hey, it's main """
-    global JIRA_BASE_URL  #pylint: disable=global-statement
     global BACKWARD_INCOMPATIBLE_LABEL  #pylint: disable=global-statement
     global SORTTYPE  #pylint: disable=global-statement
     global SORTORDER  #pylint: disable=global-statement
@@ -751,20 +310,13 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
     if options.output_directory is not None:
         # Create the output directory if it does not exist.
         try:
-            if not os.path.exists(options.output_directory):
-                os.makedirs(options.output_directory)
+            outputpath = pathlib.Path(options.output_directory).resolve()
+            outputpath.mkdir(parents=True, exist_ok=True)
         except OSError as exc:
-            if exc.errno == errno.EEXIST and os.path.isdir(
-                    options.output_directory):
-                pass
-            else:
-                print("Unable to create output directory %s: %u, %s" % \
-                        (options.output_directory, exc.errno, exc.strerror))
-                sys.exit(1)
+            logging.error("Unable to create output directory %s: %s, %s",
+                          options.output_directory, exc.errno, exc.strerror)
+            sys.exit(1)
         os.chdir(options.output_directory)
-
-    if options.base_url is not None:
-        JIRA_BASE_URL = options.base_url
 
     if options.incompatible_label is not None:
         BACKWARD_INCOMPATIBLE_LABEL = options.incompatible_label
@@ -775,7 +327,8 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
     projects = options.projects
 
     if options.range is True:
-        versions = GetVersions(options.versions, projects).getlist()
+        versions = GetVersions(options.versions, projects,
+                               options.base_url).getlist()
     else:
         versions = [PythonVersion(v) for v in options.versions]
     versions = sorted(versions)
@@ -796,10 +349,11 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
     for version in versions:
         vstr = str(version)
         linter = Linter(vstr, options)
-        jlist = sorted(JiraIter(vstr, projects))
+        jlist = sorted(JiraIter(options.base_url, vstr, projects))
         if not jlist and not options.empty:
-            print("There is no issue which has the specified version: %s" %
-                  version)
+            logging.warning(
+                "There is no issue which has the specified version: %s",
+                version)
             continue
 
         if vstr in RELEASE_VERSION:
@@ -807,7 +361,7 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
         elif options.usetoday:
             reldate = strftime("%Y-%m-%d", gmtime())
         else:
-            reldate = "Unreleased (as of %s)" % strftime("%Y-%m-%d", gmtime())
+            reldate = f"Unreleased (as of {strftime('%Y-%m-%d', gmtime())})"
 
         if not os.path.exists(vstr) and options.versiondirs:
             os.mkdir(vstr)
@@ -919,10 +473,7 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
             else:
                 otherlist.append(jira)
 
-            line = '* [%s](' % (sanitize_text(jira.get_id())) + JIRA_BASE_URL + \
-                   '/browse/%s) | *%s* | **%s**\n' \
-                   % (sanitize_text(jira.get_id()),
-                      sanitize_text(jira.get_priority()), sanitize_text(jira.get_summary()))
+            line = generate_changelog_line_md(options.base_url, jira)
 
             if jira.get_release_note() or \
                jira.get_incompatible_change() or jira.get_important():
@@ -931,15 +482,14 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
                 if not jira.get_release_note():
                     line = '\n**WARNING: No release note provided for this change.**\n\n'
                 else:
-                    line = '\n%s\n\n' % (processrelnote(
-                        jira.get_release_note()))
+                    line = f'\n{processrelnote(jira.get_release_note())}\n\n'
                 reloutputs.write_key_raw(jira.get_project(), line)
 
             linter.lint(jira)
 
         if linter.enabled:
-            print(linter.message())
             if linter.had_errors():
+                logging.error(linter.message())
                 haderrors = True
                 if os.path.exists(vstr):
                     shutil.rmtree(vstr)
@@ -962,55 +512,58 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
             choutputs.write_list(incompatlist, options.skip_credits,
-                                 JIRA_BASE_URL)
+                                 options.base_url)
 
         if importantlist:
             choutputs.write_all("\n\n### IMPORTANT ISSUES:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
             choutputs.write_list(importantlist, options.skip_credits,
-                                 JIRA_BASE_URL)
+                                 options.base_url)
 
         if newfeaturelist:
             choutputs.write_all("\n\n### NEW FEATURES:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
             choutputs.write_list(newfeaturelist, options.skip_credits,
-                                 JIRA_BASE_URL)
+                                 options.base_url)
 
         if improvementlist:
             choutputs.write_all("\n\n### IMPROVEMENTS:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
             choutputs.write_list(improvementlist, options.skip_credits,
-                                 JIRA_BASE_URL)
+                                 options.base_url)
 
         if buglist:
             choutputs.write_all("\n\n### BUG FIXES:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(buglist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(buglist, options.skip_credits,
+                                 options.base_url)
 
         if testlist:
             choutputs.write_all("\n\n### TESTS:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
-            choutputs.write_list(testlist, options.skip_credits, JIRA_BASE_URL)
+            choutputs.write_list(testlist, options.skip_credits,
+                                 options.base_url)
 
         if subtasklist:
             choutputs.write_all("\n\n### SUB-TASKS:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
             choutputs.write_list(subtasklist, options.skip_credits,
-                                 JIRA_BASE_URL)
+                                 options.base_url)
 
         if tasklist or otherlist:
             choutputs.write_all("\n\n### OTHER:\n\n")
             choutputs.write_all(change_header21)
             choutputs.write_all(change_header22)
             choutputs.write_list(otherlist, options.skip_credits,
-                                 JIRA_BASE_URL)
-            choutputs.write_list(tasklist, options.skip_credits, JIRA_BASE_URL)
+                                 options.base_url)
+            choutputs.write_list(tasklist, options.skip_credits,
+                                 options.base_url)
 
         choutputs.write_all("\n\n")
         choutputs.close()
