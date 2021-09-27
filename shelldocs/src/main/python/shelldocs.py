@@ -117,21 +117,21 @@ class ShellFunction:  # pylint: disable=too-many-instance-attributes
         validvalues = {
             "audience": ("Public", "Private"),
             "stability": ("Stable", "Evolving"),
-            "replacerawtext": ("yes", "no", "Yes", "No", "True", "False"),
+            "replacerawtext": ("yes", "no"),
         }
-        for attribute in ("audience", "stability", "replacerawtext"):
+        for attribute in validvalues:
             value = getattr(self, attribute)
-            if (not value or value == '') and attribute != 'replaceable':
-                logging.error("%s:%u: ERROR: function %s has no @%s",
+            if (not value or value == ''):
+                logging.error("%s:%u:ERROR: function %s has no @%s",
                               self.filename, self.linenum, self.name,
-                              attribute.lower())
+                              attribute.lower().replace('rawtext', 'able'))
             elif value not in validvalues[attribute]:
                 validvalue = "|".join(v.lower()
                                       for v in validvalues[attribute])
                 logging.error(
-                    "%s:%d: ERROR: function %s has invalid value (%s) for @%s (%s)",
+                    "%s:%d:ERROR: function %s has invalid value (%s) for @%s (%s)",
                     self.filename, self.linenum, self.name, value.lower(),
-                    attribute.lower(), validvalue)
+                    attribute.lower().replace('rawtext', 'able'), validvalue)
 
     def __str__(self):
         '''Generate a string for this function'''
@@ -401,6 +401,8 @@ def process_arguments():
 
 def main():
     '''main entry point'''
+
+    logging.basicConfig(format='%(message)s')
 
     options = process_arguments()
 
