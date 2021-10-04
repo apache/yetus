@@ -111,11 +111,13 @@ def buildreadme(title, asf_license):
 
 def getversion():
     """ print the version file"""
-    versionfile = pathlib.Path(__file__).resolve().parent.joinpath('VERSION')
-    if versionfile.exists():
-        with open(versionfile, encoding='utf-8') as ver_file:
-            version = ver_file.read()
-        return version
+    basepath = pathlib.Path(__file__).parent.resolve()
+    for versionfile in [basepath.resolve().joinpath('VERSION'),
+                        basepath.parent.parent.resolve().joinpath('VERSION')]:
+        if versionfile.exists():
+            with open(versionfile, encoding='utf-8') as ver_file:
+                version = ver_file.read()
+            return version
 
     return 'Unknown'
 
@@ -305,6 +307,7 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
     global NUM_RETRIES  #pylint: disable=global-statement
     global EXTENSION  #pylint: disable=global-statement
 
+    logging.basicConfig(format='%(message)s', level=logging.DEBUG)
     options = parse_args()
 
     if options.output_directory is not None:
