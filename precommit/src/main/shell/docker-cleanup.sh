@@ -61,8 +61,7 @@ function import_core
   declare filename
 
   for filename in "${BINDIR}/core.d"/*; do
-    # shellcheck disable=SC1091
-    # shellcheck source=core.d/01-common.sh
+    # shellcheck source=SCRIPTDIR/core.d/01-common.sh
     . "${filename}"
   done
 }

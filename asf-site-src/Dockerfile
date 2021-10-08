@@ -44,10 +44,12 @@ RUN apt-get -q update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# hadolint disable=DL3059
 RUN echo "export GPG_TTY=\$(tty)" >>  /root/.bashrc
-RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}"
-RUN useradd -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
-# shellcheck disable=SC2039,SC1117
+# hadolint disable=DL3059
+RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" \
+    && useradd -l -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
+# hadolint disable=DL3059,SC2039,SC1117
 RUN echo -e "${USER_NAME}\\tALL=NOPASSWD: ALL" > "/etc/sudoers.d/yetus-build-${USER_ID}"
 ENV HOME /home/${USER_NAME}
 
@@ -59,28 +61,26 @@ ENV APACHE_RUN_DIR /tmp/website/rundir
 ENV APACHE_RUN_USER ${USER_NAME}
 ENV APACHE_RUN_GROUP ${USER_NAME}
 
+# hadolint ignore=DL3013
 RUN mkdir -p /tmp/website/{logdir,rundir} \
     && chown -R ${USER_ID}:${GROUP_ID} /var/www/html /tmp/website \
     && ln -s /var/www/html /tmp/website/html \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf \
     && sed -i "s,Listen 80,Listen 8123," /etc/apache2/ports.conf \
-    && sed -i "s,:80,:8123," /etc/apache2/sites-available/000-default.conf
-
-# there is no version to pin here, so....
-# hadolint ignore=DL3013
-RUN pip3 install git+https://github.com/linkchecker/linkchecker.git
+    && sed -i "s,:80,:8123," /etc/apache2/sites-available/000-default.conf \
+    && pip3 install --no-cache-dir git+https://github.com/linkchecker/linkchecker.git
 
 USER ${USER_NAME}
 
-RUN bundle config --global github.https true
-RUN bundle config --global path "${BUNDLE_PATH}"
+RUN bundle config --global github.https true \
+    && bundle config --global path "${BUNDLE_PATH}"
 ENV GEM_HOME ${BUNDLE_PATH}
 
 # pre-install most of the middleman stack to save time
 # on re-launches
 # hadolint ignore=DL3028
 RUN gem install bundler \
-    middleman:'4.3.11' \
+    middleman:'4.4.0' \
     middleman-livereload \
     middleman-syntax \
     nokogiri:1.10.10 \

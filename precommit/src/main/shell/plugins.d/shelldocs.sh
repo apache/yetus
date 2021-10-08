@@ -118,7 +118,7 @@ function shelldocs_preapply
   pushd "${BASEDIR}" >/dev/null || return 1
   for i in $(shelldocs_private_findbash); do
     if [[ -f ${i} ]]; then
-      "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/branch-shelldocs-result.txt"
+      "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/branch-shelldocs-result.txt" 2>&1
     fi
   done
   popd > /dev/null || return 1
@@ -148,7 +148,7 @@ function shelldocs_postapply
   # we re-check this in case one has been added
   for i in $(shelldocs_private_findbash); do
     if [[ -f ${i} ]]; then
-      "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/patch-shelldocs-result.txt"
+      "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/patch-shelldocs-result.txt" 2>&1
     fi
   done
 

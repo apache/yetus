@@ -387,7 +387,7 @@ function import_core
 
   for filename in "${BINDIR}/core.d"/*; do
     # shellcheck disable=SC1091
-    # shellcheck source=core.d/01-common.sh
+    # shellcheck source=SCRIPTDIR/core.d/01-common.sh
     . "${filename}"
   done
 }
@@ -457,7 +457,7 @@ fi
 
 if ! dryrun_both_files; then
   yetus_error "ERROR: Aborting! ${PATCH_OR_ISSUE} cannot be verified."
-  cleanup_and_exit ${RESULT}
+  cleanup_and_exit "${RESULT}"
 fi
 
 patch_file_hinter "${INPUT_APPLIED_FILE}"
@@ -483,4 +483,4 @@ patch_reports
 
 popd >/dev/null || exit 1
 
-cleanup_and_exit ${RESULT}
+cleanup_and_exit "${RESULT}"

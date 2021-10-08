@@ -119,15 +119,17 @@ class ShellFunction:  # pylint: disable=too-many-instance-attributes
             "stability": ("Stable", "Evolving"),
             "replacerawtext": ("yes", "no"),
         }
-        for attribute in validvalues:
+        for attribute, attrvalues in validvalues.items():
             value = getattr(self, attribute)
-            if (not value or value == ''):
+            if (not value or value == '') and attribute != 'replacerawtext':
                 logging.error("%s:%u:ERROR: function %s has no @%s",
                               self.filename, self.linenum, self.name,
-                              attribute.lower().replace('rawtext', 'able'))
-            elif value not in validvalues[attribute]:
+                              attribute.lower())
+            elif value not in attrvalues:
+                if attribute == 'replacerawtext' and value == '':
+                    continue
                 validvalue = "|".join(v.lower()
-                                      for v in validvalues[attribute])
+                                      for v in attrvalues)
                 logging.error(
                     "%s:%d:ERROR: function %s has invalid value (%s) for @%s (%s)",
                     self.filename, self.linenum, self.name, value.lower(),
@@ -160,7 +162,7 @@ class ProcessFile:
       Comparison is case sensitive and the comment must be in
       UPPERCASE.
       """
-        with open(self.filename) as input_file:
+        with open(self.filename) as input_file: #pylint: disable=unspecified-encoding
             for line in input_file:
                 if line.startswith(
                         "#") and line[1:].strip() == "SHELLDOC-IGNORE":
@@ -247,7 +249,7 @@ class ProcessFile:
             return
 
         try:
-            with open(self.filename, "r") as shellcode:
+            with open(self.filename, "r") as shellcode: #pylint: disable=unspecified-encoding
                 # if the file contains a comment containing
                 # only "SHELLDOC-IGNORE" then skip that file
 
@@ -398,10 +400,8 @@ def process_arguments():
 
     return options
 
-
 def main():
     '''main entry point'''
-
     logging.basicConfig(format='%(message)s')
 
     options = process_arguments()
