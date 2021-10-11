@@ -139,6 +139,7 @@ Language Support, Licensing, and more:
 * [checkmake](plugins/checkmake)
 * [checkstyle](plugins/checkstyle)
 * [codespell](plugins/codespell)
+* [detect-secrets](plugins/detsecrets)
 * [golangci-lint](plugins/golangcilint)
 * [hadolint](plugins/hadolint)
 * [jshint](plugins/jshint)

@@ -313,6 +313,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ######
 ARG PY3_ASTROID_VERSION=2.8.0
 ARG PY3_CODESPELL_VERSION=2.1.0
+ARG PY3_DETECT_SECRETS=1.0.3
 ARG PY3_DOCKER_COMPOSE=1.29.2
 ARG PY3_PYLINT_VERSION=2.11.1
 ARG PY3_YAMLLINT_VERSION=1.26.3
@@ -324,12 +325,10 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3-cryptography \
         python3-dateutil \
         python3-dev \
-        python3-dev \
         python3-isort \
         python3-dockerpty \
         python3-nacl \
         python3-pyrsistent \
-        python3-setuptools \
         python3-setuptools \
         python3-singledispatch \
         python3-six \
@@ -344,6 +343,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && pip3 install --no-cache-dir -v \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
+        detect-secrets==$PY3_DETECT_SECRETS \
         docker-compose==$PY3_DOCKER_COMPOSE \
         pylint==$PY3_PYLINT_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
