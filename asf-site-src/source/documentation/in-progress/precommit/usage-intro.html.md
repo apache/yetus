@@ -378,15 +378,15 @@ process the file.patch from the example.com webserver.
 
 Some repositories have content that is either imported from other sources (aka "vendored") or in some
 other way have files that are known to break tests. By default, `.yetus/excludes.txt` will be read for any
-file, directory, or extended regular expression as the list to remove from test results.  The file to read
+file, directory, or regular expression as the list to remove from test results.  The file to read
 may be overwritten by using the `--excludes` flag:
 
 ```bash
 $ test-patch --plugins=all --excludes=(filename) (other options)
 ```
 
-    NOTE: for best results, avoid using ^ and $ in your regular expressions.  `test-patch` will automatically
-    anchor the contents of that file.
+    NOTE: Do not confuse file globs for regular expressions.  With regular expressions, `a*` will match `aaaaaaaa`
+    but not `ab`.  To match all characters any number of times, you need `.*` as your wildcard expression.
 
 # "Warn-only" Test Results
 

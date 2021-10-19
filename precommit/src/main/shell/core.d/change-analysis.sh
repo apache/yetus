@@ -56,6 +56,7 @@ function find_changed_files
   INPUT_APPLIED_FILE=${INPUT_APPLIED_FILE:-${PATCH_DIR}/patch}
 
   pushd "${BASEDIR}" >/dev/null || return 1
+  CHANGED_FILES=()
 
   case "${BUILDMODE}" in
     full)
@@ -79,63 +80,9 @@ function find_changed_files
       ;;
     esac
   popd >/dev/null || return 1
+  CHANGED_FILES_COMPLETE=("${CHANGED_FILES[@]}")
 }
 
-
-## @description Determine directories with
-## @description changed content. Should be used with
-## @description static linters that don't care about
-## @description the build system.
-## @audience    private
-## @stability   evolving
-## @replaceable no
-## @return      None; sets ${CHANGED_DIRS}
-function find_changed_dirs
-{
-  declare f
-  declare -a newarray
-  declare dir
-
-  CHANGED_DIRS=()
-  for f in "${CHANGED_FILES[@]}"; do
-    dir=$(dirname "./${f}")
-    if [[ "${dir}" = . ]]; then
-      CHANGED_DIRS=('.')
-      continue
-    fi
-    yetus_add_array_element CHANGED_DIRS "${dir}"
-  done
-
-  if [[ "${#CHANGED_DIRS[@]}" -eq 1 ]]; then
-    return
-  fi
-
-  echo "${#CHANGED_DIRS[@]}"
-
-  newarray=()
-
-  for f in "${CHANGED_DIRS[@]}"; do
-    dir=${f%/*}
-    found=false
-    while [[ ${dir} != "." ]] && [[ ${found} = false ]]; do
-      if yetus_array_contains "${dir}" "${newarray[@]}"; then
-        found=true
-        continue
-      fi
-      if yetus_array_contains "${dir}" "${CHANGED_DIRS[@]}"; then
-        found=true
-        continue
-      fi
-      dir=${dir%/*}
-    done
-
-    if [[ "${found}" == false ]]; then
-      newarray+=("${f}")
-    fi
-  done
-
-  CHANGED_DIRS=("${newarray[@]}")
-}
 
 ## @description  Apply the EXCLUDE_PATHS to CHANGED_FILES
 ## @audience     private
@@ -151,50 +98,28 @@ function exclude_paths_from_changed_files
 
   # empty the existing list
   EXCLUDE_PATHS=()
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    mv "${PATCH_DIR}/excluded.txt" "${PATCH_DIR}/branch-excluded.txt"
+  fi
 
-  # if E_P_F has been defined, then it was found earlier
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
-
-    # if it still exists ( it may have gotten deleted post-patch!)
-    # read it in
-    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-      yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
-    else
-      # it was deleted post-patch, so delete it
-      unset EXCLUDE_PATHS_FILE
-      return
-    fi
-
- # User provided us with a name but it wasn't there.
- # let's see if it is now
- elif [[ -n "${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
-    # try to absolute the file name
-    if [[ -f "${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
-      EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE_SAVEOFF}")
-    elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE_SAVEOFF}" ]]; then
-      EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE_SAVEOFF}")
-    fi
-
-    # if it exists, process, otherwise just return because nothing
-    # to do
-
-    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-      yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
-    else
-      unset EXCLUDE_PATHS_FILE
-      return
-    fi
-  else
+  if [[ ! -f "${EXCLUDE_PATHS_FILE}" ]]; then
+    # it was deleted post-patch, so ignore it
+    CHANGED_FILES=("${CHANGED_FILES_COMPLETE[@]}")
     return
   fi
 
+  # it still exists ( it may have gotten deleted post-patch!)
+  # read it in
+  yetus_file_to_array EXCLUDE_PATHS "${EXCLUDE_PATHS_FILE}"
+
   a=()
-  for f in "${CHANGED_FILES[@]}"; do
+  for f in "${CHANGED_FILES_COMPLETE[@]}"; do
     strip=false
     for p in "${EXCLUDE_PATHS[@]}"; do
-      if [[  "${f}" =~ ${p} ]]; then
+      if [[ "${f}" =~ ${p} ]]; then
         strip=true
         echo "${f}" >> "${PATCH_DIR}/excluded.txt"
+        break
       fi
     done
     if [[ ${strip} = false ]]; then

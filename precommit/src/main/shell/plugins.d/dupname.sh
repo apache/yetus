@@ -70,7 +70,7 @@ function dupname_precheck
   declare prev
   declare -a tmpfiles
 
-  tmpfiles=("${CHANGED_FILES[@]}")
+  tmpfiles=("${CHANGED_FILES_COMPLETE[@]}")
 
   big_console_header "Checking for duplicated filenames that differ only in case"
   start_clock
@@ -78,7 +78,7 @@ function dupname_precheck
   pushd "${BASEDIR}" >/dev/null || return 1
 
   # check the existing tree
-  for fn in "${CHANGED_FILES[@]}"; do
+  for fn in "${CHANGED_FILES_COMPLETE[@]}"; do
     existing=$(${GIT} ls-files ":(icase)${fn}")
     if [[ -n "${existing}" ]]; then
       if [[ "${existing}" != "${fn}" ]]; then

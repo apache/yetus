@@ -1010,14 +1010,14 @@ function parse_args
   PATCH_DIR=$(yetus_abs "${PATCH_DIR}")
   COPROC_LOGFILE="${PATCH_DIR}/coprocessors.txt"
 
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
-    # shellcheck disable=SC2034
-    EXCLUDE_PATHS_FILE_SAVEOFF=${EXCLUDE_PATHS_FILE}
-    if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-      EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
-    elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE}" ]]; then
-      EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE}")
-    fi
+  if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+    EXCLUDE_PATHS_FILE=$(yetus_abs "${EXCLUDE_PATHS_FILE}")
+  elif [[ -f "${BASEDIR}/${EXCLUDE_PATHS_FILE}" ]]; then
+    EXCLUDE_PATHS_FILE=$(yetus_abs "${BASEDIR}/${EXCLUDE_PATHS_FILE}")
+  fi
+
+  if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
+    EXCLUDE_PATHS_FILE=$(yetus_relative_dir "${BASEDIR}" "${EXCLUDE_PATHS_FILE}")
   fi
 
   # we need absolute dir for ${CONSOLE_REPORT_FILE}
@@ -1409,7 +1409,7 @@ function determine_needed_tests
   big_console_header "Determining needed tests"
   echo "(Depending upon input size and number of plug-ins, this may take a while)"
 
-  exclude_paths_from_changed_files
+  exclude_paths_from_changed_files "branch"
 
   for i in "${CHANGED_FILES[@]}"; do
     yetus_debug "Determining needed tests for ${i}"
@@ -1498,11 +1498,6 @@ function copytpbits
   # Set to be relative to ${PATCH_DIR}/precommit
   USER_PLUGIN_DIR="${PATCH_DIR}/precommit/user-plugins"
 
-  if [[ -n ${EXCLUDE_PATHS_FILE}
-    && -f ${EXCLUDE_PATHS_FILE} ]]; then
-    yetus_debug "copying '${EXCLUDE_PATHS_FILE}' over to '${PATCH_DIR}/precommit/excluded.txt'"
-    cp -pr "${EXCLUDE_PATHS_FILE}" "${PATCH_DIR}/precommit/excluded.txt"
-  fi
   if [[ -n ${PERSONALITY}
     && -f ${PERSONALITY} ]]; then
     yetus_debug "copying '${PERSONALITY}' over to '${PATCH_DIR}/precommit/personality/provided.sh'"
@@ -3302,6 +3297,8 @@ if [[ "${BUILDMODE}" = patch ]]; then
 
   apply_patch_file
 
+  # Need to re-analyze the what files are changed due to
+  # potentially new exclusion rules
   exclude_paths_from_changed_files
 
   compute_gitdiff

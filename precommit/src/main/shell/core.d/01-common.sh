@@ -31,6 +31,8 @@ function common_defaults
   EXEC_MODES=()
   #shellcheck disable=SC2034
   EXCLUDE_PATHS=()
+  #shellcheck disable=SC2034
+  EXCLUDE_PATHS_FILE='.yetus/excludes.txt'
   IGNORE_UNKNOWN_OPTIONS=false
   ROBOTTYPE=""
   LOAD_SYSTEM_PLUGINS=true

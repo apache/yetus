@@ -132,8 +132,8 @@ function bufcompat_executor
   offset_clock "${BUFCOMPAT_TIMER}"
 
   echo "Running buf against identified protobuf files."
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]] && [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-    args=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    args=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
   else
     args=("cat")
   fi
@@ -257,8 +257,8 @@ function buflint_executor
   offset_clock "${BUFLINT_TIMER}"
 
   echo "Running buf against identified protobuf files."
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]] && [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-    args=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    args=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
   else
     args=("cat")
   fi
