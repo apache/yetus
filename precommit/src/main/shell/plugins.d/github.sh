@@ -1059,11 +1059,11 @@ function github_finalreport
     return 0
   fi
 
+  big_console_header "Adding GitHub Statuses"
+
   if [[ "${GITHUB_WRITE_COMMENT}" == true ]]; then
     github_finalreport_as_comment "${result}"
   fi
-
-  big_console_header "Adding GitHub Statuses"
 
   if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
     yetus_error "ERROR: no credentials provided to write a status."
