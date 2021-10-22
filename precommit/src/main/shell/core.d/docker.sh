@@ -842,7 +842,7 @@ function docker_run_image
 
   DOCKER_EXTRAARGS+=(--name "${containername}")
 
-  trap 'docker_signal_handler' SIGTERM SIGINT SIGHUP
+  yetus_set_trap_handler docker_signal_handler HUP INT QUIT TERM
 
   if [[ ${PATCH_DIR} =~ ^/ ]]; then
     dockercmd run --rm=true -i \
@@ -874,11 +874,12 @@ function docker_run_image
 ## @replaceable  no
 function docker_signal_handler
 {
+  declare signal=$1
   declare cid
 
   cid=$(cat "${PATCH_DIR}/cidfile.txt")
 
-  yetus_error "ERROR: Caught signal. Killing docker container:"
+  yetus_error "ERROR: Caught signal ${signal}. Killing docker container:"
   echo "ERROR: Caught signal. Killing docker container: ${cid}" > "${PATCH_DIR}/signal.log"
   dockercmd kill "${cid}" | tee -a "${PATCH_DIR}/signal.log"
   rm "${PATCH_DIR}/cidfile.txt"

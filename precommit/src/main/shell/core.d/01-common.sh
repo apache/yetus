@@ -909,3 +909,17 @@ function escape_html
   str="${str//\'/&apos;}"
   echo "${str}"
 }
+
+## @description  When getting a signal, mention the signal then
+## @description  die by calling cleanup_and_exit. Expected to be
+## @description  used with yetus_set_trap_handler
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function generic_signal_handler
+{
+  declare trapid=$1
+
+  yetus_error "ERROR: Caught signal ${trapid}."
+  cleanup_and_exit 143 # 128 + 15 -- SIGTERM
+}

@@ -513,3 +513,18 @@ function yetus_get_ctime
     date +"%s"
   fi
 }
+
+## @description  Set a trap passing the first param as the signal
+## @audience     public
+## @stability    stable
+## @param        function
+## @param        signal
+## @param        [signal]
+function yetus_set_trap_handler
+{
+  local func="$1" ; shift
+  for signal ; do
+    # shellcheck disable=SC2064
+    trap "${func} ${signal}" "${signal}"
+  done
+}
