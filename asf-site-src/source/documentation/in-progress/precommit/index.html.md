@@ -138,6 +138,7 @@ Language Support, Licensing, and more:
 * [buf](plugins/buf)
 * [checkmake](plugins/checkmake)
 * [checkstyle](plugins/checkstyle)
+* [codespell](plugins/codespell)
 * [golangci-lint](plugins/golangcilint)
 * [hadolint](plugins/hadolint)
 * [jshint](plugins/jshint)
