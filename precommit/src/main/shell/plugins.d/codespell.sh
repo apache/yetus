@@ -69,11 +69,6 @@ function codespell_logic
 
   pushd "${BASEDIR}" >/dev/null || return 1
 
-  # codespell will ignore skip directives if you give it
-  # a specific file name.  so best we can do is
-  # use CHANGED_DIRS[@].  Will still need to filter out
-  # files, but this should at least cut back on the runtime
-
   if [[ -f "${CODESPELL_X_FILE}" ]]; then
     codespellargs=("--exclude-file" "${CODESPELL_X_FILE}")
   fi

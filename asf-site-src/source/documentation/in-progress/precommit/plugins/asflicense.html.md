@@ -40,6 +40,7 @@ None
 | Option | Notes |
 |:---------|:------|
 | `--asflicense-rat-excludes=<path>` | When running rat outside of a build tool, specify the location of the exclusion file |
+| `--asflicense-rat-globalexcludes=<bool>` | Apply the global excludes file after Apache Rat has run (default: true) |
 | `--asflicense-rat-jar=<path>` | When running rat outside of a build tool, specify the location of the Java jar file to execute. Defaults to /opt/apache-rat/apache-rat.jar |
 
 # Docker Notes

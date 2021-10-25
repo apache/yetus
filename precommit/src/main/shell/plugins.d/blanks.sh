@@ -132,8 +132,8 @@ function blanks_postcompile
     tabsignore=("cat")
   fi
 
-  if [[ -n "${EXCLUDE_PATHS_FILE}" ]]; then
-    globalignore=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    globalignore=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
   else
     globalignore=("cat")
   fi

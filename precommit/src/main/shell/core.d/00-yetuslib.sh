@@ -280,11 +280,11 @@ function yetus_file_to_array
     # work due to the variable only being present in
     # the subshell.  So MUST force the grep into the
     # subshell...
-    mapfile -t a < <("${GREP:-grep}" -v -e '^#' -e '^$' "${filename}" )
+    mapfile -t a < <("${GREP:-grep}" -v -E -e '^#' -e '^[[:space:]]*$' "${filename}" )
   else
     while read -r line; do
       a+=("${line}")
-    done < <("${GREP:-grep}" -v -e '^#' -e '^$' "${filename}")
+    done < <("${GREP:-grep}" -v -E -e '^#' -e '^[[:space:]]*$' "${filename}")
   fi
   eval "${var}=(\"\${a[@]}\")"
   return 0

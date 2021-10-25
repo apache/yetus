@@ -13,5 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-precommit/src/test/resources/blanks.txt
-precommit/src/test/resources/arrayfiletest.txt
+precommit/src/test/resources/brokenfiles/1\.txt
+precommit/src/test/resources/brokenfiles/a.*\.txt
+precommit/src/test/resources/brokenfiles/[2-3]\.txt
+^precommit/src/test/resources/brokenfiles/4\.txt

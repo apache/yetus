@@ -77,8 +77,8 @@ function golangcilint_exec
   declare -a args
   declare -a gargs
 
-  if [[ -f "${EXCLUDE_PATHS_FILE}" ]]; then
-    gargs=("${GREP}" "-v" "-E" "-f" "${EXCLUDE_PATHS_FILE}")
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    gargs=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
   else
     gargs=("cat")
   fi

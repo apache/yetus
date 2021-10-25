@@ -19,11 +19,13 @@
 add_test_type asflicense
 
 ASFLICENSE_RAT_JAR=/opt/apache-rat/apache-rat.jar
+ASFLICENSE_RAT_GLOBALEXCLUDES=true
 
 function asflicense_usage
 {
-  yetus_add_option "--asflicense-rat-excludes=<file>" "path to file containing exclusion patterns"
-  yetus_add_option "--asflicense-rat-jar=<file>" "path to Apache Creadur Rat jar file"
+  yetus_add_option "--asflicense-rat-excludes=<file>" "Path to file containing exclusion patterns"
+  yetus_add_option "--asflicense-rat-globalexcludes=<bool>" "Filter against global exclusion patterns (default: ${ASFLICENSE_RAT_GLOBALEXCLUDES})"
+  yetus_add_option "--asflicense-rat-jar=<file>" "Path to Apache Creadur Rat jar file"
 }
 
 function asflicense_parse_args
@@ -35,6 +37,10 @@ function asflicense_parse_args
       --asflicense-rat-excludes=*)
         delete_parameter "${i}"
         ASFLICENSE_RAT_EXCLUDES=${i#*=}
+      ;;
+      --asflicense-rat-globalexcludes=*)
+        delete_parameter "${i}"
+        ASFLICENSE_RAT_GLOBALEXCLUDES=${i#*=}
       ;;
       --asflicense-rat-jar=*)
         delete_parameter "${i}"
@@ -95,7 +101,7 @@ function asflicense_tests
       btfails=false
       asflicense_writexsl "${PATCH_DIR}/asf.xsl"
       if [[ -f ${ASFLICENSE_RAT_EXCLUDES} ]]; then
-        echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
+        echo_and_redirect "${PATCH_DIR}/patch-asflicense-raw.txt" \
         "${JAVA_HOME}/bin/java" \
             -jar "${ASFLICENSE_RAT_JAR}" \
             -s "${PATCH_DIR}/asf.xsl" \
@@ -103,7 +109,7 @@ function asflicense_tests
             -d "${BASEDIR}"
         retval=$?
       else
-        echo_and_redirect "${PATCH_DIR}/patch-asflicense.txt" \
+        echo_and_redirect "${PATCH_DIR}/patch-asflicense-raw.txt" \
         "${JAVA_HOME}/bin/java" \
             -jar "${ASFLICENSE_RAT_JAR}" \
             -s "${PATCH_DIR}/asf.xsl" \
@@ -120,15 +126,15 @@ function asflicense_tests
     return 0
   fi
 
-  if [[ ! -f "${PATCH_DIR}/patch-asflicense.txt" ]]; then
+  if [[ ! -f "${PATCH_DIR}/patch-asflicense-raw.txt" ]]; then
     #shellcheck disable=SC2038
     find "${BASEDIR}" -name rat.txt \
           -o -name releaseaudit_report.txt \
           -o -name rat-report.txt \
-      | xargs cat > "${PATCH_DIR}/patch-asflicense.txt"
+      | xargs cat > "${PATCH_DIR}/patch-asflicense-raw.txt"
   fi
 
-  if [[ ! -s "${PATCH_DIR}/patch-asflicense.txt" ]]; then
+  if [[ ! -s "${PATCH_DIR}/patch-asflicense-raw.txt" ]]; then
     if [[ ${btfails} = true ]]; then
       # if we're here, then build actually failed
       modules_messages patch asflicense true
@@ -137,6 +143,15 @@ function asflicense_tests
       add_vote_table_v2 0 asflicense "" "ASF License check generated no output?"
       return 0
     fi
+  fi
+
+  if [[ -f "${PATCH_DIR}/excluded.txt" && "${ASFLICENSE_RAT_GLOBALEXCLUDES}" == "true"  ]]; then
+    "${GREP}" "-v" \
+      "-f" "${PATCH_DIR}/excluded.txt" \
+      "${PATCH_DIR}/patch-asflicense-raw.txt" \
+      > "${PATCH_DIR}/patch-asflicense.txt"
+  else
+    cp -p "${PATCH_DIR}/patch-asflicense-raw.txt" "${PATCH_DIR}/patch-asflicense.txt"
   fi
 
   numpatch=$("${GREP}" -c '\!?????' "${PATCH_DIR}/patch-asflicense.txt")
