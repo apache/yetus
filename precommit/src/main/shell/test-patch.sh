@@ -3263,6 +3263,8 @@ setup_parameter_tracker
 
 import_core
 
+yetus_set_trap_handler generic_signal_handler HUP INT QUIT TERM
+
 if [[ "${BINNAME}" =~ qbt ]]; then
   initialize --empty-patch "$@"
 else

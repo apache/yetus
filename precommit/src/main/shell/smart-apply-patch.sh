@@ -407,13 +407,14 @@ function setup_parameter_tracker
   done
 }
 
-trap "cleanup_and_exit 1" HUP INT QUIT TERM
 
 # robots will change USER_PARAMS so must
 # do this before importing other code
 setup_parameter_tracker
 
 import_core
+
+yetus_set_trap_handler generic_signal_handler HUP INT QUIT TERM
 
 setup_defaults
 

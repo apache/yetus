@@ -148,11 +148,24 @@ function setup_parameter_tracker
   done
 }
 
-trap "cleanup_and_exit 1" HUP INT QUIT TERM
+## @description  Clean the filesystem as appropriate and then exit
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+function cleanup_and_exit
+{
+  local result=$1
+
+  # shellcheck disable=SC2086
+  exit ${result}
+}
 
 setup_parameter_tracker
 
 import_core
+
+yetus_set_trap_handler generic_signal_handler HUP INT QUIT TERM
 
 setup_defaults
 
