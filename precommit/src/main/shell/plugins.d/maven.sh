@@ -834,3 +834,23 @@ function maven_reorder_modules
   # shellcheck disable=SC2046
   echo "Elapsed: $(clock_display $(stop_clock))"
 }
+
+## @description  process cc output from maven
+## @audience     private
+## @stability    evolving
+function maven_cc_logfilter
+{
+  declare input=$1
+  declare output=$2
+
+  # [WARNING] fullpath:linenum:column: message
+
+  "${GREP}" -i -E "^.*\.${CC_EXT_RE}\:[[:digit:]]*\:" "${input}" \
+    | "${SED}" -E -e 's,\[(ERROR|WARNING)\] ,,g' \
+    | "${GREP}" -i -E "^/" \
+    | "${SED}" -e "s,^${BASEDIR}/,," \
+    | sort \
+    > "${output}"
+
+  # shortpath:linenum:column: message
+}
