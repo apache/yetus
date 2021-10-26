@@ -68,9 +68,5 @@ function cc_logfilter
   declare output=$2
 
   #shellcheck disable=SC1117
-  "${GREP}" -i -E "^.*\.${CC_EXT_RE}\:[[:digit:]]*\:" "${input}" \
-   | "${SED}" -E -e 's,\[(ERROR|WARNING)\] ,,g' \
-                 -e "s,^${BASEDIR}/,," \
-   | sort \
-   > "${output}"
+  "${GREP}" -i -E "^.*\.${CC_EXT_RE}\:[[:digit:]]*\:" "${input}" > "${output}"
 }
