@@ -17,13 +17,14 @@
  */
 package org.apache.yetus.audience.tools;
 
-import com.sun.javadoc.DocErrorReporter;
-import com.sun.javadoc.LanguageVersion;
-import com.sun.javadoc.RootDoc;
-import com.sun.tools.doclets.standard.Standard;
-
+import jdk.javadoc.doclet.DocletEnvironment;
+import jdk.javadoc.doclet.StandardDoclet;
 import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.yetus.audience.InterfaceStability;
+
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A <a href="https://docs.oracle.com/javase/8/docs/jdk/api/javadoc/doclet/">Doclet</a>
@@ -34,28 +35,21 @@ import org.apache.yetus.audience.InterfaceStability;
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public class ExcludePrivateAnnotationsStandardDoclet {
-
-  public static LanguageVersion languageVersion() {
-    return LanguageVersion.JAVA_1_5;
+public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
+  @Override
+  public String getName() {
+    return "ExcludePrivateAnnotationsStandard";
   }
 
-  public static boolean start(RootDoc root) {
-    return Standard.start(RootDocProcessor.process(root));
+  @Override
+  public Set<? extends Option> getSupportedOptions() {
+    Set<Option> options = new TreeSet<>(super.getSupportedOptions());
+    options.addAll(EnumSet.allOf(StabilityOption.class));
+    return options;
   }
 
-  public static int optionLength(String option) {
-    Integer length = StabilityOptions.optionLength(option);
-    if (length != null) {
-      return length;
-    }
-    return Standard.optionLength(option);
-  }
-
-  public static boolean validOptions(String[][] options,
-      DocErrorReporter reporter) {
-    StabilityOptions.validOptions(options, reporter);
-    String[][] filteredOptions = StabilityOptions.filterOptions(options);
-    return Standard.validOptions(filteredOptions, reporter);
+  @Override
+  public boolean run(DocletEnvironment environment) {
+    return super.run(DocletEnvironmentProcessor.wrap(environment));
   }
 }
