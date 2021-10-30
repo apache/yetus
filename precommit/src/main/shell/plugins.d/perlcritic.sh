@@ -62,6 +62,7 @@ function perlcritic_precheck
 function perlcritic_preapply
 {
   local i
+  declare -a args
 
   if ! verify_needed_test perlcritic; then
     return 0
@@ -71,11 +72,20 @@ function perlcritic_preapply
 
   start_clock
 
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    args=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
+  else
+    args=("cat")
+  fi
+
   echo "Running perlcritic against identified perl scripts/modules."
   pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
-      "${PERLCRITIC}" --verbose 1 --nocolor "${i}" 2>/dev/null >> "${PATCH_DIR}/branch-perlcritic-result.txt"
+      "${PERLCRITIC}" --verbose 1 --nocolor "${i}" \
+      | "${args[@]}" \
+      >> "${PATCH_DIR}/branch-perlcritic-result.txt" \
+      2>/dev/null
     fi
   done
   popd >/dev/null || return 1
@@ -99,6 +109,7 @@ function perlcritic_calcdiffs
 function perlcritic_postapply
 {
   declare i
+  declare -a args
 
   if ! verify_needed_test perlcritic; then
     return 0
@@ -107,6 +118,12 @@ function perlcritic_postapply
   big_console_header "Perl::Critic plugin: ${BUILDMODE}"
 
   start_clock
+
+  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
+    args=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
+  else
+    args=("cat")
+  fi
 
   # add our previous elapsed to our new timer
   # by setting the clock back
@@ -117,7 +134,10 @@ function perlcritic_postapply
   pushd "${BASEDIR}" >/dev/null || return 1
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.p[lm]$ && -f ${i} ]]; then
-      "${PERLCRITIC}" --verbose 1 --nocolor "${i}" 2>/dev/null >> "${PATCH_DIR}/patch-perlcritic-result.txt"
+      "${PERLCRITIC}" --verbose 1 --nocolor "${i}" \
+      | "${args[@]}" \
+      >> "${PATCH_DIR}/patch-perlcritic-result.txt" \
+      2>/dev/null
     fi
   done
   popd >/dev/null || return 1
