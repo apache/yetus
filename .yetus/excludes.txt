@@ -17,3 +17,4 @@ precommit/src/test/resources/brokenfiles/1\.txt
 precommit/src/test/resources/brokenfiles/a.*\.txt
 precommit/src/test/resources/brokenfiles/[2-3]\.txt
 ^precommit/src/test/resources/brokenfiles/4\.txt
+precommit/src/test/resources/brokenfiles/perlcritic.pl
