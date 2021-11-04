@@ -315,7 +315,6 @@ ARG PY3_ANSIBLE_VERSION=4.7.0
 ARG PY3_ANSIBLELINT_VERSION=5.2.1
 ARG PY3_ASTROID_VERSION=2.8.0
 ARG PY3_CODESPELL_VERSION=2.1.0
-ARG PY3_DETECT_SECRETS=1.0.3
 ARG PY3_DOCKER_COMPOSE=1.29.2
 ARG PY3_PYLINT_VERSION=2.11.1
 ARG PY3_YAMLLINT_VERSION=1.26.3
@@ -347,11 +346,11 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         ansible-lint==$PY3_ANSIBLELINT_VERSION \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
-        detect-secrets==$PY3_DETECT_SECRETS \
         docker-compose==$PY3_DOCKER_COMPOSE \
         pylint==$PY3_PYLINT_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
-
+    && pip3 install --no-cache-dir -v \
+        git+https://github.com/IBM/detect-secrets@0.13.1+ibm.46.dss \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \
     && ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint \

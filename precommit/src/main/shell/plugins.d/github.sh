@@ -185,7 +185,7 @@ function github_brute_force_repo_on_remote
 function github_initialize
 {
   if [[ -n "${GITHUB_TOKEN}" ]]; then
-    GITHUB_AUTH=(-H "Authorization: token ${GITHUB_TOKEN}")
+    GITHUB_AUTH=(-H "Authorization: token ${GITHUB_TOKEN}") # pragma: allowlist secret
   fi
 
   GITHUB_REPO=${GITHUB_REPO:-${GITHUB_REPO_DEFAULT}}
