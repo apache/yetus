@@ -21,6 +21,7 @@ add_test_type hadolint
 
 HADOLINT_TIMER=0
 HADOLINT=${HADOLINT:-$(command -v hadolint 2>/dev/null)}
+HADOLINT_VERSION=''
 
 # files that are going to get hadolint'd
 HADOLINT_CHECKFILES=()
@@ -66,6 +67,10 @@ function hadolint_precheck
     fi
   fi
 
+  HADOLINT_VERSION=$("${HADOLINT}" --version)
+  HADOLINT_VERSION=${HADOLINT_VERSION##* v}
+  add_version_data hadolint "${HADOLINT_VERSION}"
+
   if [[ ! "${LANG}" =~ UTF-8 ]]; then
     yetus_error "WARNING: hadolint may fail without UTF-8 locale setting."
   fi
@@ -75,8 +80,15 @@ function hadolint_logic
 {
   declare repostatus=$1
   declare i
+  declare -a args
 
   pushd "${BASEDIR}" >/dev/null || return 1
+
+  if [[ "${HADOLINT_VERSION}" =~ ^[01] ]]; then
+    args=()
+  else
+    args=(--no-color)
+  fi
 
   for i in "${HADOLINT_CHECKFILES[@]}"; do
     if [[ -f "${i}" ]]; then
@@ -88,7 +100,9 @@ function hadolint_logic
       ## so that built-in routines can get used
 
       # shellcheck disable=SC2016
-      "${HADOLINT}" "${i}" \
+      "${HADOLINT}" \
+        "${args[@]}" \
+        "${i}" \
         | "${AWK}" '{printf "%s:",$1; $1=""; print $0}' \
         >> "${PATCH_DIR}/${repostatus}-hadolint-result.txt"
     fi
@@ -120,8 +134,6 @@ function hadolint_calcdiffs
 
 function hadolint_postapply
 {
-  declare version
-
   if ! verify_needed_test hadolint; then
     return 0
   fi
@@ -135,9 +147,6 @@ function hadolint_postapply
   offset_clock "${HADOLINT_TIMER}"
 
   hadolint_logic patch
-
-  version=$("${HADOLINT}" --version)
-  add_version_data hadolint "${version##* v}"
 
   root_postlog_compare \
     hadolint \
