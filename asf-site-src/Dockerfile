@@ -80,12 +80,11 @@ ENV GEM_HOME ${BUNDLE_PATH}
 # on re-launches
 # hadolint ignore=DL3028
 RUN gem install bundler \
-    middleman:'4.4.0' \
-    middleman-livereload \
-    middleman-syntax \
-    nokogiri:1.10.10 \
-    sassc:2.4.0 \
-    therubyracer \
-    tzinfo-data
+        middleman:'4.4.0' \
+        middleman-livereload \
+        middleman-syntax \
+        nokogiri:1.10.10 \
+        sassc:2.4.0 \
+        tzinfo-data
 
 CMD ["/bin/bash"]
