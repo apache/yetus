@@ -59,6 +59,9 @@ The `--dockerfile` parameter allows one to provide a custom Dockerfile instead. 
 
 Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in `--robot` mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a "safe" mode that prevents deletions via the `--dockerdelrep` option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.
 
+If you are using a system such as [Travis CI](../robots/travisci) that has strict limits on logging, the `--docker-build-output`
+option can control whether the `docker build` process is sent to the screen.
+
 ### COPY and ADD in Dockerfiles
 
 In order to use both 'YETUS CUT HERE' and a Dockerfile that uses COPY and ADD directives, the Docker API must be version 18 or higher.  If the API version is 17 or lower, the Dockerfile will be copied to a temporary directory to be processed, thus removing the Docker build context in the process.

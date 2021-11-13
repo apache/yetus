@@ -23,6 +23,7 @@ DOCKER_DESTRUCTIVE=true
 DOCKERFILE_DEFAULT="${BINDIR}/test-patch-docker/Dockerfile"
 DOCKERSUPPORT=false
 DOCKER_ENABLE_PRIVILEGED=false
+DOCKER_BUILD_OUTPUT=${DOCKER_BUILDKIT_SETTING:-true}
 DOCKER_CLEANUP_CMD=false
 DOCKER_MEMORY="4g"
 DOCKER_PLATFORM=""
@@ -67,6 +68,7 @@ function docker_usage
   yetus_add_option "--docker-buildkit=<bool>" "Set the Docker BuildKit availability (default: ${DOCKER_BUILDKIT_SETTING})'"
   if [[ "${DOCKER_CLEANUP_CMD}" == false ]]; then
     yetus_add_option "--docker-bash-debug=<bool>" "Enable bash -x mode running in a container (default: ${YETUS_DOCKER_BASH_DEBUG})"
+    yetus_add_option "--docker-build-output=<bool>" "Send docker build output to the screen (default: '${DOCKER_BUILD_OUTPUT}')"
     yetus_add_option "--docker-cache-from=<image>" "Comma delimited images to use as a cache when building"
     yetus_add_option "--dockerfile=<file>" "Dockerfile fragment to use as the base (default: '${DOCKERFILE_DEFAULT}')"
     yetus_add_option "--dockerind=<bool>" "Enable Docker-in-Docker by mounting the Docker socket in the container (default: '${DOCKER_IN_DOCKER}')"
@@ -105,6 +107,10 @@ function docker_parse_args
       --docker-buildkit=*)
         delete_parameter "${i}"
         DOCKER_BUILDKIT_SETTING=${i#*=}
+      ;;
+      --docker-build-output=*)
+        delete_parameter "${i}"
+        DOCKER_BUILD_OUTPUT=${i#*=}
       ;;
       --docker-cache-from=*)
         delete_parameter "${i}"
@@ -734,20 +740,33 @@ function docker_run_image
       cachefrom=("--cache-from=yetus/${PROJECT_NAME}:${gitfilerev},${DOCKER_CACHE_FROM}")
     fi
 
-    if ! dockercmd build \
-          "${dockplat[@]}" \
-          "${cachefrom[@]}" \
-          --label org.apache.yetus=\"\" \
-          --label org.apache.yetus.testpatch.project="${PROJECT_NAME}" \
-          --tag "${baseimagename}" \
-          "${DOCKER_EXTRABUILDARGS[@]}" \
-          -f "${buildfile}" \
-          "${dockerdir}"; then
+    dockerbuild=(build "${dockplat[@]}" "${cachefrom[@]}")
+    dockerbuild+=(--label org.apache.yetus=\"\")
+    dockerbuild+=(--label org.apache.yetus.testpatch.project="${PROJECT_NAME}")
+    dockerbuild+=(--tag "${baseimagename}")
+    dockerbuild+=("${DOCKER_EXTRABUILDARGS[@]}")
+    dockerbuild+=(-f "${buildfile}")
+    dockerbuild+=("${dockerdir}")
+
+    if [[ "${DOCKER_BUILD_OUTPUT}" == 'true' ]]; then
+      echo "Starting docker build..."
+      dockercmd "${dockerbuild[@]}"
+      dockerlogfile=""
+    else
+      echo "Starting docker build..."
+      dockercmd "${dockerbuild[@]}" > "${PATCH_DIR}/docker-build.log" 2>&1
+      dockerlogfile="${PATCH_DIR}/docker-build.log"
+    fi
+
+    # shellcheck disable=SC2181
+    if [[ $? != 0 ]]; then
       popd >/dev/null || return 1
       yetus_error "ERROR: Docker failed to build ${baseimagename}."
-      add_vote_table_v2 -1 docker "" "Docker failed to build ${baseimagename}."
+      add_vote_table_v2 -1 docker "${dockerlogfile}" "Docker failed to build ${baseimagename}."
       bugsystem_finalreport 1
       cleanup_and_exit 1
+    elif [[ -n "${dockerlogfile}" ]]; then
+      add_vote_table_v2 +1 docker "${dockerlogfile}" "Docker build log ${baseimagename}."
     fi
     popd >/dev/null || return 1
   fi

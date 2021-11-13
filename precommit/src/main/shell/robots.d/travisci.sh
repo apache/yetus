@@ -26,6 +26,11 @@ if [[ "${TRAVIS}" == true ]] &&
   DOCKER_BUILDKIT_SETTING=false
   unset DOCKER_BUILDKIT
 
+  # Travis has massive limits on log output that it
+  # captures so stop this one for sure
+  DOCKER_BUILD_OUTPUT=false
+  export DOCKER_BUILD_OUTPUT
+
   # shellcheck disable=SC2034
   if [[ -n "${ARTIFACTS_PATH}" ]]; then
     PATCH_DIR=${ARTIFACTS_PATH%%:*}
