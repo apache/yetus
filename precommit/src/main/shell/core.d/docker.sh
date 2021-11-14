@@ -762,6 +762,10 @@ function docker_run_image
     if [[ $? != 0 ]]; then
       popd >/dev/null || return 1
       yetus_error "ERROR: Docker failed to build ${baseimagename}."
+      gitdockerfile=$(yetus_relative_dir "${BASEDIR}" "${DOCKERFILE}")
+      echo "${gitdockerfile}:1:Failed to build Dockerfile" > "${PATCH_DIR}/dockerline.log"
+      bugsystem_linecomments_queue docker "${PATCH_DIR}/dockerline.log"
+      rm "${PATCH_DIR}/dockerline.log"
       add_vote_table_v2 -1 docker "${dockerlogfile}" "Docker failed to build ${baseimagename}."
       bugsystem_finalreport 1
       cleanup_and_exit 1
