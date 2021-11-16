@@ -32,6 +32,7 @@ images without using `docker run` in the before_install phase.  Therefore, using
 in the [Apache Yetus Docker Hub Images](../../../../../yetus-docker-image) page.
 
     NOTE: As of this writing (2020-10-31), Travis CI does not support Docker BuildKit.  It is disabled by default.
+    Also, docker build logs are automatically sent to a file due to the Travis CI logging limits.
 
 See also:
 
