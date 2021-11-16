@@ -50,7 +50,7 @@ RUN echo "export GPG_TTY=\$(tty)" >>  /root/.bashrc
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" \
     && useradd -l -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
 # hadolint disable=DL3059,SC2039,SC1117
-RUN echo -e "${USER_NAME}\\tALL=NOPASSWD: ALL" > "/etc/sudoers.d/yetus-build-${USER_ID}"
+RUN echo -e "${USER_NAME}\\tALL=NOPASSWD: ALL" > "/etc/sudoers.d/yetus-build-${USER_ID}" # pragma: allowlist secret
 ENV HOME /home/${USER_NAME}
 
 WORKDIR /home/${USER_NAME}

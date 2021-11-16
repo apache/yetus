@@ -27,9 +27,7 @@ Test
 
 # Description
 
-Runs Yelp's [detect-secrets](https://github.com/Yelp/detect-secrets) or
-IBM's forked [detect-secrets](https://github.com/IBM/detect-secrets).  If `--detsecrets-baseline` is
-provided, it will effectively use that as an exception file in addition to the normal exception handling.
+Runs IBM's version of [detect-secrets](https://github.com/IBM/detect-secrets).
 
 NOTE: This test also requires a working Python 3.4+ interpreter available on the path.  It will be called first
 as `python3` and secondarily as `python`.
@@ -50,7 +48,8 @@ None
 
 # Docker Notes
 
-Currently, the Yelp version is provided but that may change in the future depending upon how the project shakes out.
+While the original project came from Yelp, the IBM version is provided due to instability with the Yelp version.
+That may change in the future depending upon how the project shakes out.
 
 # Developer Notes
 

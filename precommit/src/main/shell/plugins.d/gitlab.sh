@@ -222,9 +222,9 @@ function gitlab_locate_mr_patch
   echo "${GITLAB_BASE_URL}/${GITLAB_REPO}/merge_requests/${input}"
 
   if [[ -n "${GITLAB_TOKEN}" ]]; then
-    gitlabauth="Private-Token: ${GITLAB_TOKEN}"
+    gitlabauth="Private-Token: ${GITLAB_TOKEN}" # pragma: allowlist secret
   else
-    gitlabauth="X-ignore-me: fake"
+    gitlabauth="X-ignore-me: fake" # pragma: allowlist secret
   fi
 
   # Let's merge the MR JSON for later use
@@ -287,9 +287,9 @@ function gitlab_locate_sha_patch
   GITLAB_COMMITSHA=${input#GLSHA:}
 
   if [[ -n "${GITLAB_TOKEN}" ]]; then
-    gitlabauth="Private-Token: ${GITLAB_TOKEN}"
+    gitlabauth="Private-Token: ${GITLAB_TOKEN}" # pragma: allowlist secret
   else
-    gitlabauth="X-ignore-me: fake"
+    gitlabauth="X-ignore-me: fake" # pragma: allowlist secret
   fi
 
    # Let's merge the MR JSON for later use
@@ -383,7 +383,7 @@ function gitlab_write_comment
   } > "${restfile}"
 
   if [[ -n "${GITLAB_TOKEN}" ]]; then
-    gitlabauth="Private-Token: ${GITLAB_TOKEN}"
+    gitlabauth="Private-Token: ${GITLAB_TOKEN}" # pragma: allowlist secret
   else
     echo "Gitlab Plugin: no credentials provided to write a comment."
     return 0

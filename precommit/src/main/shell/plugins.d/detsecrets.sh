@@ -27,7 +27,6 @@ DETSECRETS_FILES='' #regex of files to ignore
 DETSECRETS_LINES='' #regex of lines to ignore
 DETSECRETS_SECRETS='' #regex of secrets to ignore
 DETSECRETS_HASHFILE='.yetus/detsecrets-ignored-hashes.txt'
-DETSECRETS_OLD='false'
 
 function detsecrets_usage
 {
@@ -82,10 +81,6 @@ function detsecrets_precheck
 
   # shellcheck disable=SC2016
   DETSECRETS_VERSION=$("${DETSECRETS}" --version 2>/dev/null| "${AWK}" '{print $NF}')
-
-  if [[ ${DETSECRETS_VERSION} =~ /^0 ]]; then
-    DETSECRETS_OLD='true'
-  fi
 }
 
 function detsecrets_calcdiffs
@@ -98,6 +93,14 @@ function detsecrets_calcdiffs
 function detsecrets_convert_json_to_flat
 {
   declare repostatus=$1
+  declare filename
+  declare tmpfile
+
+  tmpfile="${PATCH_DIR}/detsecrets.$$"
+
+  for filename in "${CHANGED_FILES[@]}"; do
+    echo "${filename}" >> "${tmpfile}"
+  done
 
   if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
     stripcmd=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
@@ -113,8 +116,11 @@ function detsecrets_convert_json_to_flat
   "${pythonexec}" "${BINDIR}/plugins.d/detsecrets_parse.py" \
     "${PATCH_DIR}/${repostatus}-detsecrets-result.json" \
     "${DETSECRETS_HASHFILE}" \
+  | "${GREP}" "-f" "${tmpfile}" \
   | "${stripcmd[@]}" \
     > "${PATCH_DIR}/${repostatus}-detsecrets-result.txt"
+
+  rm "${tmpfile}"
 }
 
 function detsecrets_executor
@@ -140,7 +146,7 @@ function detsecrets_executor
   echo "Running detect-secrets against source tree."
   pushd "${BASEDIR}" >/dev/null || return 1
 
-  detsecretsopts=()
+  detsecretsopts=(--all-files)
 
   if [[ -n "${DETSECRETS_FILES}" ]]; then
     detsecretsopts=("${detsecretsopts[@]}" "--exclude-files" "${DETSECRETS_FILES}")
@@ -149,22 +155,16 @@ function detsecrets_executor
   if [[ -n "${DETSECRETS_LINES}" ]]; then
     detsecretsopts=("${detsecretsopts[@]}" "--exclude-lines" "${DETSECRETS_LINES}")
   fi
+
   if [[ -n "${DETSECRETS_SECRETS}" ]]; then
     detsecretsopts=("${detsecretsopts[@]}" "--exclude-secrets" "${DETSECRETS_SECRETS}")
   fi
 
-  if [[ ${DETSECRETS_OLD} == 'false' ]]; then
-    "${DETSECRETS}" "${detsecretsopts[@]}" scan \
-      --all-files \
-      "${detsecretsopts[@]}" \
-      > "${PATCH_DIR}/${repostatus}-detsecrets-result.json" \
-      2>"${PATCH_DIR}/${detsecretsStderr}"
-  else
-    "${DETSECRETS}" "${detsecretsopts[@]}" scan \
-      "${detsecretsopts[@]}" \
-      > "${PATCH_DIR}/${repostatus}-detsecrets-result.json" \
-      2>"${PATCH_DIR}/${detsecretsStderr}"
-  fi
+  "${DETSECRETS}" scan \
+    "${detsecretsopts[@]}" \
+    "${BASEDIR}" \
+    > "${PATCH_DIR}/${repostatus}-detsecrets-result.json" \
+    2>"${PATCH_DIR}/${detsecretsStderr}"
 
   detsecrets_convert_json_to_flat "${repostatus}"
 
