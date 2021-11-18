@@ -99,7 +99,7 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 ####
 # Install Apache Creadur RAT jar
 ####
-FROM yetusbase AS apacherat
+FROM yetusbase AS yetusapacherat
 ARG APACHE_RAT_VERSION=0.13
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/apache-rat \
@@ -114,7 +114,7 @@ RUN mkdir -p /opt/apache-rat \
 #####
 # Install SpotBugs
 #####
-FROM yetusbase AS spotbugs
+FROM yetusbase AS yetusspotbugs
 ARG SPOTBUGS_VERSION=4.4.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz -o spotbugs.tgz \
@@ -125,53 +125,48 @@ RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/
     && tar -C /opt/spotbugs --strip-components 1 -xpf spotbugs.tgz \
     && rm spotbugs.tgz spotbugs.tgz.sha1 \
     && chmod a+rx /opt/spotbugs/bin/*
-ENV SPOTBUGS_HOME /opt/spotbugs
+## NOTE: SPOTBUGS_HOME is set below
 
 ####
 # Install shellcheck (shell script lint)
 ####
-FROM yetusbase AS shellcheck
+FROM yetusbase AS yetusshellcheck
 ARG SHELLCHECK_VERSION=0.7.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
-    https://github.com/koalaman/shellcheck/releases/download/v$SHELLCHECK_VERSION/shellcheck-v$SHELLCHECK_VERSION.linux.x86_64.tar.xz \
+    https://github.com/koalaman/shellcheck/releases/download/v$SHELLCHECK_VERSION/shellcheck-v$SHELLCHECK_VERSION.linux."$(uname -m)".tar.xz \
         | tar --strip-components 1 --wildcards -xJf - '*/shellcheck' \
     && chmod a+rx shellcheck \
-    && mv shellcheck /bin/shellcheck \
-    && shasum -a 512 /bin/shellcheck \
-    | awk '$1!="0977b3d34f6e7e6d5c95ba46ca648ab55a6168e6304484d0daffefb0724c2309f9b0a2c8121d72ddcee977ba5614a5e7e83efc419b294600e0f73d748ec263a0" {exit(1)}'
+    && mv shellcheck /bin/shellcheck
 
 ####
 # Install hadolint (dockerfile lint)
 ####
-FROM yetusbase AS hadolint
-ARG HADOLINT_VERSION=2.7.0
+FROM yetusbase AS yetushadolint
+ARG HADOLINT_VERSION=2.8.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN curl -sSL \
-        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-x86_64 \
+RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
+        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-"$(uname -m)" \
         -o /bin/hadolint \
-    && chmod a+rx /bin/hadolint \
-    && shasum -a 512 /bin/hadolint \
-    | awk '$1!="176eb3fd9f6a3cb9eda7f23b69a98069ea77cefc2078cf6234ebb3cb45897078934ee6925bec32b6e5c10915e8ff39bf24ebec36f37b226a2c8c4068a456ee30" {exit(1)}'
+    && chmod a+rx /bin/hadolint; \
+    else touch /bin/hadolint; fi
 
 ####
 # Install buf (protobuf lint)
 ####
-FROM yetusbase AS buf
+FROM yetusbase AS yetusbuf
 ARG BUF_VERSION=0.56.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
-      https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-x86_64.tar.gz \
+      https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-"$(uname -m)".tar.gz \
       -o buf.tar.gz \
-    && shasum -a 512 buf.tar.gz \
-    | awk '$1!="52b8ef7ba924b6679d59134df0765fe456749e83a9842ce289875489261b62b5261a21fc9849a22778a6afb3c5fcc6e86b856e06d1b62564d794c3e8f4da10ca" {exit(1)}' \
     && tar -xzf buf.tar.gz -C /usr/local --strip-components 1 \
     && rm buf.tar.gz
 
 ####
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
-FROM yetusbase AS bats
+FROM yetusbase AS yetusbats
 ARG BATS_VERSION=1.4.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN git clone --branch v$BATS_VERSION \
@@ -180,11 +175,10 @@ RUN git clone --branch v$BATS_VERSION \
     && /tmp/bats-core/install.sh /opt/bats \
     && rm -rf /tmp/bats-core
 
-
 ####
 # revive (golint on steroids)
 ####
-FROM yetusbase AS revive
+FROM yetusbase AS yetusrevive
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN go get -u github.com/mgechev/revive
 
@@ -195,7 +189,7 @@ RUN go get -u github.com/mgechev/revive
 # requires go 1.15 as of 2021-03-02
 #
 ####
-FROM yetusbase AS checkmake
+FROM yetusbase AS yetuscheckmake
 ARG CHECKMAKE_VERSION=8915bd40945dd20b153cfcecb787ecdb5020ba38
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV BUILDER_NAME='Apache Yetus'
@@ -203,13 +197,13 @@ ENV BUILDER_EMAIL='dev@apache.yetus.org'
 RUN git clone \
       https://github.com/mrtazz/checkmake.git /tmp/checkmake \
     && git -C /tmp/checkmake checkout $CHECKMAKE_VERSION \
-    && GOOS=linux GOARCH=amd64 CGO_ENABLED=0 make -C /tmp/checkmake binaries \
+    && GOOS=linux CGO_ENABLED=0 make -C /tmp/checkmake binaries \
     && make -C /tmp/checkmake test
 
 ####
 # golangci-lint (Multi-tool golang linter)
 ####
-FROM yetusbase as golangci
+FROM yetusbase as yetusgolangci
 ARG GOLANGCILINT_VERSION=1.42.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v$GOLANGCILINT_VERSION)
@@ -246,10 +240,12 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y openjdk-8
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y default-jre-headless openjdk-11-jdk-headless \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && update-java-alternatives -s java-1.8.0-openjdk-amd64 \
+    && update-java-alternatives -s "$(update-java-alternatives -l | grep 1.8.0 | awk '{print $1}')" \
     && rm -f /usr/lib/jvm/default-java \
-    && ln -s java-8-openjdk-amd64 /usr/lib/jvm/default-java
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+    && ln -s "$(update-java-alternatives -l | grep 1.8.0 | awk '{print $NF}')" /usr/lib/jvm/default-java
+# this var will get yetus_abs'd when run under precommit so should be relatively safe
+ENV JAVA_HOME /usr/lib/jvm/default-java
+ENV SPOTBUGS_HOME /opt/spotbugs
 
 ####
 # Install ant
@@ -282,7 +278,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y cmake \
 RUN curl -sSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 # hadolint ignore=DL3008,DL3059
 RUN add-apt-repository -y \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable" \
     && apt-get -q update && apt-get -q install --no-install-recommends -y docker-ce \
@@ -397,17 +393,17 @@ RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
 # Now all the stuff that was built in parallel
 #####
 
-COPY --from=apacherat /opt/apache-rat /opt/apache-rat
-COPY --from=spotbugs /opt/spotbugs /opt/spotbugs
-COPY --from=shellcheck /bin/shellcheck /bin/shellcheck
-COPY --from=hadolint /bin/hadolint /bin/hadolint
-COPY --from=buf /usr/local/bin/buf /usr/local/bin/buf
-COPY --from=bats /opt/bats /opt/bats
+COPY --from=yetusapacherat /opt/apache-rat /opt/apache-rat
+COPY --from=yetusspotbugs /opt/spotbugs /opt/spotbugs
+COPY --from=yetusshellcheck /bin/shellcheck /bin/shellcheck
+COPY --from=yetushadolint /bin/hadolint /bin/hadolint
+COPY --from=yetusbuf /usr/local/bin/buf /usr/local/bin/buf
+COPY --from=yetusbats /opt/bats /opt/bats
 RUN ln -s /opt/bats/bin/bats /usr/local/bin/bats
 
-COPY --from=revive /root/go/bin/* /usr/local/bin
-COPY --from=checkmake /tmp/checkmake/checkmake /usr/local/bin
-COPY --from=golangci /root/go/bin/* /usr/local/bin
+COPY --from=yetusrevive /root/go/bin/* /usr/local/bin
+COPY --from=yetuscheckmake /tmp/checkmake/checkmake /usr/local/bin
+COPY --from=yetusgolangci /root/go/bin/* /usr/local/bin
 
 ####
 # YETUS CUT HERE

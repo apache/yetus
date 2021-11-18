@@ -14,26 +14,79 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+if [[ -n "${DOCKER_MULTIARCH}" ]]; then
+
+  docker buildx create --name yetus-multiarch --driver docker-container --use || exit 1
+  docker buildx inspect --bootstrap || exit 1
+
+  traphandler() {
+    docker buildx rm yetus-multiarch || true
+  }
+
+  trap traphandler HUP INT QUIT TERM
+
+fi
+
 GIT_URL=$(git config --get remote.origin.url)
 
 # shellcheck disable=SC2034
 DOCKER_BUILDKIT=1
 export DOCKER_BUILDKIT
 
+# shellcheck disable=SC2034
+DOCKER_CLI_EXPERIMENTAL=enabled
+export DOCKER_CLI_EXPERIMENTAL
+
+if [[ -z "${SOURCE_COMMIT}" ]]; then
+  SOURCE_COMMIT="$(git rev-parse --verify HEAD)"
+  export SOURCE_COMMIT
+fi
+
+if [[ -z "${SOURCE_BRANCH}" ]]; then
+  SOURCE_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  export SOURCE_BRANCH
+fi
+
+if [[ -z "${DOCKER_TAG}" ]]; then
+  DOCKER_TAG=${SOURCE_BRANCH}
+  export DOCKER_TAG
+fi
+
+if [[ -z "${DOCKER_REPO}" ]]; then
+  DOCKER_REPO=apache/yetus
+  export DOCKER_REPO
+fi
+
+KNOWN_PLATFORMS=$(docker buildx inspect --bootstrap)
+
+if [[ ${KNOWN_PLATFORMS} =~ linux/amd64 ]]; then
+  PLATFORMS+=(linux/amd64)
+fi
+
+if [[ ${KNOWN_PLATFORMS} =~ linux/arm64 ]]; then
+  PLATFORMS+=(linux/arm64)
+fi
+
+PLATSTRING=${PLATFORMS[*]}
+PLATSTRING=${PLATSTRING/ /,}
+echo "Building for ${PLATSTRING}"
+
 # Build the -base image
-docker build \
+docker buildx build --platform "${PLATSTRING}" \
   --label "git-commit-sha=${SOURCE_COMMIT}" \
   --label "git-commit-branch=${SOURCE_BRANCH}" \
   --label "git-commit-url=${GIT_URL}" \
   --tag "${DOCKER_REPO}-base:${DOCKER_TAG}" \
-  precommit/src/main/shell/test-patch-docker
+  --push \
+  precommit/src/main/shell/test-patch-docker || exit 1
 
 # Build the full image using base above
-docker build \
+docker buildx build --platform "${PLATSTRING}" \
   --label "git-commit-sha=${SOURCE_COMMIT}" \
   --label "git-commit-branch=${SOURCE_BRANCH}" \
   --label "git-commit-url=${GIT_URL}" \
   --tag "${DOCKER_REPO}:${DOCKER_TAG}" \
   --build-arg DOCKER_TAG="${DOCKER_TAG}" \
   --build-arg DOCKER_REPO="${DOCKER_REPO}" \
+  --push \
   .
