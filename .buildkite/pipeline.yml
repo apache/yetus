@@ -23,7 +23,7 @@ steps:
         --bugcomments=briefreport,htmlout,buildkiteannotate
         --console-report-file=/tmp/yetus-out/console.txt
         --docker
-        --docker-cache-from=apache/yetus:main
+        --docker-cache-from=ghcr.io/apache/yetus-base:main
         --html-report-file=/tmp/yetus-out/report.html
         --java-home=/usr/lib/jvm/java-8-openjdk-amd64
         --patch-dir=/tmp/yetus-out

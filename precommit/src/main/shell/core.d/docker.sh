@@ -32,6 +32,7 @@ DOCKER_IN_DOCKER=false
 DOCKER_SOCKET="/var/run/docker.sock"
 DOCKER_SOCKET_GID=-1
 DOCKER_WORK_DIR="/precommit"
+DOCKER_ASF_BUILT_REPO="ghcr.io/apache/yetus"
 
 declare -a DOCKER_EXTRAARGS
 declare -a DOCKER_EXTRABUILDARGS
@@ -261,11 +262,11 @@ function docker_fileverify
         dockplat=('--platform' "${DOCKER_PLATFORM}")
       fi
 
-      echo "No --dockerfile or --docker-tag provided. Attempting to pull apache/yetus:${VERSION}."
+      echo "No --dockerfile or --docker-tag provided. Attempting to pull ${DOCKER_ASF_BUILT_REPO}:${VERSION}."
 
-      if dockercmd pull "${dockplat[@]}" "apache/yetus:${VERSION}"; then
+      if dockercmd pull "${dockplat[@]}" "${DOCKER_ASF_BUILT_REPO}:${VERSION}"; then
         echo "Pull succeeded; will build with pulled image."
-        DOCKER_TAG="apache/yetus:${VERSION}"
+        DOCKER_TAG="${DOCKER_ASF_BUILT_REPO}:${VERSION}"
       else
         echo "Pull failed; will build with built-in Dockerfile."
         DOCKERFILE=${DOCKERFILE_DEFAULT}
