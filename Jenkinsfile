@@ -135,7 +135,7 @@ pipeline {
                   docker pull ubuntu:focal
                   YETUS_ARGS+=("--docker")
                   YETUS_ARGS+=("--dockerfile=${YETUS_DOCKERFILE}")
-                  YETUS_ARGS+=("--docker-cache-from=aghcr.io/apache/yetus-base:main")
+                  YETUS_ARGS+=("--docker-cache-from=ghcr.io/apache/yetus-base:main")
                 else
                   # need to figure this out programmatically; hard-coded for now
                   export JAVA_HOME=/home/jenkins/tools/java/latest1.8
