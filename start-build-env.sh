@@ -56,8 +56,16 @@ CACHE_LIST=""
 DOCKER_BUILDKIT=1
 export DOCKER_BUILDKIT
 
+# shellcheck disable=SC2034
+DOCKER_CLI_EXPERIMENTAL=1
+export DOCKER_CLI_EXPERIMENTAL
+
 # moving to the path of the Dockerfile reduces the context
 cd "${ROOTDIR}/precommit/src/main/shell/test-patch-docker"
+
+printf "Using:\n\n\n"
+docker version
+printf "\n\n\n"
 
 BRANCH=$(git branch | grep '\*' | cut -d ' ' -f2 )
 if [[ "${BRANCH}" =~ HEAD ]]; then
@@ -81,12 +89,16 @@ fi
 make_cache_list
 
 if [[ -n "${CACHE_LIST}" ]]; then
+  set -x
   docker build \
-    --cache-from="${CACHE_LIST}" \
+  --cache-from="${CACHE_LIST}" \
     -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
+  set +x
 else
+  set -x
   docker build \
     -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
+  set +x
 fi
 
 USER_NAME=${SUDO_USER:=$USER}
