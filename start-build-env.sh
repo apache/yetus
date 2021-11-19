@@ -80,13 +80,12 @@ fi
 echo "Attempting a few pulls to save time"
 echo "Errors here will be ignored!"
 
+make_cache_list
 
 if [[ "${GITHUB_ACTIONS}" == true ]]; then
   echo "::endgroup::"
   echo "::group::start-build-env - rebuild base"
 fi
-
-make_cache_list
 
 if [[ -n "${CACHE_LIST}" ]]; then
   set -x
