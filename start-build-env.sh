@@ -15,17 +15,57 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# SHELLDOC-IGNORE
+
+make_cache_list() {
+  gotit="false"
+  cache_array=()
+  for imagelocation in "${YETUS_DOCKER_REPO}" "${ASF_DOCKER_REPO}"; do
+    if [[ "${imagelocation}" == "apache/yetus" ]]; then
+      # skip Apache docker hub since we will pull from
+      # github later
+      continue
+    fi
+    for branch in "${BRANCH}" "main"; do
+      for type in "-base" ""; do
+        image="${imagelocation}${type}:${branch}"
+        if docker pull "${image}"; then
+          cache_array+=("${image}")
+          gotit="true"
+          break
+        fi
+      done
+      if [[  "${gotit}" == "true" ]]; then
+        gotit="false"
+        break
+      fi
+    done
+  done
+  printf -v thelist "%s," "${cache_array[@]}"
+  CACHE_LIST=${thelist%,}
+}
+
 set -e            # exit on error
 ROOTDIR=$(cd -P -- "$(dirname -- "${BASH_SOURCE-$0}")" >/dev/null && pwd -P)
 
+ASF_DOCKER_REPO="ghcr.io/apache/yetus"
 YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-apache/yetus}
+CACHE_LIST=""
 
 # shellcheck disable=SC2034
 DOCKER_BUILDKIT=1
 export DOCKER_BUILDKIT
 
+# shellcheck disable=SC2034
+DOCKER_CLI_EXPERIMENTAL=1
+export DOCKER_CLI_EXPERIMENTAL
+
 # moving to the path of the Dockerfile reduces the context
 cd "${ROOTDIR}/precommit/src/main/shell/test-patch-docker"
+
+printf "Using:\n\n\n"
+docker version
+printf "\n\n\n"
 
 BRANCH=$(git branch | grep '\*' | cut -d ' ' -f2 )
 if [[ "${BRANCH}" =~ HEAD ]]; then
@@ -37,19 +77,28 @@ if [[ "${GITHUB_ACTIONS}" == true ]]; then
   echo "::group::start-build-env - warm docker cache"
 fi
 
-echo "Attempting a few pulls of ${YETUS_DOCKER_REPO} and ${YETUS_DOCKER_REPO}-base to save time"
+echo "Attempting a few pulls to save time"
 echo "Errors here will be ignored!"
-docker pull "${YETUS_DOCKER_REPO}-base:${BRANCH}" || docker pull "${YETUS_DOCKER_REPO}-base:main" || true
-docker pull "${YETUS_DOCKER_REPO}:${BRANCH}"  || docker pull "${YETUS_DOCKER_REPO}:main" || true
+
+make_cache_list
 
 if [[ "${GITHUB_ACTIONS}" == true ]]; then
   echo "::endgroup::"
   echo "::group::start-build-env - rebuild base"
 fi
 
-docker build \
-  --cache-from="${YETUS_DOCKER_REPO}-build:${BRANCH},${YETUS_DOCKER_REPO}-base:${BRANCH},${YETUS_DOCKER_REPO}-base:main,${YETUS_DOCKER_REPO}:${BRANCH},${YETUS_DOCKER_REPO}:main" \
-  -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
+if [[ -n "${CACHE_LIST}" ]]; then
+  set -x
+  docker build \
+  --cache-from="${CACHE_LIST}" \
+    -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
+  set +x
+else
+  set -x
+  docker build \
+    -t "${YETUS_DOCKER_REPO}-build:${BRANCH}" .
+  set +x
+fi
 
 USER_NAME=${SUDO_USER:=$USER}
 USER_ID=$(id -u "${USER_NAME}")

@@ -25,4 +25,4 @@ PRECOMMITDIR=precommit/src/main/shell
   --tests-filter=checkstyle,test4tests \
   --docker \
   --dockerfile="${PRECOMMITDIR}/test-patch-docker/Dockerfile" \
-  --docker-cache-from=apache/yetus-base:main,ubuntu:focal
+  --docker-cache-from=ghcr.io/apache/yetus-base:main,ubuntu:focal

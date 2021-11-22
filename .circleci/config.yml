@@ -19,7 +19,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: apache/yetus:main
+      - image: ghcr.io/apache/yetus:main
 
     working_directory: ~/repo
 

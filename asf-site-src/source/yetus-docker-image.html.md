@@ -26,13 +26,14 @@
 
 <!-- /MarkdownTOC -->
 
-While not official releases, the Apache Yetus project makes available two types of images on hub.docker.com:
+While not official releases, the Apache Yetus project makes available two types of images available via
+the GitHub Container Registry:
 
-* apache/yetus-base
+* ghcr.io/apache/yetus-base
 
   This image is the same as the 'built-in' Dockerfile when `--docker` is used without `--dockerfile`  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in `precommit/src/main/shell/test-patch-docker/`.
 
-* apache/yetus
+* ghcr.io/apache/yetus
 
   This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.
 
@@ -49,7 +50,7 @@ docker run \
   --rm \
   -v /tmp/out:/output \
   -v /src/precommit/src/main/shell:/input:ro \
-  apache/yetus:0.9.0 \
+  ghcr.io/apache/yetus:0.14.0 \
     shelldocs --output /output/test-patch.md --input /input/test-patch.sh
 ```
 
@@ -62,7 +63,7 @@ docker run \
   --rm \
   -v /tmp/patchdir:/patchdir \
   -v /src:/basedir \
-  apache/yetus:0.9.0 \
+  ghcr.io/apache/yetus:0.14.0 \
   qbt \
     --plugins=all \
     --basedir=/basedir \
@@ -73,7 +74,7 @@ docker run \
 If your project needs additional dependencies, it is trivial to build off of the Apache Yetus image:
 
 ```Dockerfile
-FROM apache/yetus:0.9.0
+FROM ghcr.io/apache/yetus:0.14.0
 RUN apt-get -q update && apt-get -q install -y \
       clang \
       libssl-dev \
@@ -85,7 +86,7 @@ RUN apt-get -q update && apt-get -q install -y \
 docker build -t project/build:0.9.0 -f .
 ```
 
-This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of apache/yetus:0.9.0 since it has all of Apache Yetus and the additions needed by our project.
+This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of ghcr.io/apache/yetus:0.14.0 since it has all of Apache Yetus and the additions needed by our project.
 
 # A Note About Precommit
 
