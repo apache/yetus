@@ -31,7 +31,7 @@ script:
     --docker
     --patch-dir=/tmp/yetus-out
     --java-home=/usr/lib/jvm/java-8-openjdk-amd64
-    --plugins=all
+    --plugins=all,-detsecrets
     --docker-cache-from=apache/yetus:main
     --html-report-file=/tmp/yetus-out/report.html
     --console-report-file=/tmp/yetus-out/console.txt
