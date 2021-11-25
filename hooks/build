@@ -27,6 +27,51 @@ if [[ -n "${DOCKER_MULTIARCH}" ]]; then
 
 fi
 
+iso8601date() {
+  date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+opencontainerslabels() {
+  LABELS=()
+
+  ## Reference: https://github.com/opencontainers/image-spec/blob/main/annotations.md
+
+  case "$1" in
+    "base")
+      desc="OS and 3rd party tools container image for use with Apache Yetus"
+      title=" (3rd Party Components)"
+      ;;
+    "full")
+      desc="Apache Yetus container image, including OS and 3rd party tooling"
+      title=""
+      ;;
+  esac
+
+
+  if [[ "${GIT_URL}" =~ apache/yetus ]]; then
+    for label in \
+      "org.opencontainers.image.description=${desc}" \
+      "org.opencontainers.image.authors=\"Apache Yetus <dev@yetus.apache.org>\"" \
+      "org.opencontainers.image.url=https://yetus.apache.org" \
+      "org.opencontainers.image.documentation=https://yetus.apache.org/documentation" \
+      "org.opencontainers.image.title=\"Apache Yetus ${title}\"" \
+      ; do
+        LABELS+=(--label "$label")
+    done
+  fi
+
+
+
+ for label in \
+    "org.opencontainers.image.created=$(iso8601date)" \
+    "org.opencontainers.image.source=${GIT_URL}" \
+    "org.opencontainers.image.version=${SOURCE_BRANCH}" \
+    "org.opencontainers.image.revision=${SOURCE_COMMIT}" \
+  ; do
+    LABELS+=(--label "$label")
+  done
+}
+
 GIT_URL=$(git config --get remote.origin.url)
 
 # shellcheck disable=SC2034
@@ -71,20 +116,21 @@ PLATSTRING=${PLATFORMS[*]}
 PLATSTRING=${PLATSTRING/ /,}
 echo "Building for ${PLATSTRING}"
 
+opencontainerslabels "base"
+
 # Build the -base image
 docker buildx build --platform "${PLATSTRING}" \
-  --label "git-commit-sha=${SOURCE_COMMIT}" \
-  --label "git-commit-branch=${SOURCE_BRANCH}" \
-  --label "git-commit-url=${GIT_URL}" \
+  "${LABELS[@]}" \
   --tag "${DOCKER_REPO}-base:${DOCKER_TAG}" \
   --push \
   precommit/src/main/shell/test-patch-docker || exit 1
 
+opencontainerslabels "full"
+
 # Build the full image using base above
 docker buildx build --platform "${PLATSTRING}" \
-  --label "git-commit-sha=${SOURCE_COMMIT}" \
-  --label "git-commit-branch=${SOURCE_BRANCH}" \
-  --label "git-commit-url=${GIT_URL}" \
+  --label "org.opencontainers.image.base.name=${DOCKER_REPO}-base:${DOCKER_TAG}" \
+  "${LABELS[@]}" \
   --tag "${DOCKER_REPO}:${DOCKER_TAG}" \
   --build-arg DOCKER_TAG="${DOCKER_TAG}" \
   --build-arg DOCKER_REPO="${DOCKER_REPO}" \
