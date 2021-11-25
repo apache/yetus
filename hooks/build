@@ -60,8 +60,6 @@ opencontainerslabels() {
     done
   fi
 
-
-
  for label in \
     "org.opencontainers.image.created=$(iso8601date)" \
     "org.opencontainers.image.source=${GIT_URL}" \
@@ -102,24 +100,32 @@ if [[ -z "${DOCKER_REPO}" ]]; then
   export DOCKER_REPO
 fi
 
-KNOWN_PLATFORMS=$(docker buildx inspect --bootstrap)
+BUILDERINSTANCE=$(docker buildx inspect --bootstrap | grep Driver)
+PLATARRAY=()
 
-if [[ ${KNOWN_PLATFORMS} =~ linux/amd64 ]]; then
-  PLATFORMS+=(linux/amd64)
+if [[ "${BUILDERINSTANCE}" =~ docker-container ]]; then
+  KNOWN_PLATFORMS=$(docker buildx inspect --bootstrap | grep Platforms)
+
+  if [[ ${KNOWN_PLATFORMS} =~ linux/amd64 ]]; then
+    PLATFORMS+=(linux/amd64)
+  fi
+
+  if [[ ${KNOWN_PLATFORMS} =~ linux/arm64 ]]; then
+    PLATFORMS+=(linux/arm64)
+  fi
+
+  PLATSTRING=${PLATFORMS[*]}
+  PLATSTRING=${PLATSTRING/ /,}
+  echo "Building for ${PLATSTRING}"
+
+  PLATARRAY=(--platform "${PLATSTRING}")
 fi
-
-if [[ ${KNOWN_PLATFORMS} =~ linux/arm64 ]]; then
-  PLATFORMS+=(linux/arm64)
-fi
-
-PLATSTRING=${PLATFORMS[*]}
-PLATSTRING=${PLATSTRING/ /,}
-echo "Building for ${PLATSTRING}"
 
 opencontainerslabels "base"
 
 # Build the -base image
-docker buildx build --platform "${PLATSTRING}" \
+docker buildx build \
+  "${PLATARRAY[@]}" \
   "${LABELS[@]}" \
   --tag "${DOCKER_REPO}-base:${DOCKER_TAG}" \
   --push \
@@ -128,7 +134,8 @@ docker buildx build --platform "${PLATSTRING}" \
 opencontainerslabels "full"
 
 # Build the full image using base above
-docker buildx build --platform "${PLATSTRING}" \
+docker buildx build \
+  "${PLATARRAY[@]}" \
   --label "org.opencontainers.image.base.name=${DOCKER_REPO}-base:${DOCKER_TAG}" \
   "${LABELS[@]}" \
   --tag "${DOCKER_REPO}:${DOCKER_TAG}" \
