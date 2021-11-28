@@ -171,6 +171,9 @@
 
 <p>Dockerfile images will be named with a test-patch prefix and suffix with either a date or a git commit hash. By using this information, test-patch will automatically manage broken/stale container images that are hanging around if it is run in <code>--robot</code> mode.  In this way, if Docker fails to build the image, the disk space should eventually be cleaned and returned back to the system.  The docker mode can also be run in a "safe" mode that prevents deletions via the <code>--dockerdelrep</code> option.  Specifying this option will cause test-patch to only report what it would have deleted, but not actually remove anything.</p>
 
+<p>If you are using a system such as <a href="../robots/travisci">Travis CI</a> that has strict limits on logging, the <code>--docker-build-output</code><br />
+option can control whether the <code>docker build</code> process is sent to the screen.</p>
+
 <h3 id="copy-and-add-in-dockerfiles">COPY and ADD in Dockerfiles</h3>
 
 <p>In order to use both 'YETUS CUT HERE' and a Dockerfile that uses COPY and ADD directives, the Docker API must be version 18 or higher.  If the API version is 17 or lower, the Dockerfile will be copied to a temporary directory to be processed, thus removing the Docker build context in the process.</p>
@@ -312,7 +315,7 @@ simply consolidating the maintenance into one location.</p>
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2021 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

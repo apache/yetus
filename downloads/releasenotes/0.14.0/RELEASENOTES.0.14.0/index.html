@@ -143,6 +143,178 @@
 <!-- markdown -->
 <p>Support for FindBugs has been removed as SpotBugs has completely replaced it.</p>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1122">YETUS-1122</a></td>
+          <td><em>Major</em></td>
+          <td><strong>pylint: provide option to ignore 'bad-option-value'</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>pylint will no longer flag options that are unsupported by the running version of pylint by default.  The <code>--pylint-ignore-bad-option-value</code> has been added to control this behavior.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1121">YETUS-1121</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Rewrite shelldocs</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p><code>shelldocs</code> errors now go to stderr. Previously they went to stdout.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1119">YETUS-1119</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Update dependencies</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Utilities within the Docker container have been upgraded, including several to major versions.  There will likely be incompatible changes as a result.</p>
+
+<p>List:</p>
+
+<ul>
+  <li>bats 1.2.1 -&gt; 1.4.1</li>
+  <li>buf 0.21.0 -&gt; 0.56.0</li>
+  <li>bundler 2.1.4 -&gt; 2.2.7</li>
+  <li>checkmake now set at 8915bd409</li>
+  <li>codespell pre-2.0 -&gt; 2.1.0</li>
+  <li>golangci-lint 1.31.0 -&gt; 1.42.1</li>
+  <li>hadolint 1.18.0 -&gt; 2.7.0</li>
+  <li>jshint 2.12.0 -&gt; 2.13.1</li>
+  <li>markdownlint-cli 0.23.2 -&gt; 0.28.1</li>
+  <li>pylint 2.5.3 -&gt; 2.11.1</li>
+  <li>rake 13.0.1 -&gt; 13.0.3</li>
+  <li>rubocop 0.90.0 -&gt; 1.21.0</li>
+  <li>shellcheck 0.7.1 -&gt; 0.7.2</li>
+  <li>spotbugs 4.2.2 -&gt; 4.4.1</li>
+  <li>yamllint 1.24.2 -&gt; 1.26.3</li>
+</ul>
+
+<p>Anything not mentioned is either unchanged or the latest top of tree</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1127">YETUS-1127</a></td>
+          <td><em>Major</em></td>
+          <td><strong>exclusions rework</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>Users:</p>
+
+<p>Exclusion support has been modified to be slightly incompatible with previous releases:</p>
+
+<ul>
+  <li>By default, <code>.yetus/excludes.txt</code> was supposed to have been read. However in previous releases it was ignored unless manually specified.</li>
+  <li><code>--excludes</code> has been restricted such that only files within the source repository, especially when running in <code>--docker</code> mode</li>
+  <li>During a PR, the working set of changed files will now be completely recalculated, not just have additional files excluded.</li>
+  <li>The <code>asflicense</code> plug-in will now honor the global excludes file unless <code>--asflicense-rat-globalexcludes=false</code> is passed.</li>
+  <li>As a reminder, the excludes file needs to be regular expressions, not file globs. Therefore <code>.*</code> is the 'match everything' string.</li>
+  <li>Several bugs with exclusion in various plug-ins have been simplified/cleaned up and should result in fewer corner-case issues.</li>
+</ul>
+
+<p>Developers:</p>
+
+<ul>
+  <li><code>yetus_file_to_array</code> has been modified to additionally strip out lines that contain spaces in addition to empty lines and lines that begin with a comment.</li>
+  <li>The private function <code>find_changed_dirs</code> and the <code>CHANGED_DIRS</code> variable has been removed. It has always been broken and nothing was known to use it.</li>
+</ul>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1139">YETUS-1139</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Option to limit docker build output</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>A new option to send the output of docker build to a log.  This option is automatically enabled on Travis CI as it kills jobs that send to much data to console (~30k).</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1141">YETUS-1141</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Write container images to ghcr.io</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>Container images are now available at ghcr.io/apache/yetus and ghcr.io./apache/yetus-base</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1138">YETUS-1138</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Better support for multiple architectures</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>The various Dockerfiles should now be much more compatible with various chipets, including amd64 and arm64.</p>
+
 
     </div>
       
@@ -152,7 +324,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2021 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

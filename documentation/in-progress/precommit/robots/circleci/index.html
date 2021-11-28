@@ -147,9 +147,9 @@
   <span class="na">build</span><span class="pi">:</span>
     <span class="na">steps</span><span class="pi">:</span>
       <span class="s">...</span>
-      <span class="s">- run</span><span class="pi">:</span> <span class="s">mkdir -p /tmp/yetus-out</span>
-      <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="s">echo "bootstrap" &gt; /tmp/yetus-out/bootstrap</span>
-      <span class="pi">-</span> <span class="na">store_artifacts</span><span class="pi">:</span>
+      <span class="s">- run</span><span class="err">:</span> <span class="s">mkdir -p /tmp/yetus-out</span>
+      <span class="s">- run</span><span class="err">:</span> <span class="s">echo "bootstrap" &gt; /tmp/yetus-out/bootstrap</span>
+      <span class="s">- store_artifacts</span><span class="err">:</span>
           <span class="na">path</span><span class="pi">:</span> <span class="s">/tmp/yetus-out</span>
       <span class="pi">-</span> <span class="na">run</span><span class="pi">:</span> <span class="pi">&gt;</span>
           <span class="s">test-patch.sh</span>
@@ -172,7 +172,7 @@
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2021 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

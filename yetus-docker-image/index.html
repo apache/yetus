@@ -132,16 +132,17 @@
 
 <!-- /MarkdownTOC -->
 
-<p>While not official releases, the Apache Yetus project makes available two types of images on hub.docker.com:</p>
+<p>While not official releases, the Apache Yetus project makes available two types of images available via<br />
+the GitHub Container Registry:</p>
 
 <ul>
   <li>
-    <p>apache/yetus-base</p>
+    <p>ghcr.io/apache/yetus-base</p>
 
     <p>This image is the same as the 'built-in' Dockerfile when <code>--docker</code> is used without <code>--dockerfile</code>  on the precommit command line.  It includes all of the pre-requisites as needed by the various Apache Yetus components. It is located in <code>precommit/src/main/shell/test-patch-docker/</code>.</p>
   </li>
   <li>
-    <p>apache/yetus</p>
+    <p>ghcr.io/apache/yetus</p>
 
     <p>This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.</p>
   </li>
@@ -159,7 +160,7 @@
   <span class="nt">--rm</span> <span class="se">\</span>
   <span class="nt">-v</span> /tmp/out:/output <span class="se">\</span>
   <span class="nt">-v</span> /src/precommit/src/main/shell:/input:ro <span class="se">\</span>
-  apache/yetus:0.9.0 <span class="se">\</span>
+  ghcr.io/apache/yetus:0.14.0 <span class="se">\</span>
     shelldocs <span class="nt">--output</span> /output/test-patch.md <span class="nt">--input</span> /input/test-patch.sh
 </code></pre></div>
 <p>In this example, we mount two volumes: one for input (marked read-only), one for output.  After execution, shelldocs has processed test-patch.sh and generated a test-patch.md file in /tmp/out on our local machine.</p>
@@ -170,7 +171,7 @@
   <span class="nt">--rm</span> <span class="se">\</span>
   <span class="nt">-v</span> /tmp/patchdir:/patchdir <span class="se">\</span>
   <span class="nt">-v</span> /src:/basedir <span class="se">\</span>
-  apache/yetus:0.9.0 <span class="se">\</span>
+  ghcr.io/apache/yetus:0.14.0 <span class="se">\</span>
   qbt <span class="se">\</span>
     <span class="nt">--plugins</span><span class="o">=</span>all <span class="se">\</span>
     <span class="nt">--basedir</span><span class="o">=</span>/basedir <span class="se">\</span>
@@ -179,16 +180,16 @@
 </code></pre></div>
 <p>If your project needs additional dependencies, it is trivial to build off of the Apache Yetus image:</p>
 
-<div class="highlight"><pre class="highlight plaintext"><code>FROM apache/yetus:0.9.0
-RUN apt-get -q update &amp;&amp; apt-get -q install -y \
-      clang \
-      libssl-dev \
-      valgrind \
-      zlib1g-dev
+<div class="highlight"><pre class="highlight docker"><code><span class="k">FROM</span><span class="s"> ghcr.io/apache/yetus:0.14.0</span>
+<span class="k">RUN </span>apt-get <span class="nt">-q</span> update <span class="o">&amp;&amp;</span> apt-get <span class="nt">-q</span> <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\
+</span>      clang <span class="se">\
+</span>      libssl-dev <span class="se">\
+</span>      valgrind <span class="se">\
+</span>      zlib1g-dev
 </code></pre></div>
 <div class="highlight"><pre class="highlight shell"><code>docker build <span class="nt">-t</span> project/build:0.9.0 <span class="nt">-f</span> <span class="nb">.</span>
 </code></pre></div>
-<p>This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of apache/yetus:0.9.0 since it has all of Apache Yetus and the additions needed by our project.</p>
+<p>This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of ghcr.io/apache/yetus:0.14.0 since it has all of Apache Yetus and the additions needed by our project.</p>
 
 <h1 id="a-note-about-precommit">A Note About Precommit</h1>
 
@@ -202,7 +203,7 @@ RUN apt-get -q update &amp;&amp; apt-get -q install -y \
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2021 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 

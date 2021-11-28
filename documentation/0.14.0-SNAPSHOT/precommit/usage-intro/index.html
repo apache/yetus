@@ -454,13 +454,13 @@ TESTFORMATS:
 
 <p>Some repositories have content that is either imported from other sources (aka "vendored") or in some<br />
 other way have files that are known to break tests. By default, <code>.yetus/excludes.txt</code> will be read for any<br />
-file, directory, or extended regular expression as the list to remove from test results.  The file to read<br />
+file, directory, or regular expression as the list to remove from test results.  The file to read<br />
 may be overwritten by using the <code>--excludes</code> flag:</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--plugins</span><span class="o">=</span>all <span class="nt">--excludes</span><span class="o">=(</span>filename<span class="o">)</span> <span class="o">(</span>other options<span class="o">)</span>
 </code></pre></div>
-<div class="highlight"><pre class="highlight plaintext"><code>NOTE: for best results, avoid using ^ and $ in your regular expressions.  `test-patch` will automatically
-anchor the contents of that file.
+<div class="highlight"><pre class="highlight plaintext"><code>NOTE: Do not confuse file globs for regular expressions.  With regular expressions, `a*` will match `aaaaaaaa`
+but not `ab`.  To match all characters any number of times, you need `.*` as your wildcard expression.
 </code></pre></div>
 <h1 id="warn-only-test-results">"Warn-only" Test Results</h1>
 
@@ -536,7 +536,7 @@ also undesirable, the <code>--report-unknown-options</code> may also be set simu
         <div class="row-fluid">
             <div class="span12 text-left">
               <div class="span12">
-                Copyright 2008-2020 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+                Copyright 2008-2021 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
               </div>
             </div>
 
