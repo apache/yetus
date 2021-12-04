@@ -16,38 +16,82 @@
 # limitations under the License.
 """ Handle versions in JIRA """
 
+import copy
 import http.client
 import json
 import logging
+import re
 import sys
 import urllib.error
 from .utils import get_jira
 
-try:
-    from pip._vendor.packaging.version import LegacyVersion as PythonVersion
-except ImportError:
-    try:
-        from setuptools._vendor.packaging.version import LegacyVersion as PythonVersion
-    except ImportError:
-        try:
-            from pkg_resources._vendor.packaging.version import LegacyVersion as PythonVersion
-        except ImportError:
+class ReleaseVersion:
+    ''' a very simple version handler '''
+
+    def __init__(self, version=None):
+        self.rawversion = version
+        self.rawcomponents = re.split('[ \\.-]', version)
+        self.intcomponents = []
+        for value in self.rawcomponents:
             try:
-                from packaging.version import LegacyVersion as PythonVersion
-            except ImportError:
-                logging.error(
-                    "This script requires a packaging module to be installed.")
-                sys.exit(1)
+                self.intcomponents.append(int(value))
+            except ValueError:
+                try:
+                    self.intcomponents.append(int(value[1:]))
+                except ValueError:
+                    self.intcomponents.append(-1)
+
+    def __repr__ (self):
+        return f"ReleaseVersion ('{str(self)}')"
+
+    def __str__(self):
+        return self.rawversion
+
+    def __lt__(self, cmpver):  # pylint: disable=too-many-return-statements
+        if isinstance(cmpver, (int,str)):
+            cmpver = ReleaseVersion(cmpver)
+
+        # shortcut
+        if self.rawversion == cmpver.rawversion:
+            return False
+
+        srcver = copy.deepcopy(self)
+
+        if len(srcver.rawcomponents) < len(cmpver.rawcomponents):
+            for index in range(0, len(cmpver.rawcomponents)):
+                srcver.rawcomponents.append('0')
+                srcver.intcomponents.append(0)
+
+        for index, rawvalue in enumerate(srcver.rawcomponents):
+            if index+1 > len(cmpver.rawcomponents):
+                cmpver.rawcomponents.append('0')
+                cmpver.intcomponents.append(0)
+
+            intvalue = srcver.intcomponents[index]
+            if intvalue == -1 or cmpver.intcomponents[index] == -1:
+                if rawvalue < cmpver.rawcomponents[index]:
+                    return True
+                if rawvalue > cmpver.rawcomponents[index]:
+                    return False
+                continue
+
+            if intvalue < cmpver.intcomponents[index]:
+                return True
+
+            if intvalue > cmpver.intcomponents[index]:
+                return False
+
+        return False
 
 
 class GetVersions:  # pylint: disable=too-few-public-methods
     """ List of version strings """
     def __init__(self, versions, projects, jira_base_url):
-        self.newversions = []
-        versions = sorted(versions, key=PythonVersion)
-        logging.info("Looking for %s through %s", {versions[0]},
-                     {versions[-1]})
-        newversions = set()
+        self.userversions = sorted(versions, key=ReleaseVersion)
+        logging.info("Looking for %s through %s", self.userversions[0],
+                     self.userversions[-1])
+
+        serverversions = set()
         for project in projects:
             url = f"{jira_base_url}/rest/api/2/project/{project.upper()}/versions"
             try:
@@ -58,19 +102,23 @@ class GetVersions:  # pylint: disable=too-few-public-methods
 
             datum = json.loads(resp.read())
             for data in datum:
-                newversions.add(PythonVersion(data['name']))
-        newlist = list(newversions.copy())
-        newlist.append(PythonVersion(versions[0]))
-        newlist.append(PythonVersion(versions[-1]))
-        newlist = sorted(newlist)
-        start_index = newlist.index(PythonVersion(versions[0]))
-        end_index = len(newlist) - 1 - newlist[::-1].index(
-            PythonVersion(versions[-1]))
-        for newversion in newlist[start_index + 1:end_index]:
-            if newversion in newversions:
-                logging.info("Adding %s to the list", newversion)
-                self.newversions.append(newversion)
+                serverversions.add(data['name'])
+
+        serverversions = sorted(serverversions, key=ReleaseVersion)
+
+        combolist = serverversions + self.userversions
+        comboset = set(combolist)
+        combolist = sorted(comboset,  key=ReleaseVersion)
+
+        start_index = combolist.index(self.userversions[0])
+        end_index = combolist.index(self.userversions[-1])
+
+        self.versions = []
+        for candidate in combolist[start_index:end_index+1]:
+            if candidate in serverversions:
+                self.versions.append(candidate)
+                logging.info('Adding %s to the list', candidate)
 
     def getlist(self):
         """ Get the list of versions """
-        return self.newversions
+        return self.versions
