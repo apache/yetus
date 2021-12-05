@@ -30,7 +30,7 @@ class ReleaseVersion:
 
     def __init__(self, version=None):
         self.rawversion = version
-        self.rawcomponents = re.split('[ \\.-]', version)
+        self.rawcomponents = re.split('[ \\.]', version)
         self.intcomponents = []
         for value in self.rawcomponents:
             try:
@@ -62,18 +62,14 @@ class ReleaseVersion:
                 srcver.rawcomponents.append('0')
                 srcver.intcomponents.append(0)
 
-        for index, rawvalue in enumerate(srcver.rawcomponents):
+        for index, rawvalue in enumerate(srcver.rawcomponents):  # pylint: disable=unused-variable
             if index+1 > len(cmpver.rawcomponents):
                 cmpver.rawcomponents.append('0')
                 cmpver.intcomponents.append(0)
 
             intvalue = srcver.intcomponents[index]
             if intvalue == -1 or cmpver.intcomponents[index] == -1:
-                if rawvalue < cmpver.rawcomponents[index]:
-                    return True
-                if rawvalue > cmpver.rawcomponents[index]:
-                    return False
-                continue
+                return self.rawversion < cmpver.rawversion
 
             if intvalue < cmpver.intcomponents[index]:
                 return True

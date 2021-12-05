@@ -71,7 +71,7 @@ ASF_LICENSE = '''
 
 def indexbuilder(title, asf_license, format_string):
     """Write an index file for later conversion using mvn site"""
-    versions = glob("[0-9]*.[0-9]*")
+    versions = glob("*[0-9]*.[0-9]*")
     versions = sorted(versions, reverse=True, key=ReleaseVersion)
     with open("index" + EXTENSION, "w", encoding='utf-8') as indexfile:
         if asf_license is True:
