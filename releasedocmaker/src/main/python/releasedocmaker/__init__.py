@@ -295,7 +295,7 @@ def generate_changelog_line_md(base_url, jira):
     sani_prio = sanitize_text(jira.get_priority())
     sani_summ = sanitize_text(jira.get_summary())
     line = f'* [{sani_jira_id}](' + f'{base_url}/browse/{sani_jira_id})'
-    line += f'| *{sani_prio}* | **{sani_summ}**\n'
+    line += f' | *{sani_prio}* | **{sani_summ}**\n'
     return line
 
 
