@@ -83,10 +83,20 @@ function ansiblelint_logic
       "${ANSIBLELINT}" \
         "${ansiblelint_params[@]}" \
         "${i}" \
-        >> "${PATCH_DIR}/${repostatus}-ansiblelint-result.txt" \
+        >> "${PATCH_DIR}/${repostatus}-ansiblelint-result.tmp" \
         2> "${PATCH_DIR}/${repostatus}-ansiblelint-stderr.txt"
     fi
   done
+
+  if [[ -f "${PATCH_DIR}/${repostatus}-ansiblelint-result.tmp" ]]; then
+    sort \
+      "${PATCH_DIR}/${repostatus}-ansiblelint-result.tmp" \
+      > "${PATCH_DIR}/${repostatus}-ansiblelint-result.txt"
+    rm "${PATCH_DIR}/${repostatus}-ansiblelint-result.tmp"
+  else
+    touch "${PATCH_DIR}/${repostatus}-ansiblelint-result.txt"
+  fi
+
   popd > /dev/null || return 1
 }
 
