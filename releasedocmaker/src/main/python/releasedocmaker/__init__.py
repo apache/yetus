@@ -35,7 +35,7 @@ from time import gmtime, strftime, sleep
 
 sys.dont_write_bytecode = True
 # pylint: disable=wrong-import-position
-from .getversions import GetVersions, PythonVersion
+from .getversions import GetVersions, ReleaseVersion
 from .jira import (Jira, JiraIter, Linter, RELEASE_VERSION, SORTTYPE,
                    SORTORDER, BACKWARD_INCOMPATIBLE_LABEL, NUM_RETRIES)
 from .utils import get_jira, to_unicode, sanitize_text, processrelnote, Outputs
@@ -71,8 +71,8 @@ ASF_LICENSE = '''
 
 def indexbuilder(title, asf_license, format_string):
     """Write an index file for later conversion using mvn site"""
-    versions = glob("[0-9]*.[0-9]*")
-    versions = sorted(versions, reverse=True, key=PythonVersion)
+    versions = glob("*[0-9]*.[0-9]*")
+    versions = sorted(versions, reverse=True, key=ReleaseVersion)
     with open("index" + EXTENSION, "w", encoding='utf-8') as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
@@ -97,7 +97,7 @@ def buildindex(title, asf_license):
 def buildreadme(title, asf_license):
     """Write an index file for Github using README.md"""
     versions = glob("[0-9]*.[0-9]*")
-    versions = sorted(versions, reverse=True, key=PythonVersion)
+    versions = sorted(versions, reverse=True, key=ReleaseVersion)
     with open("README.md", "w", encoding='utf-8') as indexfile:
         if asf_license is True:
             indexfile.write(ASF_LICENSE)
@@ -295,7 +295,7 @@ def generate_changelog_line_md(base_url, jira):
     sani_prio = sanitize_text(jira.get_priority())
     sani_summ = sanitize_text(jira.get_summary())
     line = f'* [{sani_jira_id}](' + f'{base_url}/browse/{sani_jira_id})'
-    line += f'| *{sani_prio}* | **{sani_summ}**\n'
+    line += f' | *{sani_prio}* | **{sani_summ}**\n'
     return line
 
 
@@ -333,7 +333,7 @@ def main():  # pylint: disable=too-many-statements, too-many-branches, too-many-
         versions = GetVersions(options.versions, projects,
                                options.base_url).getlist()
     else:
-        versions = [PythonVersion(v) for v in options.versions]
+        versions = [ReleaseVersion(v) for v in options.versions]
     versions = sorted(versions)
 
     SORTTYPE = options.sorttype
