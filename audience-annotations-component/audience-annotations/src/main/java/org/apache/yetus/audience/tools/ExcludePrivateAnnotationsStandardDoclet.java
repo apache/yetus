@@ -42,7 +42,7 @@ public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
   }
 
   @Override
-  public Set<? extends Option> getSupportedOptions() {
+  public Set<Option> getSupportedOptions() {
     Set<Option> options = new TreeSet<>(super.getSupportedOptions());
     options.addAll(EnumSet.allOf(StabilityOption.class));
     return options;
