@@ -24,7 +24,7 @@ import org.apache.yetus.audience.InterfaceStability;
 import java.util.Locale;
 
 /**
- * A <a href="https://docs.oracle.com/javase/8/docs/jdk/api/javadoc/doclet/">Doclet</a>
+ * A {@link jdk.javadoc.doclet.Doclet}
  * that only includes class-level elements that are annotated with
  * {@link org.apache.yetus.audience.InterfaceAudience.Public}.
  * Class-level elements with no annotation are excluded.
@@ -36,10 +36,11 @@ import java.util.Locale;
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public class IncludePublicAnnotationsStandardDoclet extends ExcludePrivateAnnotationsStandardDoclet {
+public class IncludePublicAnnotationsStandardDoclet
+        extends ExcludePrivateAnnotationsStandardDoclet {
   @Override
-  public void init(Locale locale, Reporter reporter) {
-    DocletEnvironmentProcessor.treatUnannotatedClassesAsPrivate = true;
+  public void init(final Locale locale, final Reporter reporter) {
+    processor.treatUnannotatedClassesAsPrivate();
     super.init(locale, reporter);
   }
 

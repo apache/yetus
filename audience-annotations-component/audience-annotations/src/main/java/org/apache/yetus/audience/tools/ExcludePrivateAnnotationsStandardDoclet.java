@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * A <a href="https://docs.oracle.com/javase/8/docs/jdk/api/javadoc/doclet/">Doclet</a>
+ * A {@link jdk.javadoc.doclet.Doclet}
  * for excluding elements that are annotated with
  * {@link org.apache.yetus.audience.InterfaceAudience.Private} or
  * {@link org.apache.yetus.audience.InterfaceAudience.LimitedPrivate}.
@@ -36,6 +36,8 @@ import java.util.TreeSet;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
+  protected DocletEnvironmentProcessor processor = new DocletEnvironmentProcessor();
+
   @Override
   public String getName() {
     return "ExcludePrivateAnnotationsStandard";
@@ -44,12 +46,14 @@ public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
   @Override
   public Set<Option> getSupportedOptions() {
     Set<Option> options = new TreeSet<>(super.getSupportedOptions());
-    options.addAll(EnumSet.allOf(StabilityOption.class));
+    Set<StabilityOption> stabilityOptions = EnumSet.allOf(StabilityOption.class);
+    stabilityOptions.forEach(o -> o.setProcessor(processor));
+    options.addAll(stabilityOptions);
     return options;
   }
 
   @Override
-  public boolean run(DocletEnvironment environment) {
-    return super.run(DocletEnvironmentProcessor.wrap(environment));
+  public boolean run(final DocletEnvironment environment) {
+    return super.run(processor.wrap(environment));
   }
 }

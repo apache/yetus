@@ -22,14 +22,24 @@ import jdk.javadoc.doclet.Doclet;
 import java.util.List;
 
 enum StabilityOption implements Doclet.Option {
+  /** Stability option corresponding to InterfaceAudience.Stable level. */
   STABLE("-stable"),
+  /** Stability option corresponding to InterfaceAudience.Evolving level. */
   EVOLVING("-evolving"),
+  /** Stability option corresponding to InterfaceAudience.Unstable level. */
   UNSTABLE("-unstable");
 
-  private final List<String> name;
+  /** @see #getNames() */
+  private final List<String> names;
+  /** The doclet processor that this option modifies. */
+  private DocletEnvironmentProcessor processor;
 
-  private StabilityOption(String name) {
-    this.name = List.of(name);
+  StabilityOption(final String name) {
+    this.names = List.of(name);
+  }
+
+  public void setProcessor(final DocletEnvironmentProcessor dProcessor) {
+    this.processor = dProcessor;
   }
 
   @Override
@@ -39,7 +49,8 @@ enum StabilityOption implements Doclet.Option {
 
   @Override
   public String getDescription() {
-    return "Output only APIs annotated as " + getName().substring(1) + (this == STABLE ? "" : " or stronger");
+    return "Output only APIs annotated as " + getName().substring(1)
+            + (this == STABLE ? "" : " or stronger");
   }
 
   @Override
@@ -48,12 +59,12 @@ enum StabilityOption implements Doclet.Option {
   }
 
   public String getName() {
-    return name.get(0);
+    return names.get(0);
   }
 
   @Override
   public List<String> getNames() {
-    return name;
+    return names;
   }
 
   @Override
@@ -62,8 +73,8 @@ enum StabilityOption implements Doclet.Option {
   }
 
   @Override
-  public boolean process(String option, List<String> arguments) {
-    DocletEnvironmentProcessor.stability = this;
+  public boolean process(final String option, final List<String> arguments) {
+    processor.setStability(this);
     return true;
   }
 }
