@@ -18,6 +18,10 @@ name: Apache Yetus
 
 on: [push, pull_request]  # yamllint disable-line rule:truthy
 
+permissions:
+  statuses: write
+  checks: write
+
 jobs:
   build:
 
