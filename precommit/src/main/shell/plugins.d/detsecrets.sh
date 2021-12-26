@@ -169,11 +169,13 @@ function detsecrets_executor
   detsecrets_convert_json_to_flat "${repostatus}"
 
   if [[ -f ${PATCH_DIR}/${detsecretsStderr} ]]; then
-    # shellcheck disable=SC2016
-    count=$(wc -l "${PATCH_DIR}/${detsecretsStderr}" | "${AWK}" '{print $1}')
-    if [[ ${count} -gt 0 ]]; then
-      add_vote_table_v2 -1 detsecrets "@@BASE@@/${detsecretsStderr}" "Error running detsecrets. Please check detsecrets stderr files."
-      return 1
+    if ! "${GREP}" -q "outdated version" "${PATCH_DIR}/${detsecretsStderr}"; then
+      # shellcheck disable=SC2016
+      count=$(wc -l "${PATCH_DIR}/${detsecretsStderr}" | "${AWK}" '{print $1}')
+      if [[ ${count} -gt 0 ]]; then
+        add_vote_table_v2 -1 detsecrets "@@BASE@@/${detsecretsStderr}" "Error running detsecrets. Please check detsecrets stderr files."
+        return 1
+      fi
     fi
   fi
   rm "${PATCH_DIR}/${detsecretsStderr}" 2>/dev/null
