@@ -145,10 +145,10 @@ function bufcompat_executor
   pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
 
   if [[ "${repostatus}" == "branch" ]]; then
-    "${BUF}" image build "${bufargs[@]}" -o "${PATCH_DIR}/buf-image.bin" 2>> "${PATCH_DIR}/${bufStderr}"
+    "${BUF}" build "${bufargs[@]}" -o "${PATCH_DIR}/buf-image.bin" 2>> "${PATCH_DIR}/${bufStderr}"
   elif [[ -f  "${PATCH_DIR}/buf-image.bin" ]]; then
-    "${BUF}" check breaking "${bufargs[@]}" \
-      --against-input "${PATCH_DIR}/buf-image.bin" \
+    "${BUF}" breaking "${bufargs[@]}" \
+      --against "${PATCH_DIR}/buf-image.bin" \
       2>> "${PATCH_DIR}/${bufStderr}" \
     | "${AWK}" "{print \"${BUF_BASEDIR}/\"\$0}" \
       > "${PATCH_DIR}/${repostatus}-bufcompat-result.txt" \
@@ -270,7 +270,7 @@ function buflint_executor
 
   pushd "${BASEDIR}/${BUF_BASEDIR}" >/dev/null || return 1
 
-  "${BUF}" check lint  "${bufargs[@]}" 2>> "${PATCH_DIR}/${bufStderr}" \
+  "${BUF}" lint "${bufargs[@]}" 2>> "${PATCH_DIR}/${bufStderr}" \
     | "${AWK}" "{print \"${BUF_BASEDIR}/\"\$0}" \
     | "${args[@]}" > "${PATCH_DIR}/${repostatus}-buflint-result.txt"
 
