@@ -30,7 +30,7 @@ script:
     precommit/src/main/shell/test-patch.sh
     --docker
     --patch-dir=/tmp/yetus-out
-    --java-home=/usr/lib/jvm/java-8-openjdk-amd64
+    --java-home=/usr/lib/jvm/java-11-openjdk-amd64
     --plugins=all,-detsecrets
     --docker-cache-from=apache/yetus:main
     --html-report-file=/tmp/yetus-out/report.html

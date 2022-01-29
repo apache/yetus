@@ -38,6 +38,7 @@ jobs:
         uses: apache/yetus-test-patch-action@main
         with:
           basedir: ./src
+          javahome: /usr/lib/jvm/java-11-openjdk-amd64
           patchdir: ./out
           buildtool: maven
           githubtoken: ${{ secrets.GITHUB_TOKEN }}

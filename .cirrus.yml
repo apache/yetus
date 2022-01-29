@@ -25,7 +25,7 @@ yetus_task:
              --bugcomments=briefreport,htmlout,junit
              --console-report-file=/tmp/yetus-out/console.txt
              --html-report-file=/tmp/yetus-out/report.html
-             --java-home=/usr/lib/jvm/java-8-openjdk-amd64
+             --java-home=/usr/lib/jvm/java-11-openjdk-amd64
              --junit-report-xml=/tmp/yetus-out/junit.xml
              --plugins=all
              --tests-filter=checkstyle,test4tests
