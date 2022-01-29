@@ -17,60 +17,64 @@
  */
 package org.apache.yetus.audience.tools;
 
-import com.sun.javadoc.DocErrorReporter;
+import jdk.javadoc.doclet.Doclet;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-class StabilityOptions {
-  public static final String STABLE_OPTION = "-stable";
-  public static final String EVOLVING_OPTION = "-evolving";
-  public static final String UNSTABLE_OPTION = "-unstable";
+enum StabilityOption implements Doclet.Option {
+  /** Stability option corresponding to InterfaceAudience.Stable level. */
+  STABLE("-stable"),
+  /** Stability option corresponding to InterfaceAudience.Evolving level. */
+  EVOLVING("-evolving"),
+  /** Stability option corresponding to InterfaceAudience.Unstable level. */
+  UNSTABLE("-unstable");
 
-  public static Integer optionLength(String option) {
-    String opt = option.toLowerCase(Locale.ENGLISH);
-    if (opt.equals(UNSTABLE_OPTION)) { return 1;}
-    if (opt.equals(EVOLVING_OPTION)) { return 1; }
-    if (opt.equals(STABLE_OPTION))   { return 1; }
-    return null;
+  /** @see #getNames() */
+  private final List<String> names;
+  /** The doclet processor that this option modifies. */
+  private DocletEnvironmentProcessor processor;
+
+  StabilityOption(final String name) {
+    this.names = List.of(name);
   }
 
-  public static void validOptions(String[][] options,
-      DocErrorReporter reporter) {
-    for (String[] option : options) {
-      String opt = option[0].toLowerCase(Locale.ENGLISH);
-      switch (opt) {
-        case UNSTABLE_OPTION:
-          RootDocProcessor.stability = UNSTABLE_OPTION;
-          break;
-        case EVOLVING_OPTION:
-          RootDocProcessor.stability = EVOLVING_OPTION;
-          break;
-        case STABLE_OPTION:
-          RootDocProcessor.stability = STABLE_OPTION;
-          break;
-        default:
-          break;
-      }
-    }
+  public void setProcessor(final DocletEnvironmentProcessor dProcessor) {
+    this.processor = dProcessor;
   }
 
-  public static String[][] filterOptions(String[][] options) {
-    List<String[]> optionsList = new ArrayList<String[]>(options.length);
-    for (String[] option1 : options) {
-      if (!option1[0].equalsIgnoreCase(UNSTABLE_OPTION)
-              && !option1[0].equalsIgnoreCase(EVOLVING_OPTION)
-              && !option1[0].equalsIgnoreCase(STABLE_OPTION)) {
-        optionsList.add(option1);
-      }
-    }
-    String[][] filteredOptions = new String[optionsList.size()][];
-    int i = 0;
-    for (String[] option : optionsList) {
-      filteredOptions[i++] = option;
-    }
-    return filteredOptions;
+  @Override
+  public int getArgumentCount() {
+    return 0;
   }
 
+  @Override
+  public String getDescription() {
+    return "Output only APIs annotated as " + getName().substring(1)
+            + (this == STABLE ? "" : " or stronger");
+  }
+
+  @Override
+  public Kind getKind() {
+    return Kind.STANDARD;
+  }
+
+  public String getName() {
+    return names.get(0);
+  }
+
+  @Override
+  public List<String> getNames() {
+    return names;
+  }
+
+  @Override
+  public String getParameters() {
+    return "";
+  }
+
+  @Override
+  public boolean process(final String option, final List<String> arguments) {
+    processor.setStability(this);
+    return true;
+  }
 }

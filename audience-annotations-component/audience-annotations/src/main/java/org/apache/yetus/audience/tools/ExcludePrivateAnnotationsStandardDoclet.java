@@ -17,16 +17,17 @@
  */
 package org.apache.yetus.audience.tools;
 
-import com.sun.javadoc.DocErrorReporter;
-import com.sun.javadoc.LanguageVersion;
-import com.sun.javadoc.RootDoc;
-import com.sun.tools.doclets.standard.Standard;
-
+import jdk.javadoc.doclet.DocletEnvironment;
+import jdk.javadoc.doclet.StandardDoclet;
 import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.yetus.audience.InterfaceStability;
 
+import java.util.EnumSet;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
- * A <a href="https://docs.oracle.com/javase/8/docs/jdk/api/javadoc/doclet/">Doclet</a>
+ * A {@link jdk.javadoc.doclet.Doclet}
  * for excluding elements that are annotated with
  * {@link org.apache.yetus.audience.InterfaceAudience.Private} or
  * {@link org.apache.yetus.audience.InterfaceAudience.LimitedPrivate}.
@@ -34,28 +35,25 @@ import org.apache.yetus.audience.InterfaceStability;
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public class ExcludePrivateAnnotationsStandardDoclet {
+public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
+  protected DocletEnvironmentProcessor processor = new DocletEnvironmentProcessor();
 
-  public static LanguageVersion languageVersion() {
-    return LanguageVersion.JAVA_1_5;
+  @Override
+  public String getName() {
+    return "ExcludePrivateAnnotationsStandard";
   }
 
-  public static boolean start(RootDoc root) {
-    return Standard.start(RootDocProcessor.process(root));
+  @Override
+  public Set<Option> getSupportedOptions() {
+    Set<Option> options = new TreeSet<>(super.getSupportedOptions());
+    Set<StabilityOption> stabilityOptions = EnumSet.allOf(StabilityOption.class);
+    stabilityOptions.forEach(o -> o.setProcessor(processor));
+    options.addAll(stabilityOptions);
+    return options;
   }
 
-  public static int optionLength(String option) {
-    Integer length = StabilityOptions.optionLength(option);
-    if (length != null) {
-      return length;
-    }
-    return Standard.optionLength(option);
-  }
-
-  public static boolean validOptions(String[][] options,
-      DocErrorReporter reporter) {
-    StabilityOptions.validOptions(options, reporter);
-    String[][] filteredOptions = StabilityOptions.filterOptions(options);
-    return Standard.validOptions(filteredOptions, reporter);
+  @Override
+  public boolean run(final DocletEnvironment environment) {
+    return super.run(processor.wrap(environment));
   }
 }

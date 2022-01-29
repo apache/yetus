@@ -95,7 +95,7 @@ function setup_defaults
 
   CONTINUOUS_IMPROVEMENT=false
 
-  PROC_LIMIT=1000
+  PROC_LIMIT=2000
   REEXECED=false
   RESETREPO=false
   REPORT_UNKNOWN_OPTIONS=true

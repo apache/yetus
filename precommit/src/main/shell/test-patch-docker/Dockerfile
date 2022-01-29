@@ -224,25 +224,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ####
 
 ####
-# OpenJDK 8
-####
-# hadolint ignore=DL3008
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y openjdk-8-jdk-headless \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-####
-# OpenJDK 11 (but keeps default to JDK8)
+# OpenJDK 11
 # NOTE: This default only works when Apache Yetus is launched
 # _in_ the container and not outside of it!
 ####
 # hadolint ignore=DL3008,DL3059
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y default-jre-headless openjdk-11-jdk-headless \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && update-java-alternatives -s "$(update-java-alternatives -l | grep 1.8.0 | awk '{print $1}')" \
-    && rm -f /usr/lib/jvm/default-java \
-    && ln -s "$(update-java-alternatives -l | grep 1.8.0 | awk '{print $NF}')" /usr/lib/jvm/default-java
+    && rm -rf /var/lib/apt/lists/*
 # this var will get yetus_abs'd when run under precommit so should be relatively safe
 ENV JAVA_HOME /usr/lib/jvm/default-java
 ENV SPOTBUGS_HOME /opt/spotbugs
@@ -289,9 +278,24 @@ RUN add-apt-repository -y \
 # Install maven
 ######
 # hadolint ignore=DL3008,DL3059
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y maven \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+ARG MVN_VERSION=3.8.4
+ARG MVN_TGZ=apache-maven-$MVN_VERSION-bin.tar.gz
+RUN curl -sSL \
+        -o $MVN_TGZ \
+        https://downloads.apache.org/maven/maven-3/$MVN_VERSION/binaries/$MVN_TGZ \
+    && tar xzpf $MVN_TGZ \
+    && mkdir -p /opt \
+    && mv apache-maven-$MVN_VERSION /opt \
+    && ln -s /opt/apache-maven-$MVN_VERSION/bin/mvn /bin \
+    && curl -sSL \
+        -o KEYS \
+        https://downloads.apache.org/maven/KEYS \
+    && gpg --import KEYS \
+    && curl -sSL \
+        -o $MVN_TGZ.asc \
+        https://downloads.apache.org/maven/maven-3/$MVN_VERSION/binaries/$MVN_TGZ.asc \
+    && gpg --verify $MVN_TGZ.asc $MVN_TGZ \
+    && rm -rf $MVN_TGZ* /root/.gnupg KEYS
 
 ######
 # Install perl
