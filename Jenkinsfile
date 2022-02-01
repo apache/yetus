@@ -94,7 +94,7 @@ pipeline {
                 # enable writing back to Github
                 YETUS_ARGS+=(--github-token="${GITHUB_TOKEN}")
 
-                YETUS_ARGS+=(--java-home=/usr/lib/jvm/java-8-openjdk-amd64)
+                YETUS_ARGS+=(--java-home=/usr/lib/jvm/java-11-openjdk-amd64)
 
                 # enable writing back to ASF JIRA
                 YETUS_ARGS+=(--jira-issue-re='^YETUS-[0-9]*$')
