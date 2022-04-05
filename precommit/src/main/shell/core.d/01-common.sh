@@ -488,7 +488,7 @@ function delete_test_type
 function replace_test_type
 {
   if verify_plugin_enabled "${1}" && verify_plugin_enabled "${2}"; then
-    ENABLED_PLUGINS=${ENABLED_PLUGINS%$2}
+    ENABLED_PLUGINS=${ENABLED_PLUGINS%"$2"}
     delete_test_type "$2"
     delete_test "$2"
     return 0

@@ -108,7 +108,7 @@ function yetus_relative_dir
 {
   declare dir=$1
   declare path=$2
-  declare p=${path#${dir}}
+  declare p=${path#"${dir}"}
 
   if [[ ${#p} -eq ${#path} ]]; then
     echo "${p}"
