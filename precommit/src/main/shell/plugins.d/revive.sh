@@ -138,6 +138,11 @@ function revive_postapply
     revive \
     "${PATCH_DIR}/branch-revive-result.txt" \
     "${PATCH_DIR}/patch-revive-result.txt"
+
+
+  # shellcheck disable=SC2016
+  REVIVE_VERSION=$("${REVIVE}" --version | "${AWK}" '{print $NF}')
+  add_version_data revive "${REVIVE_VERSION}"
 }
 
 function revive_postcompile

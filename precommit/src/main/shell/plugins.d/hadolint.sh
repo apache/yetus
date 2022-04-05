@@ -69,7 +69,7 @@ function hadolint_precheck
 
   HADOLINT_VERSION=$("${HADOLINT}" --version)
   HADOLINT_VERSION=${HADOLINT_VERSION##* v}
-  if [[ ${HADOLINT_VERSION} =~ /Haskell/ ]]; then
+  if [[ ${HADOLINT_VERSION} =~ Haskell ]]; then
     # shellcheck disable=SC2016
     HADOLINT_VERSION=$("${HADOLINT}" --version | "${AWK}" '{print $NF}')
   fi
