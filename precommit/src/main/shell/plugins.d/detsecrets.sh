@@ -209,6 +209,10 @@ function detsecrets_postapply
 
   # shellcheck disable=SC2016
   DETSECRETS_VERSION=$("${DETSECRETS}" --version 2>/dev/null | "${GREP}" detsecrets | "${AWK}" '{print $NF}')
+  if [[ -z "${DETSECRETS_VERSION}" ]]; then
+    # shellcheck disable=SC2016
+    DETSECRETS_VERSION=$("${DETSECRETS}" --version 2>/dev/null  | "${AWK}" '{print $NF}')
+  fi
   add_version_data detsecrets "${DETSECRETS_VERSION%,}"
 
 
