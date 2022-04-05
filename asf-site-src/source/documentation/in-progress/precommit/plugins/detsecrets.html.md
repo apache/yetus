@@ -27,7 +27,7 @@ Test
 
 # Description
 
-Runs [detect-secrets](https://github.com/IBM/detect-secrets).
+Runs [detect-secrets](https://github.com/yelp/detect-secrets).
 
 NOTE: This test also requires a working Python 3.4+ interpreter available on the path.  It will be called first
 as `python3` and secondarily as `python`.
