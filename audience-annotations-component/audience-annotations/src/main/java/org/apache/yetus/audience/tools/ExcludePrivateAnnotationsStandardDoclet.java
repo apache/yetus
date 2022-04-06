@@ -23,6 +23,7 @@ import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.yetus.audience.InterfaceStability;
 
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -45,7 +46,7 @@ public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
 
   @Override
   public Set<Option> getSupportedOptions() {
-    Set<Option> options = new TreeSet<>(super.getSupportedOptions());
+    Set<Option> options = new HashSet<>(super.getSupportedOptions());
     Set<StabilityOption> stabilityOptions = EnumSet.allOf(StabilityOption.class);
     stabilityOptions.forEach(o -> o.setProcessor(processor));
     options.addAll(stabilityOptions);
