@@ -27,7 +27,7 @@ Test
 
 # Description
 
-Runs IBM's version of [detect-secrets](https://github.com/IBM/detect-secrets).
+Runs [detect-secrets](https://github.com/yelp/detect-secrets).
 
 NOTE: This test also requires a working Python 3.4+ interpreter available on the path.  It will be called first
 as `python3` and secondarily as `python`.
@@ -48,8 +48,8 @@ None
 
 # Docker Notes
 
-While the original project came from Yelp, the IBM version is provided due to instability with the Yelp version.
-That may change in the future depending upon how the project shakes out.
+The IBM version is based upon 0.13 and is slightly incompatible with the Yelp version.  The docker container includes
+the Yelp version.  Using the IBM version may result in some weirdness.
 
 # Developer Notes
 

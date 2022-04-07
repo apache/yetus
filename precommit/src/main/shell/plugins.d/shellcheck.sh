@@ -189,7 +189,6 @@ function shellcheck_preapply
     msg="v${SHELLCHECK_VERSION} is an old version that has serious bugs. Consider upgrading."
     add_footer_table shellcheck "${msg}"
   fi
-  add_version_data shellcheck "${SHELLCHECK_VERSION}"
 
   # keep track of how much as elapsed for us already
   SHELLCHECK_TIMER=$(stop_clock)
@@ -229,6 +228,8 @@ function shellcheck_postapply
     shellcheck \
     "${PATCH_DIR}/branch-shellcheck-result.txt" \
     "${PATCH_DIR}/patch-shellcheck-result.txt"
+
+  add_version_data shellcheck "${SHELLCHECK_VERSION}"
 }
 
 function shellcheck_postcompile

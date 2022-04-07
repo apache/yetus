@@ -14,6 +14,6 @@
 # limitations under the License.
 
 [codespell]
-skip = *.css.*,*.js,./.git/*,./asf.yaml
+skip = *.css.*,*.js,./.git/*,./asf.yaml,./asf-site-src/Gemfile.lock
 ignore-regex = class\=\"nd\"
 

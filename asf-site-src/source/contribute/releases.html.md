@@ -145,7 +145,7 @@ Depending on how candidate evaluation goes, you may end up performing these step
 
 1. Update JIRA version release date. Browse to the JIRA project version management page <https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions>, mark the version as 'Release', and set the release date. Our generated release notes will use this date.
 1. Update your `${HOME}/.m2/settings.xml` file to include the Maven snapshot information as indicated on <https://www.apache.org/dev/publishing-maven-artifacts.html>
-1. Build release artifacts. Run the following from the *release staging branch* created by the `release/initial-patches.sh` script and run these commands:
+1. Build release artifacts. Run the following from the _release staging branch_ created by the `release/initial-patches.sh` script and run these commands:
 
    ```bash
    $ git checkout YETUS-XXX-release

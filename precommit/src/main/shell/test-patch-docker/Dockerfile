@@ -115,7 +115,7 @@ RUN mkdir -p /opt/apache-rat \
 # Install SpotBugs
 #####
 FROM yetusbase AS yetusspotbugs
-ARG SPOTBUGS_VERSION=4.4.1
+ARG SPOTBUGS_VERSION=4.6.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz -o spotbugs.tgz \
     && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz.sha1 -o spotbugs.tgz.sha1 \
@@ -131,7 +131,7 @@ RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/
 # Install shellcheck (shell script lint)
 ####
 FROM yetusbase AS yetusshellcheck
-ARG SHELLCHECK_VERSION=0.7.2
+ARG SHELLCHECK_VERSION=0.8.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
     https://github.com/koalaman/shellcheck/releases/download/v$SHELLCHECK_VERSION/shellcheck-v$SHELLCHECK_VERSION.linux."$(uname -m)".tar.xz \
@@ -143,7 +143,7 @@ RUN curl -sSL \
 # Install hadolint (dockerfile lint)
 ####
 FROM yetusbase AS yetushadolint
-ARG HADOLINT_VERSION=2.8.0
+ARG HADOLINT_VERSION=2.10.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
         https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-"$(uname -m)" \
@@ -155,7 +155,7 @@ RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
 # Install buf (protobuf lint)
 ####
 FROM yetusbase AS yetusbuf
-ARG BUF_VERSION=1.0.0-rc10
+ARG BUF_VERSION=1.3.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-"$(uname -m)".tar.gz \
@@ -167,7 +167,7 @@ RUN curl -sSL \
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
 FROM yetusbase AS yetusbats
-ARG BATS_VERSION=1.4.1
+ARG BATS_VERSION=1.6.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN git clone --branch v$BATS_VERSION \
       https://github.com/bats-core/bats-core.git \
@@ -180,7 +180,7 @@ RUN git clone --branch v$BATS_VERSION \
 ####
 FROM yetusbase AS yetusrevive
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN go get -u github.com/mgechev/revive
+RUN go install github.com/mgechev/revive@latest
 
 
 ####
@@ -190,7 +190,7 @@ RUN go get -u github.com/mgechev/revive
 #
 ####
 FROM yetusbase AS yetuscheckmake
-ARG CHECKMAKE_VERSION=8915bd40945dd20b153cfcecb787ecdb5020ba38
+ARG CHECKMAKE_VERSION=0.2.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV BUILDER_NAME='Apache Yetus'
 ENV BUILDER_EMAIL='dev@apache.yetus.org'
@@ -204,9 +204,9 @@ RUN git clone \
 # golangci-lint (Multi-tool golang linter)
 ####
 FROM yetusbase as yetusgolangci
-ARG GOLANGCILINT_VERSION=1.42.1
+ARG GOLANGCILINT_VERSION=1.45.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN (GO111MODULE=on go get github.com/golangci/golangci-lint/cmd/golangci-lint@v$GOLANGCILINT_VERSION)
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v$GOLANGCILINT_VERSION
 
 ########
 #
@@ -278,11 +278,11 @@ RUN add-apt-repository -y \
 # Install maven
 ######
 # hadolint ignore=DL3008,DL3059
-ARG MVN_VERSION=3.8.4
+ARG MVN_VERSION=3.8.5
 ARG MVN_TGZ=apache-maven-$MVN_VERSION-bin.tar.gz
 RUN curl -sSL \
         -o $MVN_TGZ \
-        https://downloads.apache.org/maven/maven-3/$MVN_VERSION/binaries/$MVN_TGZ \
+        https://archive.apache.org/dist/maven/maven-3/$MVN_VERSION/binaries/$MVN_TGZ \
     && tar xzpf $MVN_TGZ \
     && mkdir -p /opt \
     && mv apache-maven-$MVN_VERSION /opt \
@@ -293,7 +293,7 @@ RUN curl -sSL \
     && gpg --import KEYS \
     && curl -sSL \
         -o $MVN_TGZ.asc \
-        https://downloads.apache.org/maven/maven-3/$MVN_VERSION/binaries/$MVN_TGZ.asc \
+         https://archive.apache.org/dist/maven/maven-3/$MVN_VERSION/binaries/$MVN_TGZ.asc \
     && gpg --verify $MVN_TGZ.asc $MVN_TGZ \
     && rm -rf $MVN_TGZ* /root/.gnupg KEYS
 
@@ -311,12 +311,13 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # Install python3 and pylint3
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
-ARG PY3_ANSIBLE_VERSION=4.7.0
-ARG PY3_ANSIBLELINT_VERSION=5.2.1
-ARG PY3_ASTROID_VERSION=2.8.0
+ARG PY3_ANSIBLE_VERSION=5.5.0
+ARG PY3_ANSIBLELINT_VERSION=6.0.2
+ARG PY3_ASTROID_VERSION=2.11.2
 ARG PY3_CODESPELL_VERSION=2.1.0
+ARG PY3_DETECT_SECRETS=1.2.0
 ARG PY3_DOCKER_COMPOSE=1.29.2
-ARG PY3_PYLINT_VERSION=2.11.1
+ARG PY3_PYLINT_VERSION=2.13.4
 ARG PY3_YAMLLINT_VERSION=1.26.3
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -346,11 +347,10 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         ansible-lint==$PY3_ANSIBLELINT_VERSION \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
+        detect-secrets==$PY3_DETECT_SECRETS \
         docker-compose==$PY3_DOCKER_COMPOSE \
         pylint==$PY3_PYLINT_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
-    && pip3 install --no-cache-dir -v \
-        git+https://github.com/IBM/detect-secrets@0.13.1+ibm.46.dss \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \
     && ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint \
@@ -359,9 +359,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ####
 # Install ruby and associated bits
 ###
-ARG RUBY_BUNDLER_VERSION=2.2.27
-ARG RUBY_RAKE_VERSION=13.0.3
-ARG RUBY_RUBOCOP_VERSION=1.21.0
+ARG RUBY_BUNDLER_VERSION=2.3.10
+ARG RUBY_RAKE_VERSION=13.0.6
+ARG RUBY_RUBOCOP_VERSION=1.26.1
 # hadolint ignore=DL3008
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -381,8 +381,8 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 ###
 # Install npm and JSHint
 ###
-ARG JSHINT_VERSION=2.13.1
-ARG MARKDOWNLINTCLI_VERSION=0.28.1
+ARG JSHINT_VERSION=2.13.4
+ARG MARKDOWNLINTCLI_VERSION=0.31.1
 # hadolint ignore=DL3008
 RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get -q install --no-install-recommends -y nodejs \
