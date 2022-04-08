@@ -18,6 +18,8 @@
 package org.apache.yetus.audience.tools;
 
 import jdk.javadoc.doclet.DocletEnvironment;
+import jdk.javadoc.internal.tool.DocEnvImpl;
+import jdk.javadoc.internal.tool.ElementsTable;
 import org.apache.yetus.audience.InterfaceAudience;
 import org.apache.yetus.audience.InterfaceStability;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,8 +46,10 @@ public class DocletEnvironmentProcessorTest {
     @BeforeEach
     public void setup() {
         processor = new DocletEnvironmentProcessor();
-        DocletEnvironment mockEnvironment = mock(DocletEnvironment.class);
-        when(mockEnvironment.isIncluded(any())).thenReturn(true);
+        ElementsTable mockElements = mock(ElementsTable.class);
+        DocletEnvironment mockEnvironment =
+            new DocEnvImpl(null, mockElements);
+        when(mockElements.isIncluded(any())).thenReturn(true);
         environment = processor.wrap(mockEnvironment);
     }
 
