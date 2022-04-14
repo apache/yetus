@@ -40,6 +40,7 @@ function markdownlint_precheck
   if ! verify_command "markdownlint" "${MARKDOWNLINT}"; then
     add_vote_table_v2 0 markdownlint "" "markdownlint was not available."
     delete_test markdownlint
+    return 0
   fi
 }
 

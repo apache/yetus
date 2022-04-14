@@ -92,6 +92,7 @@ function spotbugs_precheck
   if [[ ${status} == 1 ]]; then
     add_vote_table_v2 0 "spotbugs" "" "spotbugs executables are not available."
     delete_test "spotbugs"
+    return 0
   fi
 }
 

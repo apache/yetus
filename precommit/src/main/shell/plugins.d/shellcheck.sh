@@ -62,6 +62,7 @@ function shellcheck_precheck
   if ! verify_command "shellcheck" "${SHELLCHECK}"; then
     add_vote_table_v2 0 shellcheck "" "Shellcheck was not available."
     delete_test shellcheck
+    return 0
   else
     # shellcheck disable=SC2016
     SHELLCHECK_VERSION=$("${SHELLCHECK}" --version | "${GREP}" version: | "${AWK}" '{print $NF}')

@@ -58,6 +58,7 @@ function checkmake_precheck
   if ! verify_command checkmake "${CHECKMAKE}"; then
     add_vote_table_v2 0 checkmake "" "checkmake was not available."
     delete_test checkmake
+    return 0
   fi
 }
 

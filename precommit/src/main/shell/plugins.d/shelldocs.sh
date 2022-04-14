@@ -76,6 +76,7 @@ function shelldocs_precheck
   if ! verify_command "shelldocs" "${SHELLDOCS}"; then
     add_vote_table_v2 0 shelldocs "" "Shelldocs was not available."
     delete_test shelldocs
+    return 0
   fi
 }
 

@@ -41,6 +41,7 @@ function yamllint_precheck
   if ! verify_command "yamllint" "${YAMLLINT}"; then
     add_vote_table_v2 0 yamllint "" "yamllint was not available."
     delete_test yamllint
+    return 0
   fi
 }
 

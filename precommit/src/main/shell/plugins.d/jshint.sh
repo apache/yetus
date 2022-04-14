@@ -61,6 +61,7 @@ function jshint_precheck
   if ! verify_command "jshint" "${JSHINT}"; then
     add_vote_table_v2 0 jshint "" "jshint was not available."
     delete_test jshint
+    return 0
   fi
 
   cat > "${PATCH_DIR}/jshintreporter.js" << EOF

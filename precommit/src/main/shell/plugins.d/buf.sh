@@ -88,6 +88,7 @@ function buf_precheck
     add_vote_table_v2 0 buf "" "buf was not available."
     delete_test buflint
     delete_test bufcompat
+    return 0
   fi
 
   # shellcheck disable=SC2016

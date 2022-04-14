@@ -60,6 +60,7 @@ function rubocop_precheck
   if ! verify_command rubocop "${RUBOCOP}"; then
     add_vote_table_v2 0 rubocop "" "rubocop was not available."
     delete_test rubocop
+    return 0
   fi
 }
 

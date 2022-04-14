@@ -55,6 +55,7 @@ function perlcritic_precheck
   if ! verify_command "Perl::Critic" "${PERLCRITIC}"; then
     add_vote_table_v2 0 perlcritic "" "Perl::Critic was not available."
     delete_test perlcritic
+    return 0
   fi
 }
 
