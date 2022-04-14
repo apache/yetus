@@ -25,7 +25,7 @@ steps:
         --docker
         --docker-cache-from=ghcr.io/apache/yetus-base:main
         --html-report-file=/tmp/yetus-out/report.html
-        --java-home=/usr/lib/jvm/java-8-openjdk-amd64
+        --java-home=/usr/lib/jvm/java-17-openjdk-amd64
         --patch-dir=/tmp/yetus-out
         --plugins=all
         --tests-filter=checkstyle,test4tests
