@@ -54,6 +54,7 @@ function ansiblelint_precheck
   if ! verify_command ansiblelint "${ANSIBLELINT}"; then
     add_vote_table 0 ansiblelint "ansiblelint was not available."
     delete_test ansiblelint
+    return 0
   fi
 }
 

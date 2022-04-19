@@ -77,6 +77,7 @@ function detsecrets_precheck
   if ! verify_command "detect-secrets" "${DETSECRETS}"; then
     add_vote_table_v2 0 detsecrets "" "detect-secrets was not available."
     delete_test detsecrets
+    return 0
   fi
 
   # shellcheck disable=SC2016

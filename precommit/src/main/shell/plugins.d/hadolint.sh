@@ -43,6 +43,7 @@ function hadolint_precheck
   if ! verify_command "hadolint" "${HADOLINT}"; then
     add_vote_table_v2 0 hadolint "" "hadolint was not available."
     delete_test hadolint
+    return 0
   fi
 
   if [[ -z "${LANG}" ]]; then

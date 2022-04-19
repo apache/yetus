@@ -86,6 +86,7 @@ function pylint_precheck
   if ! verify_command "Pylint" "${PYLINT}"; then
     add_vote_table_v2 0 pylint "" "Pylint was not available."
     delete_test pylint
+    return 0
   fi
 
   if [[ "${PYLINT_REQUIREMENTS}" == true ]] && ! verify_command pip "${PYLINT_PIP_CMD}"; then

@@ -58,6 +58,7 @@ function codespell_precheck
   if ! verify_command "codespell" "${CODESPELL}"; then
     add_vote_table_v2 0 codespell "" "codespell was not available."
     delete_test codespell
+    return 0
   fi
 }
 

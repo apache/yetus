@@ -60,6 +60,7 @@ function revive_precheck
   if ! verify_command revive "${REVIVE}"; then
     add_vote_table_v2 0 revive "" "revive was not available."
     delete_test revive
+    return 0
   fi
 }
 
