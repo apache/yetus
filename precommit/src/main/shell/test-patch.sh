@@ -1171,10 +1171,6 @@ function git_checkout
   fi
 
   cd "${BASEDIR}" || cleanup_and_exit 1
-  if [[ ! -e .git ]]; then
-    yetus_error "ERROR: ${BASEDIR} is not a git repo."
-    cleanup_and_exit 1
-  fi
 
   if [[ ${RESETREPO} == "true" ]] ; then
 

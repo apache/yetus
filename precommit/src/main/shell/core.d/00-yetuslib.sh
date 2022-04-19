@@ -528,3 +528,65 @@ function yetus_set_trap_handler
     trap "${func} ${signal}" "${signal}"
   done
 }
+
+## @description  Determine if running in a container
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function yetus_is_container
+{
+  declare mounts
+  declare cgroups
+
+  if [[ -n "${YETUS_CONTAINER_STATE}" ]]; then
+    if [[ "${YETUS_CONTAINER_STATE}" == "true" ]]; then
+      return 0
+    fi
+    return 1
+  fi
+
+  if [[ -f /.dockerenv ]]; then
+    YETUS_CONTAINER_STATE=true
+    return 0
+  fi
+
+  if [[ -n "${container}" ]]; then
+    YETUS_CONTAINER_STATE=true
+    return 0
+  fi
+
+  if [[ -d /proc/self/mountinfo ]]; then
+    mounts=$(awk '$4 ~ /^\/docker/ {print $1}' /proc/self/mountinfo)
+    if [[ -n "${mounts}" ]]; then
+      YETUS_CONTAINER_STATE=true
+      return 0
+    fi
+  fi
+
+  if [[ -d /proc/self/mountinfo ]]; then
+    mounts=$(awk '$4 ~ /^\/container/ {print $1}' /proc/self/mountinfo)
+    if [[ -n "${mounts}" ]]; then
+      YETUS_CONTAINER_STATE=true
+      return 0
+    fi
+  fi
+
+  if [[ -d /proc/self/cgroup ]]; then
+    cgroups=$(awk '$4 ~ /docker/ {print $1}'  /proc/self/cgroup)
+    if [[ -n "${cgroups}" ]]; then
+      YETUS_CONTAINER_STATE=true
+      return 0
+    fi
+  fi
+
+  if [[ -d /proc/self/cgroup ]]; then
+    cgroups=$(awk '$4 ~ /lxc/ {print $1}'  /proc/self/cgroup )
+    if [[ -n "${cgroups}" ]]; then
+      YETUS_CONTAINER_STATE=true
+      return 0
+    fi
+  fi
+
+  YETUS_CONTAINER_STATE=false
+  return 1
+}

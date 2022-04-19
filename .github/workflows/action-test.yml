@@ -25,12 +25,12 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: src
           fetch-depth: 0
       - name: maven cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.m2
           key: yetus-m2-${{ hashFiles('**/pom.xml') }}
@@ -45,7 +45,7 @@ jobs:
           testsfilter: checkstyle,test4tests
       - name: Artifact output
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: apacheyetustestpatchactionout
           path: ${{ github.workspace }}/out
