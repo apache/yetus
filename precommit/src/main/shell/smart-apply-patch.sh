@@ -191,6 +191,8 @@ function parse_args
 
   common_args "$@"
 
+  verify_basedir_repo
+
   for i in "$@"; do
     case ${i} in
       --build-tool=*)

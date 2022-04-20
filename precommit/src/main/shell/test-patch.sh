@@ -760,6 +760,8 @@ function parse_args
 
   common_args "$@"
 
+  verify_basedir_repo
+
   for i in "$@"; do
     case ${i} in
       --archive-list=*)
@@ -966,6 +968,10 @@ function parse_args
     RUN_TESTS=true
     ISSUE=${PATCH_OR_ISSUE}
     yetus_add_array_element EXEC_MODES Robot
+  fi
+
+  if yetus_is_container; then
+    yetus_add_array_element EXEC_MODES InContainer
   fi
 
   if [[ -n $UNIT_TEST_FILTER_FILE ]]; then
@@ -3080,6 +3086,8 @@ function initialize
   setup_defaults
 
   parse_args "$@"
+
+  verify_basedir_repo
 
   importplugins
 

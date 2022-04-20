@@ -299,6 +299,17 @@ function common_args
     cleanup_and_exit 1
   fi
 
+  PERSONALITY="${BASEDIR}/.yetus/personality.sh"
+  USER_PLUGIN_DIR="${BASEDIR}/.yetus/plugins.d"
+}
+
+## @description  Verify that BASEDIR is a git repo
+## @description  and set some git settings
+## @audience     public
+## @stability    evolving
+## @replaceable  no
+function verify_basedir_repo
+{
   if [[ ! -e "${BASEDIR}/.git" ]]; then
     yetus_error "ERROR: ${BASEDIR} is not a git repo."
     cleanup_and_exit 1
@@ -311,9 +322,6 @@ function common_args
     GIT_CEILING_DIRECTORIES="${BASEDIR}"
     export GIT_CEILING_DIRECTORIES
   fi
-
-  PERSONALITY="${BASEDIR}/.yetus/personality.sh"
-  USER_PLUGIN_DIR="${BASEDIR}/.yetus/plugins.d"
 }
 
 ## @description  List all installed plug-ins, regardless of whether
