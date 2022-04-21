@@ -75,7 +75,7 @@ if [[ "${TRAVIS}" == true ]] &&
 
   if [[ -d ${BASEDIR}/.git ]]; then
 
-    verify_basedir_repo
+    check_basedir_repo
 
     echo "Updating the local git repo to include all branches/tags:"
     pushd "${BASEDIR}" >/dev/null || exit 1

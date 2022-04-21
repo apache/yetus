@@ -760,7 +760,7 @@ function parse_args
 
   common_args "$@"
 
-  verify_basedir_repo
+  check_basedir_repo
 
   for i in "$@"; do
     case ${i} in
@@ -3087,7 +3087,7 @@ function initialize
 
   parse_args "$@"
 
-  verify_basedir_repo
+  check_basedir_repo
 
   importplugins
 

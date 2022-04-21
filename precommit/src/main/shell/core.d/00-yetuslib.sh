@@ -538,6 +538,7 @@ function yetus_is_container
   declare mounts
   declare cgroups
 
+  # shortcut logic
   if [[ -n "${YETUS_CONTAINER_STATE}" ]]; then
     if [[ "${YETUS_CONTAINER_STATE}" == "true" ]]; then
       return 0
@@ -545,16 +546,30 @@ function yetus_is_container
     return 1
   fi
 
+  # NOTE: there is no official 'is this a container?' API
+  # as of this writing that works 100%.  In fact, there are
+  # no APIs at all that could be considered stable. So this
+  # function basically performs some guesswork based upon
+  # some common things.
+
+  # Docker creates this file but it isn't guaranteed by
+  # them.
   if [[ -f /.dockerenv ]]; then
     YETUS_CONTAINER_STATE=true
     return 0
   fi
 
+  # LXC and others sets the container env var to be
+  # something.
   if [[ -n "${container}" ]]; then
     YETUS_CONTAINER_STATE=true
     return 0
   fi
 
+  #
+  # docker and lxc will tend to mount things onto /docker or /containers
+  # (depending upon OS, version involved, etc)
+  #
   if [[ -d /proc/self/mountinfo ]]; then
     mounts=$(awk '$4 ~ /^\/docker/ {print $1}' /proc/self/mountinfo)
     if [[ -n "${mounts}" ]]; then
@@ -571,6 +586,10 @@ function yetus_is_container
     fi
   fi
 
+  #
+  # docker and lxc will tend to create docker or lxc cgroups,
+  # depending upon the OS configuration
+  #
   if [[ -d /proc/self/cgroup ]]; then
     cgroups=$(awk '$4 ~ /docker/ {print $1}'  /proc/self/cgroup)
     if [[ -n "${cgroups}" ]]; then

@@ -303,12 +303,13 @@ function common_args
   USER_PLUGIN_DIR="${BASEDIR}/.yetus/plugins.d"
 }
 
-## @description  Verify that BASEDIR is a git repo
+## @description  Check BASEDIR is a git repo
 ## @description  and set some git settings
-## @audience     public
+## @audience     private
 ## @stability    evolving
 ## @replaceable  no
-function verify_basedir_repo
+## @return       May exit on failure
+function check_basedir_repo
 {
   if [[ ! -e "${BASEDIR}/.git" ]]; then
     yetus_error "ERROR: ${BASEDIR} is not a git repo."
