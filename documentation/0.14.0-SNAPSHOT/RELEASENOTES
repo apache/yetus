@@ -173,7 +173,7 @@
 </ul>
 
 <!-- markdown -->
-<p>A new option to send the output of docker build to a log.  This option is automatically enabled on Travis CI as it kills jobs that send to much data to console (~30k).</p>
+<p>A new option to send the output of docker build to a log.  This option is automatically enabled on Travis CI as it kills jobs that send too much data to console (~30k).</p>
 
 <hr />
 
@@ -191,7 +191,7 @@
   </li>
 </ul>
 
-<p>Container images are now available at ghcr.io/apache/yetus and ghcr.io./apache/yetus-base</p>
+<p>Container images are now available at ghcr.io/apache/yetus and ghcr.io./apache/yetus-base.  The Dockerhub source will continue to be updated for the time being, however only the x86 image will be available.</p>
 
 <hr />
 
@@ -209,7 +209,7 @@
   </li>
 </ul>
 
-<p>The various Dockerfiles should now be much more compatible with various chipets, including amd64 and arm64.</p>
+<p>The various Dockerfiles should now be much more compatible with various chipets.  In addition to x86, arm64 container images are now published on the ghcr.io registry, enabling easier access for machines like Apple's M1.</p>
 
 <hr />
 
@@ -256,6 +256,45 @@
     <table class="table table-bordered table-striped">
       <tbody>
         <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1156">YETUS-1156</a></td>
+          <td><em>Major</em></td>
+          <td><strong>[April 2022] Update Dependencies</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>More updates to versions:</p>
+
+<ul>
+  <li>ansiblelint 5.2.1 -&gt; 5.5.0</li>
+  <li>buf 1.0.0-rc10 -&gt; 1.3.1</li>
+  <li>bundler 2.2.27 -&gt; 2.3.10</li>
+  <li>checkmake is now 0.2.1</li>
+  <li>detect-secrets IBM 0.13 -&gt; Yelp 1.2.0</li>
+  <li>golangcilint 1.42.1 -&gt; 1.45.2</li>
+  <li>hadolint 2.8.0 -&gt; 2.10.0</li>
+  <li>jshint 2.13.1 -&gt; 2.13.4</li>
+  <li>markdownlint-cli 0.28.1 -&gt; 0.31.1</li>
+  <li>maven 3.8.4 -&gt; 3.8.5</li>
+  <li>pylint 2.11.1 -&gt;2.13.4</li>
+  <li>rake 13.0.3 -&gt; 13.0.6</li>
+  <li>rubocop 1.21.0 -&gt; 1.26.1</li>
+  <li>shellcheck 0.7.2 -&gt; 0.8.0</li>
+  <li>spotbugs 4.4.1 -&gt; 4.6.0</li>
+</ul>
+
+<p>As usual, versions not mentioned were either unchanged or latest top of tree.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
           <td><a href="https://issues.apache.org/jira/browse/YETUS-1132">YETUS-1132</a></td>
           <td><em>Blocker</em></td>
           <td><strong>EOL JDK8 Support</strong></td>
@@ -269,4 +308,30 @@
 <p>JDK8 support for audience annotations has been removed.  JDK11 or higher is required.</p>
 
 <p>The Apache Yetus container now has JDK11 as the base JDK.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1159">YETUS-1159</a></td>
+          <td><em>Blocker</em></td>
+          <td><strong>fixes for CVE-2022-24765</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>Users:</p>
+
+<p>If precommit is running within a container, set <code>GIT_DIR</code> and <code>GIT_CEILING_DIRECTORIES</code> to provide some assistance with CVE-2022-24765.  If running outside of a container, there is an assumption that the user has a properly configured environment.</p>
+
+<p>Developers:</p>
+
+<p>This change now adds a new yetus_is_container function.  It should be noted that there is no guaranteed way to determine if a process is in a container (especially from within the container) but there are some parts of the environment that are able to be checked to provide at least a pretty good guess.</p>
 
