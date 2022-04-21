@@ -149,7 +149,7 @@ either be a released version (or <code>main</code> to use the bleeding edge, unt
 
     <span class="na">steps</span><span class="pi">:</span>
       <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">checkout</span>
-        <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v2</span>
+        <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v3</span>
         <span class="na">with</span><span class="pi">:</span>
           <span class="na">path</span><span class="pi">:</span> <span class="s">src</span>
           <span class="na">fetch-depth</span><span class="pi">:</span> <span class="m">0</span>
@@ -162,7 +162,7 @@ either be a released version (or <code>main</code> to use the bleeding edge, unt
           <span class="na">githubtoken</span><span class="pi">:</span> <span class="s">${{ secrets.GITHUB_TOKEN }}</span>
       <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Artifact output</span>
         <span class="na">if</span><span class="pi">:</span> <span class="s">${{ always() }}</span>
-        <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/upload-artifact@v2</span>
+        <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/upload-artifact@v3</span>
         <span class="na">with</span><span class="pi">:</span>
           <span class="na">name</span><span class="pi">:</span> <span class="s">apacheyetuspatchdir</span>
           <span class="na">path</span><span class="pi">:</span> <span class="s">${{ github.workspace }}/out</span>

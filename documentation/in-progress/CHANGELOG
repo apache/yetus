@@ -18,7 +18,7 @@
 -->
 <h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h2 id="release-0140-snapshot---2021-11-28">Release 0.14.0-SNAPSHOT - 2021-11-28</h2>
+<h2 id="release-0140-snapshot---2022-04-21">Release 0.14.0-SNAPSHOT - 2022-04-21</h2>
 
 <h3 id="important-issues">IMPORTANT ISSUES:</h3>
 
@@ -73,6 +73,22 @@
       <td style="text-align: left">Precommit</td>
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1152">YETUS-1152</a></td>
+      <td style="text-align: left">Upgrade buf</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-557">YETUS-557</a></td>
+      <td style="text-align: left">Investigate switching to jdk.javadoc.doclet</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Audience Annotations</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Mike Drob</td>
     </tr>
   </tbody>
 </table>
@@ -228,6 +244,14 @@
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1090">YETUS-1090</a></td>
+      <td style="text-align: left">codespell missing from plug-ins link section</td>
+      <td style="text-align: left">Trivial</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
   </tbody>
 </table>
 
@@ -349,6 +373,38 @@
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1149">YETUS-1149</a></td>
+      <td style="text-align: left">ansible-lint output is not sorted</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1148">YETUS-1148</a></td>
+      <td style="text-align: left">releasedocmaker ranged versions do not work</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Release Doc Maker</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1157">YETUS-1157</a></td>
+      <td style="text-align: left">Switch buildkite config to JDK 17</td>
+      <td style="text-align: left">Trivial</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1150">YETUS-1150</a></td>
+      <td style="text-align: left">handle verify_command failures better</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
   </tbody>
 </table>
 
@@ -379,6 +435,46 @@
       <td style="text-align: left">homebrew release process doesn't work</td>
       <td style="text-align: left">Major</td>
       <td style="text-align: left">build, homebrew</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1153">YETUS-1153</a></td>
+      <td style="text-align: left">IBM's detect-secrets annoyingly checks for updated versions</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1156">YETUS-1156</a></td>
+      <td style="text-align: left">[April 2022] Update Dependencies</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1155">YETUS-1155</a></td>
+      <td style="text-align: left">mvn site:site fails</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Audience Annotations, build</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Owen O'Malley</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1132">YETUS-1132</a></td>
+      <td style="text-align: left">EOL JDK8 Support</td>
+      <td style="text-align: left">Blocker</td>
+      <td style="text-align: left">Audience Annotations, build, yetus-maven-plugin</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1154">YETUS-1154</a></td>
+      <td style="text-align: left">Clean-up some build issues now that JDK8 has been removed</td>
+      <td style="text-align: left">Critical</td>
+      <td style="text-align: left">build</td>
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>

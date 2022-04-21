@@ -211,3 +211,62 @@
 
 <p>The various Dockerfiles should now be much more compatible with various chipets, including amd64 and arm64.</p>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1152">YETUS-1152</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Upgrade buf</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>As of this release, <code>test-patch</code> only supports buf v0.34.0 and higher.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-557">YETUS-557</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Investigate switching to jdk.javadoc.doclet</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>The audience annotations doclet code now requires JDK 11+.  Additionally, the default Apache Yetus container no longer has JDK 8.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1132">YETUS-1132</a></td>
+          <td><em>Blocker</em></td>
+          <td><strong>EOL JDK8 Support</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>JDK8 support for audience annotations has been removed.  JDK11 or higher is required.</p>
+
+<p>The Apache Yetus container now has JDK11 as the base JDK.</p>
+
