@@ -44,7 +44,7 @@ jobs:
 
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: src
           fetch-depth: 0
@@ -57,7 +57,7 @@ jobs:
           githubtoken: ${{ secrets.GITHUB_TOKEN }}
       - name: Artifact output
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: apacheyetuspatchdir
           path: ${{ github.workspace }}/out

@@ -89,7 +89,7 @@ docker_run() {
     -u "${USER_ID}" \
     -e "HOME=${HOME}" \
     -w /src \
-    "apache/yetus:main" \
+    "ghcr.io/apache/yetus:main" \
     "$@"
 }
 

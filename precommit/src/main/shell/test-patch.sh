@@ -760,6 +760,8 @@ function parse_args
 
   common_args "$@"
 
+  check_basedir_repo
+
   for i in "$@"; do
     case ${i} in
       --archive-list=*)
@@ -968,6 +970,10 @@ function parse_args
     yetus_add_array_element EXEC_MODES Robot
   fi
 
+  if yetus_is_container; then
+    yetus_add_array_element EXEC_MODES InContainer
+  fi
+
   if [[ -n $UNIT_TEST_FILTER_FILE ]]; then
     if [[ -f $UNIT_TEST_FILTER_FILE ]]; then
       UNIT_TEST_FILTER_FILE=$(yetus_abs "${UNIT_TEST_FILTER_FILE}")
@@ -1171,10 +1177,6 @@ function git_checkout
   fi
 
   cd "${BASEDIR}" || cleanup_and_exit 1
-  if [[ ! -e .git ]]; then
-    yetus_error "ERROR: ${BASEDIR} is not a git repo."
-    cleanup_and_exit 1
-  fi
 
   if [[ ${RESETREPO} == "true" ]] ; then
 
@@ -3084,6 +3086,8 @@ function initialize
   setup_defaults
 
   parse_args "$@"
+
+  check_basedir_repo
 
   importplugins
 

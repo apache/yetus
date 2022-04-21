@@ -70,6 +70,9 @@ if [[ "${CIRRUS_CI}" == true ]] &&
   CONSOLE_USE_BUILD_URL=true
 
   if [[ -d ${BASEDIR}/.git ]]; then
+
+    check_basedir_repo
+
     echo "Updating the local git repo to include all branches/tags:"
     pushd "${BASEDIR}" >/dev/null || exit 1
     "${GIT}" config --replace-all remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
