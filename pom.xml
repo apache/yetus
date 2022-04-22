@@ -31,7 +31,7 @@
   </parent>
   <groupId>org.apache.yetus</groupId>
   <artifactId>yetus-project</artifactId>
-  <version>0.14.0-SNAPSHOT</version>
+  <version>${revision}</version>
   <description>Project-wide definitions for Apache Yetus</description>
   <name>Apache Yetus Project</name>
   <packaging>pom</packaging>
