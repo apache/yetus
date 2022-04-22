@@ -1,5 +1,6 @@
 .DS_Store
 *.iml
+.flattened-pom.xml
 *.ipr
 *.iws
 *.orig

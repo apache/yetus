@@ -2241,7 +2241,7 @@ function cleanup_and_exit
     big_console_header "Finished build."
   fi
 
-  if [[ "${DOCKERMODE}" != true ]]; then
+  if [[ "${DOCKERMODE}" != true  && -f "${PATCH_DIR}/pidfile.txt" ]]; then
     rm "${PATCH_DIR}/pidfile.txt"
   fi
 

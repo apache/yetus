@@ -613,7 +613,7 @@ function importplugins
     # shellcheck disable=SC1090
     files+=("${PERSONALITY}")
   else
-    if [[ "${PERSONALITY}" != "${BASEDIR}/.yetus/personality.sh" ]]; then
+    if [[  -n "${PERSONALITY}" && "${PERSONALITY}" != "${BASEDIR}/.yetus/personality.sh" ]]; then
       yetus_error "ERROR: ${PERSONALITY} does not exist."
       exit 1
     fi
@@ -764,11 +764,9 @@ function set_yetus_version
   elif [[ -f "${BINDIR}/VERSION" ]]; then
     # dist version file
     VERSION=$(cat "${BINDIR}/VERSION")
-  elif [[ -f "${BINDIR}/../../../pom.xml" ]]; then
+  elif [[ -f "${BINDIR}/../../../../.mvn/maven.config" ]]; then
     # this way we have no dependency on Maven being installed
-    VERSION=$("${GREP}" "<version>" "${BINDIR}/../../../pom.xml" 2>/dev/null \
-      | head -1 \
-      | "${SED}"  -e 's|^ *<version>||' -e 's|</version>.*$||' 2>/dev/null)
+    VERSION=$("${GREP}" "revision" "${BINDIR}/../../../../.mvn/maven.config" 2>/dev/null | cut -f2 -d= 2>/dev/null)
   fi
 }
 
