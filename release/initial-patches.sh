@@ -27,13 +27,6 @@ if [[ ! -d precommit ]]; then
   exit 1
 fi
 
-SYSTEM=$(uname -s)
-if [[ "${SYSTEM}" == Darwin ]]; then
-  SEDI=("-i" '')
-else
-  SEDI=("-i")
-fi
-
 #shellcheck source=SCRIPTDIR/../precommit/src/main/shell/core.d/00-yetuslib.sh
 . precommit/src/main/shell/core.d/00-yetuslib.sh
 
@@ -82,6 +75,20 @@ option_parse()
   fi
 }
 
+function check_basedir_repo
+{
+  if [[ ! -e "${BASEDIR}/.git" ]]; then
+    yetus_error "ERROR: ${BASEDIR} is not a git repo."
+    cleanup_and_exit 1
+  fi
+
+  GIT_DIR="${BASEDIR}/.git"
+  export GIT_DIR
+
+  GIT_CEILING_DIRECTORIES="${BASEDIR}"
+  export GIT_CEILING_DIRECTORIES
+}
+
 docker_run() {
   docker run -i --rm \
     -v "${PWD}:/src" \
@@ -106,7 +113,7 @@ determine_versions() {
   declare micro
   declare microinc
 
-  OLD_BRANCH_VERSION=$(docker_run mvn -Dmaven.repo.local="${HOME}/.m2" help:evaluate -Dexpression=project.version -q -DforceStdout)
+  OLD_BRANCH_VERSION=$(grep revision .mvn/maven.config | cut -f2 -d=)
 
   if [[ ${OLD_BRANCH_VERSION} =~ -SNAPSHOT ]]; then
     if [[ -n "${NEW_BRANCH_VERSION}" ]]; then
@@ -128,16 +135,19 @@ determine_versions() {
 }
 
 update_version() {
-  declare oldversion=${1//\./\\.}
-  declare newversion=$2
+  declare newversion=$1
 
-  # *MOST* systems have sed -i these days
-  while read -r file; do
-    sed "${SEDI[@]}" "s,${oldversion},${newversion},g" "${file}"
-  done < <( find . -name 'pom.xml')
+  if ! grep -q .mvn/maven.config .yetus/excludes.txt; then
+    echo ".mvn/maven.config" >> .yetus/excludes.txt
+  fi
+  mkdir -p "${BASEDIR}/.mvn"
+  echo "-Drevision=${newversion}" > "${BASEDIR}/.mvn/maven.config"
+  git add "${BASEDIR}/.mvn/maven.config"
 }
 
 option_parse "$@"
+
+check_basedir_repo
 
 trap cleanup INT QUIT TRAP ABRT BUS SEGV TERM ERR
 
@@ -158,16 +168,15 @@ determine_versions
 
 git checkout -b "${JIRAISSUE}-release"
 
-update_version "${OLD_BRANCH_VERSION}" "${NEW_BRANCH_VERSION}"
+update_version "${NEW_BRANCH_VERSION}"
 
 git commit -a -m "${JIRAISSUE}. Stage version ${NEW_BRANCH_VERSION}"
 
 if [[ -n "${NEW_MAIN_VERSION}" ]]; then
   git checkout --force main
   git checkout -b "${JIRAISSUE}-${STARTING_BRANCH}"
-  update_version "${OLD_BRANCH_VERSION}" "${NEW_MAIN_VERSION}"
+  update_version "${NEW_MAIN_VERSION}"
   git commit -a -m "${JIRAISSUE}. Bump main version to ${NEW_MAIN_VERSION}"
-
 fi
 
 git checkout "${JIRAISSUE}-release"
