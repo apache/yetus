@@ -115,7 +115,7 @@
           <!-- AUTOMATED_EDIT_END -->
           <execution>
             <!-- we create a symlink of current version->in-progress.  This will cause
-                 middle man to generate two copies of the output. -->
+                 middleman to generate two copies of the output. -->
             <id>in-progress</id>
             <phase>pre-site</phase>
             <goals>
@@ -124,6 +124,17 @@
             <configuration>
               <target>in-progress</target>
               <newLink>${basedir}/source/documentation/${project.version}</newLink>
+            </configuration>
+          </execution>
+          <execution>
+            <id>apidocs</id>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>symlink</goal>
+            </goals>
+            <configuration>
+              <target>../../../../target/in-progress/precommit/apidocs/</target>
+              <newLink>${basedir}/source/documentation/in-progress/precommit/apidocs</newLink>
             </configuration>
           </execution>
         </executions>
