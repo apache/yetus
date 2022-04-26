@@ -82,7 +82,9 @@ function rubocop_exec
 
   for i in "${CHANGED_FILES[@]}"; do
     if [[ ${i} =~ \.rb$ && -f ${i} ]]; then
-      "${RUBOCOP}" "${args[@]}" "${i}" | "${AWK}" '!/[0-9]* files? inspected/' >> "${PATCH_DIR}/${repostatus}-rubocop-result.txt"
+      "${RUBOCOP}" "${args[@]}" "${i}" \
+      | "${AWK}" '!/[0-9]* files? inspected/' \
+      | "${SED}" -e "s,${BASEDIR}/,,g" >> "${PATCH_DIR}/${repostatus}-rubocop-result.txt"
     fi
   done
   popd >/dev/null || return 1

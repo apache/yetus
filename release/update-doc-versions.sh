@@ -75,7 +75,6 @@ update_versions()
   declare vermajor
   declare verminor
   declare -a versions
-  declare produced=false
 
   ## NOTE: $REPLY, the default for read, is used
   ## here because it will maintain any leading spaces!
@@ -114,59 +113,6 @@ update_versions()
   done
 
   mv "${newfile}" "${BASEDIR}"/asf-site-src/data/versions.yml
-
-
-  ## NOTE: $REPLY, the default for read, is used
-  ## here because it will maintain any leading spaces!
-  ## if read is given a variable, then IFS manipulation
-  ## will be required!
-
-  found=false
-  produced=false
-  while read -r; do
-    if [[ "${REPLY}" =~ AUTOMATED_EDIT_BEGIN ]]; then
-      echo "${REPLY}" >> "${newfile}"
-      found=true
-    elif [[ "${REPLY}" =~ AUTOMATED_EDIT_END ]]; then
-      echo "${REPLY}" >> "${newfile}"
-      found=false
-    elif [[ ${found} == false ]]; then
-      echo "${REPLY}" >> "${newfile}"
-    elif [[ "${produced}" == true ]]; then
-      continue
-    elif [[ "${found}" == true ]]; then
-      for ver in "${versions[@]}"; do
-        cat << EOF >> "${newfile}"
-          <execution>
-            <id>${ver}</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>symlink</goal>
-            </goals>
-            <configuration>
-              <target>../../target/${ver}</target>
-              <newLink>\${basedir}/source/documentation/${ver}</newLink>
-            </configuration>
-          </execution>
-          <execution>
-            <id>${ver}.html.md</id>
-            <phase>pre-site</phase>
-            <goals>
-              <goal>symlink</goal>
-            </goals>
-            <configuration>
-              <target>../../target/${ver}.html.md</target>
-              <newLink>\${basedir}/source/documentation/${ver}.html.md</newLink>
-            </configuration>
-          </execution>
-EOF
-      done
-      produced=true
-    fi
-  done < "${BASEDIR}"/asf-site-src/pom.xml
-
-  mv "${newfile}" "${BASEDIR}"/asf-site-src/pom.xml
-
 }
 
 update_htaccess()

@@ -452,7 +452,8 @@ Once a release candidate obtains majority approval from the PMC, there are sever
    ```bash
    $ release/update-doc-versions.sh --version=<x.y.z -- version WITHOUT the rel/!>
    $ git add -p
-   $ git add asf-site-src/pom.xml
+   $ git add asf-site-src/data/versions.yml
+   $ git add asf-site-src/data/htaccess.yml
    $ git commit
    ```
 
@@ -462,7 +463,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
    YETUS-XXX. add release 0.7.0.
 
    - list in releases
-   - remove 0.4.0, add 0.7.0 to pom.xml
+   - remove 0.4.0, add 0.7.0 to docs and downloads
    ```
 
 1. Commit the patch to the ASF source repo immediately, but do not update the website just yet.

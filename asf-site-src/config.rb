@@ -119,24 +119,17 @@ def releasenotes(output, version)
 end
 
 def build_release_docs(output, version)
-  # TODO: get the version date from jira and do an up to date check instead of building each time.
   puts "Building docs for release #{version}"
-  puts "\tcleaning up output directories in #{output}"
-  FileUtils.rm_rf("#{output}/build-#{version}", secure: true)
-  FileUtils.rm_rf("#{output}/#{version}", secure: true)
 
   puts "Downloading and extracting #{version} from ASF archives"
   `(cd #{output} \
-    && mkdir -p build-#{version} \
+    && mkdir -p site/documentation/#{version} \
     && curl --fail --location --output site-#{version}.tar.gz \
     https://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
-    && tar -C build-#{version} \
-    --strip-components 3 -xzpf site-#{version}.tar.gz \
+    && tar -C site/documentation/#{version} \
+    --strip-components 3 -xzkpf site-#{version}.tar.gz \
     apache-yetus-#{version}-site/documentation/in-progress/ \
     )`
-  puts "Removing #{output}/build-#{version}/CHANGELOG"
-  FileUtils.rm_rf("#{output}/build-#{version}/CHANGELOG", secure: true)
-  FileUtils.rm_rf("#{output}/build-#{version}/RELEASENOTES", secure: true)
 end
 
 def precommit_shelldocs(apidocs_dir, source_dir)
@@ -151,7 +144,7 @@ def precommit_shelldocs(apidocs_dir, source_dir)
 end
 
 # Add in apidocs rendered by other parts of the repo
-after_configuration do # rubocop:disable Metrics/BlockLength
+after_configuration do
   # Since `after_configuration` runs twice in middleman 4,
   # we will build twice if we don't skip the config run
   next if app.config[:mode] == :config
@@ -164,17 +157,6 @@ after_configuration do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  # For Audience Annotations we just rely on having made javadocs with Maven
-  sitemap.register_resource_list_manipulator(
-    :audience_annotations,
-    ApiDocs.new(
-      sitemap,
-      'documentation/in-progress/javadocs',
-      File.expand_path('../target/site/documentation/in-progress/javadocs',
-                       File.dirname(__FILE__))
-    )
-  )
-
   # For Precommit we regenerate source files so they can be rendered.
   # we rely on a symlink. to avoid an error from the file watcher, our target
   # has to be outside of the asf-site-src directory.
@@ -184,7 +166,6 @@ after_configuration do # rubocop:disable Metrics/BlockLength
   precommit_shelldocs('target/in-progress/precommit/apidocs/', '../precommit/src/main/shell')
   # stitch the javadoc in place
   app.data.versions.releases&.each do |release|
-    build_release_docs('target', release)
     releasenotes('target', release)
     sitemap.register_resource_list_manipulator(
       "#{release}_javadocs".to_sym,
@@ -204,4 +185,7 @@ after_build do
     'target/site/documentation/in-progress/precommit/apidocs-index/index.html',
     'target/site/documentation/in-progress/precommit/apidocs/index.html'
   )
+  app.data.versions.releases&.each do |release|
+    build_release_docs('target', release)
+  end
 end
