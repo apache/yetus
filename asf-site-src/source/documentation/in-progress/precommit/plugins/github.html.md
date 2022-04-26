@@ -41,8 +41,8 @@ None
 | `--github-api-url=<url>` | REST API URL (for GitHub Enterprise) |
 | `--github-base-url=<url>` | Non-REST API URL (for GitHub Enterprise) |
 | `--github-repo=<repo>` | `username/repository` identifier |
-| `--github-token=<token>` | Token used to perform read and write operations |
 | `--github-status-use-htmlreport=<bool>` | Use htmlout for Github Status 'Details' link |
+| `--github-token=<token>` | Token used to perform read and write operations |
 
 ## HTML Details LInk
 
