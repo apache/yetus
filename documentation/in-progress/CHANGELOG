@@ -276,6 +276,14 @@
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1163">YETUS-1163</a></td>
+      <td style="text-align: left">Remove changelog data from config.rb</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">website and documentation</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
   </tbody>
 </table>
 
@@ -434,6 +442,14 @@
       <td style="text-align: left">handle verify_command failures better</td>
       <td style="text-align: left">Major</td>
       <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-1023">YETUS-1023</a></td>
+      <td style="text-align: left">javadocs website creation is broken</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">build</td>
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
