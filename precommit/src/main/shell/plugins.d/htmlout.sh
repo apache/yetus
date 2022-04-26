@@ -36,6 +36,7 @@ function htmlout_parse_args
 {
   declare i
   declare fn
+  declare url
 
   for i in "$@"; do
     case ${i} in
