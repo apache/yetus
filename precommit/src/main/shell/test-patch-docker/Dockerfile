@@ -383,6 +383,7 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 ###
 ARG JSHINT_VERSION=2.13.4
 ARG MARKDOWNLINTCLI_VERSION=0.31.1
+ARG JSONLINT_VERSION=1.6.0
 # hadolint ignore=DL3008
 RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get -q install --no-install-recommends -y nodejs \
@@ -390,6 +391,7 @@ RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
     && rm -rf /var/lib/apt/lists/* \
     && npm install -g \
         jshint@$JSHINT_VERSION \
+        jsonlint@$JSONLINT_VERSION \
         markdownlint-cli@0$MARKDOWNLINTCLI_VERSION \
     && rm -rf /root/.npm
 
