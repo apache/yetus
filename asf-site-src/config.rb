@@ -100,34 +100,14 @@ def shelldocs(output, docs = [])
   end
 end
 
-RELEASEDOCMAKER = File.absolute_path('../releasedocmaker/src/main/python/releasedocmaker.py')
-
-def releasenotes(output, version)
-  # TODO: check jira for last update to the version and compare to source
-  #       file timestamp
-  puts("Calling releasenotes #{version} @ #{output}")
-  `(cd #{output} && #{RELEASEDOCMAKER} --project=YETUS --version=#{version} \
-    --projecttitle="Apache Yetus" \
-    --dirversions --empty \
-    --extension=.html.md \
-    --usetoday --license --lint=all)`
-  errmsg = $stderr
-  return if $CHILD_STATUS.exitstatus.zero?
-
-  puts(errmsg)
-  abort("releasedocmaker failed to generate release notes for #{version}.")
-end
-
-def build_release_docs(output, version)
-  puts "Building docs for release #{version}"
-
+def fetch_release_docs(output, version)
   puts "Downloading and extracting #{version} from ASF archives"
   `(cd #{output} \
     && mkdir -p site/documentation/#{version} \
     && curl --fail --location --output site-#{version}.tar.gz \
     https://archive.apache.org/dist/yetus/#{version}/apache-yetus-#{version}-site.tar.gz \
     && tar -C site/documentation/#{version} \
-    --strip-components 3 -xzkpf site-#{version}.tar.gz \
+    --strip-components 3 -xzpf site-#{version}.tar.gz \
     apache-yetus-#{version}-site/documentation/in-progress/ \
     )`
 end
@@ -164,19 +144,6 @@ after_configuration do
   # instead of symlinks
   FileUtils.mkdir_p 'target/in-progress/precommit/apidocs/'
   precommit_shelldocs('target/in-progress/precommit/apidocs/', '../precommit/src/main/shell')
-  # stitch the javadoc in place
-  app.data.versions.releases&.each do |release|
-    releasenotes('target', release)
-    sitemap.register_resource_list_manipulator(
-      "#{release}_javadocs".to_sym,
-      ApiDocs.new(
-        sitemap,
-        "documentation/#{release}",
-        File.expand_path("target/build-#{release}",
-                         File.dirname(__FILE__))
-      )
-    )
-  end
 end
 
 after_build do
@@ -186,6 +153,6 @@ after_build do
     'target/site/documentation/in-progress/precommit/apidocs/index.html'
   )
   app.data.versions.releases&.each do |release|
-    build_release_docs('target', release)
+    fetch_release_docs('target', release)
   end
 end

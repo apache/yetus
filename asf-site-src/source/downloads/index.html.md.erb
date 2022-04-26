@@ -37,8 +37,8 @@ third-party repositories (e.g. Maven Central) and [Docker Hub](../yetus-docker-i
 
 <%   data.versions.releases.reverse.each do | release | %>
   * <%= release %>
-    * [Release Notes](/documentation/<%= release %>/RELEASENOTES)
-    * [CHANGELOG](/documentation/<%= release %>/CHANGELOG)
+    * [Release Notes](releasenotes/<%= release %>/RELEASENOTES.<%= release %>/)
+    * [CHANGELOG](releasenotes/<%= release %>/CHANGELOG.<%= release %>/)
     <% if release =~ /^0\.[0-8]\./ %>
       * Source : [yetus-<%= release %>-src.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz) ([signature](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.asc), [hashes](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-src.tar.gz.mds))
       * Binaries : [yetus-<%= release %>-bin.tar.gz](https://www.apache.org/dyn/closer.lua?path=/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz) ([signature](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.asc), [hashes](https://downloads.apache.org/yetus/<%= release %>/yetus-<%= release %>-bin.tar.gz.mds))
