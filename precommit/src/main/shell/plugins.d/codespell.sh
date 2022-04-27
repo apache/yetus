@@ -67,6 +67,9 @@ function codespell_logic
   declare repostatus=$1
   declare -a codespellargs
   declare i
+  declare tmpfile
+
+  tmpfile="${PATCH_DIR}/codespell.$$"
 
   pushd "${BASEDIR}" >/dev/null || return 1
 
@@ -74,22 +77,22 @@ function codespell_logic
     codespellargs=("--exclude-file" "${CODESPELL_X_FILE}")
   fi
 
+  printf "^%b:\n" "${CHANGED_FILES[@]}" > "${tmpfile}"
+
   # specifically add ./ because otherwise the .codespellrc file gets weird
   "${CODESPELL}" \
     --disable-colors \
     --interactive 0 \
     --quiet-level 2 \
     "${codespellargs[@]}" \
-    "./${i}" \
+    "." \
   | "${SED}" -e 's,^./,,g' \
     >> "${PATCH_DIR}/${repostatus}-codespell-tmp.txt"
 
-  for i in "${CHANGED_FILES[@]}"; do
-    "${GREP}" -E "^${i}:" \
-      "${PATCH_DIR}/${repostatus}-codespell-tmp.txt" \
-      >> "${PATCH_DIR}/${repostatus}-codespell-result.txt"
-  done
-
+  "${GREP}" -E -f "${tmpfile}" \
+    "${PATCH_DIR}/${repostatus}-codespell-tmp.txt" \
+    >> "${PATCH_DIR}/${repostatus}-codespell-result.txt"
+  rm "${tmpfile}"
   popd > /dev/null || return 1
 }
 

@@ -158,6 +158,7 @@
           <excludes>
             <exclude>src/main/python/unit-test-filter-file.example</exclude>
             <exclude>src/test/resources/brokenfiles/**</exclude>
+            <exclude>src/test/resources/i18n/**</exclude>
           </excludes>
         </configuration>
       </plugin>

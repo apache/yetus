@@ -265,10 +265,7 @@ function patch_reports
   find_changed_files
 
   if [[ -n "${FILEREPORT}" ]]; then
-    : > "${FILEREPORT}"
-    for i in "${CHANGED_FILES[@]}"; do
-      echo "${i}" >> "${FILEREPORT}"
-    done
+    printf "%b\n" "${CHANGED_FILES[@]}" > "${FILEREPORT}"
   fi
 
   if [[ -n "${MODULEREPORT}" ]] || [[ -n "${UNIONREPORT}" ]]; then
@@ -281,10 +278,7 @@ function patch_reports
     find_changed_modules
 
     if [[ -n "${MODULEREPORT}" ]]; then
-      : > "${MODULEREPORT}"
-      for i in "${CHANGED_MODULES[@]}"; do
-        echo "${i}" >> "${MODULEREPORT}"
-      done
+      printf "%b\n" "${CHANGED_MODULES[@]}" > "${MODULEREPORT}"
     fi
 
     if [[ -n "${UNIONREPORT}" ]]; then
