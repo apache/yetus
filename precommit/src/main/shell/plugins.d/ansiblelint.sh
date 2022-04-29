@@ -35,6 +35,7 @@ function ansiblelint_parse_args
     case ${i} in
     --ansiblelint=*)
       ANSIBLELINT=${i#*=}
+      delete_parameter "${i}"
     ;;
     esac
   done

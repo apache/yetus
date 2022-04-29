@@ -36,9 +36,11 @@ function checkmake_parse_args
     case ${i} in
       --checkmake=*)
         CHECKMAKE=${i#*=}
+        delete_parameter "${i}"
       ;;
       --checkmake-config=*)
         CHECKMAKE_CONFIG=${i#*=}
+        delete_parameter "${i}"
       ;;
     esac
   done
