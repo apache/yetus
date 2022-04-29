@@ -124,15 +124,7 @@ function bufcompat_executor
     return 0
   fi
 
-  big_console_header "bufcompat plugin: ${BUILDMODE}"
-
-  start_clock
-
-  # add our previous elapsed to our new timer
-  # by setting the clock back
-  offset_clock "${BUFCOMPAT_TIMER}"
-
-  echo "Running buf against identified protobuf files."
+  echo "Running buf (compat) against identified protobuf files."
   if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
     args=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
   else
@@ -158,7 +150,7 @@ function bufcompat_executor
 
   popd >/dev/null || return 1
 
-  if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${bufStderr}" ]]; then
+  if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${PATCH_DIR}/${bufStderr}" ]]; then
     add_vote_table_v2 -1 bufcompat "@@BASE@@/${bufStderr}" "Error running buf. Please check buf stderr files."
     return 1
   fi
@@ -174,6 +166,9 @@ function bufcompat_preapply
   if ! verify_needed_test bufcompat; then
     return 0
   fi
+  big_console_header "bufcompat plugin: ${BUILDMODE}"
+
+  start_clock
 
   bufcompat_executor "branch"
   retval=$?
@@ -194,6 +189,7 @@ function bufcompat_postapply
   big_console_header "bufcompat plugin: ${BUILDMODE}"
 
   bufcompat_executor "patch"
+  retval=$?
 
   offset_clock "${BUFCOMPAT_TIMER}"
 
@@ -207,7 +203,7 @@ function bufcompat_postapply
     bugsystem_linecomments_queue bufcompat "${PATCH_DIR}/${repostatus}-bufcompat-result.txt"
     return 1
   fi
-  return 0
+  return ${retval}
 }
 
 function bufcompat_postcompile
@@ -249,15 +245,7 @@ function buflint_executor
     return 0
   fi
 
-  big_console_header "buflint plugin: ${BUILDMODE}"
-
-  start_clock
-
-  # add our previous elapsed to our new timer
-  # by setting the clock back
-  offset_clock "${BUFLINT_TIMER}"
-
-  echo "Running buf against identified protobuf files."
+  echo "Running buf (lint) against identified protobuf files."
   if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
     args=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
   else
@@ -277,7 +265,7 @@ function buflint_executor
 
   popd >/dev/null || return 1
 
-  if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${bufStderr}" ]]; then
+  if [[ -f ${PATCH_DIR}/${bufStderr} ]] && [[ -s "${PATCH_DIR}/${bufStderr}" ]]; then
     add_vote_table_v2 -1 buflint \
       "@@BASE@@/${bufStderr}" \
       "Error running buf. Please check buf stderr files."
@@ -295,6 +283,9 @@ function buflint_preapply
   if ! verify_needed_test buflint; then
     return 0
   fi
+  big_console_header "buflint plugin: ${BUILDMODE}"
+
+  start_clock
 
   buflint_executor "branch"
   retval=$?
@@ -310,9 +301,15 @@ function buflint_postapply
     return 0
   fi
 
+  big_console_header "buflint plugin: ${BUILDMODE}"
+
   # shellcheck disable=SC2016
   BUF_VERSION=$("${BUF}" version 2>/dev/null | "${GREP}" Version | "${AWK}" '{print $NF}')
   add_version_data buf "${BUF_VERSION}"
+
+  # add our previous elapsed to our new timer
+  # by setting the clock back
+  offset_clock "${BUFLINT_TIMER}"
 
   buflint_executor patch
 
