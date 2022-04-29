@@ -39,6 +39,7 @@ None
 | Option | Notes |
 |:---------|:------|
 | `--html-report-file=<file>` | Name of the output file |
+| `--html-report-url=<url>` | Override the default URL for using the HTML report |
 
 # Docker Notes
 

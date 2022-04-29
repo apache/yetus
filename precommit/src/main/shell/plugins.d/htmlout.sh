@@ -16,6 +16,8 @@
 
 add_bugsystem htmlout
 
+HTMLOUT_REPORTFILE_URL=""
+
 ## @description  Usage info for htmlout plugin
 ## @audience     private
 ## @stability    evolving
@@ -23,6 +25,7 @@ add_bugsystem htmlout
 function htmlout_usage
 {
   yetus_add_option "--html-report-file=<file>" "Save the final report to an HTML-formated file"
+  yetus_add_option "--html-report-url=<url>" "Override the default URL for using the HTML report"
 }
 
 ## @description  Option parsing for htmlout plugin
@@ -41,6 +44,10 @@ function htmlout_parse_args
         delete_parameter "${i}"
         fn=${i#*=}
       ;;
+      --html-report-url=*)
+        delete_parameter "${i}"
+        HTMLOUT_REPORTFILE_URL=${i#*=}
+      ;;
     esac
   done
 
@@ -52,6 +59,16 @@ function htmlout_parse_args
       yetus_error "WARNING: cannot create HTML report file ${fn}. Ignoring."
     fi
   fi
+
+  if [[ -z "${HTMLOUT_REPORTFILE_URL}" ]]; then
+    filepath=$(yetus_relative_dir "${PATCH_DIR}" "${HTMLOUT_REPORTFILE}")
+    url=$(get_artifact_url)
+
+    if [[ "${filepath}" != "${HTMLOUT_REPORTFILE}" ]]; then
+      HTMLOUT_REPORTFILE_URL="${url}/${filepath}"
+      USER_PARAMS+=("--html-report-url=${HTMLOUT_REPORTFILE_URL}")
+    fi
+  fi
 }
 
 ## @description  Give access to the HTML report file in docker mode
@@ -60,23 +77,26 @@ function htmlout_parse_args
 ## @replaceable  no
 function htmlout_docker_support
 {
+  # if for some reason the report file is in PATCH_DIR, then if
+  # PATCH_DIR gets cleaned out we lose access to the file on the 'outside'
+  # so we put it into the workdir which never gets cleaned.
+
   if [[ -n ${HTMLOUT_REPORTFILE} ]]; then
     DOCKER_EXTRAARGS+=("-v" "${HTMLOUT_REPORTFILE}:${DOCKER_WORK_DIR}/report.htm")
     USER_PARAMS+=("--html-report-file=${DOCKER_WORK_DIR}/report.htm")
   fi
 }
 
-
 ## @description  Write out an HTML version of the final report to a file
 ## @audience     private
 ## @stability    evolving
 ## @replaceable  no
 ## @param        runresult
-function htmlout_finalreport
+function htmlout_report_writer
 {
   declare result=$1
+  declare commentfile=$2
   declare i
-  declare commentfile="${HTMLOUT_REPORTFILE}"
   declare comment
   declare vote
   declare ourstring
@@ -91,12 +111,6 @@ function htmlout_finalreport
   url=$(get_artifact_url)
 
   rm "${commentfile}" 2>/dev/null
-
-  if [[ -z "${HTMLOUT_REPORTFILE}" ]]; then
-    return
-  fi
-
-  big_console_header "Writing HTML to ${commentfile}"
 
   {
     echo "<table><tbody>"
@@ -282,4 +296,40 @@ function htmlout_finalreport
   } >> "${commentfile}"
 
   printf "<p>This message was automatically generated.</p>" >> "${commentfile}"
+}
+
+
+## @description  Write out an HTML version of the final report to a file
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        runresult
+function htmlout_finalreport
+{
+  declare result=$1
+
+  rm "${commentfile}" 2>/dev/null
+
+  if [[ -z "${HTMLOUT_REPORTFILE}" ]]; then
+    return
+  fi
+
+  big_console_header "Writing HTML to ${commentfile}"
+
+  htmlout_report_writer "${result}" "${HTMLOUT_REPORTFILE}"
+}
+
+## @description  Write out an HTML version of the final report to a file
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       url or empty string
+function htmlout_reportname
+{
+  if [[ -n "${HTMLOUT_REPORTFILE_URL}" ]]; then
+    echo "${HTMLOUT_REPORTFILE_URL}"
+    return
+  fi
+
+  echo ""
 }

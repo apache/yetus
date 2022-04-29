@@ -41,7 +41,15 @@ None
 | `--github-api-url=<url>` | REST API URL (for GitHub Enterprise) |
 | `--github-base-url=<url>` | Non-REST API URL (for GitHub Enterprise) |
 | `--github-repo=<repo>` | `username/repository` identifier |
+| `--github-status-use-htmlreport=<bool>` | Use htmlout for Github Status 'Details' link |
 | `--github-token=<token>` | Token used to perform read and write operations |
+
+## HTML Details LInk
+
+By default, if Apache Yetus is under conditions when it would normally write a Github Status (e.g., Jenkins processing
+a GitHub PR using the Github Multibranch Plug-in), the Details will link to the [htmlout](../htmlout) report rather than
+the robot's console after the run is complete. The report file must either be relative to the normal `--patch-dir` or
+be forcibly set using the `--html-report-url`.
 
 # Docker Notes
 

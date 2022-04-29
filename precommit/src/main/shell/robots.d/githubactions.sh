@@ -46,6 +46,9 @@ if [[ "${GITHUB_ACTIONS}" == true ]] &&
   # shellcheck disable=SC2034
   GITHUB_REPO="${GITHUB_REPOSITORY}"
 
+  # shellcheck disable=SC2034
+  GITHUB_STATUS_USE_HTMLREPORT="false"
+
   if [[ "${GITHUB_EVENT_NAME}" == push ]]; then
     # shellcheck disable=SC2034
     PATCH_OR_ISSUE=""

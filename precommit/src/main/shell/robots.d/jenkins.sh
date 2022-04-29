@@ -30,6 +30,7 @@ if [[ -n "${JENKINS_URL}" && -n "${EXECUTOR_NUMBER}" ]] &&
   JENKINS_CUSTOM_HOMEDIR=false
   BUILDMODE=full
   USER_PARAMS+=("--empty-patch")
+  GITHUB_STATUS_USE_HTMLREPORT=true
 
   # if we are running in an Jenkins docker container
   # spawned by using agent, then there is a good chance
