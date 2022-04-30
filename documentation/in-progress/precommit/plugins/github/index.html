@@ -164,11 +164,22 @@
       <td style="text-align: left"><code>username/repository</code> identifier</td>
     </tr>
     <tr>
+      <td style="text-align: left"><code>--github-status-use-htmlreport=&lt;bool&gt;</code></td>
+      <td style="text-align: left">Use htmlout for Github Status 'Details' link</td>
+    </tr>
+    <tr>
       <td style="text-align: left"><code>--github-token=&lt;token&gt;</code></td>
       <td style="text-align: left">Token used to perform read and write operations</td>
     </tr>
   </tbody>
 </table>
+
+<h2 id="html-details-link">HTML Details LInk</h2>
+
+<p>By default, if Apache Yetus is under conditions when it would normally write a Github Status (e.g., Jenkins processing<br />
+a GitHub PR using the Github Multibranch Plug-in), the Details will link to the <a href="../htmlout">htmlout</a> report rather than<br />
+the robot's console after the run is complete. The report file must either be relative to the normal <code>--patch-dir</code> or<br />
+be forcibly set using the <code>--html-report-url</code>.</p>
 
 <h1 id="docker-notes">Docker Notes</h1>
 
