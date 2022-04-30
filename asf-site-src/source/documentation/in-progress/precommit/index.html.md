@@ -144,6 +144,7 @@ Language Support, Licensing, and more:
 * [golangci-lint](plugins/golangcilint)
 * [hadolint](plugins/hadolint)
 * [jshint](plugins/jshint)
+* [jsonlint](plugins/jsonlint)
 * [markdownlint-cli](plugins/markdownlint)
 * [Perl::Critic](plugins/perlcritic)
 * [pylint](plugins/pylint)
