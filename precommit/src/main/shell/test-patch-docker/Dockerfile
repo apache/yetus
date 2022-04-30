@@ -37,7 +37,8 @@ ENV DEBCONF_TERSE true
 # Install some basic Apache Yetus requirements
 # some git repos need ssh-client so do it too
 # Adding libffi-dev for all the programming languages
-# that take advantage of it.
+# that take advantage of it. Also throw in
+# xmllint here since so much links against libxml anyway.
 ######
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -50,6 +51,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         gpg \
         gpg-agent \
         libffi-dev \
+        libxml2-utils \
         locales \
         pkg-config \
         rsync \
