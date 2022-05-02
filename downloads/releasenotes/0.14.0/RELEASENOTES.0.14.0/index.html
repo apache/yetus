@@ -439,6 +439,27 @@
 
 <p>This change now adds a new yetus_is_container function.  It should be noted that there is no guaranteed way to determine if a process is in a container (especially from within the container) but there are some parts of the environment that are able to be checked to provide at least a pretty good guess.</p>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1030">YETUS-1030</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Support linecomments in junit</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>The JUnit report output has been changed to support two formats, one generated using line-level and the other being a full report with URLs. By default, line is the default with the exception of Circle CI.</p>
+
+<p>Jenkins users should now be able to process the output with the WarningsNG plug-in to provide better feedback in the Jenkins UI.</p>
+
 
     </div>
       

@@ -154,11 +154,24 @@
   </thead>
   <tbody>
     <tr>
+      <td style="text-align: left"><code>--junit-report-style=[full|line]</code></td>
+      <td style="text-align: left">Style of the junit report</td>
+    </tr>
+    <tr>
       <td style="text-align: left"><code>--junit-report-xml=&lt;file&gt;</code></td>
       <td style="text-align: left">Name of the output file</td>
     </tr>
   </tbody>
 </table>
+
+<h2 id="junit-style">JUnit Style</h2>
+
+<p>The JUnit report type has two formats:</p>
+
+<ul>
+  <li><code>full</code> - summarizes per-test and provides a link to the report for that test</li>
+  <li><code>line</code> - summarizes per-file and works better with integrated CI systems and with external readers such as Jenkins WarningNG plug-in</li>
+</ul>
 
 <h1 id="docker-notes">Docker Notes</h1>
 
