@@ -95,9 +95,11 @@ EOF
 function jshint_logic
 {
   declare repostatus=$1
-  declare j
   declare full="${PATCH_DIR}/${repostatus}-jshint-result.full.txt"
   declare filter="${PATCH_DIR}/${repostatus}-jshint-result.txt"
+  declare tmpfile
+
+  tmpfile="${PATCH_DIR}/jshint.$$"
 
   pushd "${BASEDIR}" >/dev/null || return 1
   "${JSHINT}" \
@@ -106,13 +108,13 @@ function jshint_logic
     . \
     > "${full}"
 
+  printf "^%b:\n" "${CHANGED_FILES[@]}" > "${tmpfile}"
+
   # pull out the files we care about
-  for j in "${CHANGED_FILES[@]}"; do
-    "${GREP}" "^${j}:" "${full}" \
-      >> "${filter}"
-  done
+  "${GREP}" -E -f "${tmpfile}" "${full}" > "${filter}"
 
   popd > /dev/null || return 1
+  rm "${tmpfile}"
 }
 
 function jshint_preapply

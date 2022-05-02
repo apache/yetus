@@ -118,7 +118,7 @@ function exclude_paths_from_changed_files
     for p in "${EXCLUDE_PATHS[@]}"; do
       if [[ "${f}" =~ ${p} ]]; then
         strip=true
-        echo "${f}" >> "${PATCH_DIR}/excluded.txt"
+        printf "%b\n" "${f}" >> "${PATCH_DIR}/excluded.txt"
         break
       fi
     done

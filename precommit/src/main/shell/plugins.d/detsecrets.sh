@@ -94,20 +94,11 @@ function detsecrets_calcdiffs
 function detsecrets_convert_json_to_flat
 {
   declare repostatus=$1
-  declare filename
   declare tmpfile
 
   tmpfile="${PATCH_DIR}/detsecrets.$$"
 
-  for filename in "${CHANGED_FILES[@]}"; do
-    echo "${filename}" >> "${tmpfile}"
-  done
-
-  if [[ -f "${PATCH_DIR}/excluded.txt" ]]; then
-    stripcmd=("${GREP}" "-v" "-f" "${PATCH_DIR}/excluded.txt")
-  else
-    stripcmd=("cat")
-  fi
+  printf "^%b:\n" "${CHANGED_FILES[@]}" > "${tmpfile}"
 
   # rip apart the detect-secrets json and make it a colon delimited file
   # to make it easier to parse.  Theoretically, python or python3 should
@@ -117,8 +108,7 @@ function detsecrets_convert_json_to_flat
   "${pythonexec}" "${BINDIR}/plugins.d/detsecrets_parse.py" \
     "${PATCH_DIR}/${repostatus}-detsecrets-result.json" \
     "${DETSECRETS_HASHFILE}" \
-  | "${GREP}" "-f" "${tmpfile}" \
-  | "${stripcmd[@]}" \
+  | "${GREP}" -E -f "${tmpfile}" \
     > "${PATCH_DIR}/${repostatus}-detsecrets-result.txt"
 
   rm "${tmpfile}"
