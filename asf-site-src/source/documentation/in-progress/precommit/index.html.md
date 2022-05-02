@@ -86,7 +86,6 @@ These plug-ins are native to Apace Yetus and are (usually!) always available:
 * [pathlen](plugins/pathlen)
 * [slack](plugins/slack)
 * [unitveto](plugins/unitveto)
-* [xml](plugins/xml)
 
 ### Optional Plug-ins
 
@@ -132,27 +131,30 @@ Compiler Support:
 * Java, both [javac](plugins/javac) and [javadoc](plugins/javadoc)
 * Scala, both [scalac](plugins/scalac) and [scaladoc](plugins/scaladoc)
 
+Commonly Parsed File Formats:
+
+* .md: [markdownlint-cli](plugins/markdownlint)
+* json: [jsonlint](plugins/jsonlint)
+* .proto: [buf](plugins/buf)
+* .yaml/.yml: [yamllint](plugins/yamllint)
+* .html/.xml: [xml](plugins/xml)
+
 Language Support, Licensing, and more:
 
-* [ansible-lint](plugins/ansiblelint)
 * [Apache Creadur Rat](plugins/asflicense)
-* [buf](plugins/buf)
 * [checkmake](plugins/checkmake)
 * [checkstyle](plugins/checkstyle)
 * [codespell](plugins/codespell)
 * [detect-secrets](plugins/detsecrets)
 * [golangci-lint](plugins/golangcilint)
-* [hadolint](plugins/hadolint)
+* Dockerfile: [hadolint](plugins/hadolint)
 * [jshint](plugins/jshint)
-* [jsonlint](plugins/jsonlint)
-* [markdownlint-cli](plugins/markdownlint)
 * [Perl::Critic](plugins/perlcritic)
 * [pylint](plugins/pylint)
 * [revive](plugins/revive)
 * [rubocop](plugins/rubocop)
 * [shellcheck](plugins/shellcheck)
 * [SpotBugs](plugins/spotbugs)
-* [yamllint](plugins/yamllint)
 
 # Related Utilities
 

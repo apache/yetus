@@ -29,8 +29,7 @@ Test
 
 # Description
 
-Verify if XML files can be parsed.  Requires `jrunscript`, which comes as part of many Java
-distributions. See [java](javac.html) for more information on configuring Java.
+Verify if HTML and XML files can be parsed.  Requires `xmllint`.
 
 # Environment Variables
 
