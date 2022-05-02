@@ -120,7 +120,7 @@ function shellcheck_criteria
     fi
   done
 
-  text=$(head -n 1 "${fn}")
+  text=$(head -n 1 "${fn}" 2>/dev/null)
 
   # shell check requires either a bangpath or a shellcheck directive
   # on the first line.
