@@ -55,8 +55,12 @@ function buf_parse_args
 
   if [[ -n "${BUF_BASEDIR}" ]]; then
     # make sure this is relative and strip any ending /
-    BUF_BASEDIR=$(yetus_abs "${BUF_BASEDIR}")
-    BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BUF_BASEDIR}")
+    if [[ -e "${BASEDIR}/${BUF_BASEDIR}" ]]; then
+      BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BASEDIR}/${BUF_BASEDIR}")
+    else
+      BUF_BASEDIR=$(yetus_abs "${BUF_BASEDIR}")
+      BUF_BASEDIR=$(yetus_relative_dir "${BASEDIR}" "${BUF_BASEDIR}")
+    fi
   fi
 
   # forcibly setting return 0 because otherwise
