@@ -28,6 +28,30 @@ function asflicense_usage
   yetus_add_option "--asflicense-rat-jar=<file>" "Path to Apache Creadur Rat jar file"
 }
 
+
+## @description  Validate the rat jar
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       0 on success
+## @return       1 on failure
+function asflicense_ratjar_validate
+{
+  declare filename=$1
+  declare result
+  result=1
+
+  if [[ "${filename}" =~ .jar$ ]]; then
+    "${JAVA_HOME}/bin/jar" tvf "${filename}" org/apache/rat >/dev/null 2>&1
+    result=$?
+  fi
+  return "${result}"
+}
+
+## @description  process asflicense args
+## @audience     private
+## @stability    evolving
+## @replaceable  no
 function asflicense_parse_args
 {
   declare i
@@ -54,11 +78,38 @@ function asflicense_parse_args
       add_test asflicense
     ;;
     *)
+      # for other builds, the rat jar file _must_ be present
+      # if it isn't, then assume asflicense wasn't actually
+      # meant to get added. we also are not going to flag
+      # a message here since this case will be common
       if [[ -f "${ASFLICENSE_RAT_JAR}" ]]; then
         add_test asflicense
       fi
     ;;
   esac
+}
+
+## @description  perform asflicense prechecks
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       0 on success
+## @return       1 on failure
+function asflicense_precheck
+{
+  case ${BUILDTOOL} in
+    ant|gradle|maven)
+      :
+    ;;
+    *)
+      if ! asflicense_ratjar_validate "${ASFLICENSE_RAT_JAR}"; then
+        delete_test asflicense
+        add_vote_table_v2 0 asflicense "" "${ASFLICENSE_RAT_JAR} is not Apache Rat."
+        return 1
+      fi
+    ;;
+  esac
+  return 0
 }
 
 ## @description  Verify all files have an Apache License
