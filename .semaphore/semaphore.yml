@@ -20,7 +20,8 @@ name: Apache Yetus
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
+
 blocks:
   - name: "Apache Yetus"
     task:
@@ -29,3 +30,15 @@ blocks:
           commands:
             - checkout
             - .semaphore/semaphore-build.sh
+
+      epilogue:
+        always:
+          commands:
+            - test-results publish /tmp/yetus-out/junit-results.xml
+
+after_pipeline:
+  task:
+    jobs:
+      - name: Publish Results
+        commands:
+          - test-results gen-pipeline-report
