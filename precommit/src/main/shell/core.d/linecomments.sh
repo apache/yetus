@@ -96,13 +96,13 @@ function bugsystem_linecomments_trigger
   declare text
   declare column
 
-  if [[ ! -f "${PATCH_DIR}/results-full.txt" ]]; then
-    return 0
+  if [[ -f "${PATCH_DIR}/results-full.txt" ]]; then
+    # sort the file such that all files and lines are now next to each other
+    sort -k1,1 -k2,2n -k3,3n -k4,4 "${PATCH_DIR}/results-full.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
+    mv "${PATCH_DIR}/linecomments-sorted.txt" "${PATCH_DIR}/results-full.txt"
+  else
+    touch "${PATCH_DIR}/results-full.txt"
   fi
-
-  # sort the file such that all files and lines are now next to each other
-  sort -k1,1 -k2,2n -k3,3n -k4,4 "${PATCH_DIR}/results-full.txt" > "${PATCH_DIR}/linecomments-sorted.txt"
-  mv "${PATCH_DIR}/linecomments-sorted.txt" "${PATCH_DIR}/results-full.txt"
 
   while read -r line;do
     fn=${line%%:*}
