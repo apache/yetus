@@ -253,6 +253,10 @@ function junit_linecomments_end
   declare testinfo=$1
   declare linecount
 
+  if [[ -z "${JUNIT_REPORT_XML}" ]]; then
+    return
+  fi
+
   if [[ "${JUNIT_REPORT_STYLE}" != "line" ]]; then
     return
   fi
