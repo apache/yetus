@@ -112,12 +112,19 @@ def buildreadme(title, asf_license):
 def getversion():
     """ print the version file"""
     basepath = pathlib.Path(__file__).parent.resolve()
-    for versionfile in [basepath.resolve().joinpath('VERSION'),
-                        basepath.parent.parent.resolve().joinpath('VERSION')]:
+    for versionfile in [
+            basepath.resolve().joinpath('VERSION'),
+            basepath.parent.parent.resolve().joinpath('VERSION')
+    ]:
         if versionfile.exists():
             with open(versionfile, encoding='utf-8') as ver_file:
                 version = ver_file.read()
             return version
+    mvnversion = basepath.parent.parent.parent.parent.parent.resolve(
+    ).joinpath('.mvn', 'maven.config')
+    if mvnversion.exists():
+        with open(mvnversion, encoding='utf-8') as ver_file:
+            return ver_file.read().split('=')[1].strip()
 
     return 'Unknown'
 

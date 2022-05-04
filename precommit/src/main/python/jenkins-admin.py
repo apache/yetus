@@ -29,6 +29,7 @@ from argparse import ArgumentParser
 from tempfile import NamedTemporaryFile
 from xml.etree import ElementTree
 import os
+import pathlib
 import re
 import sys
 import requests
@@ -160,10 +161,16 @@ def main():  #pylint: disable=too-many-branches, too-many-statements, too-many-l
 
     # Handle the version string right away and exit
     if options.release_version:
-        with open(
-                os.path.join(os.path.dirname(__file__), "..", "..",
-                             "VERSION")) as ver_file:
-            print(ver_file.read())
+        execname = pathlib.Path(__file__)
+        binversion = execname.joinpath("..", "..", "VERSION").resolve()
+        mvnversion = execname.joinpath("..", "..", "..", "..", "..", ".mvn",
+                                       "maven.config").resolve()
+        if binversion.exists():
+            with open(binversion, encoding='utf-8') as ver_file:
+                print(ver_file.read().strip())
+        elif mvnversion.exists():
+            with open(mvnversion, encoding='utf-8') as ver_file:
+                print(ver_file.read().split('=')[1].strip())
         sys.exit(0)
 
     token_frag = ''

@@ -51,6 +51,7 @@ ASFLICENSE = '''
 
 class ShellFunction:  # pylint: disable=too-many-instance-attributes
     """a shell function"""
+
     def __init__(self, filename='Unknown'):
         '''Initializer'''
         self.audience = ''
@@ -128,8 +129,7 @@ class ShellFunction:  # pylint: disable=too-many-instance-attributes
             elif value not in attrvalues:
                 if attribute == 'replacerawtext' and value == '':
                     continue
-                validvalue = "|".join(v.lower()
-                                      for v in attrvalues)
+                validvalue = "|".join(v.lower() for v in attrvalues)
                 logging.error(
                     "%s:%d:ERROR: function %s has invalid value (%s) for @%s (%s)",
                     self.filename, self.linenum, self.name, value.lower(),
@@ -162,7 +162,7 @@ class ProcessFile:
       Comparison is case sensitive and the comment must be in
       UPPERCASE.
       """
-        with open(self.filename) as input_file: #pylint: disable=unspecified-encoding
+        with open(self.filename) as input_file:  #pylint: disable=unspecified-encoding
             for line in input_file:
                 if line.startswith(
                         "#") and line[1:].strip() == "SHELLDOC-IGNORE":
@@ -249,7 +249,7 @@ class ProcessFile:
             return
 
         try:
-            with open(self.filename, "r") as shellcode: #pylint: disable=unspecified-encoding
+            with open(self.filename, "r") as shellcode:  #pylint: disable=unspecified-encoding
                 # if the file contains a comment containing
                 # only "SHELLDOC-IGNORE" then skip that file
 
@@ -282,6 +282,7 @@ class ProcessFile:
 
 class MarkdownReport:
     ''' generate a markdown report '''
+
     def __init__(self, functions, filename=None):
         self.filename = filename
         self.filepath = pathlib.Path(self.filename)
@@ -320,6 +321,7 @@ class MarkdownReport:
 
 def process_input(inputlist, skipprnorep):
     """ take the input and loop around it """
+
     def call_process_file(filename, skipsuperprivate):
         ''' handle building a ProcessFile '''
         fileprocessor = ProcessFile(filename=filename,
@@ -345,6 +347,26 @@ def process_input(inputlist, skipprnorep):
 
     allfuncs = sorted(allfuncs)
     return allfuncs
+
+
+def getversion():
+    """ print the version file"""
+    basepath = pathlib.Path(__file__).parent.resolve()
+    for versionfile in [
+            basepath.resolve().joinpath('VERSION'),
+            basepath.parent.resolve().joinpath('VERSION')
+    ]:
+        if versionfile.exists():
+            with open(versionfile, encoding='utf-8') as ver_file:
+                version = ver_file.read()
+            return version
+    mvnversion = basepath.parent.parent.parent.parent.resolve().joinpath(
+        '.mvn', 'maven.config')
+    if mvnversion.exists():
+        with open(mvnversion, encoding='utf-8') as ver_file:
+            return ver_file.read().split('=')[1].strip()
+
+    return 'Unknown'
 
 
 def process_arguments():
@@ -387,9 +409,7 @@ def process_arguments():
     options = parser.parse_args()
 
     if options.release_version:
-        verfile = pathlib.Path(__file__).parent.joinpath('VERSION')
-        with open(verfile, encoding='utf-8') as ver_file:
-            print(ver_file.read())
+        print(getversion())
         sys.exit(0)
 
     if options.infile is None:
@@ -399,6 +419,7 @@ def process_arguments():
             "At least one of output file and lint mode needs to be specified")
 
     return options
+
 
 def main():
     '''main entry point'''
