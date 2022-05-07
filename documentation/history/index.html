@@ -25,13 +25,13 @@
         <meta name="description" content="">
         <meta name="author" content="">
 
-        <link href="../../../../../assets/css/bootstrap.css" rel="stylesheet">
-        <link href="../../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
-        <link href="../../../../../assets/css/font-awesome.css" rel="stylesheet">
+        <link href="../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../assets/css/font-awesome.css" rel="stylesheet">
 
         <!-- JS -->
-        <script type="text/javascript" src="../../../../../assets/js/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="../../../../../assets/js/bootstrap.js"></script>
+        <script type="text/javascript" src="../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../assets/js/bootstrap.js"></script>
   </head>
     <body>
       
@@ -45,7 +45,7 @@
                 <span class="icon-bar"></span>
             </button>
             <a class="img-responsive pull-left" href="/">
-                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
             </a>
         </div>
         <div class="navbar-collapse collapse">
@@ -123,54 +123,43 @@
   under the License.
 -->
 
-<h1 id="name">Name</h1>
+<h1 id="history-of-apache-yetus">History of Apache Yetus</h1>
 
-<p>golangcilint</p>
+<h2 id="precommit">Precommit</h2>
 
-<h1 id="category">Category</h1>
+<p>The origins of the project start with a single Hudson job, long lost to the mists of time. The<br />
+purpose was to run a few basic tests against the Apache Hadoop source tree so that developers<br />
+would not have to re-run common tests before trying to merge a commit.  Eventually this<br />
+Hudson job would get turned into a shell script that sat in the Apache Hadoop's source<br />
+repository so that anyone could run it without trying to tie up Hudson.</p>
 
-<p>Test</p>
+<p>As Hadoop's needs increased and as the "Big Data" projects grew in the Apache Software<br />
+Foundation, <code>test-patch.sh</code> was getting copied from Hadoop into these other repos.<br />
+Time passed and all of these copies diverged.</p>
 
-<h1 id="description">Description</h1>
+<p>In 2015, the Apache Hadoop project did a major rewrite (HADOOP-11746) to take advantage<br />
+of new tooling and to deal with the heavy burden of testing a very large code base.<br />
+Other projects took note and it was felt that it was time to combine everyone's efforts<br />
+into a single project, using the new Apache Hadoop code as the starting point.</p>
 
-<p>NOTE: This plug-in only supports Go using Go modules.</p>
+<p>Thus, Apache Yetus was born.</p>
 
-<p>Provides support for<br />
-<a href="https://github.com/golangci/golangci-lint">golangci-lint</a>.  This<br />
-plug-in requires the <a href="../golang">golang</a> plug-in to also be enabled.</p>
+<h2 id="other-parts">Other Parts</h2>
 
-<h1 id="environment-variables">Environment Variables</h1>
+<p>While splitting off the patch testing facilities, it was thought that other portions that<br />
+were equally useful and in some cases followed a similar path should also be copied into<br />
+the Apache Yetus repository.  When it came time to split from Apache Hadoop, the<br />
+<code>audience-annotations</code>, <code>releasedocmaker</code>, and <code>shelldocs</code> portions were also copied over.</p>
 
-<p>None</p>
+<h1 id="old-source">Old Source</h1>
 
-<h1 id="options">Options</h1>
-
-<table class="table table-bordered table-striped">
-  <thead>
-    <tr>
-      <th style="text-align: left">Option</th>
-      <th style="text-align: left">Notes</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="text-align: left"><code>--golangcilint=&lt;file&gt;</code></td>
-      <td style="text-align: left">Location of the <code>golangci-lint</code> binary if it is not on the path</td>
-    </tr>
-    <tr>
-      <td style="text-align: left"><code>--golangcilint-config=&lt;file&gt;</code></td>
-      <td style="text-align: left">Override the default location of the configuration file</td>
-    </tr>
-  </tbody>
-</table>
-
-<h1 id="docker-notes">Docker Notes</h1>
-
-<p>None</p>
-
-<h1 id="developer-notes">Developer Notes</h1>
-
-<p>None</p>
+<p>Due to coming from Apache Hadoop, the source repository history is extremely messy.  The<br />
+project underwent many major changes that make following changes much more difficult,<br />
+including splitting the project into multiple different repos, svn-&gt;git source migration,<br />
+and changing the build tooling from <code>ant</code> to <code>maven</code>.  As a result, the first commit<br />
+in the repository history is not actually the first commit. In order to provide a<br />
+clearer picture, the <code>prehistory</code> repository tag documents the code changes that<br />
+happened to the <code>test-patch.sh</code> script prior to the first commit in the <code>main</code> branch.</p>
 
     </div>
       

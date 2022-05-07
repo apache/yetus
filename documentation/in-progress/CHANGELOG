@@ -18,7 +18,7 @@
 -->
 <h1 id="apache-yetus-changelog">Apache Yetus Changelog</h1>
 
-<h2 id="release-0140-snapshot---2022-05-04">Release 0.14.0-SNAPSHOT - 2022-05-04</h2>
+<h2 id="release-0140-snapshot---2022-05-07">Release 0.14.0-SNAPSHOT - 2022-05-07</h2>
 
 <h3 id="important-issues">IMPORTANT ISSUES:</h3>
 
@@ -565,6 +565,14 @@
       <td style="text-align: left">Allen Wittenauer</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-777">YETUS-777</a></td>
+      <td style="text-align: left">–version is broken in python programs</td>
+      <td style="text-align: left">Major</td>
+      <td style="text-align: left">Precommit</td>
+      <td style="text-align: left">Akira Ajisaka</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
   </tbody>
 </table>
 
@@ -628,6 +636,14 @@
       <td style="text-align: left">Major</td>
       <td style="text-align: left">build, website and documentation</td>
       <td style="text-align: left">Allen Wittenauer</td>
+      <td style="text-align: left">Allen Wittenauer</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><a href="https://issues.apache.org/jira/browse/YETUS-60">YETUS-60</a></td>
+      <td style="text-align: left">recover history from before "the great subproject split"</td>
+      <td style="text-align: left">Minor</td>
+      <td style="text-align: left">build</td>
+      <td style="text-align: left">Sean Busbey</td>
       <td style="text-align: left">Allen Wittenauer</td>
     </tr>
   </tbody>
