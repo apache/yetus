@@ -1,8 +1,0 @@
-org.apache.yetus.audience
-org.apache.yetus.audience.tools
-org.apache.yetus.maven.plugin.fileops
-org.apache.yetus.maven.plugin.rdm
-org.apache.yetus.maven.plugin.shelldocs
-org.apache.yetus.maven.plugin.utils
-org.apache.yetus.releasedocmaker
-org.apache.yetus.shelldocs
