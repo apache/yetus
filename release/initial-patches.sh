@@ -170,13 +170,13 @@ git checkout -b "${JIRAISSUE}-release"
 
 update_version "${NEW_BRANCH_VERSION}"
 
-git commit -a -m "${JIRAISSUE}. Stage version ${NEW_BRANCH_VERSION}"
+git commit -S -a -m "${JIRAISSUE}. Stage version ${NEW_BRANCH_VERSION}"
 
 if [[ -n "${NEW_MAIN_VERSION}" ]]; then
   git checkout --force main
   git checkout -b "${JIRAISSUE}-${STARTING_BRANCH}"
   update_version "${NEW_MAIN_VERSION}"
-  git commit -a -m "${JIRAISSUE}. Bump main version to ${NEW_MAIN_VERSION}"
+  git commit -S -a -m "${JIRAISSUE}. Bump main version to ${NEW_MAIN_VERSION}"
 fi
 
 git checkout "${JIRAISSUE}-release"
