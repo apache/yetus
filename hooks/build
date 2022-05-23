@@ -16,7 +16,9 @@
 
 if [[ -n "${DOCKER_MULTIARCH}" ]]; then
 
-  docker buildx create --name yetus-multiarch --driver docker-container --use || exit 1
+  docker buildx create --name yetus-multiarch --driver docker-container --use \
+    || docker buildx use yetus-multiarch \
+    || exit 1
   docker buildx inspect --bootstrap || exit 1
 
   traphandler() {
