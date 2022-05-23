@@ -89,8 +89,13 @@ fi
 
 if [[ -z "${SOURCE_BRANCH}" ]]; then
   SOURCE_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  if [[ "${SOURCE_BRANCH}" == 'HEAD' ]]; then
+    SOURCE_BRANCH=$(git describe --tags)
+  fi
   export SOURCE_BRANCH
 fi
+
+SOURCE_BRANCH=${SOURCE_BRANCH/rel\//}
 
 if [[ -z "${DOCKER_TAG}" ]]; then
   DOCKER_TAG=${SOURCE_BRANCH}
@@ -122,6 +127,10 @@ if [[ "${BUILDERINSTANCE}" =~ docker-container ]]; then
 
   PLATARRAY=(--platform "${PLATSTRING}")
 fi
+
+echo
+echo "Building ${DOCKER_REPO}-base:${DOCKER_TAG}"
+echo
 
 opencontainerslabels "base"
 
