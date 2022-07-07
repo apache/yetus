@@ -85,6 +85,7 @@ function golangcilint_exec
 
   args+=("--max-issues-per-linter=0")
   args+=("--max-same-issues=0")
+  args+=("--uniq-by-line=false")
   args+=("--out-format=line-number")
   args+=("--print-issued-lines=false")
   args+=("--color=never")
