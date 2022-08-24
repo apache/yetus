@@ -141,4 +141,9 @@ public class DocletEnvironmentProcessorTest {
         assertFalse(environment.isIncluded(get(InterfaceStability.Unstable.class)));
         assertFalse(environment.isIncluded(get()));
     }
+
+    @Test
+    public void testNullElement() {
+        assertFalse(environment.isIncluded(null));
+    }
 }
