@@ -56,6 +56,9 @@ class DocletEnvironmentProcessor {
      * @return true iff the element should be excluded
      */
     private boolean excluded(final Element e) {
+      if (e == null) {
+        return true;
+      }
       // Exclude private and limited private types
       if (e.getAnnotation(InterfaceAudience.Private.class) != null) {
         return true;
