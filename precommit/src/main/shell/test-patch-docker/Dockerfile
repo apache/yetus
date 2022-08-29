@@ -102,13 +102,13 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 # Install Apache Creadur RAT jar
 ####
 FROM yetusbase AS yetusapacherat
-ARG APACHE_RAT_VERSION=0.13
+ARG APACHE_RAT_VERSION=0.14
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/apache-rat \
     && curl -f -s -L -o /tmp/rat.tgz \
-        "https://dlcdn.apache.org/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz" \
+        "https://archive.apache.org/dist/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz" \
     && shasum -a 512 /tmp/rat.tgz \
-        | awk '$1!="2c1e12eace7b80a9b6373c2f5080fbf63d3fa8d9248f3a17bd05de961cd3ca3c4549817b8b7320a84f0c323194edad0abdb86bdfec3976227a228e2143e14a54" {exit(1)}' \
+        | awk '$1!="17119289839dc573dd29039ca09bd86f729f1108308f6681292125418fd7bceeaf7d1a40b83eb01daf7d3dd66fbcc0a68d5431741314e748f7b878e8967459e9" {exit(1)}' \
     && tar --strip-components 1 -C /opt/apache-rat -xpzf /tmp/rat.tgz \
     && rm /tmp/rat.tgz \
     && mv /opt/apache-rat/apache-rat-$APACHE_RAT_VERSION.jar /opt/apache-rat/apache-rat.jar

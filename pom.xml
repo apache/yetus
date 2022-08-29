@@ -72,7 +72,7 @@
     <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
     <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
     <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
-    <maven-rat-plugin.version>0.13</maven-rat-plugin.version>
+    <maven-rat-plugin.version>0.14</maven-rat-plugin.version>
     <mockito.version>4.2.0</mockito.version>
     <spotbugs-maven-plugin.version>4.4.1</spotbugs-maven-plugin.version>
 
@@ -252,6 +252,7 @@
           <excludeSubprojects>false</excludeSubprojects>
           <excludes>
             <exclude>.mvn/maven.config</exclude>
+            <exclude>.gitattributes</exclude>
           </excludes>
         </configuration>
       </plugin>
