@@ -107,6 +107,7 @@ function hadolint_logic
       # shellcheck disable=SC2016
       "${HADOLINT}" \
         "${args[@]}" \
+        --ignore DL3059 \
         "${i}" \
         | "${AWK}" '{printf "%s:",$1; $1=""; print $0}' \
         >> "${PATCH_DIR}/${repostatus}-hadolint-result.txt"
