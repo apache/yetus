@@ -26,6 +26,33 @@ HADOLINT_VERSION=''
 # files that are going to get hadolint'd
 HADOLINT_CHECKFILES=()
 
+## @description  Ignore hadolint warnings
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function hadolint_usage
+{
+  yetus_add_option "--hadolint-ignore-list=<list>" "list of hadolint warnings to ignore"
+}
+
+## @description  hadolint parse args hook
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function hadolint_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --hadolint-ignore-list=*)
+        delete_parameter "${i}"
+        yetus_comma_to_array HADOLINT_IGNORE_LIST "${i#*=}"
+      ;;
+    esac
+  done
+}
+
 function hadolint_filefilter
 {
   declare filename=$1
@@ -95,6 +122,9 @@ function hadolint_logic
     args=(--no-color)
   fi
 
+  prefix="--ignore "
+  ignorelist="${HADOLINT_IGNORE_LIST[*]/#/$prefix}"
+
   for i in "${HADOLINT_CHECKFILES[@]}"; do
     if [[ -f "${i}" ]]; then
 
@@ -107,7 +137,7 @@ function hadolint_logic
       # shellcheck disable=SC2016
       "${HADOLINT}" \
         "${args[@]}" \
-        --ignore DL3059 \
+        "${ignorelist}" \
         "${i}" \
         | "${AWK}" '{printf "%s:",$1; $1=""; print $0}' \
         >> "${PATCH_DIR}/${repostatus}-hadolint-result.txt"
