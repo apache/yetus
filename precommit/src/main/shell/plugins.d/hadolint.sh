@@ -122,8 +122,10 @@ function hadolint_logic
     args=(--no-color)
   fi
 
-  prefix="--ignore "
-  ignorelist="${HADOLINT_IGNORE_LIST[*]/#/$prefix}"
+  if [[ -n "${HADOLINT_IGNORE_LIST}" ]]; then
+    prefix="--ignore "
+    args+=("${HADOLINT_IGNORE_LIST[*]/#/$prefix}")
+  fi
 
   for i in "${HADOLINT_CHECKFILES[@]}"; do
     if [[ -f "${i}" ]]; then
@@ -137,7 +139,6 @@ function hadolint_logic
       # shellcheck disable=SC2016
       "${HADOLINT}" \
         "${args[@]}" \
-        "${ignorelist}" \
         "${i}" \
         | "${AWK}" '{printf "%s:",$1; $1=""; print $0}' \
         >> "${PATCH_DIR}/${repostatus}-hadolint-result.txt"
