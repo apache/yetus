@@ -30,10 +30,39 @@ function hadolint_filefilter
 {
   declare filename=$1
 
-  if [[ ${filename} =~ Dockerfile ]]; then
+  if [[ ${filename} =~ ${HADOLINT_IGNORE_FILE} ]]; then
+    return
+  elif [[ ${filename} =~ Dockerfile ]]; then
     add_test hadolint
     yetus_add_array_element HADOLINT_CHECKFILES "${filename}"
   fi
+}
+
+## @description  The options available for the hadolint plugin
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function hadolint_usage
+{
+  yetus_add_option "--hadolint-ignore-file=<file>" "Excludes this file from hadolint"
+}
+
+## @description  hadolint parse args hook
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function hadolint_parse_args
+{
+  declare i
+
+  for i in "$@"; do
+    case ${i} in
+      --hadolint-ignore-file=*)
+        HADOLINT_IGNORE_FILE="${i#*=}"
+        delete_parameter "${i}"
+      ;;
+    esac
+  done
 }
 
 function hadolint_precheck
