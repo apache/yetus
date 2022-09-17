@@ -30,7 +30,7 @@ function hadolint_filefilter
 {
   declare filename=$1
 
-  if [[ -n ${HADOLINT_IGNORE_FILES} && ${filename} =~ ${HADOLINT_IGNORE_FILES} ]]; then
+  if [[ -n ${HADOLINT_IGNORE_FILE} && ${filename} =~ ${HADOLINT_IGNORE_FILE} ]]; then
     return
   elif [[ ${filename} =~ Dockerfile ]]; then
     add_test hadolint
@@ -44,7 +44,7 @@ function hadolint_filefilter
 ## @replaceable  no
 function hadolint_usage
 {
-  yetus_add_option "--hadolint-ignore-files=<file>" "Excludes the files containing this substring from hadolint"
+  yetus_add_option "--hadolint-ignore-file=<file>" "Excludes the files containing this substring from hadolint"
 }
 
 ## @description  hadolint parse args hook
@@ -58,7 +58,7 @@ function hadolint_parse_args
   for i in "$@"; do
     case ${i} in
       --hadolint-ignore-file=*)
-        HADOLINT_IGNORE_FILES="${i#*=}"
+        HADOLINT_IGNORE_FILE="${i#*=}"
         delete_parameter "${i}"
       ;;
     esac
