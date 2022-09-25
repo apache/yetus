@@ -30,9 +30,7 @@ function hadolint_filefilter
 {
   declare filename=$1
 
-  if [[ -n ${HADOLINT_IGNORE_FILE} && ${filename} =~ ${HADOLINT_IGNORE_FILE} ]]; then
-    return
-  elif [[ ${filename} =~ Dockerfile ]]; then
+  if [[ ${filename} =~ Dockerfile ]]; then
     add_test hadolint
     yetus_add_array_element HADOLINT_CHECKFILES "${filename}"
   fi
@@ -125,6 +123,11 @@ function hadolint_logic
   fi
 
   for i in "${HADOLINT_CHECKFILES[@]}"; do
+    if [[ -n ${HADOLINT_IGNORE_FILE} && ${i} =~ ${HADOLINT_IGNORE_FILE} ]]; then
+      yetus_debug "Skipping ${i} for hadolint"
+      continue
+    fi
+
     if [[ -f "${i}" ]]; then
 
       ## transform from
