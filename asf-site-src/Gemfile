@@ -39,4 +39,6 @@ gem 'mini_racer'
 
 gem 'kramdown-parser-gfm'
 
+gem 'haml', '~>5.2.2'
+
 # rubocop:enable Style/HashSyntax, Style/SymbolArray
