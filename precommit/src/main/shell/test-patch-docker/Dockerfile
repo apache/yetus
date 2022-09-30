@@ -361,7 +361,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ####
 # Install ruby and associated bits
 ###
-ARG RUBY_BUNDLER_VERSION=2.3.10
+ARG RUBY_BUNDLER_VERSION=2.3.22
 ARG RUBY_RAKE_VERSION=13.0.6
 ARG RUBY_RUBOCOP_VERSION=1.26.1
 # hadolint ignore=DL3008

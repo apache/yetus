@@ -1,22 +1,22 @@
 GIT
   remote: https://github.com/middleman/middleman-syntax.git
-  revision: ad7bcde8eb14f1fa79d943511949670cd93de91e
+  revision: d1b3edd4d2a5ad1028621f6c03ab709a1d94d4e2
   specs:
-    middleman-syntax (3.2.0)
+    middleman-syntax (3.3.0)
       middleman-core (>= 3.2)
       rouge (~> 3.2)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.1.6)
+    activesupport (6.1.7)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    addressable (2.8.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     backports (3.23.0)
     coffee-script (2.4.1)
       coffee-script-source
@@ -24,7 +24,7 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.10)
     contracts (0.13.0)
-    dotenv (2.7.6)
+    dotenv (2.8.1)
     em-websocket (0.5.3)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0)
@@ -91,9 +91,9 @@ GEM
       em-websocket (~> 0.5.1)
       middleman-core (>= 3.3)
       rack-livereload (~> 0.3.15)
-    mini_racer (0.6.2)
+    mini_racer (0.6.3)
       libv8-node (~> 16.10.0.0)
-    minitest (5.15.0)
+    minitest (5.16.3)
     padrino-helpers (0.15.1)
       i18n (>= 0.6.7, < 2)
       padrino-support (= 0.15.1)
@@ -101,29 +101,29 @@ GEM
     padrino-support (0.15.1)
     parallel (1.22.1)
     parslet (2.0.0)
-    public_suffix (4.0.7)
-    rack (2.2.3)
+    public_suffix (5.0.0)
+    rack (2.2.4)
     rack-livereload (0.3.17)
       rack
-    rb-fsevent (0.11.1)
+    rb-fsevent (0.11.2)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     rexml (3.2.5)
-    rouge (3.28.0)
+    rouge (3.30.0)
     sassc (2.4.0)
       ffi (~> 1.9)
     servolux (0.13.0)
     temple (0.8.2)
     thor (1.2.1)
-    tilt (2.0.10)
+    tilt (2.0.11)
     toml (0.3.0)
       parslet (>= 1.8.0, < 3.0.0)
-    tzinfo (2.0.4)
+    tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     uglifier (3.2.0)
       execjs (>= 0.3.0, < 3)
     webrick (1.7.0)
-    zeitwerk (2.5.4)
+    zeitwerk (2.6.0)
 
 PLATFORMS
   aarch64-linux
@@ -131,6 +131,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  haml (~> 5.2.2)
   kramdown-parser-gfm
   middleman (~> 4.3)
   middleman-livereload
