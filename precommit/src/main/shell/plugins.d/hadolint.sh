@@ -23,16 +23,12 @@ HADOLINT_TIMER=0
 HADOLINT=${HADOLINT:-$(command -v hadolint 2>/dev/null)}
 HADOLINT_VERSION=''
 
-# files that are going to get hadolint'd
-HADOLINT_CHECKFILES=()
-
 function hadolint_filefilter
 {
   declare filename=$1
 
   if [[ ${filename} =~ Dockerfile ]]; then
     add_test hadolint
-    yetus_add_array_element HADOLINT_CHECKFILES "${filename}"
   fi
 }
 
@@ -95,8 +91,8 @@ function hadolint_logic
     args=(--no-color)
   fi
 
-  for i in "${HADOLINT_CHECKFILES[@]}"; do
-    if [[ -f "${i}" ]]; then
+  for i in "${CHANGED_FILES[@]}"; do
+    if [[ "${i}" =~ Dockerfile ]] && [[ -f "${i}" ]]; then
 
       ## transform from
       ## filename:line\sCODE Text
