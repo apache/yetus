@@ -148,6 +148,19 @@ function shelldocs_postapply
   echo "Running shelldocs against all identifiable shell scripts"
   # we re-check this in case one has been added
   for i in $(shelldocs_private_findbash); do
+
+    skipflag="false"
+
+    for excludepath in "${EXCLUDE_PATHS[@]}"; do
+      if [[  "${i}" =~ ${excludepath} ]]; then
+        skipflag="true"
+      fi
+    done
+
+    if [[ "${skipflag}" == "true" ]]; then
+      continue
+    fi
+
     if [[ -f ${i} ]]; then
       "${SHELLDOCS}" --input "${i}" --lint >> "${PATCH_DIR}/patch-shelldocs-result.txt" 2>&1
     fi

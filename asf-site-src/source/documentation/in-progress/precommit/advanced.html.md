@@ -62,7 +62,9 @@ This function call registers the `pluginname` so that test-patch knows that it e
 function pluginname_filefilter
 ```
 
-defines the filefilter for the `pluginname` plug-in.
+defines the filefilter for the `pluginname` plug-in.  This function determines if the plug-in should
+execute given the filename.  If more extensive analysis is required, execute `add_test` and do that
+work later as there is a chance the file has not been added to the file system yet.
 
 Similarly, there are other functions that may be defined during the test-patch run:
 

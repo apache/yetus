@@ -22,9 +22,6 @@ add_test_type yamllint
 YAMLLINT_TIMER=0
 YAMLLINT=${YAMLLINT:-$(command -v yamllint 2>/dev/null)}
 
-# files that are going to get yamllint'd
-YAMLLINT_CHECKFILES=()
-
 function yamllint_filefilter
 {
   declare filename=$1
@@ -32,7 +29,6 @@ function yamllint_filefilter
   if [[ ${filename} =~ \.yaml$ ]] ||
      [[ ${filename} =~ \.yml$ ]]; then
     add_test yamllint
-    yetus_add_array_element YAMLLINT_CHECKFILES "${filename}"
   fi
 }
 
@@ -54,19 +50,24 @@ function yamllint_logic
 
   pushd "${BASEDIR}" >/dev/null || return 1
 
-  for i in "${YAMLLINT_CHECKFILES[@]}"; do
-    if [[ -f "${i}" ]]; then
-      fn=""
-      while read -r; do
-        if [[ -z "${fn}" ]]; then
-          fn=$REPLY
-        elif [[ -n "${REPLY}" ]]; then
-          # (space)line:col(space)error/warning(space)text
-          output=$(echo "${REPLY}" | awk '{$1=$1":"; $2=$2":"; print $0;}')
-          # fn:line:col:(space)error/warning:(space)text
-          echo "${fn}:${output}" >> "${PATCH_DIR}/${repostatus}-yamllint-result.txt"
-        fi
-      done < <("${YAMLLINT}" "${i}")
+  for i in "${CHANGED_FILES[@]}"; do
+
+    if [[ ${i} =~ \.yaml$ ]] ||
+       [[ ${i} =~ \.yml$ ]]; then
+
+      if [[ -f "${i}" ]]; then
+        fn=""
+        while read -r; do
+          if [[ -z "${fn}" ]]; then
+            fn=$REPLY
+          elif [[ -n "${REPLY}" ]]; then
+            # (space)line:col(space)error/warning(space)text
+            output=$(echo "${REPLY}" | awk '{$1=$1":"; $2=$2":"; print $0;}')
+            # fn:line:col:(space)error/warning:(space)text
+            echo "${fn}:${output}" >> "${PATCH_DIR}/${repostatus}-yamllint-result.txt"
+          fi
+        done < <("${YAMLLINT}" "${i}")
+      fi
     fi
   done
   popd > /dev/null || return 1
