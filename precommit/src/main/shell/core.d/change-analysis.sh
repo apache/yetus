@@ -131,7 +131,7 @@ function exclude_paths_from_changed_files
 }
 
 ## @description Check for directories to skip during
-## @description changed module calcuation
+## @description changed module calculation
 ## @description requires $MODULE_SKIPDIRS to be set
 ## @audience    private
 ## @stability   stable

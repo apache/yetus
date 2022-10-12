@@ -253,6 +253,7 @@
           <excludes>
             <exclude>.mvn/maven.config</exclude>
             <exclude>.gitattributes</exclude>
+            <exclude>.codespellignorewords</exclude>
           </excludes>
         </configuration>
       </plugin>

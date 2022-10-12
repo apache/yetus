@@ -15,5 +15,5 @@
 
 [codespell]
 skip = *.css.*,*.js,./.git/*,./asf.yaml,./asf-site-src/Gemfile.lock
-ignore-regex = class\=\"nd\"
-
+ignore-words = .codespellignorewords
+exclude-file = .codespellignorelines

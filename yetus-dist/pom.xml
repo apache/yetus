@@ -29,7 +29,7 @@
     <relativePath>..</relativePath>
   </parent>
   <artifactId>yetus-dist</artifactId>
-  <description>Distrbution Creation</description>
+  <description>Distribution Creation</description>
   <name>Apache Yetus - Distribution</name>
   <packaging>pom</packaging>
 

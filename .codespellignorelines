@@ -14,3 +14,4 @@
 # limitations under the License.
   unless FileUtils.uptodate?(output, docs) &&
          FileUtils.uptodate?(output, [SHELLDOCS])
+  -v /src/precommit/src/main/shell:/input:ro \
