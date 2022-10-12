@@ -204,11 +204,19 @@ RUN git clone \
 
 ####
 # golangci-lint (Multi-tool golang linter)
+#
+# NOTE: go must be installed prior to executing this block!
 ####
 FROM yetusbase as yetusgolangci
-ARG GOLANGCILINT_VERSION=1.45.2
+ARG GOLANGCILINT_VERSION=1.50.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v$GOLANGCILINT_VERSION
+RUN curl -sSL \
+      https://github.com/golangci/golangci-lint/releases/download/v$GOLANGCILINT_VERSION/golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)".tar.gz \
+      -o golangcilint.tar.gz \
+    && tar -xzf golangcilint.tar.gz \
+        -C /usr/local/bin --strip-components 1 \
+        golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)"/golangci-lint \
+    && rm golangcilint.tar.gz
 
 ########
 #
