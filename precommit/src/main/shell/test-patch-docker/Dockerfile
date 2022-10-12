@@ -213,9 +213,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/golangci/golangci-lint/releases/download/v$GOLANGCILINT_VERSION/golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)".tar.gz \
       -o golangcilint.tar.gz \
-    && tar -xzf golangcilint.tar.gz \
-        -C /usr/local/bin --strip-components 1 \
-        golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)"/golangci-lint \
+    && tar -xzf golangcilint.tar.gz -C /usr/local/bin --strip-components 1 \
     && rm golangcilint.tar.gz
 
 ########
@@ -419,7 +417,7 @@ RUN ln -s /opt/bats/bin/bats /usr/local/bin/bats
 
 COPY --from=yetusrevive /root/go/bin/* /usr/local/bin
 COPY --from=yetuscheckmake /tmp/checkmake/checkmake /usr/local/bin
-COPY --from=yetusgolangci /root/go/bin/* /usr/local/bin
+COPY --from=yetusgolangci /usr/local/bin/golangci-lint /usr/local/bin
 
 ####
 # YETUS CUT HERE
