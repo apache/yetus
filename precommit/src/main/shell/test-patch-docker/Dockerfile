@@ -157,7 +157,7 @@ RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
 # Install buf (protobuf lint)
 ####
 FROM yetusbase AS yetusbuf
-ARG BUF_VERSION=1.3.1
+ARG BUF_VERSION=1.8.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-"$(uname -m)".tar.gz \
