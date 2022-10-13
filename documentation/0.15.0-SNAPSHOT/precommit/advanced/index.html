@@ -172,7 +172,9 @@
 
 <div class="highlight"><pre class="highlight shell"><code><span class="k">function </span>pluginname_filefilter
 </code></pre></div>
-<p>defines the filefilter for the <code>pluginname</code> plug-in.</p>
+<p>defines the filefilter for the <code>pluginname</code> plug-in.  This function determines if the plug-in should<br />
+execute given the filename.  If more extensive analysis is required, execute <code>add_test</code> and do that<br />
+work later as there is a chance the file has not been added to the file system yet.</p>
 
 <p>Similarly, there are other functions that may be defined during the test-patch run:</p>
 
