@@ -169,7 +169,7 @@ RUN curl -sSL \
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
 FROM yetusbase AS yetusbats
-ARG BATS_VERSION=1.6.0
+ARG BATS_VERSION=1.8.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN git clone --branch v$BATS_VERSION \
       https://github.com/bats-core/bats-core.git \
