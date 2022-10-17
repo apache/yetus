@@ -440,7 +440,7 @@ For many projects, it is useful to test Java code against multiple versions of J
 $ test-patch --plugins=all --multijdkdirs="/j/d/k/1,/j/d/k/2"
 ```
 
-Not all Java tests support this mode, but those that do will now run their tests with all of the given versions of Java consecutively (e.g., `javac`--the Java compliation test).  Tests that do not support MultiJDK mode (e.g., checkstyle, mvn install) will use JAVA\_HOME.
+Not all Java tests support this mode, but those that do will now run their tests with all of the given versions of Java consecutively (e.g., `javac`--the Java compilation test).  Tests that do not support MultiJDK mode (e.g., checkstyle, mvn install) will use JAVA\_HOME.
 
 NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JAVA\_HOME is in the list, it will be moved to the end.
 

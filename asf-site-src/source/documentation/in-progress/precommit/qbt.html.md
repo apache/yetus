@@ -69,7 +69,7 @@ ${FILE,path="<report-file-path>"}
 </body></html>
 ```
 
-If your mailing lists do not allow HTML-formatted email, then the `--brief-report-file` provides a solution.  This option creates a very plain, reduced content text file suitable for email.  It contains just the barebones information needed to get information on failures: what voted -1, what tests failed, what subsystems are long running (configurable with the `--brief-report-long` opton), and a list of any attached log files.
+If your mailing lists do not allow HTML-formatted email, then the `--brief-report-file` provides a solution.  This option creates a very plain, reduced content text file suitable for email.  It contains just the barebones information needed to get information on failures: what voted -1, what tests failed, what subsystems are long running (configurable with the `--brief-report-long` option), and a list of any attached log files.
 
 NOTE: Be aware that ASF mailing lists do not allow HTML formatted email.
 
