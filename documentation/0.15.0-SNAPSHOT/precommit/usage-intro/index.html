@@ -506,7 +506,7 @@ provides the <code>--tests-filter</code> option to do just that; print the resul
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--plugins</span><span class="o">=</span>all <span class="nt">--multijdkdirs</span><span class="o">=</span><span class="s2">"/j/d/k/1,/j/d/k/2"</span>
 </code></pre></div>
-<p>Not all Java tests support this mode, but those that do will now run their tests with all of the given versions of Java consecutively (e.g., <code>javac</code>–the Java compliation test).  Tests that do not support MultiJDK mode (e.g., checkstyle, mvn install) will use JAVA_HOME.</p>
+<p>Not all Java tests support this mode, but those that do will now run their tests with all of the given versions of Java consecutively (e.g., <code>javac</code>–the Java compilation test).  Tests that do not support MultiJDK mode (e.g., checkstyle, mvn install) will use JAVA_HOME.</p>
 
 <p>NOTE: JAVA_HOME is always appended to the list of JDKs in MultiJDK mode.  If JAVA_HOME is in the list, it will be moved to the end.</p>
 
