@@ -1,0 +1,228 @@
+<!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Apache Yetus</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <link href="../../../../assets/css/bootstrap.css" rel="stylesheet">
+        <link href="../../../../assets/css/bootstrap-theme.css" rel="stylesheet">
+        <link href="../../../../assets/css/font-awesome.css" rel="stylesheet">
+
+        <!-- JS -->
+        <script type="text/javascript" src="../../../../assets/js/jquery-2.1.4.min.js"></script>
+        <script type="text/javascript" src="../../../../assets/js/bootstrap.js"></script>
+  </head>
+    <body>
+      
+<div class="navbar navbar-inverse navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="img-responsive pull-left" href="/">
+                <img style="max-height: 40px; margin-top: 5px; margin-bottom: 5px;" src="../../../../assets/img/yetus_logo.png" alt="Apache Yetus logo" />
+            </a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/downloads/">Downloads</a>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Documentation <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu">
+                      <li><a href="/documentation/0.12.0/">Docs for v0.12.0</a></li>
+                      <li><a href="/documentation/0.13.0/">Docs for v0.13.0</a></li>
+                      <li><a href="/documentation/0.14.0/">Docs for v0.14.0</a></li>
+                      <li><a href="/documentation/in-progress/">In Progress Docs for Contributors</a>
+                      </li>
+                      <li><a href="/documentation/history/">History of the Project</a>
+                      </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Get Involved <span class="caret"></span></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="drop1">
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/mailinglists"><i class="fa fa-commenting"></i> Mailing Lists</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://issues.apache.org/jira/browse/YETUS"><i class="fa fa-bug"></i> JIRA (Bugs)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://gitbox.apache.org/repos/asf/yetus.git"><i class="fa fa-code"></i> Source (Apache)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://github.com/apache/yetus"><i class="fa fa-github-alt"></i> Source (GitHub)</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="/contribute/"><i class="fa fa-code-fork"></i> Contributing</a>
+                        </li>
+                        <li role="presentation"><a role="menuitem" tabindex="-1" href="https://twitter.com/ApacheYetus"><i class="fa fa-twitter"></i> @ApacheYetus</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Apache Software Foundation <b class="caret"></b></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="https://www.apache.org">Apache Homepage</a>
+                            </li>
+                            <li><a href="https://www.apache.org/licenses/">Apache License</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/sponsorship.html">Sponsorship</a>
+                            </li>
+                            <li><a href="https://www.apache.org/foundation/thanks.html">Thanks</a>
+                            </li>
+                            <li><a href="https://www.apache.org/security/">Security</a>
+                            </li>
+                        </ul>
+                    </li>
+                </li>
+            </ul>
+        </div>
+        <!--/.nav-collapse -->
+    </div>
+</div>
+
+      <div class="container">
+        <!---
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+
+<h1 id="robots-continuous-integration-support">Robots: Continuous Integration Support</h1>
+
+<!-- MarkdownTOC levels="1,2" autolink="true" indent="  " bullets="*" bracket="round" -->
+
+<ul>
+  <li><a href="#intro">Intro</a></li>
+  <li><a href="#automated-robot-detection">Automated Robot Detection</a></li>
+  <li><a href="#manual-configuration">Manual Configuration</a></li>
+  <li><a href="#sentinel-mode">Sentinel Mode</a></li>
+  <li><a href="#continuous-improvement">Continuous Improvement</a></li>
+</ul>
+
+<!-- /MarkdownTOC -->
+
+<h1 id="intro">Intro</h1>
+
+<p><code>test-patch</code> works hand-in-hand with various CI and other automated build systems.  <code>test-patch</code> will attempt to auto-determine if it is running under such a system and change its defaults to match known configuration parameters automatically. When robots are activated, there is generally some additional/changed behavior:</p>
+
+<ul>
+  <li>display extra information in the footer</li>
+  <li>change log entries from file names to URLs</li>
+  <li>activate <code>--resetrepo</code> to keep the directory structure clean</li>
+  <li>enable the running of unit tests and run them in parallel</li>
+  <li>if possible, write comments to bug systems</li>
+  <li>attempt to determine the build tool in use</li>
+  <li>activate Docker maintenance when <code>--docker</code> is passed</li>
+  <li>attempt to determine whether this is a full build (<code>qbt</code>) or testing a patch/merge request/pull request.</li>
+</ul>
+
+<h1 id="automated-robot-detection">Automated Robot Detection</h1>
+
+<p>The following systems are detected automatically when run in one of these environments:</p>
+
+<ul>
+  <li><a href="azurepipelines">Azure Pipelines</a></li>
+  <li><a href="buildkite">Buildkite</a></li>
+  <li><a href="circleci">Circle CI</a></li>
+  <li><a href="cirrusci">Cirrus CI</a></li>
+  <li><a href="githubactions">GitHub Actions</a></li>
+  <li><a href="gitlabci">Gitlab CI</a></li>
+  <li><a href="jenkins">Jenkins</a></li>
+  <li><a href="semaphoreci">Semaphore CI</a></li>
+  <li><a href="travisci">Travis CI</a></li>
+</ul>
+
+<h1 id="manual-configuration">Manual Configuration</h1>
+
+<p>For automated systems that are not directly supported, <code>--robot</code> tells <code>test-patch</code> that this is an automated system.  This will trigger many of the above settings.</p>
+
+<p>The <code>--build-url</code> option is also useful when running in <code>--robot</code> mode so that emails and such<br />
+have a location to look at the output artifacts:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--robot</span> <span class="nt">--build-url</span><span class="o">=</span>https://server.example.name:80/<span class="k">${</span><span class="nv">buildnumber</span><span class="k">}</span>/
+</code></pre></div>
+<p>Some plug-ins such as Maven have special handling if there are multiple executions of <code>test-patch</code> happening at once.  It is very common when using automation systems to have multiple runs on the same host. In order to assist these plug-ins, an instance identifier may be provided:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--robot</span> <span class="nt">--instance</span><span class="o">=</span>1
+</code></pre></div>
+<p>If <code>--robot</code> is specified without an instance, a random number is generated and used.</p>
+
+<h1 id="sentinel-mode">Sentinel Mode</h1>
+
+<p>If stuck Docker containers are a problem, a more aggressive robot may be enabled with the <code>--sentinel</code> option.  This option<br />
+enables killing containers that have been running for over 24 hours as well. See the documentation on <a href="../docker">docker</a><br />
+for more information.</p>
+
+<h1 id="continuous-improvement">Continuous Improvement</h1>
+
+<p>It isn't unusual when adding a new linter to an existing source repository to be overwhelmed with new errors.<br />
+Most projects want to start out where all new patches cannot add new errors, but the existing ones are<br />
+acceptable.  In order to enable branches to build with errors but patches/PRs to fail on robots,<br />
+<code>test-patch</code> supports the <code>--continuous-improvement</code> flag:</p>
+
+<p>Normally, <code>test-patch</code> execute with this flag set to false:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--continuous-improvement</span><span class="o">=</span><span class="nb">false</span> <span class="o">(</span>other options<span class="o">)</span>
+</code></pre></div>
+<p>This setting will fail branches and PRs if any errors are found. However, if this value is set to true:</p>
+
+<div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span>test-patch <span class="nt">--continuous-improvement</span><span class="o">=</span><span class="nb">true</span> <span class="o">(</span>other options<span class="o">)</span>
+</code></pre></div>
+<p>then branches will still report errors but the return code will be successful.  Using this mode is ideal for<br />
+many CI/CD systems that are using repositories with known problems.</p>
+
+    </div>
+      
+<div class="container">
+    <hr>
+    <footer class="footer">
+        <div class="row-fluid">
+            <div class="span12 text-left">
+              <div class="span12">
+                Copyright 2008-2022 <a href="https://www.apache.org/">Apache Software Foundation</a>. Licensed under the <a href="https://www.apache.org/licenses/">Apache License v2.0</a>. Apache Yetus and the Apache feather logo are trademarks of The Apache Software Foundation.
+              </div>
+            </div>
+
+        </div>
+
+    </footer>
+</div>
+
+  </body>
+</html>
