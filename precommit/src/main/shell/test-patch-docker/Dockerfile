@@ -325,6 +325,7 @@ ARG PY3_ASTROID_VERSION=2.11.2
 ARG PY3_CODESPELL_VERSION=2.2.1
 ARG PY3_DETECT_SECRETS=1.2.0
 ARG PY3_DOCKER_COMPOSE=1.29.2
+ARG PY3_RSTCHECK_VERSION=5.0.0
 ARG PY3_PYLINT_VERSION=2.13.4
 ARG PY3_YAMLLINT_VERSION=1.26.3
 # hadolint ignore=DL3008
@@ -358,6 +359,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         detect-secrets==$PY3_DETECT_SECRETS \
         docker-compose==$PY3_DOCKER_COMPOSE \
         pylint==$PY3_PYLINT_VERSION \
+        rstcheck==$PY3_RSTCHECK_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \

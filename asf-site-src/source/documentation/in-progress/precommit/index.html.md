@@ -136,6 +136,7 @@ Commonly Parsed File Formats:
 * .md: [markdownlint-cli](plugins/markdownlint)
 * json: [jsonlint](plugins/jsonlint)
 * .proto: [buf](plugins/buf)
+* .rst: [rstcheck](plugins/rstcheck)
 * .yaml/.yml: [yamllint](plugins/yamllint)
 * .html/.xml: [xml](plugins/xml)
 
