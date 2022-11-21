@@ -22,14 +22,14 @@ import sys
 
 hashdict = []
 
-inputfile = sys.argv[1]
-inputpath = pathlib.Path(inputfile).resolve()
+INPUTFILE = sys.argv[1]
+INPUTPATH = pathlib.Path(INPUTFILE).resolve()
 
 if len(sys.argv) == 3:
-    hashfile = sys.argv[2]
-    hashpath = pathlib.Path(hashfile).resolve()
-    if hashpath.exists():
-        with open(hashpath, encoding='utf-8') as filein:
+    HASHFILE = sys.argv[2]
+    HASHPATH = pathlib.Path(HASHFILE).resolve()
+    if HASHPATH.exists():
+        with open(HASHPATH, encoding='utf-8') as filein:
             while True:
                 line = filein.readline()
                 if not line:
@@ -38,11 +38,11 @@ if len(sys.argv) == 3:
                     continue
                 hashdict.append(line.strip())
 
-if not inputpath.exists() or not inputpath.is_file():
-    logging.error('%s does not exist or is not a file.', inputpath)
+if not INPUTPATH.exists() or not INPUTPATH.is_file():
+    logging.error('%s does not exist or is not a file.', INPUTPATH)
     sys.exit(1)
 
-with open(inputfile, encoding='utf-8') as filein:
+with open(INPUTFILE, encoding='utf-8') as filein:
     rawdata = filein.read()
 
 jsondata = json.loads(rawdata)

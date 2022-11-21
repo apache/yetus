@@ -169,7 +169,8 @@ class ProcessFile:
                     return True
             return False
 
-    def _docstrip(self, key, dstr):  #pylint: disable=no-self-use
+    @staticmethod
+    def _docstrip(key, dstr):
         '''remove extra spaces from shelldoc phrase'''
         dstr = re.sub(f"^## @{key} ", "", dstr)
         dstr = dstr.strip()
@@ -223,7 +224,8 @@ class ProcessFile:
             return
         funcdef.returnt.append(self._docstrip('return', text))
 
-    def _process_function(self, funcdef, text=None, linenum=1):  # pylint: disable=no-self-use
+    @staticmethod
+    def _process_function(funcdef, text=None, linenum=1):
         '''set the name of the function'''
         if ProcessFile.FUNCTIONRE.match(text):
             definition = ProcessFile.FUNCTIONRE.match(text).groups()[0]
