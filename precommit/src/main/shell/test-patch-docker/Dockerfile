@@ -22,7 +22,7 @@
 #
 ###############
 
-FROM ubuntu:focal AS yetusbase
+FROM ubuntu:jammy AS yetusbase
 
 ## NOTE to committers: if this gets moved from Xenial to something else, be
 ## sure to also fix the gpg link in asf-site-src as appropriate
@@ -145,7 +145,7 @@ RUN curl -sSL \
 # Install hadolint (dockerfile lint)
 ####
 FROM yetusbase AS yetushadolint
-ARG HADOLINT_VERSION=2.10.0
+ARG HADOLINT_VERSION=2.12.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
         https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-"$(uname -m)" \
@@ -157,7 +157,7 @@ RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
 # Install buf (protobuf lint)
 ####
 FROM yetusbase AS yetusbuf
-ARG BUF_VERSION=1.8.0
+ARG BUF_VERSION=1.9.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-"$(uname -m)".tar.gz \
@@ -169,7 +169,7 @@ RUN curl -sSL \
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
 FROM yetusbase AS yetusbats
-ARG BATS_VERSION=1.8.0
+ARG BATS_VERSION=1.8.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN git clone --branch v$BATS_VERSION \
       https://github.com/bats-core/bats-core.git \
@@ -208,7 +208,7 @@ RUN git clone \
 # NOTE: go must be installed prior to executing this block!
 ####
 FROM yetusbase as yetusgolangci
-ARG GOLANGCILINT_VERSION=1.50.0
+ARG GOLANGCILINT_VERSION=1.50.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/golangci/golangci-lint/releases/download/v$GOLANGCILINT_VERSION/golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)".tar.gz \
@@ -278,7 +278,7 @@ RUN add-apt-repository -y \
    "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable" \
-    && apt-get -q update && apt-get -q install --no-install-recommends -y docker-ce \
+    && apt-get -q update && apt-get -q install --no-install-recommends -y docker-ce docker-compose-plugin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -286,7 +286,7 @@ RUN add-apt-repository -y \
 # Install maven
 ######
 # hadolint ignore=DL3008,DL3059
-ARG MVN_VERSION=3.8.5
+ARG MVN_VERSION=3.8.6
 ARG MVN_TGZ=apache-maven-$MVN_VERSION-bin.tar.gz
 RUN curl -sSL \
         -o $MVN_TGZ \
@@ -319,14 +319,13 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # Install python3 and pylint3
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
-ARG PY3_ANSIBLE_VERSION=5.5.0
-ARG PY3_ANSIBLELINT_VERSION=6.0.2
-ARG PY3_ASTROID_VERSION=2.11.2
-ARG PY3_CODESPELL_VERSION=2.2.1
-ARG PY3_DETECT_SECRETS=1.2.0
-ARG PY3_DOCKER_COMPOSE=1.29.2
-ARG PY3_PYLINT_VERSION=2.13.4
-ARG PY3_YAMLLINT_VERSION=1.26.3
+ARG PY3_ANSIBLE_VERSION=6.6.0
+ARG PY3_ANSIBLELINT_VERSION=6.8.7
+ARG PY3_ASTROID_VERSION=2.12.13
+ARG PY3_CODESPELL_VERSION=2.2.2
+ARG PY3_DETECT_SECRETS=1.4.0
+ARG PY3_PYLINT_VERSION=2.15.6
+ARG PY3_YAMLLINT_VERSION=1.28.0
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3 \
@@ -356,7 +355,6 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
         detect-secrets==$PY3_DETECT_SECRETS \
-        docker-compose==$PY3_DOCKER_COMPOSE \
         pylint==$PY3_PYLINT_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
     && rm -rf /root/.cache \
@@ -367,9 +365,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ####
 # Install ruby and associated bits
 ###
-ARG RUBY_BUNDLER_VERSION=2.3.22
+ARG RUBY_BUNDLER_VERSION=2.3.26
 ARG RUBY_RAKE_VERSION=13.0.6
-ARG RUBY_RUBOCOP_VERSION=1.26.1
+ARG RUBY_RUBOCOP_VERSION=1.39
 # hadolint ignore=DL3008
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -389,8 +387,8 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 ###
 # Install npm and JSHint
 ###
-ARG JSHINT_VERSION=2.13.4
-ARG MARKDOWNLINTCLI_VERSION=0.31.1
+ARG JSHINT_VERSION=2.13.6
+ARG MARKDOWNLINTCLI_VERSION=0.32.2
 ARG JSONLINT_VERSION=1.6.0
 # hadolint ignore=DL3008
 RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \

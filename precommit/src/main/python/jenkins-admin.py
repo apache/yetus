@@ -40,9 +40,9 @@ def http_get(resource, ignore_error=False, username=None, password=None):
 
     try:
         if username and password:
-            response = requests.get(resource, auth=(username, password))
+            response = requests.get(resource, auth=(username, password), timeout=10)
         else:
-            response = requests.get(resource)
+            response = requests.get(resource, timeout=10)
         response.raise_for_status()
     except requests.exceptions.HTTPError as http_err:
         errstr = str(http_err)
