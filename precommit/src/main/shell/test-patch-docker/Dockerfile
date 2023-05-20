@@ -117,7 +117,7 @@ RUN mkdir -p /opt/apache-rat \
 # Install SpotBugs
 #####
 FROM yetusbase AS yetusspotbugs
-ARG SPOTBUGS_VERSION=4.6.0
+ARG SPOTBUGS_VERSION=4.7.3
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz -o spotbugs.tgz \
     && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz.sha1 -o spotbugs.tgz.sha1 \
@@ -133,7 +133,7 @@ RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/
 # Install shellcheck (shell script lint)
 ####
 FROM yetusbase AS yetusshellcheck
-ARG SHELLCHECK_VERSION=0.8.0
+ARG SHELLCHECK_VERSION=0.9.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
     https://github.com/koalaman/shellcheck/releases/download/v$SHELLCHECK_VERSION/shellcheck-v$SHELLCHECK_VERSION.linux."$(uname -m)".tar.xz \
@@ -157,7 +157,7 @@ RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
 # Install buf (protobuf lint)
 ####
 FROM yetusbase AS yetusbuf
-ARG BUF_VERSION=1.9.0
+ARG BUF_VERSION=1.19.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-"$(uname -m)".tar.gz \
@@ -169,7 +169,7 @@ RUN curl -sSL \
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
 FROM yetusbase AS yetusbats
-ARG BATS_VERSION=1.8.2
+ARG BATS_VERSION=1.9.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN git clone --branch v$BATS_VERSION \
       https://github.com/bats-core/bats-core.git \
@@ -192,7 +192,7 @@ RUN go install github.com/mgechev/revive@latest
 #
 ####
 FROM yetusbase AS yetuscheckmake
-ARG CHECKMAKE_VERSION=0.2.1
+ARG CHECKMAKE_VERSION=0.2.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV BUILDER_NAME='Apache Yetus'
 ENV BUILDER_EMAIL='dev@apache.yetus.org'
@@ -208,7 +208,7 @@ RUN git clone \
 # NOTE: go must be installed prior to executing this block!
 ####
 FROM yetusbase as yetusgolangci
-ARG GOLANGCILINT_VERSION=1.50.1
+ARG GOLANGCILINT_VERSION=1.52.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/golangci/golangci-lint/releases/download/v$GOLANGCILINT_VERSION/golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)".tar.gz \
@@ -286,7 +286,7 @@ RUN add-apt-repository -y \
 # Install maven
 ######
 # hadolint ignore=DL3008,DL3059
-ARG MVN_VERSION=3.8.6
+ARG MVN_VERSION=3.9.2
 ARG MVN_TGZ=apache-maven-$MVN_VERSION-bin.tar.gz
 RUN curl -sSL \
         -o $MVN_TGZ \
@@ -319,13 +319,13 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # Install python3 and pylint3
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
-ARG PY3_ANSIBLE_VERSION=6.6.0
-ARG PY3_ANSIBLELINT_VERSION=6.8.7
-ARG PY3_ASTROID_VERSION=2.12.13
-ARG PY3_CODESPELL_VERSION=2.2.2
+#ARG PY3_ANSIBLE_VERSION=7.5.0
+ARG PY3_ANSIBLELINT_VERSION=6.16.1
+ARG PY3_ASTROID_VERSION=2.15.5
+ARG PY3_CODESPELL_VERSION=2.2.4
 ARG PY3_DETECT_SECRETS=1.4.0
-ARG PY3_PYLINT_VERSION=2.15.6
-ARG PY3_YAMLLINT_VERSION=1.28.0
+ARG PY3_PYLINT_VERSION=2.17.4
+ARG PY3_YAMLLINT_VERSION=1.31.0
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3 \
@@ -350,7 +350,6 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && python3 /tmp/get-pip.py \
     && rm /usr/local/bin/pip /tmp/get-pip.py \
     && pip3 install --no-cache-dir -v \
-        ansible==$PY3_ANSIBLE_VERSION \
         ansible-lint==$PY3_ANSIBLELINT_VERSION \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
@@ -365,9 +364,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ####
 # Install ruby and associated bits
 ###
-ARG RUBY_BUNDLER_VERSION=2.3.26
+ARG RUBY_BUNDLER_VERSION=2.4.13
 ARG RUBY_RAKE_VERSION=13.0.6
-ARG RUBY_RUBOCOP_VERSION=1.39
+ARG RUBY_RUBOCOP_VERSION=1.51
 # hadolint ignore=DL3008
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -388,10 +387,10 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 # Install npm and JSHint
 ###
 ARG JSHINT_VERSION=2.13.6
-ARG MARKDOWNLINTCLI_VERSION=0.32.2
-ARG JSONLINT_VERSION=1.6.0
+ARG MARKDOWNLINTCLI_VERSION=0.34.0
+ARG JSONLINT_VERSION=1.6.3
 # hadolint ignore=DL3008
-RUN curl -sSL https://deb.nodesource.com/setup_14.x | bash - \
+RUN curl -sSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get -q install --no-install-recommends -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \

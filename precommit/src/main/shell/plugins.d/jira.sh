@@ -443,7 +443,7 @@ function jira_finalreport
     echo "| (x) *{color:red}-1 overall{color}* |" >> "${commentfile}"
   fi
 
-  echo "\\\\" >>  "${commentfile}"
+  printf '\\\\\n' >>  "${commentfile}"
 
   i=0
   until [[ $i -ge ${#TP_HEADER[@]} ]]; do
@@ -451,7 +451,7 @@ function jira_finalreport
     ((i=i+1))
   done
 
-  echo "\\\\" >>  "${commentfile}"
+  printf '\\\\\n' >>  "${commentfile}"
 
   echo "|| Vote || Subsystem || Runtime ||  Logfile || Comment ||" >> "${commentfile}"
 
@@ -522,7 +522,7 @@ function jira_finalreport
   done
 
   if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
-    { echo "\\\\" ; echo "\\\\"; } >>  "${commentfile}"
+    { printf '\\\\\n' ; printf '\\\\\n'; } >>  "${commentfile}"
 
     echo "|| Reason || Tests ||" >>  "${commentfile}"
     i=0
@@ -532,7 +532,7 @@ function jira_finalreport
     done
   fi
 
-  { echo "\\\\" ; echo "\\\\"; } >>  "${commentfile}"
+  { printf '\\\\\n' ; printf '\\\\\n' ; } >>  "${commentfile}"
 
 
   echo "|| Subsystem || Report/Notes ||" >> "${commentfile}"

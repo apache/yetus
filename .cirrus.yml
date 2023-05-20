@@ -28,6 +28,7 @@ yetus_task:
              --java-home=/usr/lib/jvm/java-11-openjdk-amd64
              --junit-report-xml=/tmp/yetus-out/junit.xml
              --plugins=all
+             --junit-report-xml=line
              --tests-filter=checkstyle,test4tests
   always:
     junit_artifacts:

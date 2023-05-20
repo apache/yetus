@@ -40,16 +40,19 @@ QATESTMODE=false
 # dummy functions
 function add_vote_table_v2
 {
+   # shellcheck disable=SC2317
   true
 }
 
 function add_footer_table
 {
+   # shellcheck disable=SC2317
   true
 }
 
 function bugsystem_finalreport
 {
+   # shellcheck disable=SC2317
   true
 }
 
@@ -171,6 +174,7 @@ function yetus_usage
   yetus_reset_usage
 }
 
+ # shellcheck disable=SC2317
 ## @description  Large display for the user console
 ## @audience     public
 ## @stability    stable
@@ -184,7 +188,7 @@ function big_console_header
   printf '\n\n'
   echo "============================================================================"
   echo "============================================================================"
-  printf '%*s\n'  ${spacing} "${text}"
+  printf '%*s\n'  "${spacing}" "${text}"
   echo "============================================================================"
   echo "============================================================================"
   printf '\n\n'
