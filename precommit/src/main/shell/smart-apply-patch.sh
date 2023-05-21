@@ -29,7 +29,7 @@ BINDIR=$(cd -P -- "$(dirname -- "${this}")" >/dev/null && pwd -P)
 QATESTMODE=false
 STARTINGDIR=$(pwd)
 
-
+# shellcheck disable=SC2317
 ## @description  disable function
 ## @stability    stable
 ## @audience     private
@@ -39,6 +39,7 @@ function add_vote_table_v2
   true
 }
 
+# shellcheck disable=SC2317
 ## @description  disable function
 ## @stability    stable
 ## @audience     private
@@ -48,6 +49,7 @@ function add_footer_table
   true
 }
 
+# shellcheck disable=SC2317
 ## @description  disable function
 ## @stability    stable
 ## @audience     private
@@ -57,6 +59,7 @@ function big_console_header
   true
 }
 
+# shellcheck disable=SC2317
 ## @description  disable function
 ## @stability    stable
 ## @audience     private
@@ -66,7 +69,7 @@ function add_test
   true
 }
 
-
+# shellcheck disable=SC2317
 ## @description  disable function
 ## @stability    stable
 ## @audience     private
@@ -303,6 +306,7 @@ function gitam_dryrun
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  git am signoff
 ## @replaceable  no
 ## @audience     private
@@ -313,12 +317,12 @@ function gitam_apply
   declare gpg=$2
 
   if [[ ${gpg} = true ]]; then
-    EXTRA_ARGS="-S"
+    EXTRA_ARGS+=("-S")
   fi
 
   echo "Applying the patch:"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am.log" \
-    "${GIT}" am --signoff ${EXTRA_ARGS} --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
+    "${GIT}" am --signoff "${EXTRA_ARGS[@]}" --whitespace=fix "-p${PATCH_LEVEL}" "${patchfile}"
   RESULT=$?
   "${GREP}" -v "^Checking" "${PATCH_DIR}/apply-patch-git-am.log"
 
@@ -329,6 +333,7 @@ function gitam_apply
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  get author and summary from jira and commit it.
 ##               if the author and the summary contains " or *,
 ##               the function does not work correctly because
@@ -370,7 +375,7 @@ function gitapply_and_commit
   "${GIT}" add --all
   echo "Committing with author: ${author}, summary: ${summary}"
   yetus_run_and_redirect "${PATCH_DIR}/apply-patch-git-am-fallback.log" \
-    "${GIT}" commit ${EXTRA_ARGS} --signoff -m "${PATCH_OR_ISSUE}. ${summary}" \
+    "${GIT}" commit "${EXTRA_ARGS[@]}" --signoff -m "${PATCH_OR_ISSUE}. ${summary}" \
     --author="${author}"
 }
 
