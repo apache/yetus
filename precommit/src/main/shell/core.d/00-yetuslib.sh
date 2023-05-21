@@ -143,7 +143,7 @@ function yetus_add_option
   declare option=$1
   declare text=$2
 
-  YETUS_OPTION_USAGE[${YETUS_OPTION_USAGE_COUNTER}]="${option}@${text}"
+  YETUS_OPTION_USAGE[YETUS_OPTION_USAGE_COUNTER]="${option}@${text}"
   ((YETUS_OPTION_USAGE_COUNTER=YETUS_OPTION_USAGE_COUNTER+1))
 }
 
@@ -191,7 +191,7 @@ function yetus_generic_columnprinter
   fi
 
   while read -r line; do
-    tmpa[${counter}]=${line}
+    tmpa[counter]=${line}
     ((counter=counter+1))
     option="${line%%@*}"
     if [[ ${#option} -gt ${maxoptsize} ]]; then

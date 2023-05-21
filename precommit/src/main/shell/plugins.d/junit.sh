@@ -183,7 +183,7 @@ EOF
 
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)

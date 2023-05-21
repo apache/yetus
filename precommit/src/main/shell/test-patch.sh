@@ -185,7 +185,7 @@ function offset_clock
 function add_header_line
 {
   # shellcheck disable=SC2034
-  TP_HEADER[${TP_HEADER_COUNTER}]="$*"
+  TP_HEADER[TP_HEADER_COUNTER]="$*"
   ((TP_HEADER_COUNTER=TP_HEADER_COUNTER+1 ))
 }
 
@@ -220,7 +220,7 @@ function add_vote_table_v2
   yetus_debug "add_vote_table_v2 >${value}< >${subsystem}< >${logfile}< >${elapsed}< ${*}"
 
   if [[ "${value}" = H ]]; then
-    TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="|${value}| | | | ${subsystem} |"
+    TP_VOTE_TABLE[TP_VOTE_COUNTER]="|${value}| | | | ${subsystem} |"
     ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
     return
   fi
@@ -236,7 +236,7 @@ function add_vote_table_v2
   done
 
   # shellcheck disable=SC2034
-  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| ${value} | ${subsystem} | ${elapsed} | ${logfile} | $* |"
+  TP_VOTE_TABLE[TP_VOTE_COUNTER]="| ${value} | ${subsystem} | ${elapsed} | ${logfile} | $* |"
   ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1))
 
   if [[ "${value}" = -1 ]]; then
@@ -354,7 +354,7 @@ function finish_vote_table
   echo ""
 
   # shellcheck disable=SC2034
-  TP_VOTE_TABLE[${TP_VOTE_COUNTER}]="| | | ${elapsed} | |"
+  TP_VOTE_TABLE[TP_VOTE_COUNTER]="| | | ${elapsed} | |"
   ((TP_VOTE_COUNTER=TP_VOTE_COUNTER+1 ))
 }
 
@@ -372,7 +372,7 @@ function add_footer_table
   shift 1
 
   # shellcheck disable=SC2034
-  TP_FOOTER_TABLE[${TP_FOOTER_COUNTER}]="| ${subsystem} | $* |"
+  TP_FOOTER_TABLE[TP_FOOTER_COUNTER]="| ${subsystem} | $* |"
   ((TP_FOOTER_COUNTER=TP_FOOTER_COUNTER+1 ))
 }
 
@@ -388,7 +388,7 @@ function add_test_table
   shift 1
 
   # shellcheck disable=SC2034
-  TP_TEST_TABLE[${TP_TEST_COUNTER}]="| ${failure} | $* |"
+  TP_TEST_TABLE[TP_TEST_COUNTER]="| ${failure} | $* |"
   ((TP_TEST_COUNTER=TP_TEST_COUNTER+1 ))
 }
 
@@ -1525,7 +1525,7 @@ function buildtool_cwd
   declare modindex=$1
 
   BUILDTOOLCWD="${BUILDTOOLCWD//@@@BASEDIR@@@/${BASEDIR}}"
-  BUILDTOOLCWD="${BUILDTOOLCWD//@@@MODULEDIR@@@/${BASEDIR}/${MODULE[${modindex}]}}"
+  BUILDTOOLCWD="${BUILDTOOLCWD//@@@MODULEDIR@@@/${BASEDIR}/${MODULE[modindex]}}"
 
   if [[ "${BUILDTOOLCWD}" =~ ^/ ]]; then
     yetus_debug "buildtool_cwd: ${BUILDTOOLCWD}"
@@ -1541,10 +1541,10 @@ function buildtool_cwd
       pushd "${BASEDIR}" >/dev/null || return 1
     ;;
     module)
-      if [[ ! -d "${BASEDIR}/${MODULE[${modindex}]}" ]]; then
+      if [[ ! -d "${BASEDIR}/${MODULE[modindex]}" ]]; then
         return 1
       fi
-      pushd "${BASEDIR}/${MODULE[${modindex}]}" >/dev/null || return 1
+      pushd "${BASEDIR}/${MODULE[modindex]}" >/dev/null || return 1
     ;;
     *)
       pushd "$(pwd)" >/dev/null || return 1
@@ -1776,34 +1776,34 @@ function modules_messages
     until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
 
       if [[ ${multijdkmode} == true ]]; then
-        statusjdk=${MODULE_STATUS_JDK[${modindex}]}
+        statusjdk=${MODULE_STATUS_JDK[modindex]}
       fi
 
-      if [[ "${MODULE_STATUS[${modindex}]}" == '+1' ]]; then
-        ((goodtime=goodtime + ${MODULE_STATUS_TIMER[${modindex}]}))
+      if [[ "${MODULE_STATUS[modindex]}" == '+1' ]]; then
+        ((goodtime=goodtime + MODULE_STATUS_TIMER[modindex]))
       else
         failure=true
         start_clock
         echo ""
-        echo "${MODULE_STATUS_MSG[${modindex}]}"
+        echo "${MODULE_STATUS_MSG[modindex]}"
         echo ""
-        offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
-        if [[ ${MODULE_STATUS[${modindex}]} == -1
-          && -n "${MODULE_STATUS_LOG[${modindex}]}" ]]; then
+        offset_clock "${MODULE_STATUS_TIMER[modindex]}"
+        if [[ ${MODULE_STATUS[modindex]} == -1
+          && -n "${MODULE_STATUS_LOG[modindex]}" ]]; then
           add_vote_table_v2 \
-            "${MODULE_STATUS[${modindex}]}" \
+            "${MODULE_STATUS[modindex]}" \
             "${testtype}" \
-            "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}" \
-            "${MODULE_STATUS_MSG[${modindex}]}"
+            "@@BASE@@/${MODULE_STATUS_LOG[modindex]}" \
+            "${MODULE_STATUS_MSG[modindex]}"
           bugsystem_linecomments_queue \
             "${testtype}" \
-            "${PATCH_DIR}/${MODULE_STATUS_LOG[${modindex}]}"
+            "${PATCH_DIR}/${MODULE_STATUS_LOG[modindex]}"
         else
           add_vote_table_v2 \
-            "${MODULE_STATUS[${modindex}]}" \
+            "${MODULE_STATUS[modindex]}" \
             "${testtype}" \
             "" \
-            "${MODULE_STATUS_MSG[${modindex}]}"
+            "${MODULE_STATUS_MSG[modindex]}"
         fi
       fi
       ((modindex=modindex+1))
@@ -1818,22 +1818,22 @@ function modules_messages
     until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
       start_clock
       echo ""
-      echo "${MODULE_STATUS_MSG[${modindex}]}"
+      echo "${MODULE_STATUS_MSG[modindex]}"
       echo ""
-      offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
-      if [[ ${MODULE_STATUS[${modindex}]} == -1
-        && -n "${MODULE_STATUS_LOG[${modindex}]}" ]]; then
+      offset_clock "${MODULE_STATUS_TIMER[modindex]}"
+      if [[ ${MODULE_STATUS[modindex]} == -1
+        && -n "${MODULE_STATUS_LOG[modindex]}" ]]; then
         add_vote_table_v2 \
-          "${MODULE_STATUS[${modindex}]}" \
+          "${MODULE_STATUS[modindex]}" \
           "${testtype}" \
-          "@@BASE@@/${MODULE_STATUS_LOG[${modindex}]}" \
-          "${MODULE_STATUS_MSG[${modindex}]}"
+          "@@BASE@@/${MODULE_STATUS_LOG[modindex]}" \
+          "${MODULE_STATUS_MSG[modindex]}"
       else
         add_vote_table_v2 \
-          "${MODULE_STATUS[${modindex}]}" \
+          "${MODULE_STATUS[modindex]}" \
           "${testtype}" \
           "" \
-          "${MODULE_STATUS_MSG[${modindex}]}"
+          "${MODULE_STATUS_MSG[modindex]}"
       fi
       ((modindex=modindex+1))
     done
@@ -1867,13 +1867,13 @@ function module_status
 
   if [[ -n ${index}
     && ${index} =~ ^[0-9]+$ ]]; then
-    MODULE_STATUS[${index}]="${value}"
+    MODULE_STATUS[index]="${value}"
     if [[ -n ${log} ]]; then
-      MODULE_STATUS_LOG[${index}]="${log}"
+      MODULE_STATUS_LOG[index]="${log}"
     fi
     if [[ -n $1 ]]; then
-      MODULE_STATUS_JDK[${index}]=" with JDK ${jdk}"
-      MODULE_STATUS_MSG[${index}]="${*}"
+      MODULE_STATUS_JDK[index]=" with JDK ${jdk}"
+      MODULE_STATUS_MSG[index]="${*}"
     fi
   else
     yetus_error "ASSERT: module_status given bad index: ${index}"
@@ -1929,28 +1929,28 @@ function modules_workers
   until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
     start_clock
 
-    fn=$(module_file_fragment "${MODULE[${modindex}]}")
+    fn=$(module_file_fragment "${MODULE[modindex]}")
     fn="${fn}${jdk}"
-    modulesuffix=$(basename "${MODULE[${modindex}]}")
+    modulesuffix=$(basename "${MODULE[modindex]}")
     if [[ ${modulesuffix} = \. ]]; then
       modulesuffix="root"
     fi
 
     if ! buildtool_cwd "${modindex}"; then
-      echo "${BASEDIR}/${MODULE[${modindex}]} no longer exists. Skipping."
+      echo "${BASEDIR}/${MODULE[modindex]} no longer exists. Skipping."
       ((modindex=modindex+1))
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${modindex}]=${savestop}
+      MODULE_STATUS_TIMER[modindex]=${savestop}
       continue
     fi
 
     argv=("${@//@@@MODULEFN@@@/${fn}}")
-    argv=("${argv[@]//@@@MODULEDIR@@@/${BASEDIR}/${MODULE[${modindex}]}}")
+    argv=("${argv[@]//@@@MODULEDIR@@@/${BASEDIR}/${MODULE[modindex]}}")
 
     # shellcheck disable=2086,2046
     echo_and_redirect "${PATCH_DIR}/${repostatus}-${testtype}-${fn}.txt" \
       $("${BUILDTOOL}_executor" "${testtype}") \
-      ${MODULEEXTRAPARAM[${modindex}]//@@@MODULEFN@@@/${fn}} \
+      ${MODULEEXTRAPARAM[modindex]//@@@MODULEFN@@@/${fn}} \
       "${argv[@]}"
     execvalue=$?
 
@@ -1974,12 +1974,12 @@ function modules_workers
 
     # compile is special
     if [[ ${testtype} = compile ]]; then
-      MODULE_COMPILE_LOG[${modindex}]="${PATCH_DIR}/${repostatus}-${testtype}-${fn}.txt"
-      yetus_debug "Compile log set to ${MODULE_COMPILE_LOG[${modindex}]}"
+      MODULE_COMPILE_LOG[modindex]="${PATCH_DIR}/${repostatus}-${testtype}-${fn}.txt"
+      yetus_debug "Compile log set to ${MODULE_COMPILE_LOG[modindex]}"
     fi
 
     savestop=$(stop_clock)
-    MODULE_STATUS_TIMER[${modindex}]=${savestop}
+    MODULE_STATUS_TIMER[modindex]=${savestop}
     # shellcheck disable=SC2086
     echo "Elapsed: $(clock_display ${savestop})"
     popd >/dev/null || return 1
@@ -2017,8 +2017,8 @@ function personality_enqueue_module
   local module=$1
   shift
 
-  MODULE[${MODCOUNT}]=${module}
-  MODULEEXTRAPARAM[${MODCOUNT}]=${*}
+  MODULE[MODCOUNT]=${module}
+  MODULEEXTRAPARAM[MODCOUNT]=${*}
   ((MODCOUNT=MODCOUNT+1))
 }
 
@@ -2039,10 +2039,10 @@ function dequeue_personality_module
   clear_personality_queue
 
   until [[ ${modindex} -eq ${#oldmodule[@]} ]]; do
-    if [[ "${oldmodule[${modindex}]}" = "${modname}" ]]; then
-      yetus_debug "Personality: removing ${modindex}, ${oldmodule[${modindex}]} = ${modname}"
+    if [[ "${oldmodule[modindex]}" = "${modname}" ]]; then
+      yetus_debug "Personality: removing ${modindex}, ${oldmodule[modindex]} = ${modname}"
     else
-      personality_enqueue_module "${oldmodule[${modindex}]}" "${oldmodparams[${modindex}]}"
+      personality_enqueue_module "${oldmodule[modindex}]}" "${oldmodparams[modindex]}"
     fi
     ((modindex=modindex+1))
   done
@@ -2122,7 +2122,7 @@ function check_unittests
 
     i=0
     until [[ $i -eq ${#MODULE[@]} ]]; do
-      module=${MODULE[${i}]}
+      module=${MODULE[i]}
       fn=$(module_file_fragment "${module}")
       fn="${fn}${jdk}"
       test_logfile="${PATCH_DIR}/patch-unit-${fn}.txt"
@@ -2567,15 +2567,15 @@ function module_postlog_compare
 
   i=0
   until [[ ${i} -eq ${#MODULE[@]} ]]; do
-    if [[ ${MODULE_STATUS[${i}]} == -1 ]]; then
+    if [[ ${MODULE_STATUS[i]} == -1 ]]; then
       ((result=result+1))
       ((i=i+1))
       continue
     fi
 
-    fn=$(module_file_fragment "${MODULE[${i}]}")
+    fn=$(module_file_fragment "${MODULE[i]}")
     fn="${fn}${jdk}"
-    module_suffix=$(basename "${MODULE[${i}]}")
+    module_suffix=$(basename "${MODULE[i]}")
     if [[ ${module_suffix} == \. ]]; then
       module_suffix=root
     fi
@@ -2616,7 +2616,7 @@ function module_postlog_compare
       ((result = result + 1))
       module_status "${i}" -1 "results-${origlog}-${testtype}-${fn}.txt" "${fn}${statusjdk} ${statstring}"
     elif [[ ${fixedpatch} -gt 0 ]]; then
-      module_status "${i}" +1 "${MODULE_STATUS_LOG[${i}]}" "${fn}${statusjdk} ${statstring}"
+      module_status "${i}" +1 "${MODULE_STATUS_LOG[i]}" "${fn}${statusjdk} ${statstring}"
       summarize=false
     fi
     ((i=i+1))

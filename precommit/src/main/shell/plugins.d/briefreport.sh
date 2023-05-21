@@ -115,7 +115,7 @@ function briefreport_finalreport
 
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
@@ -199,7 +199,7 @@ function briefreport_finalreport
 
     i=0
     until [[ $i -gt ${#TP_TEST_TABLE[@]} ]]; do
-      ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
+      ourstring=$(echo "${TP_TEST_TABLE[i]}" | tr -s ' ')
       vote=$(echo "${ourstring}" | cut -f2 -d\|)
       subs=$(echo "${ourstring}"  | cut -f3 -d\|)
       {
@@ -225,7 +225,7 @@ function briefreport_finalreport
 
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
 

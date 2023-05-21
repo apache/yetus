@@ -129,14 +129,14 @@ function spotbugs_runner
 
   #shellcheck disable=SC2153
   until [[ ${i} -eq ${#MODULE[@]} ]]; do
-    if [[ ${MODULE_STATUS[${i}]} == -1 ]]; then
+    if [[ ${MODULE_STATUS[i]} == -1 ]]; then
       ((result=result+1))
       ((i=i+1))
       continue
     fi
     start_clock
-    offset_clock "${MODULE_STATUS_TIMER[${i}]}"
-    module="${MODULE[${i}]}"
+    offset_clock "${MODULE_STATUS_TIMER[i]}"
+    module="${MODULE[i]}"
     fn=$(module_file_fragment "${module}")
 
     if [[ "${module}" == . ]]; then
@@ -186,7 +186,7 @@ function spotbugs_runner
 
     if [[ ${retval} != 0 ]]; then
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       module_status "${i}" -1 "" "${name}/${module} cannot run setBugDatabaseInfo from spotbugs"
       ((result=result+1))
       ((i=i+1))
@@ -204,7 +204,7 @@ function spotbugs_runner
       "${warnings_file}.xml" \
       "${warnings_file}.html"; then
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       module_status "${i}" -1 "" "${name}/${module} cannot run convertXmlToText from spotbugs"
       ((result=result+1))
     fi
@@ -255,15 +255,15 @@ function spotbugs_preapply
   fi
 
   until [[ ${modindex} -eq ${#MODULE[@]} ]]; do
-    if [[ ${MODULE_STATUS[${modindex}]} == -1 ]]; then
+    if [[ ${MODULE_STATUS[modindex]} == -1 ]]; then
       ((result=result+1))
       ((modindex=modindex+1))
       continue
     fi
 
-    module=${MODULE[${modindex}]}
+    module=${MODULE[modindex]}
     start_clock
-    offset_clock "${MODULE_STATUS_TIMER[${modindex}]}"
+    offset_clock "${MODULE_STATUS_TIMER[modindex]}"
     fn=$(module_file_fragment "${module}")
 
     if [[ "${module}" == . ]]; then
@@ -273,7 +273,7 @@ function spotbugs_preapply
     warnings_file="${PATCH_DIR}/branch-spotbugs-${fn}-warnings"
     if [[ ! -f "${warnings_file}.xml" ]]; then
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${modindex}]=${savestop}
+      MODULE_STATUS_TIMER[modindex]=${savestop}
       ((modindex=modindex+1))
       continue
     fi
@@ -306,7 +306,7 @@ function spotbugs_preapply
     fi
 
     savestop=$(stop_clock)
-    MODULE_STATUS_TIMER[${modindex}]=${savestop}
+    MODULE_STATUS_TIMER[modindex]=${savestop}
     ((modindex=modindex+1))
   done
   modules_messages branch "spotbugs" true
@@ -357,15 +357,15 @@ function spotbugs_postinstall
   fi
 
   until [[ $i -eq ${#MODULE[@]} ]]; do
-    if [[ ${MODULE_STATUS[${i}]} == -1 ]]; then
+    if [[ ${MODULE_STATUS[i]} == -1 ]]; then
       ((result=result+1))
       ((i=i+1))
       continue
     fi
 
     start_clock
-    offset_clock "${MODULE_STATUS_TIMER[${i}]}"
-    module="${MODULE[${i}]}"
+    offset_clock "${MODULE_STATUS_TIMER[i]}"
+    module="${MODULE[i]}"
 
     buildtool_cwd "${i}"
 
@@ -397,7 +397,7 @@ function spotbugs_postinstall
       module_status "${i}" 0 "" "${module} has no data from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -412,7 +412,7 @@ function spotbugs_postinstall
       module_status "${i}" -1 "" "${module} cannot run computeBugHistory from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -433,7 +433,7 @@ function spotbugs_postinstall
       module_status "${i}" -1 "" "${module} cannot run filterBugs (#1) from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -447,7 +447,7 @@ function spotbugs_postinstall
       module_status "${i}" -1 "" "${module} cannot run filterBugs (#2) from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -460,7 +460,7 @@ function spotbugs_postinstall
       module_status "${i}" -1 "" "${module} cannot run convertXmlToText from spotbugs"
       ((result=result+1))
       savestop=$(stop_clock)
-      MODULE_STATUS_TIMER[${i}]=${savestop}
+      MODULE_STATUS_TIMER[i]=${savestop}
       ((i=i+1))
       popd >/dev/null || return 1
       continue
@@ -482,7 +482,7 @@ function spotbugs_postinstall
       summarize=false
     fi
     savestop=$(stop_clock)
-    MODULE_STATUS_TIMER[${i}]=${savestop}
+    MODULE_STATUS_TIMER[i]=${savestop}
     popd >/dev/null || return 1
     ((i=i+1))
   done
