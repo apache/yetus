@@ -105,7 +105,7 @@ function console_finalreport
   seccoladj=$((seccoladj + 2 ))
   i=0
   until [[ $i -ge ${#TP_HEADER[@]} ]]; do
-    printf '%s\n' "${TP_HEADER[${i}]}"
+    printf '%s\n' "${TP_HEADER[i]}"
     ((i=i+1))
   done
 
@@ -113,7 +113,7 @@ function console_finalreport
   echo "============================================================================"
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
@@ -145,7 +145,7 @@ function console_finalreport
     printf '\n\n%*s | Tests\n' "${seccoladj}" "Reason"
     i=0
     until [[ $i -ge ${#TP_TEST_TABLE[@]} ]]; do
-      ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
+      ourstring=$(echo "${TP_TEST_TABLE[i]}" | tr -s ' ')
       vote=$(echo "${ourstring}" | cut -f2 -d\|)
       subs=$(echo "${ourstring}"  | cut -f3 -d\|)
       printf '%*s | %s\n' "${seccoladj}" "${vote}" "${subs}"
@@ -167,7 +167,7 @@ function console_finalreport
 
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\|)
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
@@ -186,7 +186,7 @@ function console_finalreport
 
   i=0
   until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
+    comment=$(echo "${TP_FOOTER_TABLE[i]}" | "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}"
     ((i=i+1))
   done

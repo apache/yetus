@@ -126,7 +126,7 @@ function htmlout_report_writer
 
   i=0
   until [[ $i -ge ${#TP_HEADER[@]} ]]; do
-    ourstring=$(echo "${TP_HEADER[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_HEADER[i]}" | tr -s ' ')
     comment=$(echo "${ourstring}"  | cut -f2 -d\|)
     printf '<tr><td>%s</td></tr>\n' "${comment}"
     ((i=i+1))
@@ -145,7 +145,7 @@ function htmlout_report_writer
 
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
@@ -227,7 +227,7 @@ function htmlout_report_writer
 
     i=0
     until [[ $i -ge ${#TP_TEST_TABLE[@]} ]]; do
-      ourstring=$(echo "${TP_TEST_TABLE[${i}]}" | tr -s ' ')
+      ourstring=$(echo "${TP_TEST_TABLE[i]}" | tr -s ' ')
       subs=$(echo "${ourstring}"  | cut -f2 -d\|)
       comment=$(echo "${ourstring}"  | cut -f3 -d\|)
       {
@@ -265,7 +265,7 @@ function htmlout_report_writer
     # excess spaces
     set -f
     ourstring=""
-    for j in ${TP_FOOTER_TABLE[${i}]}; do
+    for j in ${TP_FOOTER_TABLE[i]}; do
       if [[ "${j}" =~ ^@@BASE@@ ]]; then
         t1=${j#@@BASE@@/}
         t2=$(echo "${j}" | "${SED}" -e "s,@@BASE@@,${url},g")

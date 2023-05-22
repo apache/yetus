@@ -447,7 +447,7 @@ function jira_finalreport
 
   i=0
   until [[ $i -ge ${#TP_HEADER[@]} ]]; do
-    printf '%s\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
+    printf '%s\n' "${TP_HEADER[i]}" >> "${commentfile}"
     ((i=i+1))
   done
 
@@ -457,7 +457,7 @@ function jira_finalreport
 
   i=0
   until [[ $i -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
@@ -527,7 +527,7 @@ function jira_finalreport
     echo "|| Reason || Tests ||" >>  "${commentfile}"
     i=0
     until [[ $i -ge ${#TP_TEST_TABLE[@]} ]]; do
-      printf '%s\n' "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
+      printf '%s\n' "${TP_TEST_TABLE[i]}" >> "${commentfile}"
       ((i=i+1))
     done
   fi
@@ -538,7 +538,7 @@ function jira_finalreport
   echo "|| Subsystem || Report/Notes ||" >> "${commentfile}"
   i=0
   until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
+    comment=$(echo "${TP_FOOTER_TABLE[i]}" | "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done

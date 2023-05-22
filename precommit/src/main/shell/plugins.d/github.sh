@@ -852,7 +852,7 @@ function github_finalreport_as_comment
 
   i=0
   until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
-    printf '%s\n\n' "${TP_HEADER[${i}]}" >> "${commentfile}"
+    printf '%s\n\n' "${TP_HEADER[i]}" >> "${commentfile}"
     ((i=i+1))
   done
 
@@ -864,7 +864,7 @@ function github_finalreport_as_comment
 
   i=0
   until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     ela=$(echo "${ourstring}" | cut -f4 -d\|)
@@ -933,7 +933,7 @@ function github_finalreport_as_comment
     } >> "${commentfile}"
     i=0
     until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
-      echo "${TP_TEST_TABLE[${i}]}" >> "${commentfile}"
+      echo "${TP_TEST_TABLE[i]}" >> "${commentfile}"
       ((i=i+1))
     done
   fi
@@ -946,7 +946,7 @@ function github_finalreport_as_comment
 
   i=0
   until [[ $i -ge ${#TP_FOOTER_TABLE[@]} ]]; do
-    comment=$(echo "${TP_FOOTER_TABLE[${i}]}" | "${SED}" -e "s,@@BASE@@,${url},g")
+    comment=$(echo "${TP_FOOTER_TABLE[i]}" | "${SED}" -e "s,@@BASE@@,${url},g")
     printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done
@@ -1126,7 +1126,7 @@ function github_finalreport
   if [[ "${result}" == 0 ]]; then
     i=0
     until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
-      ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+      ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
       vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
 
       if [[ "${vote}" == "-0" ]]; then
@@ -1182,7 +1182,7 @@ function github_finalreport
   url=$(get_artifact_url)
   i=0
   until [[ ${i} -eq ${#TP_VOTE_TABLE[@]} ]]; do
-    ourstring=$(echo "${TP_VOTE_TABLE[${i}]}" | tr -s ' ')
+    ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
     vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
     subs=$(echo "${ourstring}"  | cut -f3 -d\|)
     logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')

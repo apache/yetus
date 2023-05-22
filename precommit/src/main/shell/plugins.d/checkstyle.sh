@@ -177,8 +177,8 @@ function checkstyle_runner
 
     # start the clock per module, setup some help vars, etc
     start_clock
-    fn=$(module_file_fragment "${MODULE[${i}]}")
-    modulesuffix=$(basename "${MODULE[${i}]}")
+    fn=$(module_file_fragment "${MODULE[i]}")
+    modulesuffix=$(basename "${MODULE[i]}")
     output="${PATCH_DIR}/${repostatus}-checkstyle-${fn}.txt"
     logfile="${PATCH_DIR}/buildtool-${repostatus}-checkstyle-${fn}.txt"
 
@@ -190,19 +190,19 @@ function checkstyle_runner
       ant)
         cmd="${ANT}  \
           -Dcheckstyle.consoleOutput=true \
-          ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}} \
+          ${MODULEEXTRAPARAM[i]//@@@MODULEFN@@@/${fn}} \
           ${ANT_ARGS[*]} checkstyle"
       ;;
       maven)
         cmd="${MAVEN} ${MAVEN_ARGS[*]} \
            checkstyle:${CHECKSTYLE_GOAL} \
           ${CHECKSTYLE_OPTIONS} \
-          ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}} -Ptest-patch"
+          ${MODULEEXTRAPARAM[i]//@@@MODULEFN@@@/${fn}} -Ptest-patch"
       ;;
       gradle)
         cmd="${GRADLEW} ${GRADLEW_ARGS[*]} \
            checkstyleMain checkstyleTest \
-          ${MODULEEXTRAPARAM[${i}]//@@@MODULEFN@@@/${fn}}"
+          ${MODULEEXTRAPARAM[i]//@@@MODULEFN@@@/${fn}}"
       ;;
       *)
         UNSUPPORTED_TEST=true
@@ -334,7 +334,7 @@ function checkstyle_runner
 
     savestop=$(stop_clock)
     #shellcheck disable=SC2034
-    MODULE_STATUS_TIMER[${i}]=${savestop}
+    MODULE_STATUS_TIMER[i]=${savestop}
 
     popd >/dev/null || return 1
     ((i=i+1))
@@ -418,7 +418,7 @@ personality_modules_wrapper patch checkstyle
   offset_clock "${CHECKSTYLE_TIMER}"
 
   until [[ $i -eq ${#MODULE[@]} ]]; do
-    if [[ ${MODULE_STATUS[${i}]} == -1 ]]; then
+    if [[ ${MODULE_STATUS[i]} == -1 ]]; then
       ((result=result+1))
       ((i=i+1))
       continue
