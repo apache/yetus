@@ -20,26 +20,19 @@
 make_cache_list() {
   gotit="false"
   cache_array=()
-  for imagelocation in "${YETUS_DOCKER_REPO}" "${ASF_DOCKER_REPO}"; do
-    if [[ "${imagelocation}" == "apache/yetus" ]]; then
-      # skip Apache docker hub since we will pull from
-      # github later
-      continue
-    fi
-    for branch in "${BRANCH}" "main"; do
-      for type in "-base" ""; do
-        image="${imagelocation}${type}:${branch}"
-        if docker pull "${image}"; then
-          cache_array+=("${image}")
-          gotit="true"
-          break
-        fi
-      done
-      if [[  "${gotit}" == "true" ]]; then
-        gotit="false"
+  for branch in "${BRANCH}" "main"; do
+    for type in "-base" ""; do
+      image="${YETUS_DOCKER_REPO}${type}:${branch}"
+      if docker pull "${image}"; then
+        cache_array+=("${image}")
+        gotit="true"
         break
       fi
     done
+    if [[  "${gotit}" == "true" ]]; then
+      gotit="false"
+      break
+    fi
   done
   printf -v thelist "%s," "${cache_array[@]}"
   CACHE_LIST=${thelist%,}
@@ -48,8 +41,7 @@ make_cache_list() {
 set -e            # exit on error
 ROOTDIR=$(cd -P -- "$(dirname -- "${BASH_SOURCE-$0}")" >/dev/null && pwd -P)
 
-ASF_DOCKER_REPO="ghcr.io/apache/yetus"
-YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-apache/yetus}
+YETUS_DOCKER_REPO=${YETUS_DOCKER_REPO:-ghcr.io/apache/yetus}
 CACHE_LIST=""
 
 # shellcheck disable=SC2034

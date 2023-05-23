@@ -35,7 +35,7 @@ the GitHub Container Registry:
 
 * ghcr.io/apache/yetus
 
-  This image is the same as apache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.
+  This image is the same as ghcr.io/aapache/yetus-base but includes a pre-built version of Apache Yetus as part of the base OS image. In other words, qbt, releasedocmaker, shelldocs, test-patch, etc., are in /usr/bin and available in the default path. It is generated from the Dockerfile located in the root of the source and is built with the options provided in the hooks directory.
 
 Both images should be suitable to be used as a building block or even directly if your build environment needs no other dependencies.  These images are especially useful for various CI systems that require a Docker image to be used.
 

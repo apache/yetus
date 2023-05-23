@@ -47,7 +47,7 @@ jobs:
           --bugcomments=console,briefreport,github,htmlout,junit
           --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
           --docker
-          --docker-cache-from=apache/yetus-base:main
+          --docker-cache-from=ghcr.io/apache/yetus-base:main
           --github-token="${{ secrets.GITHUB_TOKEN }}"
           --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
           --java-home=/usr/lib/jvm/java-11-openjdk-amd64
