@@ -149,7 +149,7 @@ In Docker mode, the `${HOME}/.ivy2` directory is shared amongst all invocations.
 
 # autoconf Specific
 
-autoconf requires make to be enabled.  autoreconf is always used to rebuild the configure scripte.
+autoconf requires make to be enabled.  autoreconf is always used to rebuild the configure script.
 
 ## autoconf Command Arguments
 

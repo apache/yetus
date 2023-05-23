@@ -107,6 +107,7 @@ function setup_defaults
   REPORTONLY=false
 }
 
+# shellcheck disable=SC2317
 ## @description  Print the usage information
 ## @audience     public
 ## @stability    stable
@@ -290,6 +291,7 @@ function patch_reports
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  git am dryrun
 ## @replaceable  no
 ## @audience     private

@@ -177,6 +177,7 @@ function offset_clock
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  Add to the header of the display
 ## @audience     public
 ## @stability    stable
@@ -193,7 +194,7 @@ function add_header_line
 ## @description  that is the vote for that column and calculates the elapsed time
 ## @description  based upon the last start_clock().  The second parameter is the reporting
 ## @description  subsystem (or test) that is providing the vote.  The second parameter
-## @description  is always required.  The third parameter is any extra verbage that goes
+## @description  is always required.  The third parameter is any extra verbiage that goes
 ## @description  with that subsystem.
 ## @description  if the vote is H, then that designates that "subsystem" should be a
 ## @description  header in the vote table comment output. The other parameters are
@@ -244,6 +245,7 @@ function add_vote_table_v2
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  Deprecated. Use add_vote_table_v2 instead.
 ## @audience     public
 ## @stability    stable
@@ -376,6 +378,7 @@ function add_footer_table
   ((TP_FOOTER_COUNTER=TP_FOOTER_COUNTER+1 ))
 }
 
+# shellcheck disable=SC2317
 ## @description  Special table just for unit test failures
 ## @audience     public
 ## @stability    stable
@@ -421,6 +424,7 @@ function big_console_header
   printf '\n\n'
 }
 
+# shellcheck disable=SC2317
 ## @description  Find the largest size of a column of an array
 ## @audience     private
 ## @stability    evolving
@@ -541,7 +545,7 @@ function compute_gitdiff
       # to do what was requested, head will exit, leaving tail with a broken pipe.
       # we're going to send stderr to /dev/null and ignore the error since head's
       # output is really what we're looking for
-      tail -n "+${startline}" "${file}" 2>/dev/null | head -n ${numlines} > "${outfile}"
+      tail -n "+${startline}" "${file}" 2>/dev/null | head -n "${numlines}" > "${outfile}"
       oldifs=${IFS}
       IFS=''
       while read -r content; do
@@ -566,9 +570,7 @@ function compute_gitdiff
   popd >/dev/null || return 1
 }
 
-
-
-
+# shellcheck disable=SC2317
 ## @description  Print the command to be executing to the screen. Then
 ## @description  run the command, sending stdout and stderr to the given filename
 ## @description  This will also ensure that any directories in ${BASEDIR} have
@@ -1136,6 +1138,7 @@ function git_clean
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  Forcibly reset the tree back to it's original state
 ## @audience     public
 ## @stability    stable
@@ -1290,6 +1293,7 @@ function git_checkout
   return 0
 }
 
+# shellcheck disable=SC2317
 ## @description  Confirm the given branch is a git reference
 ## @description  or a valid gitXYZ commit hash
 ## @audience     private
@@ -1883,6 +1887,7 @@ function module_status
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  run the tests for the queued modules
 ## @audience     public
 ## @stability    evolving
@@ -1994,6 +1999,7 @@ function modules_workers
   return 0
 }
 
+# shellcheck disable=SC2317
 ## @description  Reset the queue for tests
 ## @audience     public
 ## @stability    evolving
@@ -2005,6 +2011,7 @@ function clear_personality_queue
   MODULE=()
 }
 
+# shellcheck disable=SC2317
 ## @description  Build the queue for tests
 ## @audience     public
 ## @stability    evolving
@@ -2022,6 +2029,7 @@ function personality_enqueue_module
   ((MODCOUNT=MODCOUNT+1))
 }
 
+# shellcheck disable=SC2317
 ## @description  Remove a module
 ## @audience     public
 ## @stability    evolving
@@ -2048,6 +2056,7 @@ function dequeue_personality_module
   done
 }
 
+# shellcheck disable=SC2317
 ## @description  Utility to push many tests into the failure list
 ## @audience     private
 ## @stability    evolving
@@ -2277,6 +2286,7 @@ function runtests
   archive
 }
 
+# shellcheck disable=SC2317
 ## @description  Calculate the differences between the specified files
 ## @description  using just the column+ messages (third+ column in a
 ## @description  colon delimated file) and output it to stdout.
@@ -2322,6 +2332,7 @@ function column_calcdiffs
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
 
+# shellcheck disable=SC2317
 ## @description  Calculate the differences between the specified files
 ## @description  using just the error messages (last column in a
 ## @description  colon delimated file) and output it to stdout.
@@ -2367,6 +2378,7 @@ function error_calcdiffs
   rm "${tmp}.branch" "${tmp}.patch" "${tmp}.lined" 2>/dev/null
 }
 
+# shellcheck disable=SC2317
 ## @description  Wrapper to call specific version of calcdiffs if available
 ## @description  otherwise calls error_calcdiffs
 ## @audience     public
@@ -2401,6 +2413,7 @@ function calcdiffs
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description generate a standardized calcdiff status message
 ## @audience    public
 ## @stability   evolving
@@ -2432,6 +2445,7 @@ function generic_calcdiff_status
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  Helper routine for plugins to ask projects, etc
 ## @description  to count problems in a log file
 ## @description  and output it to stdout.
@@ -2457,6 +2471,7 @@ function generic_logfilter
   fi
 }
 
+# shellcheck disable=SC2317
 ## @description  Deprecated. Use module_pre_handler instead.
 ## @audience     public
 ## @stability    evolving
@@ -2470,6 +2485,7 @@ function generic_pre_handler
   module_pre_handler "$@"
 }
 
+# shellcheck disable=SC2317
 ## @description  Helper routine for plugins to do a pre-patch run
 ## @audience     public
 ## @stability    evolving
@@ -2522,6 +2538,7 @@ function module_pre_handler
   return 0
 }
 
+# shellcheck disable=SC2317
 ## @description  Deprecated. Use module_postlog_compare instead.
 ## @audience     public
 ## @stability    evolving
@@ -2530,6 +2547,7 @@ function generic_postlog_compare
   module_postlog_compare "$@"
 }
 
+# shellcheck disable=SC2317
 ## @description  Module post-patch log handler
 ## @audience     public
 ## @stability    evolving
@@ -2629,6 +2647,7 @@ function module_postlog_compare
   return 0
 }
 
+# shellcheck disable=SC2317
 ## @description  Root-level post-patch log handler. Files should be
 ## @description  linecomments compatible!
 ## @audience     public
@@ -2700,6 +2719,7 @@ function root_postlog_compare
   return 0
 }
 
+# shellcheck disable=SC2317
 ## @description  Deprecated. Use module_post_handler instead.
 ## @audience     public
 ## @stability    evolving
@@ -2708,6 +2728,7 @@ function generic_post_handler
   module_post_handler "$@"
 }
 
+# shellcheck disable=SC2317
 ## @description  Generic post-patch handler
 ## @audience     public
 ## @stability    evolving
