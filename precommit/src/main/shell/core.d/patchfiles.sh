@@ -155,8 +155,14 @@ function locate_patch
             "${PATCH_OR_ISSUE}" \
             "${INPUT_PATCH_FILE}" \
             "${INPUT_DIFF_FILE}"; then
-          gotit=true
-          PATCH_SYSTEM=${bugsys}
+          if [[ -f "${INPUT_PATCH_FILE}" || -f "${INPUT_DIFF_FILE}" ]]; then
+            gotit=true
+            PATCH_SYSTEM=${bugsys}
+          else
+            # this situation can happen if the bugsystem forced a full build
+            # so not an error.
+            yetus_debug "Bugsystem ${bugsys} did not actually download a change."
+          fi
         fi
       fi
       # did the bug system actually make us change our mind?
@@ -168,7 +174,7 @@ function locate_patch
     # ok, none of the bug systems know. let's see how smart we are
     if [[ ${gotit} == false ]]; then
       if ! generic_locate_patch "${PATCH_OR_ISSUE}" "${INPUT_PATCH_FILE}"; then
-        yetus_error "ERROR: Unsure how to process ${PATCH_OR_ISSUE}."
+        yetus_error "ERROR: Unsure how to process ${PATCH_OR_ISSUE}. Permissions missing?"
         cleanup_and_exit 1
       fi
       PATCH_SYSTEM=generic
