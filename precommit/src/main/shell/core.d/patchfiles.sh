@@ -155,8 +155,12 @@ function locate_patch
             "${PATCH_OR_ISSUE}" \
             "${INPUT_PATCH_FILE}" \
             "${INPUT_DIFF_FILE}"; then
-          gotit=true
-          PATCH_SYSTEM=${bugsys}
+          if [[ -f "${INPUT_PATCH_FILE}" || -f "${INPUT_DIFF_FILE}" ]]; then
+            gotit=true
+            PATCH_SYSTEM=${bugsys}
+          else
+            yetus_error "Bugsystem ${bugsys} did not actually download the change!"
+          fi
         fi
       fi
       # did the bug system actually make us change our mind?
