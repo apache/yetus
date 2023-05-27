@@ -53,6 +53,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         libffi-dev \
         libxml2-utils \
         locales \
+        patch \
         pkg-config \
         rsync \
         software-properties-common \
