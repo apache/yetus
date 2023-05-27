@@ -26,4 +26,4 @@ PRECOMMITDIR=precommit/src/main/shell
   --junit-report-xml=/tmp/yetus-out/junit-results.xml \
   --docker \
   --dockerfile="${PRECOMMITDIR}/test-patch-docker/Dockerfile" \
-  --docker-cache-from=ghcr.io/apache/yetus-base:main,ubuntu:focal
+  --docker-cache-from=ghcr.io/apache/yetus-base:main,ubuntu:jammy

@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ARG DOCKER_TAG=main
-ARG DOCKER_REPO=apache/yetus
+ARG DOCKER_REPO=ghcr.io/apache/yetus
 FROM ${DOCKER_REPO}-base:${DOCKER_TAG}
 
 LABEL org.apache.yetus=""
