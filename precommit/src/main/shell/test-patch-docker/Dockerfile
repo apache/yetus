@@ -145,14 +145,22 @@ RUN curl -sSL \
 ####
 # Install hadolint (dockerfile lint)
 ####
-FROM yetusbase AS yetushadolint
+FROM yetusbase as yetushadolint_arm64
 ARG HADOLINT_VERSION=2.12.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
-        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-"$(uname -m)" \
+RUN curl -sSl \
+        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-arm64 \
         -o /bin/hadolint \
-    && chmod a+rx /bin/hadolint; \
-    else touch /bin/hadolint; fi
+    && chmod a+rx /bin/hadolint
+FROM yetusbase as yetushadolint_amd64
+ARG HADOLINT_VERSION=2.12.0
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN curl -sSl \
+        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-x86_64 \
+        -o /bin/hadolint \
+    && chmod a+rx /bin/hadolint
+ARG TARGETARCH
+FROM yetushadolint_$TARGETARCH AS yetushadolint
 
 ####
 # Install buf (protobuf lint)
