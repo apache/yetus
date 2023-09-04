@@ -35,11 +35,7 @@ apache2
 echo "::endgroup::"
 
 echo "::group::linkchecker"
-linkchecker \
-  --ignore-url 'http://localhost:8123/documentation/[0-9]+.[0-9]+.[0-9]+' \
-  --ignore-url 'resources/fonts/dejavu.css' \
-  --no-robots --file-output=csv \
-  http://localhost:8123
+linkchecker --config .linkcheckerrc http://localhost:8123
 result=$?
 echo "::endgroup::"
 

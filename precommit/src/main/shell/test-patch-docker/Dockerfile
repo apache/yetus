@@ -103,7 +103,7 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 # Install Apache Creadur RAT jar
 ####
 FROM yetusbase AS yetusapacherat
-ARG APACHE_RAT_VERSION=0.15
+ARG APACHE_RAT_VERSION=0.14
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/apache-rat \
     && curl -f -s -L -o /tmp/rat.tgz \

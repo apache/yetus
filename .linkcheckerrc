@@ -13,26 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
----
-name: linkcheck
+[filtering]
+ignore=
+	http://localhost:8123/documentation/[0-9]+.[0-9]+.[0-9]+
+  resources/fonts/dejavu.css
+ignorewarnings=http-redirected
 
-on: [push, pull_request]  # yamllint disable-line rule:truthy
+[checking]
+norobots=1
 
-
-#
-# NOTE: these paths are referenced in start-build-env.sh
-#
-
-jobs:
-  linkcheck:
-    runs-on: ubuntu-latest
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: maven cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: yetus-m2-${{ hashFiles('**/pom.xml') }}
-      - name: test
-        run: ./start-build-env.sh ./website-tester.sh
+[output]
+fileoutput=csv
