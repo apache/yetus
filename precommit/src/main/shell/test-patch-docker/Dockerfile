@@ -103,13 +103,13 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 # Install Apache Creadur RAT jar
 ####
 FROM yetusbase AS yetusapacherat
-ARG APACHE_RAT_VERSION=0.14
+ARG APACHE_RAT_VERSION=0.15
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/apache-rat \
     && curl -f -s -L -o /tmp/rat.tgz \
         "https://archive.apache.org/dist/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz" \
     && shasum -a 512 /tmp/rat.tgz \
-        | awk '$1!="17119289839dc573dd29039ca09bd86f729f1108308f6681292125418fd7bceeaf7d1a40b83eb01daf7d3dd66fbcc0a68d5431741314e748f7b878e8967459e9" {exit(1)}' \
+        | awk '$1!="a90161a38e68677ab4ae3caf1f7bf1f97dd5e94b7aa4e5a7df5a314146f87823e0d173b37ab6193e189b24319eedee2aa967850eb93286ad3dbdfd6d1e878279" {exit(1)}' \
     && tar --strip-components 1 -C /opt/apache-rat -xpzf /tmp/rat.tgz \
     && rm /tmp/rat.tgz \
     && mv /opt/apache-rat/apache-rat-$APACHE_RAT_VERSION.jar /opt/apache-rat/apache-rat.jar
@@ -149,16 +149,22 @@ FROM yetusbase AS yetushadolint
 ARG HADOLINT_VERSION=2.12.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN if [[ "$(uname -m)" == "x86_64" ]]; then curl -sSL \
-        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-"$(uname -m)" \
+        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-x86_64 \
         -o /bin/hadolint \
-    && chmod a+rx /bin/hadolint; \
-    else touch /bin/hadolint; fi
+        && chmod a+rx /bin/hadolint; \
+    elif [[ "$(uname -m)" == "aarch64" ]]; then curl -sSL \
+        https://github.com/hadolint/hadolint/releases/download/v$HADOLINT_VERSION/hadolint-Linux-arm64 \
+        -o /bin/hadolint \
+        && chmod a+rx /bin/hadolint; \
+    else \
+        touch /bin/hadolint; \
+    fi
 
 ####
 # Install buf (protobuf lint)
 ####
 FROM yetusbase AS yetusbuf
-ARG BUF_VERSION=1.19.0
+ARG BUF_VERSION=1.26.1
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/bufbuild/buf/releases/download/v$BUF_VERSION/buf-Linux-"$(uname -m)".tar.gz \
@@ -170,7 +176,7 @@ RUN curl -sSL \
 # Install bats (TAP-capable unit testing for shell scripts)
 ####
 FROM yetusbase AS yetusbats
-ARG BATS_VERSION=1.9.0
+ARG BATS_VERSION=1.10.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN git clone --branch v$BATS_VERSION \
       https://github.com/bats-core/bats-core.git \
@@ -209,7 +215,7 @@ RUN git clone \
 # NOTE: go must be installed prior to executing this block!
 ####
 FROM yetusbase as yetusgolangci
-ARG GOLANGCILINT_VERSION=1.52.2
+ARG GOLANGCILINT_VERSION=1.54.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
       https://github.com/golangci/golangci-lint/releases/download/v$GOLANGCILINT_VERSION/golangci-lint-$GOLANGCILINT_VERSION-"$(go env GOOS)"-"$(go env GOARCH)".tar.gz \
@@ -287,7 +293,7 @@ RUN add-apt-repository -y \
 # Install maven
 ######
 # hadolint ignore=DL3008,DL3059
-ARG MVN_VERSION=3.9.2
+ARG MVN_VERSION=3.9.4
 ARG MVN_TGZ=apache-maven-$MVN_VERSION-bin.tar.gz
 RUN curl -sSL \
         -o $MVN_TGZ \
@@ -321,12 +327,12 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
 #ARG PY3_ANSIBLE_VERSION=7.5.0
-ARG PY3_ANSIBLELINT_VERSION=6.16.1
-ARG PY3_ASTROID_VERSION=2.15.5
-ARG PY3_CODESPELL_VERSION=2.2.4
+ARG PY3_ANSIBLELINT_VERSION=6.18.0
+ARG PY3_ASTROID_VERSION=2.15.6
+ARG PY3_CODESPELL_VERSION=2.2.5
 ARG PY3_DETECT_SECRETS=1.4.0
-ARG PY3_PYLINT_VERSION=2.17.4
-ARG PY3_YAMLLINT_VERSION=1.31.0
+ARG PY3_PYLINT_VERSION=2.17.5
+ARG PY3_YAMLLINT_VERSION=1.32.0
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         python3 \
@@ -365,9 +371,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ####
 # Install ruby and associated bits
 ###
-ARG RUBY_BUNDLER_VERSION=2.4.13
+ARG RUBY_BUNDLER_VERSION=2.4.19
 ARG RUBY_RAKE_VERSION=13.0.6
-ARG RUBY_RUBOCOP_VERSION=1.51
+ARG RUBY_RUBOCOP_VERSION=1.56.1
 # hadolint ignore=DL3008
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -388,10 +394,14 @@ ENV BUNDLE_PATH /var/tmp/.bundler-gems
 # Install npm and JSHint
 ###
 ARG JSHINT_VERSION=2.13.6
-ARG MARKDOWNLINTCLI_VERSION=0.34.0
+ARG MARKDOWNLINTCLI_VERSION=0.36.0
 ARG JSONLINT_VERSION=1.6.3
 # hadolint ignore=DL3008
-RUN curl -sSL https://deb.nodesource.com/setup_lts.x | bash - \
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+       | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+       | echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" \
+         > /etc/apt/sources.list.d/nodesource.list \
+    && apt-get -q update \
     && apt-get -q install --no-install-recommends -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
