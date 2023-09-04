@@ -15,7 +15,7 @@
 
 [filtering]
 ignore=
-	http://localhost:8123/documentation/[0-9]+.[0-9]+.[0-9]+
+  http://localhost:8123/documentation/[0-9]+.[0-9]+.[0-9]+
   resources/fonts/dejavu.css
 ignorewarnings=http-redirected
 
