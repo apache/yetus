@@ -109,7 +109,7 @@ RUN mkdir -p /opt/apache-rat \
     && curl -f -s -L -o /tmp/rat.tgz \
         "https://archive.apache.org/dist/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz" \
     && shasum -a 512 /tmp/rat.tgz \
-        | awk '$1!="a90161a38e68677ab4ae3caf1f7bf1f97dd5e94b7aa4e5a7df5a314146f87823e0d173b37ab6193e189b24319eedee2aa967850eb93286ad3dbdfd6d1e878279" {exit(1)}' \
+        | awk '$1!="17119289839dc573dd29039ca09bd86f729f1108308f6681292125418fd7bceeaf7d1a40b83eb01daf7d3dd66fbcc0a68d5431741314e748f7b878e8967459e9" {exit(1)}' \
     && tar --strip-components 1 -C /opt/apache-rat -xpzf /tmp/rat.tgz \
     && rm /tmp/rat.tgz \
     && mv /opt/apache-rat/apache-rat-$APACHE_RAT_VERSION.jar /opt/apache-rat/apache-rat.jar
