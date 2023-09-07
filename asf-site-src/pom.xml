@@ -84,7 +84,6 @@
             </goals>
             <configuration>
               <executable>${rdm.bin}</executable>
-              <requiresOnline>true</requiresOnline>
               <arguments>
                 <argument>--lint=all</argument>
                 <argument>--license</argument>
@@ -109,7 +108,6 @@
             </goals>
             <configuration>
               <executable>${rdm.bin}</executable>
-              <requiresOnline>true</requiresOnline>
               <arguments>
                 <argument>--dirversions</argument>
                 <argument>--fileversions</argument>
@@ -140,7 +138,6 @@
             </goals>
             <configuration>
               <executable>bundle</executable>
-              <requiresOnline>true</requiresOnline>
               <arguments>
                 <argument>install</argument>
               </arguments>
@@ -154,7 +151,6 @@
             </goals>
             <configuration>
               <executable>bundle</executable>
-              <requiresOnline>false</requiresOnline>
               <arguments>
                 <argument>exec</argument>
                 <argument>middleman</argument>

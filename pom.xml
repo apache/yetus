@@ -75,7 +75,7 @@
     <maven-project-info-reports-plugin.version>3.1.2</maven-project-info-reports-plugin.version>
     <maven-rat-plugin.version>0.15</maven-rat-plugin.version>
     <mockito.version>5.3.1</mockito.version>
-    <spotbugs-maven-plugin.version>4.7.3.4</spotbugs-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.7.3.5</spotbugs-maven-plugin.version>
 
     <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
     <project.build.outputTimestamp>n</project.build.outputTimestamp>
