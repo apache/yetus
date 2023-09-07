@@ -20,3 +20,145 @@
 
 <p>These release notes cover new developer and user-facing incompatibilities, important issues, features, and major improvements.</p>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1193">YETUS-1193</a></td>
+          <td><em>Major</em></td>
+          <td><strong>Update to Jammy Jellyfish Ubuntu LTS</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+<p>Beyond the operating system, the following components have been updated:</p>
+
+<ul>
+  <li>hadolint: 2.10.0 -&gt; 2.12.0</li>
+  <li>buf: 1.8.0 -&gt; 1.9.0</li>
+  <li>bats: 1.8.0 -&gt; 1.8.2</li>
+  <li>golangci-lint: 1.50.0 -&gt; 1.50.1</li>
+  <li>maven: 3.8.5 -&gt; 3.8.6</li>
+  <li>ansible: 5.5.0 -&gt; 6.6.0</li>
+  <li>ansible-lint: 6.0.2 -&gt; 6.8.7</li>
+  <li>codespell: 2.2.1 -&gt; 2.2.2</li>
+  <li>detect-secrets: 1.2.0 -&gt; 1.4.0</li>
+  <li>pylint: 2.13.4 -&gt; 2.15.6</li>
+  <li>yamllint: 1.26.3 -&gt; 1.28.0</li>
+  <li>bundler: 2.3.22 -&gt; 2.3.26</li>
+  <li>rubocop: 1.26.1 -&gt; 1.39</li>
+  <li>jshint: 2.13.4 -&gt; 2.13.6</li>
+  <li>markdowncli-lint: 0.31.1 -&gt; 0.32.2</li>
+</ul>
+
+<p>Additionally:</p>
+
+<ul>
+  <li>Python is now 3.10-based</li>
+  <li>docker-compose python version has been replaced with the go code plug-in</li>
+</ul>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1222">YETUS-1222</a></td>
+          <td><em>Major</em></td>
+          <td><strong>smart-apply-patch EXTRA_ARGS should be an array</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p>The undocumented EXTRA_ARGS environment variable is now expected to be an array.</p>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1224">YETUS-1224</a></td>
+          <td><em>Major</em></td>
+          <td><strong>2023-05 Dependency Updates</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<ul>
+  <li>ansible (removed)</li>
+  <li>ansiblelint 6.8.7 -&gt; 7.5.0</li>
+  <li>bats 1.8.2 -&gt; 1.9.0</li>
+  <li>buf 1.9.0 -&gt; 1.19.0</li>
+  <li>bundler 2.3.26 -&gt; 2.4.13</li>
+  <li>codespell 2.2.2 -&gt; 2.2.4</li>
+  <li>golangci-lint 1.50.1 -&gt; 1.52.2</li>
+  <li>jsonlint 1.6.0 -&gt; 1.6.3</li>
+  <li>maven 3.8.6 -&gt; 3.9.2</li>
+  <li>markdownlint 0.32.2 -&gt; 0.34</li>
+  <li>node 14.x -&gt; latest LTS at time of publishing (18.x currently)</li>
+  <li>pylint 2.15.6 -&gt; 2.17.4</li>
+  <li>rubocop 1.39 -&gt; 1.51</li>
+  <li>shellcheck 0.8.0 -&gt; 0.9.0</li>
+  <li>spotbugs 4.6.0 -&gt; 4.7.3</li>
+  <li>yamllint 1.28.0 -&gt; 1.31.0</li>
+</ul>
+
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1233">YETUS-1233</a></td>
+          <td><em>Major</em></td>
+          <td><strong>2023-09 Dependency Updates</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<!-- markdown -->
+
+<p>External:</p>
+
+<ul>
+  <li>ansiblelint 6.16.1 -&gt; 6.18.0</li>
+  <li>bats 1.9.0 -&gt; 1.10.0</li>
+  <li>buf 1.19.0 -&gt; 1.26.1</li>
+  <li>bundler 2.4.13 -&gt; 2.4.19</li>
+  <li>codespell 2.2.4 -&gt; 2.2.5</li>
+  <li>golangci-lint 1.52.2 -&gt; 1.54.2</li>
+  <li>hadolint arm is now supported</li>
+  <li>maven 3.9.2 -&gt; 3.9.4</li>
+  <li>markdownlint 0.34.0 -&gt; 0.36.0</li>
+  <li>node: now comes from nodesource and hardcoded to 18.x</li>
+  <li>pylint 2.17.4 -&gt; 2.17.5</li>
+  <li>rubocop 1.51 -&gt; 1.56.1</li>
+  <li>spotbugs 4.6.0 -&gt; 4.7.3</li>
+  <li>yamllint 1.31.0 -&gt; 1.32.0</li>
+</ul>
+
+<p>Internal:</p>
+
+<ul>
+  <li>middleman went to 4.5.0 and a bunch of ruby deps updated in the process</li>
+</ul>
+
