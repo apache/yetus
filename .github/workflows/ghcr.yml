@@ -22,6 +22,8 @@ on:  # yamllint disable-line rule:truthy
       - main
     tags:
       - rel/*
+  schedule:
+    - cron: '5 12 * * 6'  # UTC
 
 jobs:
   deploy:
