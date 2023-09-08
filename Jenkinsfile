@@ -86,11 +86,12 @@ pipeline {
                 YETUS_ARGS+=(--sentinel)
 
                 # lots of different output formats
+                YETUS_ARGS+=("--bugcomments=briefreport,console,csvout,htmlout,junit")
                 YETUS_ARGS+=("--brief-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/brief.txt")
                 YETUS_ARGS+=("--console-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/console.txt")
                 YETUS_ARGS+=("--html-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/report.html")
                 YETUS_ARGS+=("--junit-report-xml=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/junit-report.xml")
-
+                YETUS_ARGS+=("--csv-report-file=${WORKSPACE}/${YETUS_RELATIVE_PATCHDIR}/yetus-out/report.csv")
                 # enable writing back to Github
                 YETUS_ARGS+=(--github-token="${GITHUB_TOKEN}")
 

@@ -609,3 +609,14 @@ function yetus_is_container
   YETUS_CONTAINER_STATE=false
   return 1
 }
+
+## @description  Given a string, trim extra surrounding whitespace
+## @audience     public
+## @stability    stable
+## @replaceable  no
+function yetus_trim {
+    declare var="$*"
+    var="${var#"${var%%[![:space:]]*}"}"
+    var="${var%"${var##*[![:space:]]}"}"
+    printf '%s' "$var"
+}

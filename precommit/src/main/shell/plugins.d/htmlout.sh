@@ -314,7 +314,7 @@ function htmlout_finalreport
     return
   fi
 
-  big_console_header "Writing HTML to ${commentfile}"
+  big_console_header "Writing HTML to ${HTMLOUT_REPORTFILE}"
 
   htmlout_report_writer "${result}" "${HTMLOUT_REPORTFILE}"
 }
