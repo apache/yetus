@@ -33,25 +33,6 @@
   <name>Apache Yetus - Audience Annotations</name>
   <packaging>jar</packaging>
 
-  <profiles>
-    <profile>
-      <id>jdk1.8</id>
-      <activation>
-        <jdk>(,1.8]</jdk>
-      </activation>
-      <dependencies>
-        <dependency>
-          <!-- Version and location set in project pom -->
-          <groupId>jdk.tools</groupId>
-          <artifactId>jdk.tools</artifactId>
-          <scope>system</scope>
-          <!-- Mark as optional so that it isn't taken transitively -->
-          <optional>true</optional>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
-
   <dependencies>
     <dependency>
       <artifactId>junit-jupiter</artifactId>
