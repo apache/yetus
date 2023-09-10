@@ -15,7 +15,7 @@
 ---
 steps:
     - label: "Clean patch-dir"
-      command: \[ -d /tmp/yetus-out ] && rm -rf /tmp/yetus-out/*
+      command: \[ -d /tmp/yetus-out ] && rm -rf /tmp/yetus-out/* || true
     - label: "Apache Yetus"
       command: >
         precommit/src/main/shell/test-patch.sh
