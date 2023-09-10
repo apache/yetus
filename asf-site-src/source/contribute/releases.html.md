@@ -467,7 +467,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
    ```
 
 1. Commit the patch to the ASF source repo immediately, but do not update the website just yet.
-1. Create shortcut links to the vote thread (e.g., <https://s.apache.org/yetus-0.7.0-rc1-vote>) and the result (e.g., <https://s.apache.org/yetus-0.7.0-vote-passes>) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.
+1. Create shortcut links to the vote thread (e.g., <https://s.apache.org/yetus-0.7.0-rc1-vote>) and the result (e.g., <https://s.apache.org/yetus-0.7.0-vote-passes>) that point to the archives on lists.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.
 1. Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag's message should include ASF-shortened links to the vote and results. It should be named 'rel/_version_' so that it will be immutable due to ASF infra's git configuration. Presuming we're working on the 0.7.0 release and the RC1 example above has passed:
 
         $ git config --global user.signingkey <your-key-id> # if you've never configured
@@ -584,7 +584,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
         Meg Smith
         Apache Yetus PMC
     If you'd like feedback on the draft, feel free to post it for review on your release issue.
-1. Wait 24 hours for mirrors to get properly updated before continuing.
+1. Wait an hour for the CDN to get properly updated before continuing.
 
 ### Documentation
 
@@ -629,7 +629,7 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 1. Verify that the tag built in Github Actions.
 1. Go to [Draft a release](https://github.com/aw-was-here/yetus-test-patch-action/releases/new?marketplace=true)
 1. Type the tag that you just pushed into the 'tag' box.
-1. Use categories 'Code quality' and 'Continuous integration'
+1. Use categories 'Code Quality' 'Code Review'
 1. Release Title should reflect the version
 1. Describe this release should be a cut-down version of the announcement email (drop SHA and direct download links. main page, github actions, and release notes should be mentioned). See [Releases](https://github.com/apache/yetus-test-patch-action/releases) for examples.
 1. Mark 'This is a pre-release'

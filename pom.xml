@@ -44,7 +44,7 @@
       <subscribe>dev-subscribe@yetus.apache.org</subscribe>
       <unsubscribe>dev-unsubscribe@yetus.apache.org</unsubscribe>
       <post>dev@yetus.apache.org</post>
-      <archive>https://mail-archives.apache.org/mod_mbox/yetus-dev/</archive>
+      <archive>https://lists.apache.org/list.html?dev@yetus.apache.org</archive>
     </mailingList>
   </mailingLists>
 
