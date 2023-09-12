@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -15,18 +14,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PRECOMMITDIR=precommit/src/main/shell
+load functions_test_helper
 
-"${PRECOMMITDIR}/test-patch.sh" \
-  --plugins=all \
-  --bugcomments=briefreport,csvout,htmlout,junit \
-  --mvn-custom-repos \
-  --mvn-custom-repos-dir=/tmp/yetus-m2 \
-  --patch-dir=/tmp/yetus-out \
-  --tests-filter=checkstyle,test4tests \
-  --csv-report-file=/tmp/yetus-out/report.csv \
-  --junit-report-xml=/tmp/yetus-out/junit-results.xml \
-  --junit-report-style=full \
-  --docker \
-  --dockerfile="${PRECOMMITDIR}/test-patch-docker/Dockerfile" \
-  --docker-cache-from=ghcr.io/apache/yetus-base:main,ubuntu:jammy
+@test "yetus_trim (no trim)" {
+  run yetus_trim fake
+  [ "${output}" = "fake" ]
+}
+
+@test "yetus_trim (left trim)" {
+  run yetus_trim " fake"
+  [ "${output}" = "fake" ]
+}
+
+@test "yetus_trim (right trim)" {
+  run yetus_trim "fake "
+  [ "${output}" = "fake" ]
+}
+
+@test "yetus_trim (dual trim)" {
+  run yetus_trim " fake "
+  [ "${output}" = "fake" ]
+}

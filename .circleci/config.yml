@@ -42,8 +42,9 @@ jobs:
              --patch-dir=/tmp/yetus-out
              --html-report-file=/tmp/yetus-out/report.html
              --console-report-file=/tmp/yetus-out/console.txt
+             --csv-report-file=/tmp/yetus-out/report.csv
              --brief-report-file=/tmp/yetus-out/brief.txt
-             --bugcomments=briefreport,htmlout,junit
+             --bugcomments=briefreport,csvout,htmlout,junit
              --tests-filter=checkstyle,test4tests
              --junit-report-xml=/tmp/yetus-out/junit-report.xml
 

@@ -25,9 +25,10 @@ buretoolbox-job:
       --plugins=all
       --java-home=/usr/lib/jvm/java-11-openjdk-amd64
       --html-report-file=/tmp/yetus-out/report.html
+      --csv-report-file=/tmp/yetus-out/report.csv
       --console-report-file=/tmp/yetus-out/console.txt
       --brief-report-file=/tmp/yetus-out/brief.txt
-      --bugcomments=briefreport,htmlout,gitlab,junit
+      --bugcomments=briefreport,csvout,htmlout,gitlab,junit
       --tests-filter=checkstyle,test4tests
       --junit-report-xml=/tmp/yetus-out/junit-report.xml
 

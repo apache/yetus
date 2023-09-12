@@ -22,8 +22,9 @@ yetus_task:
              ${CIRRUS_WORKING_DIR}/precommit/src/main/shell/test-patch.sh
              --basedir="${CIRRUS_WORKING_DIR}"
              --brief-report-file=/tmp/yetus-out/brief.txt
-             --bugcomments=briefreport,htmlout,junit
+             --bugcomments=briefreport,console,csvout,htmlout,junit
              --console-report-file=/tmp/yetus-out/console.txt
+             --csv-report-file=/tmp/yetus-out/report.csv
              --html-report-file=/tmp/yetus-out/report.html
              --java-home=/usr/lib/jvm/java-11-openjdk-amd64
              --junit-report-xml=/tmp/yetus-out/junit.xml

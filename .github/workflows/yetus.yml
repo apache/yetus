@@ -44,8 +44,9 @@ jobs:
           --archive-list="checkstyle-errors.xml,spotbugsXml.xml"
           --basedir="${GITHUB_WORKSPACE}/src"
           --brief-report-file="${GITHUB_WORKSPACE}/out/brief.txt"
-          --bugcomments=console,briefreport,github,htmlout,junit
+          --bugcomments=console,briefreport,csvout,github,htmlout,junit
           --console-report-file="${GITHUB_WORKSPACE}/out/console.txt"
+          --csv-report-file="${GITHUB_WORKSPACE}/out/report.csv"
           --docker
           --docker-cache-from=ghcr.io/apache/yetus-base:main
           --github-token="${{ secrets.GITHUB_TOKEN }}"

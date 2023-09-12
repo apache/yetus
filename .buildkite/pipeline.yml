@@ -20,10 +20,11 @@ steps:
       command: >
         precommit/src/main/shell/test-patch.sh
         --brief-report-file=/tmp/yetus-out/brief.txt
-        --bugcomments=briefreport,htmlout,buildkiteannotate
+        --bugcomments=briefreport,csvout,htmlout,buildkiteannotate
         --console-report-file=/tmp/yetus-out/console.txt
         --docker
         --docker-cache-from=ghcr.io/apache/yetus-base:main
+        --csv-report-file=/tmp/yetus-out/report.csv
         --html-report-file=/tmp/yetus-out/report.html
         --java-home=/usr/lib/jvm/java-17-openjdk-amd64
         --patch-dir=/tmp/yetus-out
