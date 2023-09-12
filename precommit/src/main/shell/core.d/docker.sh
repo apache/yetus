@@ -546,6 +546,9 @@ function docker_image_maintenance
   echo "Other images:"
   #shellcheck disable=SC2046
   docker_image_maintenance_helper $(docker_get_sentinel_images)
+
+  echo "docker buildx cache"
+  dockercmd buildx prune --force --filter=until="${DOCKER_IMAGE_PURGE}s"
 }
 
 
