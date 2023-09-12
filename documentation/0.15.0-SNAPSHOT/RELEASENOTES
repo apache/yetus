@@ -162,3 +162,21 @@
   <li>middleman went to 4.5.0 and a bunch of ruby deps updated in the process</li>
 </ul>
 
+<hr />
+
+<ul>
+  <li>
+    <table class="table table-bordered table-striped">
+      <tbody>
+        <tr>
+          <td><a href="https://issues.apache.org/jira/browse/YETUS-1218">YETUS-1218</a></td>
+          <td><em>Major</em></td>
+          <td><strong>locate_patch falsely succeeds</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<p><strong>WARNING: No release note provided for this change.</strong></p>
+

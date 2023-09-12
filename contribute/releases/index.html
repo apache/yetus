@@ -418,13 +418,15 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
     </ul>
   </li>
   <li>
-    <p>You SHOULD make sure the source release artifact corresponds to the referenced commit hash in the [VOTE] thread. (This ASF policy is currently in DRAFT status.) The release tag is how we'll provide long-term provenance information for our downstream users. Since the release's source code artifact will be the canonical representation of the release we vote on, it is essential that it matches the contents of the version control system's tag. Given our example above, you can check this with recursive diff.</p>
+    <p>You SHOULD make sure the source release artifact corresponds to the referenced commit hash in the [VOTE] thread. A release tag that points to this commit hash is how we'll provide long-term provenance information for our downstream users. Since the release's source code artifact will be the canonical representation of the release we vote on, it is essential that it matches the contents of the version control system's tag. Given our example above, you can check this with recursive diff.</p>
 
     <p>NOTE: The <code>maven</code> plug-in that we use does not include some git control files like <code>.gitignore</code> and <code>.gitattributes</code>.  Additionally, it adds a <code>DEPENDENCIES</code> file.</p>
 
 <div class="highlight"><pre class="highlight shell"><code><span class="nv">$ </span><span class="nb">mkdir </span>apache-yetus-0.7.0-src_unpack
 <span class="nv">$ </span><span class="nb">tar</span> <span class="nt">-C</span> apache-yetus-0.7.0-src_unpack <span class="nt">-xzf</span> apache-yetus-0.7.0-src.tar.gz
 <span class="nv">$ </span>git clone <span class="nt">--single-branch</span> <span class="nt">--depth</span><span class="o">=</span>1 <span class="nt">--branch</span> YETUS-585 <span class="s1">'https://github.com/apache/yetus.git'</span> apache-yetus-0.7.0-RC1-tag
+<span class="nv">$ </span>git <span class="nt">--C</span> apache-yetus-0.7.0-RC1-tag show <span class="nt">-1</span>
+  .. verify the <span class="nb">hash</span> ...
 <span class="nv">$ </span>diff <span class="nt">-r</span> apache-yetus-0.7.0-RC1-tag apache-yetus-0.7.0-src_unpack/apache-yetus-0.7.0
 </code></pre></div>  </li>
   <li>
@@ -586,7 +588,7 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
 - remove 0.4.0, add 0.7.0 to docs and downloads
 </code></pre></div>  </li>
   <li>Commit the patch to the ASF source repo immediately, but do not update the website just yet.</li>
-  <li>Create shortcut links to the vote thread (e.g., <a href="https://s.apache.org/yetus-0.7.0-rc1-vote">https://s.apache.org/yetus-0.7.0-rc1-vote</a>) and the result (e.g., <a href="https://s.apache.org/yetus-0.7.0-vote-passes">https://s.apache.org/yetus-0.7.0-vote-passes</a>) that point to the archives on mail-archives.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.</li>
+  <li>Create shortcut links to the vote thread (e.g., <a href="https://s.apache.org/yetus-0.7.0-rc1-vote">https://s.apache.org/yetus-0.7.0-rc1-vote</a>) and the result (e.g., <a href="https://s.apache.org/yetus-0.7.0-vote-passes">https://s.apache.org/yetus-0.7.0-vote-passes</a>) that point to the archives on lists.apache.org.  Be aware that it may take several hours for the archive to get the posts that need to be referenced.</li>
   <li>
     <p>Produce a signed release tag. You should create a signed tag and push it to the asf repo. The tag's message should include ASF-shortened links to the vote and results. It should be named 'rel/<em>version</em>' so that it will be immutable due to ASF infra's git configuration. Presuming we're working on the 0.7.0 release and the RC1 example above has passed:</p>
 
@@ -708,7 +710,7 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
  Meg Smith
  Apache Yetus PMC  If you'd like feedback on the draft, feel free to post it for review on your release issue.
 </code></pre></div>  </li>
-  <li>Wait 24 hours for mirrors to get properly updated before continuing.</li>
+  <li>Wait an hour for the CDN to get properly updated before continuing.</li>
 </ol>
 
 <h3 id="documentation">Documentation</h3>
@@ -759,7 +761,7 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
   <li>Verify that the tag built in Github Actions.</li>
   <li>Go to <a href="https://github.com/aw-was-here/yetus-test-patch-action/releases/new?marketplace=true">Draft a release</a></li>
   <li>Type the tag that you just pushed into the 'tag' box.</li>
-  <li>Use categories 'Code quality' and 'Continuous integration'</li>
+  <li>Use categories 'Code Quality' 'Code Review'</li>
   <li>Release Title should reflect the version</li>
   <li>Describe this release should be a cut-down version of the announcement email (drop SHA and direct download links. main page, github actions, and release notes should be mentioned). See <a href="https://github.com/apache/yetus-test-patch-action/releases">Releases</a> for examples.</li>
   <li>Mark 'This is a pre-release'</li>
