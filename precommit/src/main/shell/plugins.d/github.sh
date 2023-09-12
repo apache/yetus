@@ -522,9 +522,11 @@ function github_locate_patch
   case "${input}" in
       GHSHA:*)
         github_locate_sha_patch "${input}" "${patchout}" "${diffout}"
+        return $?
       ;;
       *)
         github_locate_pr_patch "${input}" "${patchout}" "${diffout}"
+        return $?
       ;;
   esac
 }

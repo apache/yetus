@@ -346,9 +346,11 @@ function gitlab_locate_patch
   case "${input}" in
       GLSHA:*)
         gitlab_locate_sha_patch "${input}" "${patchout}" "${diffout}"
+        return $?
       ;;
       *)
         gitlab_locate_mr_patch "${input}" "${patchout}" "${diffout}"
+        return $?
       ;;
   esac
 }
