@@ -299,7 +299,7 @@ ASF policies require that binding votes on releases be cast only after verifying
    - Our `LICENSE` and `NOTICE` files must correctly propagate licensing information for bundled products. The [Foundation's Licensing HOWTO Guide](https://www.apache.org/dev/licensing-howto.html) provides guidance on how these files should be maintained.
    - Our software must only bundle compatibly licensed products; read [the Licensing Policy's Category A list for compatible licenses](https://www.apache.org/legal/resolved#category-a).
    - Our software may only have a runtime dependency on a product with a prohibit license if its use is optional; read [the Licensing Policy's Category X list for prohibited licenses](https://www.apache.org/legal/resolved#category-x) and [the Licensing Policy's explanation of optional runtime dependencies](https://www.apache.org/legal/resolved#optional).
-1. You SHOULD make sure the source release artifact corresponds to the referenced commit hash in the [VOTE] thread. (This ASF policy is currently in DRAFT status.) The release tag is how we'll provide long-term provenance information for our downstream users. Since the release's source code artifact will be the canonical representation of the release we vote on, it is essential that it matches the contents of the version control system's tag. Given our example above, you can check this with recursive diff.
+1. You SHOULD make sure the source release artifact corresponds to the referenced commit hash in the [VOTE] thread. A release tag that points to this commit hash is how we'll provide long-term provenance information for our downstream users. Since the release's source code artifact will be the canonical representation of the release we vote on, it is essential that it matches the contents of the version control system's tag. Given our example above, you can check this with recursive diff.
 
     NOTE: The `maven` plug-in that we use does not include some git control files like `.gitignore` and `.gitattributes`.  Additionally, it adds a `DEPENDENCIES` file.
 
@@ -307,6 +307,8 @@ ASF policies require that binding votes on releases be cast only after verifying
    $ mkdir apache-yetus-0.7.0-src_unpack
    $ tar -C apache-yetus-0.7.0-src_unpack -xzf apache-yetus-0.7.0-src.tar.gz
    $ git clone --single-branch --depth=1 --branch YETUS-585 'https://github.com/apache/yetus.git' apache-yetus-0.7.0-RC1-tag
+   $ git --C apache-yetus-0.7.0-RC1-tag show -1
+     .. verify the hash ...
    $ diff -r apache-yetus-0.7.0-RC1-tag apache-yetus-0.7.0-src_unpack/apache-yetus-0.7.0
    ```
 
