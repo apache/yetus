@@ -140,7 +140,9 @@ These commands will create one or two branches:
 - _JIRA_-main with updated poms that match the next SNAPSHOT release
 
 Verify the automated commits to these branches are correct and create the necessary PRs.
-Once Apache Yetus checks finish, merge to their respective branches. (You do not need approval.)
+Once Apache Yetus checks finish, merge in the _JIRA-release_ and send a message
+to dev@yetus.apache.org that main is now frozen for release.  The _JIRA-main_ branch
+will get merged in after release.
 
 ## Verify Changelog and Release Notes
 
@@ -524,6 +526,8 @@ Once a release candidate obtains majority approval from the PMC, there are sever
 1. Mark JIRA version as released. Browse to the [project version management page for the YETUS JIRA tracker](https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions). Mouse over the version you are managing, click on the gear in the far right and select Release.
 1. Delete staging branch. Now that there is an immutable tag for the release, all commits leading up to that release will be maintained by git. Should we need a future maintenance release after this version, we can reestablish the branch based off of the release tag.
         $ git push origin :YETUS-XXX
+1. Merge the release tag into main.
+1. Merge in the _JIRA-main_ PR that was created at the beginning of the release cycle.
 1. Remove old releases from the distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintenance for an earlier minor or major release line, you should delete those versions from the distribution area.
 1. Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,
         Subject: [ANNOUNCE] Apache Yetus 0.7.0 release
