@@ -145,11 +145,23 @@ update_version() {
   git add "${BASEDIR}/.mvn/maven.config"
 }
 
+test_gpg_signing() {
+  declare binary
+  echo "**** testing gpg signing"
+  binary=$(git config gpg.program)
+  if ! echo "test" | "${binary}" -o /dev/null -as -; then
+    exit 1
+  fi
+
+}
+
 option_parse "$@"
 
 check_basedir_repo
 
 trap cleanup INT QUIT TRAP ABRT BUS SEGV TERM ERR
+
+test_gpg_signing
 
 set -x
 
