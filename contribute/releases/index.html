@@ -259,7 +259,9 @@ PRs.  A script is provided to make this easier:</p>
 </ul>
 
 <p>Verify the automated commits to these branches are correct and create the necessary PRs.<br />
-Once Apache Yetus checks finish, merge to their respective branches. (You do not need approval.)</p>
+Once Apache Yetus checks finish, merge in the <em>JIRA-release</em> and send a message<br />
+to dev@yetus.apache.org that main is now frozen for release.  The <em>JIRA-main</em> branch<br />
+will get merged in after release.</p>
 
 <h2 id="verify-changelog-and-release-notes">Verify Changelog and Release Notes</h2>
 
@@ -647,6 +649,8 @@ gpg: Good signature from <span class="s2">"Sean Busbey (CODE SIGNING KEY) &lt;bu
   <li>Mark JIRA version as released. Browse to the <a href="https://issues.apache.org/jira/plugins/servlet/project-config/YETUS/versions">project version management page for the YETUS JIRA tracker</a>. Mouse over the version you are managing, click on the gear in the far right and select Release.</li>
   <li>Delete staging branch. Now that there is an immutable tag for the release, all commits leading up to that release will be maintained by git. Should we need a future maintenance release after this version, we can reestablish the branch based off of the release tag.<br />
      $ git push origin :YETUS-XXX</li>
+  <li>Merge the release tag into main.</li>
+  <li>Merge in the <em>JIRA-main</em> PR that was created at the beginning of the release cycle.</li>
   <li>Remove old releases from the distribution area. The ASF distribution area should only contain the most recent release for actively developed branches If your release is a maintenance release, delete the prior release. If your release marks the end of maintenance for an earlier minor or major release line, you should delete those versions from the distribution area.</li>
   <li>
     <p>Draft an announcement email. The announcement email should briefly describe our project and provide links to our artifacts and documentation. For example,<br />
