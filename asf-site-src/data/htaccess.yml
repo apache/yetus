@@ -15,6 +15,6 @@
 ---
 redirect:
   /latest.tgz: >
-    https://www.apache.org/dyn/closer.cgi?action=download&filename=yetus/0.14.1/apache-yetus-0.14.1-bin.tar.gz
+    https://www.apache.org/dyn/closer.cgi?action=download&filename=yetus/0.15.0/apache-yetus-0.15.0-bin.tar.gz
   /latest.tgz.asc: >
-    https://downloads.apache.org/yetus/0.14.1/apache-yetus-0.14.1-bin.tar.gz.asc
+    https://downloads.apache.org/yetus/0.15.0/apache-yetus-0.15.0-bin.tar.gz.asc
