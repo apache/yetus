@@ -83,7 +83,7 @@ function codespell_logic
   "${CODESPELL}" \
     --disable-colors \
     --interactive 0 \
-    --quiet-level 2 \
+    --quiet-level 34 \
     "${codespellargs[@]}" \
     "." \
   | "${SED}" -e 's,^./,,g' \
