@@ -250,7 +250,6 @@
         <artifactId>apache-rat-plugin</artifactId>
         <version>${maven-rat-plugin.version}</version>
         <configuration>
-          <!-- <excludeSubprojects>false</excludeSubprojects> -->
           <excludes>
             <exclude>.mvn/maven.config</exclude>
             <exclude>.gitattributes</exclude>
