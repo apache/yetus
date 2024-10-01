@@ -118,7 +118,7 @@ function yetus_usage
 
   echo "${BINNAME} [OPTIONS]"
 
-  yetus_add_option "--github-annotations=<bool>" "Enable GitHub Checks Annoations [default: ${GITHUB_CHECK_ANNOTATIONS}]"
+  yetus_add_option "--github-annotations=<bool>" "Enable GitHub Checks Annotations [default: ${GITHUB_CHECK_ANNOTATIONS}]"
   yetus_add_option "--curl-cmd=<cmd>" "The 'curl' command to use (default 'curl')"
   yetus_add_option "--debug" "If set, then output some extra stuff to stderr"
   yetus_add_option "--grep-cmd=<cmd>" "The 'grep' command to use (default 'grep')"

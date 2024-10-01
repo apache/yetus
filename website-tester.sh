@@ -28,6 +28,11 @@ echo "::endgroup::"
 echo "::group::tar"
 tar -C /tmp/website/html --strip-components 1 \
   -xpf yetus-dist/target/artifacts/apache-yetus-*-site.tar.gz
+find /tmp/website/html/* -type d | sort
+if [[ ! -d /tmp/website/html/documentation/in-progress/ ]]; then
+  echo ::error javadoc is missing from tar file
+  exit 1
+fi
 echo "::endgroup::"
 
 echo "::group::start apache httpd"
@@ -43,7 +48,7 @@ echo "::group::codespell releasenotes"
 codespell \
   --disable-colors \
   --interactive 0 \
-  --quiet-level 2 \
+  --quiet-level 34 \
   ./asf-site-src/source/downloads/releasenotes \
 | sed -e 's,^./,,g'  \
   > /tmp/codespell.txt

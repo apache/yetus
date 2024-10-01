@@ -188,7 +188,7 @@ How should the classification be recorded for the annotated APIs?
     providing an implementation of a standards-body based interface that is
     still under development. For example, many companies, in an attempt to be
     first to market, have provided implementations of a new NFS protocol even
-    when the protocol was not fully completed by IETF. The implementor cannot
+    when the protocol was not fully completed by IETF. The implementer cannot
     evolve the interface in a fashion that causes least disruption because
     the stability is controlled by the standards body. Hence it is appropriate
     to label the interface as unstable.

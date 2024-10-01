@@ -41,7 +41,7 @@ None
 
 | Option | Notes |
 |:---------|:------|
-| `--junit-report-style=[full|line]` | Style of the junit report |
+| `--junit-report-style=[full\|line]` | Style of the junit report |
 | `--junit-report-xml=<file>` | Name of the output file |
 
 ## JUnit Style

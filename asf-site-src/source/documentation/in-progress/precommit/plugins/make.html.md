@@ -46,7 +46,8 @@ None
 | Option | Notes |
 |:---------|:------|
 | `--make-cmd=<cmd>` | Executable location |
-| `--make-file=<filename>` | Filename to use instead of the default `Makefile` | `--make-use-git-clean` | Instead of `make clean`, use `git clean` to wipe the repository |
+| `--make-file=<filename>` | Filename to use instead of the default `Makefile` |
+| `--make-use-git-clean` | Instead of `make clean`, use `git clean` to wipe the repository |
 
 # Docker Notes
 
