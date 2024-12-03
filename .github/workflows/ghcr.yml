@@ -24,6 +24,7 @@ on:  # yamllint disable-line rule:truthy
       - rel/*
   schedule:
     - cron: '5 12 * * 6'  # UTC
+  workflow_dispatch:
 
 jobs:
   deploy:
