@@ -21,7 +21,7 @@
 
 TRIGGER: ${CI}=true and ${SEMAPHORE}=true
 
-Semaphore CI requires that `checkout --use-cache` has been used prior to trigging test-patch. It is HIGHLY recommended to use a helper script checked into the repository to control precommit options to avoid problems with Semaphore CI's parsing of long lines in the YAML file.
+Semaphore CI requires that `checkout --use-cache` has been used prior to triggering test-patch. It is HIGHLY recommended to use a helper script checked into the repository to control precommit options to avoid problems with Semaphore CI's parsing of long lines in the YAML file.
 
 The GitHub repo and the Pull Request in use are automatically detected.  However, some personalities may override the auto-detected Github repository information.  It may be necessary to manually configure it in your `semaphore.yml` file.
 

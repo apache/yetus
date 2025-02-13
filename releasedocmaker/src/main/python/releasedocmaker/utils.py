@@ -179,7 +179,7 @@ class Outputs:
             value.close()
 
     def write_list(self, mylist, skip_credits, base_url):
-        """ Take a Jira object and write out the relevants parts in a multimarkdown table line"""
+        """ Take a Jira object and write out the relevant parts in a multimarkdown table line"""
         for jira in sorted(mylist):
             if skip_credits:
                 line = '| [{id}]({base_url}/browse/{id}) | {summary} |  ' \
