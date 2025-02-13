@@ -9,7 +9,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (7.0.8.4)
+    activesupport (7.0.8.7)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
@@ -102,7 +102,7 @@ GEM
     parallel (1.26.3)
     parslet (2.0.0)
     public_suffix (6.0.1)
-    rack (2.2.9)
+    rack (2.2.11)
     rack-livereload (0.3.17)
       rack
     rb-fsevent (0.11.2)
@@ -122,7 +122,7 @@ GEM
       concurrent-ruby (~> 1.0)
     uglifier (3.2.0)
       execjs (>= 0.3.0, < 3)
-    webrick (1.8.2)
+    webrick (1.9.1)
 
 PLATFORMS
   aarch64-linux
