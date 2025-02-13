@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/middleman/middleman-syntax.git
-  revision: 888e1a6590830ef7e6163301d3bd53afa39614c0
+  revision: 2d44853d28766850db2ca800e880270fa7dd8ad6
   specs:
     middleman-syntax (3.4.0)
       middleman-core (>= 3.2)
@@ -29,7 +29,7 @@ GEM
       http_parser.rb (~> 0)
     erubis (2.7.0)
     eventmachine (1.2.7)
-    execjs (2.9.1)
+    execjs (2.10.0)
     fast_blank (1.0.1)
     fastimage (2.4.0)
     ffi (1.17.1)
@@ -42,8 +42,8 @@ GEM
     http_parser.rb (0.8.0)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
-    kramdown (2.4.0)
-      rexml
+    kramdown (2.5.1)
+      rexml (>= 3.3.9)
     kramdown-parser-gfm (1.1.0)
       kramdown (~> 2.0)
     libv8-node (21.7.2.0-aarch64-linux)
@@ -141,4 +141,4 @@ DEPENDENCIES
   wdm (~> 0.1.0)
 
 BUNDLED WITH
-   2.5.20
+   2.5.23
