@@ -31,8 +31,8 @@ GEM
     eventmachine (1.2.7)
     execjs (2.9.1)
     fast_blank (1.0.1)
-    fastimage (2.3.1)
-    ffi (1.17.0)
+    fastimage (2.4.0)
+    ffi (1.17.1)
     haml (5.2.2)
       temple (>= 0.8.0)
       tilt
