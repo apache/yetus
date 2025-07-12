@@ -332,6 +332,7 @@ ARG PY3_ASTROID_VERSION=2.15.6
 ARG PY3_CODESPELL_VERSION=2.4.1
 ARG PY3_DETECT_SECRETS=1.5.0
 ARG PY3_PYLINT_VERSION=2.17.5
+ARG PY3_RUFF_VERSION=0.12.3
 ARG PY3_YAMLLINT_VERSION=1.35.1
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -362,6 +363,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         codespell==$PY3_CODESPELL_VERSION \
         detect-secrets==$PY3_DETECT_SECRETS \
         pylint==$PY3_PYLINT_VERSION \
+        ruff==$PY3_RUFF_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
     && rm -rf /root/.cache \
     && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \
