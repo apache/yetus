@@ -28,22 +28,33 @@ on:  # yamllint disable-line rule:truthy
 
 jobs:
   deploy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
     steps:
       - name: checkout
         uses: actions/checkout@v6
         with:
           path: src
           fetch-depth: 0
+
       - name: Set up QEMU
         id: qemu
         # yamllint disable-line rule:line-length
         uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a  # v4.0.0
         with:
-          image: tonistiigi/binfmt:qemu-v7.0.0-28
+          image: tonistiigi/binfmt:qemu-v10.2.1-65
           platforms: all
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Available platforms
         run: echo ${{ steps.qemu.outputs.platforms }}
+
       - name: Login to GitHub Container Registry
         # yamllint disable-line rule:line-length
         uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2  # v4.0.0
@@ -51,6 +62,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and Push Docker Image
         env:
           DOCKER_REPO: ghcr.io/${{ github.repository }}
