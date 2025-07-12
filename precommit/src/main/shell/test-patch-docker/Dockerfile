@@ -30,8 +30,8 @@ FROM ubuntu:jammy AS yetusbase
 WORKDIR /root
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV DEBCONF_TERSE true
+ENV DEBIAN_FRONTEND=noninteractive
+ENV DEBCONF_TERSE=true
 
 ######
 # Install some basic Apache Yetus requirements
@@ -67,9 +67,9 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
 ###
 #hadolint ignore=DL3059
 RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LANGUAGE=en_US:en
+ENV LC_ALL=en_US.UTF-8
 
 ####
 # Install GNU C/C++ and GNU make (everything generally needs this)
@@ -214,7 +214,7 @@ RUN git clone \
 #
 # NOTE: go must be installed prior to executing this block!
 ####
-FROM yetusbase as yetusgolangci
+FROM yetusbase AS yetusgolangci
 ARG GOLANGCILINT_VERSION=1.64.4
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL \
@@ -248,8 +248,8 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y default-j
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 # this var will get yetus_abs'd when run under precommit so should be relatively safe
-ENV JAVA_HOME /usr/lib/jvm/default-java
-ENV SPOTBUGS_HOME /opt/spotbugs
+ENV JAVA_HOME=/usr/lib/jvm/default-java
+ENV SPOTBUGS_HOME=/opt/spotbugs
 
 ####
 # Install ant
@@ -387,8 +387,8 @@ RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && rm -rf /root/.gem
 # set some reasonable defaults for ruby
 # user's can always override these as needed
-ENV PATH ${PATH}:/var/tmp/.bundler-gems/bin
-ENV BUNDLE_PATH /var/tmp/.bundler-gems
+ENV PATH=${PATH}:/var/tmp/.bundler-gems/bin
+ENV BUNDLE_PATH=/var/tmp/.bundler-gems
 
 ###
 # Install npm and JSHint
