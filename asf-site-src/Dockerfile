@@ -51,15 +51,15 @@ RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" \
     && useradd -l -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
 # hadolint disable=DL3059,SC2039,SC1117
 RUN echo -e "${USER_NAME}\\tALL=NOPASSWD: ALL" > "/etc/sudoers.d/yetus-build-${USER_ID}" # pragma: allowlist secret
-ENV HOME /home/${USER_NAME}
+ENV HOME=/home/${USER_NAME}
 
 WORKDIR /home/${USER_NAME}
 
-ENV APACHE_PID_FILE /tmp/website/pid
-ENV APACHE_LOG_DIR /tmp/website/logdir
-ENV APACHE_RUN_DIR /tmp/website/rundir
-ENV APACHE_RUN_USER ${USER_NAME}
-ENV APACHE_RUN_GROUP ${USER_NAME}
+ENV APACHE_PID_FILE=/tmp/website/pid
+ENV APACHE_LOG_DIR=/tmp/website/logdir
+ENV APACHE_RUN_DIR=/tmp/website/rundir
+ENV APACHE_RUN_USER=${USER_NAME}
+ENV APACHE_RUN_GROUP=${USER_NAME}
 
 # hadolint ignore=DL3013
 RUN mkdir -p /tmp/website/{logdir,rundir} \
@@ -74,7 +74,7 @@ USER ${USER_NAME}
 
 RUN bundle config --global github.https true \
     && bundle config --global path "${BUNDLE_PATH}"
-ENV GEM_HOME ${BUNDLE_PATH}
+ENV GEM_HOME=${BUNDLE_PATH}
 
 # pre-install most of the middleman stack to save time
 # on re-launches
