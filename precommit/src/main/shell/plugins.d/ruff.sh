@@ -254,6 +254,7 @@ function ruff_postcompile
 
 function ruff_format_calcdiffs
 {
+  # shellcheck disable=SC2034
   declare branch=$1
   declare patch=$2
   declare tmp=${PATCH_DIR}/pl.$$.${RANDOM}
