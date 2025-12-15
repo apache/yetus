@@ -45,7 +45,7 @@ jobs:
           testsfilter: checkstyle,test4tests
       - name: Artifact output
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: apacheyetustestpatchactionout
           path: ${{ github.workspace }}/out
