@@ -24,6 +24,8 @@ GitHub Action support is available in two different ways.  There are some settin
 * Annotations will be used to mark problems in the files for those plug-ins that support this feature and
 if `--linecomments` has `github` as a configured bug system (the default).
 * Statuses will be added if the GitHub Token gives permission.
+* Job Summary will be written with a Markdown-formatted report of the test results, visible directly on the
+workflow run page without downloading artifacts.
 
 ## Workflow Action
 
@@ -107,6 +109,23 @@ Manual configuration is recommended if one needs significant customization over 
 TRIGGER: ${GITHUB_ACTIONS}=True
 
 GitHub Actions support has only been tested on the ubuntu-latest image. It automatically configures `--patch-dir` to be `${GITHUB_WORKSAPCE}/yetus` if not previously set.
+
+## Job Summary
+
+When running under GitHub Actions, Apache Yetus automatically writes a summary of the test results to the
+[Job Summary](https://github.blog/2022-05-09-supercharging-github-actions-with-job-summaries/). This provides
+immediate visibility of pass/fail status and details directly on the workflow run page, without needing to
+download artifacts or parse log files.
+
+The Job Summary includes:
+
+* Overall pass/fail status with vote counts
+* Vote table showing each subsystem's result, runtime, and comments
+* Failed tests section (if any tests failed)
+* Links to log files (if artifact URLs are available)
+
+This feature requires no configuration and is automatically enabled when the `GITHUB_STEP_SUMMARY` environment
+variable is present (which GitHub Actions sets automatically).
 
 See also:
 
