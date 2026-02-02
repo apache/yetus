@@ -939,8 +939,12 @@ function docker_handler
 
   determine_user
 
-  # need to call this explicitly
+  # need to call these explicitly (not in plugin lists)
   console_docker_support
+
+  if declare -f githubactions_docker_support >/dev/null; then
+    githubactions_docker_support
+  fi
 
   for plugin in ${PROJECT_NAME} ${BUILDTOOL} "${BUGSYSTEMS[@]}" "${TESTTYPES[@]}" "${TESTFORMATS[@]}"; do
     if declare -f "${plugin}_docker_support" >/dev/null; then

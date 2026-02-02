@@ -85,6 +85,25 @@ function githubactions_set_plugin_defaults
   GITHUB_REPO="${GITHUB_REPOSITORY}"
 }
 
+## @description  Docker support for GitHub Actions
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function githubactions_docker_support
+{
+  if [[ -z "${GITHUB_STEP_SUMMARY}" ]]; then
+    return 0
+  fi
+
+  if [[ ! -f "${GITHUB_STEP_SUMMARY}" ]]; then
+    return 0
+  fi
+
+  DOCKER_EXTRAARGS+=("-v" "${GITHUB_STEP_SUMMARY}:${DOCKER_WORK_DIR}/step_summary.md")
+  GITHUB_STEP_SUMMARY="${DOCKER_WORK_DIR}/step_summary.md"
+  add_docker_env GITHUB_STEP_SUMMARY
+}
+
 function githubactions_cleanup_and_exit
 {
   echo "::endgroup::"

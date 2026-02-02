@@ -129,3 +129,47 @@ setup_gha() {
   grep -q "+1" "${GITHUB_STEP_SUMMARY}"
   ! grep -q ":green_heart:" "${GITHUB_STEP_SUMMARY}"
 }
+
+setup_docker_support() {
+  # Source the githubactions robot
+  # shellcheck disable=SC1090
+  . "${BATS_TEST_DIRNAME}/../../main/shell/robots.d/githubactions.sh"
+
+  # Mock add_docker_env
+  DOCKER_EXTRAENVS=()
+  add_docker_env() {
+    for k in "$@"; do
+      DOCKER_EXTRAENVS+=("${k}")
+    done
+  }
+
+  DOCKER_EXTRAARGS=()
+  DOCKER_WORK_DIR="/workdir"
+}
+
+@test "githubactions_docker_support (no GITHUB_STEP_SUMMARY)" {
+  setup_docker_support
+  unset GITHUB_STEP_SUMMARY
+  run githubactions_docker_support
+  [ "${status}" -eq 0 ]
+  [ "${#DOCKER_EXTRAARGS[@]}" -eq 0 ]
+}
+
+@test "githubactions_docker_support (GITHUB_STEP_SUMMARY file missing)" {
+  setup_docker_support
+  GITHUB_STEP_SUMMARY="/nonexistent/path/summary.md"
+  run githubactions_docker_support
+  [ "${status}" -eq 0 ]
+  [ "${#DOCKER_EXTRAARGS[@]}" -eq 0 ]
+}
+
+@test "githubactions_docker_support (mounts summary file)" {
+  setup_docker_support
+  GITHUB_STEP_SUMMARY="${TMP}/step_summary.md"
+  touch "${GITHUB_STEP_SUMMARY}"
+  githubactions_docker_support
+  [[ "${DOCKER_EXTRAARGS[*]}" == *"-v"* ]]
+  [[ "${DOCKER_EXTRAARGS[*]}" == *"${TMP}/step_summary.md:/workdir/step_summary.md"* ]]
+  [ "${GITHUB_STEP_SUMMARY}" = "/workdir/step_summary.md" ]
+  [[ "${DOCKER_EXTRAENVS[*]}" == *"GITHUB_STEP_SUMMARY"* ]]
+}
