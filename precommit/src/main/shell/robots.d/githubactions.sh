@@ -85,7 +85,158 @@ function githubactions_set_plugin_defaults
   GITHUB_REPO="${GITHUB_REPOSITORY}"
 }
 
+## @description  Docker support for GitHub Actions
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function githubactions_docker_support
+{
+  if [[ -z "${GITHUB_STEP_SUMMARY}" ]]; then
+    return 0
+  fi
+
+  if [[ ! -f "${GITHUB_STEP_SUMMARY}" ]]; then
+    return 0
+  fi
+
+  DOCKER_EXTRAARGS+=("-v" "${GITHUB_STEP_SUMMARY}:${DOCKER_WORK_DIR}/step_summary.md")
+  GITHUB_STEP_SUMMARY="${DOCKER_WORK_DIR}/step_summary.md"
+  add_docker_env GITHUB_STEP_SUMMARY
+}
+
 function githubactions_cleanup_and_exit
 {
   echo "::endgroup::"
+}
+
+## @description  Write a summary report to GitHub Actions Job Summary
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+function githubactions_finalreport
+{
+  declare -i i=0
+  declare ourstring
+  declare vote
+  declare subs
+  declare ela
+  declare calctime
+  declare logfile
+  declare comment
+  declare url
+  declare emoji
+  declare loglink
+
+  if [[ -z "${GITHUB_STEP_SUMMARY}" ]]; then
+    return 0
+  fi
+
+  if [[ ! -w "${GITHUB_STEP_SUMMARY}" ]]; then
+    yetus_error "WARNING: GITHUB_STEP_SUMMARY (${GITHUB_STEP_SUMMARY}) is not writable"
+    return 0
+  fi
+
+  big_console_header "Writing GitHub Actions Job Summary"
+
+  url=$(get_artifact_url)
+
+  {
+    if [[ ${RESULT} == 0 ]]; then
+      printf '## :confetti_ball: +1 overall\n\n'
+    else
+      printf '## :broken_heart: -1 overall\n\n'
+    fi
+
+    i=0
+    until [[ ${i} -ge ${#TP_HEADER[@]} ]]; do
+      printf '%s\n\n' "${TP_HEADER[i]}"
+      ((i=i+1))
+    done
+
+    printf '| Vote | Subsystem | Runtime | Logfile | Comment |\n'
+    printf '|:----:|----------:|--------:|:-------:|:--------|\n'
+
+    i=0
+    until [[ ${i} -ge ${#TP_VOTE_TABLE[@]} ]]; do
+      ourstring=$(echo "${TP_VOTE_TABLE[i]}" | tr -s ' ')
+      vote=$(echo "${ourstring}" | cut -f2 -d\| | tr -d ' ')
+      subs=$(echo "${ourstring}" | cut -f3 -d\|)
+      ela=$(echo "${ourstring}" | cut -f4 -d\|)
+      calctime=$(clock_display "${ela}")
+      logfile=$(echo "${ourstring}" | cut -f5 -d\| | tr -d ' ')
+      comment=$(echo "${ourstring}" | cut -f6 -d\|)
+
+      if [[ "${vote}" = "H" ]]; then
+        printf '| | | | | _%s_ |\n' "${comment}"
+        ((i=i+1))
+        continue
+      fi
+
+      # Honor GITHUB_USE_EMOJI_VOTE setting
+      if [[ ${GITHUB_USE_EMOJI_VOTE} == true ]]; then
+        case ${vote} in
+          1|"+1")
+            emoji="+1 :green_heart:"
+          ;;
+          -1)
+            emoji="-1 :x:"
+          ;;
+          0)
+            emoji="+0 :ok:"
+          ;;
+          -0)
+            emoji="-0 :warning:"
+          ;;
+          *)
+            emoji=${vote}
+          ;;
+        esac
+      else
+        emoji="${vote}"
+      fi
+
+      # Format logfile as link if URL is available
+      if [[ -n "${logfile}" ]]; then
+        if [[ -n "${url}" ]]; then
+          loglink=$(echo "${logfile}" | "${SED}" -e "s,@@BASE@@,${url},g")
+          loglink="[${logfile/@@BASE@@\//}](${loglink})"
+        else
+          loglink="${logfile/@@BASE@@\//}"
+        fi
+      else
+        loglink=""
+      fi
+
+      printf '| %s | %s | %s | %s | %s |\n' \
+        "${emoji}" \
+        "${subs}" \
+        "${calctime}" \
+        "${loglink}" \
+        "${comment}"
+
+      ((i=i+1))
+    done
+
+    if [[ ${#TP_TEST_TABLE[@]} -gt 0 ]]; then
+      printf '\n### Failed Tests\n\n'
+      printf '| Reason | Tests |\n'
+      printf '|-------:|:------|\n'
+      i=0
+      until [[ ${i} -ge ${#TP_TEST_TABLE[@]} ]]; do
+        echo "${TP_TEST_TABLE[i]}"
+        ((i=i+1))
+      done
+    fi
+
+    printf '\n### Subsystem Report\n\n'
+    printf '| Subsystem | Report/Notes |\n'
+    printf '|----------:|:-------------|\n'
+
+    i=0
+    until [[ ${i} -ge ${#TP_FOOTER_TABLE[@]} ]]; do
+      comment=$(echo "${TP_FOOTER_TABLE[i]}" | "${SED}" -e "s,@@BASE@@,${url},g")
+      printf '%s\n' "${comment}"
+      ((i=i+1))
+    done
+  } >> "${GITHUB_STEP_SUMMARY}"
 }
