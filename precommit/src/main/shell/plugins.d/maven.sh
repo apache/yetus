@@ -16,10 +16,12 @@
 
 declare -a MAVEN_ARGS
 
-if [[ -z "${MAVEN_HOME:-}" ]]; then
-  MAVEN=mvn
-else
+if [[ -e "${BASEDIR}/mvnw" ]]; then
+  MAVEN=${BASEDIR}/mvnw
+elif [[ -n "${MAVEN_HOME:-}" ]]; then
   MAVEN=${MAVEN_HOME}/bin/mvn
+else
+  MAVEN=mvn
 fi
 
 MAVEN_CUSTOM_REPOS=false
@@ -78,7 +80,7 @@ function maven_ws_replace
 function maven_usage
 {
   maven_ws_replace
-  yetus_add_option "--mvn-cmd=<file>" "The 'mvn' command to use (default \${MAVEN_HOME}/bin/mvn, or 'mvn')"
+  yetus_add_option "--mvn-cmd=<file>" "The 'mvn' command to use (default \${BASEDIR}/mvnw, \${MAVEN_HOME}/bin/mvn, or 'mvn')"
   yetus_add_option "--mvn-custom-repos" "Use per-project maven repos"
   yetus_add_option "--mvn-custom-repos-dir=<dir>" "Location of repos, default is '${MAVEN_CUSTOM_REPOS_DIR}'"
   yetus_add_option "--mvn-deps-order=<bool>" "Disable maven's auto-dependency module ordering (Default: '${MAVEN_DEPENDENCY_ORDER}')"
