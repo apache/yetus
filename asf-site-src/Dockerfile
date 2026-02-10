@@ -81,7 +81,6 @@ ENV GEM_HOME=${BUNDLE_PATH}
 # hadolint ignore=DL3028
 RUN gem install bundler \
         middleman:'4.5.0' \
-        middleman-livereload \
         middleman-syntax \
         nokogiri:1.15.4 \
         sassc:2.4.0 \
