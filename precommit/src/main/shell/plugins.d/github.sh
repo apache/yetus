@@ -354,6 +354,7 @@ function github_generate_local_diff
   declare patchout=$2
   declare diffout=$3
   declare base_ref
+  declare base_sha
   declare head_sha
   declare merge_base
 
@@ -385,7 +386,19 @@ function github_generate_local_diff
     return 1
   fi
 
-  merge_base=$("${GIT}" merge-base FETCH_HEAD "${head_sha}" 2>/dev/null)
+  base_sha=$("${GIT}" rev-parse FETCH_HEAD)
+
+  merge_base=$("${GIT}" merge-base "${base_sha}" "${head_sha}" 2>/dev/null)
+
+  if [[ -z "${merge_base}" ]]; then
+    if "${GIT}" rev-parse --is-shallow-repository 2>/dev/null | grep -q true; then
+      yetus_debug "github: shallow repo detected, deepening to find merge base"
+      "${GIT}" fetch --deepen=2147483647 origin "${base_ref}" >/dev/null 2>&1
+      "${GIT}" fetch --deepen=2147483647 origin "refs/pull/${input}/head" >/dev/null 2>&1
+      merge_base=$("${GIT}" merge-base "${base_sha}" "${head_sha}" 2>/dev/null)
+    fi
+  fi
+
   if [[ -z "${merge_base}" ]]; then
     yetus_debug "github: cannot determine merge base"
     popd >/dev/null || true
