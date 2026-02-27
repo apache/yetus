@@ -378,7 +378,12 @@ function github_generate_local_diff
     return 1
   fi
 
-  head_sha=$("${GIT}" rev-parse FETCH_HEAD)
+  head_sha=$("${GIT}" rev-parse FETCH_HEAD 2>/dev/null)
+  if [[ -z "${head_sha}" ]]; then
+    yetus_debug "github: cannot resolve PR head SHA"
+    popd >/dev/null || true
+    return 1
+  fi
 
   if ! "${GIT}" fetch origin "${base_ref}" >/dev/null 2>&1; then
     yetus_debug "github: cannot fetch base ref ${base_ref}"
@@ -386,7 +391,12 @@ function github_generate_local_diff
     return 1
   fi
 
-  base_sha=$("${GIT}" rev-parse FETCH_HEAD)
+  base_sha=$("${GIT}" rev-parse FETCH_HEAD 2>/dev/null)
+  if [[ -z "${base_sha}" ]]; then
+    yetus_debug "github: cannot resolve base branch SHA"
+    popd >/dev/null || true
+    return 1
+  fi
 
   merge_base=$("${GIT}" merge-base "${base_sha}" "${head_sha}" 2>/dev/null)
 
