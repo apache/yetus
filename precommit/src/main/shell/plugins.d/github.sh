@@ -336,6 +336,103 @@ function github_determine_branch
   verify_valid_branch "${PATCH_BRANCH}"
 }
 
+## @description  Generate patch and diff files locally via git when the
+## @description  GitHub API fails (e.g., HTTP 406 on PRs with >300 files).
+## @description  Fetches the PR head via refs/pull/N/head and the base branch,
+## @description  then uses git format-patch and git diff to produce the output.
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        PR number
+## @param        patch output file
+## @param        diff output file
+## @return       0 on success
+## @return       1 on failure
+function github_generate_local_diff
+{
+  declare input=$1
+  declare patchout=$2
+  declare diffout=$3
+  declare base_ref
+  declare base_sha
+  declare head_sha
+  declare merge_base
+
+  yetus_debug "github: attempting local git fallback for PR #${input}"
+
+  # shellcheck disable=SC2016
+  base_ref=$("${AWK}" 'match($0,"\"ref\": \""){print $2}' "${PATCH_DIR}/github-pull.json" \
+    | cut -f2 -d\" \
+    | tail -1)
+
+  if [[ -z "${base_ref}" ]]; then
+    yetus_debug "github: cannot determine base ref from PR JSON"
+    return 1
+  fi
+
+  pushd "${BASEDIR}" >/dev/null || return 1
+
+  if ! "${GIT}" fetch origin "refs/pull/${input}/head" >/dev/null 2>&1; then
+    yetus_debug "github: cannot fetch refs/pull/${input}/head"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  head_sha=$("${GIT}" rev-parse FETCH_HEAD 2>/dev/null)
+  if [[ -z "${head_sha}" ]]; then
+    yetus_debug "github: cannot resolve PR head SHA"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  if ! "${GIT}" fetch origin "${base_ref}" >/dev/null 2>&1; then
+    yetus_debug "github: cannot fetch base ref ${base_ref}"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  base_sha=$("${GIT}" rev-parse FETCH_HEAD 2>/dev/null)
+  if [[ -z "${base_sha}" ]]; then
+    yetus_debug "github: cannot resolve base branch SHA"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  merge_base=$("${GIT}" merge-base "${base_sha}" "${head_sha}" 2>/dev/null)
+
+  if [[ -z "${merge_base}" ]]; then
+    if "${GIT}" rev-parse --is-shallow-repository 2>/dev/null | grep -q true; then
+      yetus_debug "github: shallow repo detected, deepening to find merge base"
+      "${GIT}" fetch --deepen=2147483647 origin "${base_ref}" >/dev/null 2>&1
+      "${GIT}" fetch --deepen=2147483647 origin "refs/pull/${input}/head" >/dev/null 2>&1
+      merge_base=$("${GIT}" merge-base "${base_sha}" "${head_sha}" 2>/dev/null)
+    fi
+  fi
+
+  if [[ -z "${merge_base}" ]]; then
+    yetus_debug "github: cannot determine merge base"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  echo "  Generating patch/diff locally via git"
+
+  if ! "${GIT}" format-patch --stdout "${merge_base}..${head_sha}" > "${patchout}" 2>/dev/null; then
+    yetus_debug "github: git format-patch failed"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  if ! "${GIT}" diff "${merge_base}..${head_sha}" > "${diffout}" 2>/dev/null; then
+    yetus_debug "github: git diff failed"
+    popd >/dev/null || true
+    return 1
+  fi
+
+  popd >/dev/null || true
+  return 0
+}
+
 ## @description  Given input = GH:##, download a patch to output.
 ## @description  Also sets GITHUB_ISSUE to the raw number.
 ## @audience     private
@@ -351,6 +448,7 @@ function github_locate_pr_patch
   declare patchout=$2
   declare diffout=$3
   declare apiurl
+  declare diffgenerated=false
   declare line
   declare sha
   declare foundhead=false
@@ -416,19 +514,25 @@ function github_locate_pr_patch
           --location \
           "${GITHUB_AUTH[@]}" \
          "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"; then
-    yetus_debug "github_locate_patch: not a github pull request."
-    return 1
+    yetus_debug "github_locate_patch: API patch download failed"
+    if ! github_generate_local_diff "${input}" "${patchout}" "${diffout}"; then
+      yetus_debug "github_locate_patch: local git fallback also failed"
+      return 1
+    fi
+    diffgenerated=true
   fi
 
-  echo "  Diff data at $(date)"
-  if ! "${CURL}" --silent --fail \
-          -H "Accept: application/vnd.github.v3.diff" \
-          --output "${diffout}" \
-          --location \
-          "${GITHUB_AUTH[@]}" \
-         "${apiurl}"; then
-    yetus_debug "github_locate_patch: cannot download diff"
-    return 1
+  if [[ "${diffgenerated}" != true ]]; then
+    echo "  Diff data at $(date)"
+    if ! "${CURL}" --silent --fail \
+            -H "Accept: application/vnd.github.v3.diff" \
+            --output "${diffout}" \
+            --location \
+            "${GITHUB_AUTH[@]}" \
+           "${apiurl}"; then
+      yetus_debug "github_locate_patch: cannot download diff"
+      return 1
+    fi
   fi
 
   if [[ -z "${GIT_BRANCH_SHA}" ]]; then
