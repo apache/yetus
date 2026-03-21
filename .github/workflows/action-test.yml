@@ -30,7 +30,7 @@ jobs:
           path: src
           fetch-depth: 0
       - name: maven cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.m2
           key: yetus-m2-${{ hashFiles('**/pom.xml') }}
