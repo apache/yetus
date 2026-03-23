@@ -188,8 +188,13 @@ RUN git clone --branch v$BATS_VERSION \
 # revive (golint on steroids)
 ####
 FROM yetusbase AS yetusrevive
+ARG REVIVE_VERSION=1.15.0
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN go install github.com/mgechev/revive@latest
+RUN curl -sSL \
+      https://github.com/mgechev/revive/releases/download/v$REVIVE_VERSION/revive_"$(go env GOOS)"_"$(go env GOARCH)".tar.gz \
+      -o revive.tar.gz \
+    && tar -xzf revive.tar.gz -C /usr/local/bin revive \
+    && rm revive.tar.gz
 
 
 ####
@@ -423,7 +428,7 @@ COPY --from=yetusbuf /usr/local/bin/buf /usr/local/bin/buf
 COPY --from=yetusbats /opt/bats /opt/bats
 RUN ln -s /opt/bats/bin/bats /usr/local/bin/bats
 
-COPY --from=yetusrevive /root/go/bin/* /usr/local/bin
+COPY --from=yetusrevive /usr/local/bin/revive /usr/local/bin
 COPY --from=yetuscheckmake /tmp/checkmake/checkmake /usr/local/bin
 COPY --from=yetusgolangci /usr/local/bin/golangci-lint /usr/local/bin
 
