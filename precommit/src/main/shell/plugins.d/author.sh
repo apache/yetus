@@ -147,7 +147,12 @@ function author_postcompile
   if [[ -z "${AUTHOR_IGNORE_LIST[0]}" ]]; then
     cp -p "${PATCH_DIR}/author-tags-git.txt" "${PATCH_DIR}/${AUTHOR_LOGNAME}"
   else
-    printf "^%s\n" "${AUTHOR_IGNORE_LIST[@]}" > "${PATCH_DIR}/author-tags-filter.txt"
+    for i in "${AUTHOR_IGNORE_LIST[@]}"; do
+      printf "%s\n" "${i}"
+    done \
+      | "${SED}" 's/[][\\.^$*+?{}()|]/\\&/g' \
+      | "${SED}" 's/^/^/' \
+      > "${PATCH_DIR}/author-tags-filter.txt"
     "${GREP}" -v -E \
       -f "${PATCH_DIR}/author-tags-filter.txt" \
       "${PATCH_DIR}/author-tags-git.txt" \
