@@ -38,7 +38,7 @@ jobs:
       - name: Set up QEMU
         id: qemu
         # yamllint disable-line rule:line-length
-        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c105540f5ed055e8a6ad78d82dd3a7e  # v3.6.0
+        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a  # v4.0.0
         with:
           image: tonistiigi/binfmt:qemu-v7.0.0-28
           platforms: all
@@ -46,7 +46,7 @@ jobs:
         run: echo ${{ steps.qemu.outputs.platforms }}
       - name: Login to GitHub Container Registry
         # yamllint disable-line rule:line-length
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9  # v3.7.0
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2  # v4.0.0
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
