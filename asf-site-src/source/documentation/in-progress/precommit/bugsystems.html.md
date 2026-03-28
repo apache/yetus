@@ -53,7 +53,7 @@ add_bugsystem <pluginname>
 * pluginname\_finalreport
   * Write the final result table to the bug system.
 
-# Bugzilla Specific
+## Bugzilla Specific
 
 Currently, Bugzilla support is read-only.  To use it, the Bug ID must be preferenced with 'BZ:'.  For example:
 
@@ -65,7 +65,7 @@ $ test-patch (other options) BZ:4
 
 Using the `--bugzilla-base-url` on the command line or BUGZILLA\_BASE\_URL in a project's personality will define the location of the Bugzilla instance.  By default, it is <https://bz.apache.org/bugzilla>.
 
-# GitHub Specific
+## GitHub Specific
 
 GitHub supports a large range of functionality, mostly self-adjusting based upon the
 environment it is running in.  Supported features include GitHub Enterprise, private
@@ -110,7 +110,7 @@ the appropriate documentation for your particular setup.
 
 The token is provided via the `--github-token` option.
 
-# GitLab Specific
+## GitLab Specific
 
 GitLab supports the full range of functionality, including putting comments on individual lines.  Be aware, however, that `test-patch` will (generally) require that GitLab MRs be fully squashed and rebased (i.e., a single commit) in many circumstances.
 
@@ -128,7 +128,7 @@ GitLab merge requests may be directly processed on the command line in two ways:
 The GitLab bugsystem plugin will attempt to download the unified diff that the merge request references.
 Merge requests that are made off of a specific branch will switch the test repo to that branch, if permitted.  If the merge request references a JIRA issue that matches the given JIRA issue regexp in the Subject, the JIRA plug-in will also be invoked as needed.
 
-# JIRA Specific
+## JIRA Specific
 
 JIRA support allows both patch downloads and summary writes.  It also supports branch detection-based upon the name of the attached patch file.
 

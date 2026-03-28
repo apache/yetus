@@ -17,7 +17,6 @@
 # limitations under the License.
 #
 
-require 'ruby27_fix_uri'
 require 'kramdown-parser-gfm'
 
 set :markdown_engine, :kramdown

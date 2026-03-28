@@ -21,30 +21,30 @@
 
 checkstyle
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 [checkstyle](https://checkstyle.sourceforge.net/) is a style linter for Java and many Java-adjacent languages.  This plugin requires
 support from the [Build Tool](../../buildtools) in order to work correctly.  At present, support for `ant`, `maven`, and `gradle` are
 built-in.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                     | Notes                                                                          |
+| :------------------------- | :----------------------------------------------------------------------------- |
 | `--checkstyle-goal=<goal>` | Choose between `check` or `checkstyle` Maven goals.  Defaults to `checkstyle`. |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

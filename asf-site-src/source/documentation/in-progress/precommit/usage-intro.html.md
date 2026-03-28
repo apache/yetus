@@ -48,7 +48,7 @@
 
 <!-- /MarkdownTOC -->
 
-# First Steps
+## First Steps
 
 A typical local configuration is to have two repositories.  One with the code you are working on and another, clean repository.  The workflow looks similar to the following:
 
@@ -165,7 +165,7 @@ Total Elapsed time:   0m 01s
 
 `test-patch` gives extensive information about what it is doing at run time and then provides a report at the end to give a summary about what happened.  In this particular case, this output just shows that the patch was applied and that no tests were actually run.
 
-# Resetting the Repository
+## Resetting the Repository
 
 After running that command, the test repository will contain the remnants of the build for later debugging.  It is inconvenient to instead use:
 
@@ -187,11 +187,11 @@ Modes: ResetRepo
 
 Some features are mostly invisible or auto-detected during runtime.  The `Modes` line provides hints about those features.
 
-# Dirty Workspaces
+## Dirty Workspaces
 
 An alternative to `--resetrepo` is the `--dirty-workspace` flag.  It tells test-patch that the repository is not clean and it is ok to continue. This is especially useful on a repository that is in some way 'live,' such as a repository that is actively being used for development.
 
-# Enabling Features
+## Enabling Features
 
 In general, almost all features are enabled via the plug-in framework.  To see what has been enabled, use the `--list-plugins` option:
 
@@ -248,7 +248,7 @@ $ cd <your repo>
 $ test-patch --plugins=all <other options> <filename>
 ```
 
-# Unit Tests
+## Unit Tests
 
 By default, unit tests are not run since they may take a significant amount of time.
 
@@ -261,7 +261,7 @@ $ test-patch --plugins=all  --dirty-workspace --run-tests <filename>
 
 This is the same command, but now runs the unit tests.
 
-# Output Directory
+## Output Directory
 
 After the tests have run, there is a directory that contains all of the `test-patch` related artifacts.  This is generally referred to as the patch directory.  By default, `test-patch` tries to make something off of `/tmp` to contain this content.  Using the `--patch-dir` option, one can specify exactly which directory to use.  This is helpful for automated precommit testing so that [continuous integration systems](../robots) knows where to look to gather up the output.
 
@@ -275,7 +275,7 @@ $ test-patch --plugins=all --patch-dir=${WORKSPACE}/patchdir --basedir=${WORKSPA
 
 **NOTE: Make sure to add the patch directory to `.gitignore` if the directory is inside the source tree to avoid deleting it, as `test-patch` does a `git clean` to remove untracked files from previous runs.**
 
-# Build Tool
+## Build Tool
 
 Out of the box, `test-patch` will try to figure out which build tool the project uses.  But what if you want to override it?  The `--build-tool` option allows a manual setting:
 
@@ -291,7 +291,7 @@ To disable the build tool entirely, use the `nobuild` setting:
 $ test-patch --plugins=all --build-tool=nobuild (other options)
 ```
 
-# Providing Patch Files
+## Providing Patch Files
 
 NOTE: More in-depth information may be found in the [bugsystems](../bugsystems/) section.
 
@@ -374,7 +374,7 @@ $ test-patch --plugins=all https://example.com/webserver/file.patch
 
 process the file.patch from the example.com webserver.
 
-# Excluding Files
+## Excluding Files
 
 Some repositories have content that is either imported from other sources (aka "vendored") or in some
 other way have files that are known to break tests. By default, `.yetus/excludes.txt` will be read for any
@@ -388,7 +388,7 @@ $ test-patch --plugins=all --excludes=(filename) (other options)
     NOTE: Do not confuse file globs for regular expressions.  With regular expressions, `a*` will match `aaaaaaaa`
     but not `ab`.  To match all characters any number of times, you need `.*` as your wildcard expression.
 
-# "Warn-only" Test Results
+## "Warn-only" Test Results
 
 In some cases, test plug-ins may always generate fail results in ways that cannot be avoided or are so
 monumental to fix that you just want to keep track of the results without ever failing the run.  `test-patch`
@@ -400,7 +400,7 @@ $ test-patch --plugins=all --tests-filter=checkstyle,javadoc (other options)
 
 ... will always force the `checkstyle` and `javadoc` tests to never vote -1.
 
-# Project-specific Capabilities
+## Project-specific Capabilities
 
 Due to the extensible nature of the system, `test-patch` allows for projects to define project-specific rules which we call personalities.  (How to build those rules is covered elsewhere.) There are two ways to specify which personality to use:
 
@@ -420,7 +420,7 @@ However, `test-patch` can detect if it is a personality that is in its "personal
 $ test-patch --plugins=all --project=(project)
 ```
 
-# Fork Bomb Protection
+## Fork Bomb Protection
 
 By default, `test-patch` will set the user soft limit (`ulimit -Su`) to a relatively low 1,000 processes (and, on some operating systems with some languages such as Java, threads!). This is to prevent errant processes from eating up all system resources.  If this limit is too low, it may be necessary to use the `--proclimit` option.  For example:
 
@@ -432,7 +432,7 @@ $ test-patch --plugins=all --proclimit=10000
 
   NOTE: The actual implementation of this feature is dependent upon the version of Bash.  For bash v4 and higher (most operating systems), the fork bomb protection is generally only used for the build and QA tools.  This means Apache Yetus should continue to function. For earlier versions of bash (e.g., OS X), the limit is applied to all of test-patch. If the limit is hit, Apache Yetus will itself likely crash.
 
-# MultiJDK
+## MultiJDK
 
 For many projects, it is useful to test Java code against multiple versions of JDKs at the same time.  In combination with the `java` plug-in, `test-patch` can do this with the `--multijdkdirs` option:
 
@@ -444,7 +444,7 @@ Not all Java tests support this mode, but those that do will now run their tests
 
 NOTE: JAVA\_HOME is always appended to the list of JDKs in MultiJDK mode.  If JAVA\_HOME is in the list, it will be moved to the end.
 
-# Docker
+## Docker
 
 `test-patch` also has a built-in mode (i.e., no plug-in required) to utilize Docker:
 
@@ -454,7 +454,7 @@ $ test-patch --docker
 
 This command will do some preliminary setup and then re-execute itself inside a Docker container.  For more information on how to provide a custom Dockerfile and other Docker-specific features, see the specific [precommit Docker support](../docker) page and the [Apache Yetus Docker Hub Images](../../../../yetus-docker-image) page for more information on the convenience Docker images.
 
-# Upgrading
+## Upgrading
 
 Currently, Apache Yetus is still undergoing incompatible changes from time to time.  Despite that, in many cases
 the upgrade process for `test-patch` and friends is usually just verifying what flags are being passed. To help out,
@@ -462,6 +462,6 @@ there is an option to `--ignore-unknown-options` so that `test-patch` does not e
 longer understands.  It will print a list of those unknown options in the end report.  In situations where that is
 also undesirable, the `--report-unknown-options` may also be set simultaneously to remove the list from the report.
 
-# In Closing
+## In Closing
 
 `test-patch` has many other features and command line options for the basic user.  Many of these are self-explanatory.  To see the list of options, run `test-patch` without any options or with `--help`.

@@ -151,7 +151,7 @@ the changelog and release notes.  These files are part of our distribution and i
 are incorrect, will require a new RC. Therefore, before cutting a new release, make sure
 they do not have errors or missing information.  The easiest way to do this check is to
 run through the [website](../website) directions to update the live website. After doing
-that work, they should be listed [here](/downloads/releasenotes/) as the top entry.
+that work, they should be listed on the [release notes page](/downloads/releasenotes/) as the top entry.
 
 ## Release Candidate(s)
 

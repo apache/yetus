@@ -21,38 +21,38 @@
 
 make
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 Enables using the various forms of make as the build tool.  This includes [GNU make](https://www.gnu.org/software/make/) and [BSD make](https://www.freebsd.org/cgi/man.cgi?make(1)).
 
 Currently, this plugin makes assumptions about what are valid targets:
 
-| Target | Function |
-|:-------|:---------|
-| clean | Clean the directory, keeping any configuration objects such as from `autoconf`.  (See also `--make-use-git-clean`) |
-| distclean | Clean the directory back to a pristine shape. (See also `--make-use-git-clean`) |
-| test | Perform unit testing |
+| Target    | Function                                                                                                           |
+| :-------- | :----------------------------------------------------------------------------------------------------------------- |
+| clean     | Clean the directory, keeping any configuration objects such as from `autoconf`.  (See also `--make-use-git-clean`) |
+| distclean | Clean the directory back to a pristine shape. (See also `--make-use-git-clean`)                                    |
+| test      | Perform unit testing                                                                                               |
 
-# Environment Variables
-
-None
-
-# Options
-
-| Option | Notes |
-|:---------|:------|
-| `--make-cmd=<cmd>` | Executable location |
-| `--make-file=<filename>` | Filename to use instead of the default `Makefile` |
-| `--make-use-git-clean` | Instead of `make clean`, use `git clean` to wipe the repository |
-
-# Docker Notes
+## Environment Variables
 
 None
 
-# Developer Notes
+## Options
+
+| Option                   | Notes                                                           |
+| :----------------------- | :-------------------------------------------------------------- |
+| `--make-cmd=<cmd>`       | Executable location                                             |
+| `--make-file=<filename>` | Filename to use instead of the default `Makefile`               |
+| `--make-use-git-clean`   | Instead of `make clean`, use `git clean` to wipe the repository |
+
+## Docker Notes
+
+None
+
+## Developer Notes
 
 See [build tools](../../buildtools) for more information.

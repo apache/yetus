@@ -21,26 +21,26 @@
 
 author
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Prevent `@``author` string from appearing the source tree.  Many Java-based open source projects specifically prohibit this entry.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

@@ -25,7 +25,7 @@
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
     <!-- 22 and 23 are broken due to MASSEMBLY-941 -->
-    <version>24</version>
+    <version>37</version>
     <relativePath/>
     <!-- no parent resolution -->
   </parent>
@@ -57,13 +57,14 @@
   </distributionManagement>
 
   <properties>
+    <javaVersion>21</javaVersion>
     <maven.plugin.validation>VERBOSE</maven.plugin.validation>
     <maven.min.version>3.8.1</maven.min.version>
     <maven.api.version>3.8.2</maven.api.version>
     <maven.plugin.api.version>3.8.2</maven.plugin.api.version>
-    <java.min.version>11</java.min.version>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <java.min.version>21</java.min.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
 
     <checkstyle.version>10.18.1</checkstyle.version>
     <commons.io.version>2.17.0</commons.io.version>
@@ -71,11 +72,11 @@
     <flatten.version>1.6.0</flatten.version>
     <junit.version>5.11.1</junit.version>
     <maven-checkstyle-plugin.version>3.5.0</maven-checkstyle-plugin.version>
-    <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
+    <maven-javadoc-plugin.version>3.10.0</maven-javadoc-plugin.version>
     <maven-project-info-reports-plugin.version>3.9.0</maven-project-info-reports-plugin.version>
-    <maven-rat-plugin.version>0.16.1</maven-rat-plugin.version>
+    <maven-rat-plugin.version>0.18</maven-rat-plugin.version>
     <mockito.version>5.14.0</mockito.version>
-    <spotbugs-maven-plugin.version>4.8.6.0</spotbugs-maven-plugin.version>
+    <spotbugs-maven-plugin.version>4.9.3.0</spotbugs-maven-plugin.version>
 
     <sourceReleaseAssemblyDescriptor>source-release-tar</sourceReleaseAssemblyDescriptor>
     <project.build.outputTimestamp>n</project.build.outputTimestamp>
@@ -156,21 +157,27 @@
           </configuration>
         </plugin>
 
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.10.1</version>
-          <configuration>
-            <compilerArgs>
-              <arg>${jigsaw.avoidance}</arg>
-            </compilerArgs>
-          </configuration>
-        </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.10.1</version>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+
+          <release combine.self="override"></release>
+          <compilerArgs>
+            <arg>--add-exports=jdk.javadoc/jdk.javadoc.internal.tool=ALL-UNNAMED</arg>
+            <arg>--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+            <arg>${jigsaw.avoidance}</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.2</version>
+          <version>3.5.2</version>
           <configuration>
             <argLine>${jigsaw.avoidance}</argLine>
           </configuration>
@@ -284,18 +291,9 @@
   <reporting>
     <plugins>
       <plugin>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <reportSets>
-          <reportSet>
-            <configuration>
-              <skip>true</skip>
-            </configuration>
-          </reportSet>
-        </reportSets>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>${maven-javadoc-plugin.version}</version>
         <inherited>false</inherited>
         <reportSets>
           <reportSet>
@@ -303,12 +301,16 @@
             <configuration>
               <maxmemory>1024m</maxmemory>
               <quiet>true</quiet>
-              <verbose>false</verbose>
               <notimestamp>true</notimestamp>
-              <source>${maven.compile.source}</source>
-              <charset>${maven.compile.encoding}</charset>
-              <reportOutputDirectory>${project.build.directory}/site</reportOutputDirectory>
-              <destDir>documentation/in-progress/javadocs</destDir>
+              <source>${maven.compiler.source}</source>
+              <release combine.self="override"></release>
+
+              <additionalOptions>
+                <additionalOption>${jigsaw.avoidance}</additionalOption>
+              </additionalOptions>
+
+              <additionalJOption>-J${jigsaw.avoidance}</additionalJOption>
+
               <doclet>org.apache.yetus.audience.tools.ExcludePrivateAnnotationsStandardDoclet</doclet>
               <docletArtifacts>
                 <docletArtifact>
@@ -318,11 +320,6 @@
                 </docletArtifact>
               </docletArtifacts>
               <useStandardDocletOptions>true</useStandardDocletOptions>
-              <includeDependencySources>false</includeDependencySources>
-              <dependencySourceIncludes>
-                <dependencySourceInclude>org.apache.yetus:audience-annotations</dependencySourceInclude>
-              </dependencySourceIncludes>
-
             </configuration>
             <reports>
               <report>aggregate</report>
@@ -330,7 +327,6 @@
           </reportSet>
         </reportSets>
       </plugin>
-
       <!-- plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>

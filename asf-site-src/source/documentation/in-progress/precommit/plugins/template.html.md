@@ -21,7 +21,7 @@
 
 tool
 
-# Category
+## Category
 
 One or more of:
 
@@ -31,25 +31,25 @@ Compile
 Test
 Test Format
 
-# Description
+## Description
 
 Something cool
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--checkmake=<path>` | Location of the `checkmake` binary if it is not on the path |
+| Option                      | Notes                                                                            |
+| :-------------------------- | :------------------------------------------------------------------------------- |
+| `--checkmake=<path>`        | Location of the `checkmake` binary if it is not on the path                      |
 | `--checkmake-config=<path>` | Location of `checkmake`'s configuration file, if it is not in a default location |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

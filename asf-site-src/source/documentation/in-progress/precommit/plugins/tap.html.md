@@ -21,28 +21,28 @@
 
 tap
 
-# Category
+## Category
 
 Test Format
 
-# Description
+## Description
 
 The `tap` test format attempts to process test data generated in the [Test Anything Protocol](https://testanything.org/) format.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                       | Notes                                                                                 |
+| :--------------------------- | :------------------------------------------------------------------------------------ |
 | `--tap-log-dir==<directory>` | Directory to search for the test output *.tap files, relative to the module directory |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

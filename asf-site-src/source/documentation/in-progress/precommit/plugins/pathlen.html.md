@@ -21,29 +21,29 @@
 
 pathlen
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Verifies that file paths in the source tree are less than a certain length.  This check helps to guarantee that
 the repository will always work on limited file systems.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                     | Notes                                                      |
+| :------------------------- | :--------------------------------------------------------- |
 | `--pathlen-size=<integer>` | Set the acceptable size limit.  Defaults to 240 characters |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

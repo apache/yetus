@@ -39,7 +39,7 @@
 
 <!-- /MarkdownTOC -->
 
-# Purpose
+## Purpose
 
 Building changelog information in a form that is human digestible but still containing as much useful information is difficult.  Many attempts over the years have resulted in a variety of methods that projects use to solve this problem:
 
@@ -51,13 +51,13 @@ All of these methods have their pros and cons.  Some have issues with accuracy. 
 
 In order to solve these problems, `releasedocmaker` was written to automatically generate a changelog and release notes by querying Apache's JIRA instance.
 
-# Requirements
+## Requirements
 
 * Python 3.8 with dateutil extension
 
 dateutil may be installed via pip:  `pip3 install python-dateutil`
 
-# Basic Usage
+## Basic Usage
 
 Minimally, the name of the JIRA project and a version registered in JIRA must be provided:
 
@@ -88,7 +88,7 @@ By default, release notes are expected to be in plain text.  However, you can wr
 remaining text
 ```
 
-# Authentication
+## Authentication
 
 `releasedocmaker` supports very simple Basic authentication.  This is accomplished by adding two environment variables to your shell environment:
 
@@ -99,7 +99,7 @@ RDM_JIRA_PASSWORD='jirapassword'
 
 These values will be added to all requests destined for the JIRA server.
 
-# Changing the Header
+## Changing the Header
 
 By default, it will use a header that matches the project name.  But that is kind of ugly and the case may be wrong.  Luckily, the title can be changed:
 
@@ -109,7 +109,7 @@ $ releasedocmaker --project HBASE --version 1.2.0 --projecttitle "Apache HBase"
 
 Now instead of "HBASE", it will use "Apache HBase" for some titles and headers.
 
-# Versioned Files and Directories
+## Versioned Files and Directories
 
 It is sometimes useful to create the `CHANGELOG` and `RELEASENOTES` with versions attached.  `releasedocmaker` supports both independently.
 
@@ -133,7 +133,7 @@ $ releasedocmaker --project HBASE --version 1.2.0 --fileversions --dirversions
 
 ... results in `1.2.0/CHANGELOG.1.2.0.md` and `1.2.0/RELEASENOTES.1.2.0.md` files.
 
-# Multiple Versions
+## Multiple Versions
 
 Using either `--dirversions` or `--fileversions` or both simultaneously, `releasedocmaker` can also generate multiple versions at once
 
@@ -151,7 +151,7 @@ $ releasedocmaker --project HBASE --version 1.0.0 --version 1.2.0 --range --file
 
 In this form, `releasedocmaker` will query JIRA, discover all versions that alphabetically appear to be between 1.0.0 and 1.2.0, inclusive, and generate all of the relative release documents.  This is especially useful when bootstrapping an existing project.
 
-# Unreleased Dates
+## Unreleased Dates
 
 For released versions, releasedocmaker will pull the date of the release from JIRA.  However, for unreleased versions it marks the release as "Unreleased". This can be inconvenient when actually building a release and wanting to include it inside the source package.
 
@@ -163,7 +163,7 @@ $ releasedocmaker --project HBASE --version 1.0.0 --usetoday
 
 After using this option and release, don't forget to change JIRA's release date to match!
 
-# Sorted Output
+## Sorted Output
 
 Different projects may find one type of sort better than another, depending upon their needs.  `releasedocmaker` supports two types of sorts and each provides two different options in the direction for that sort.
 
@@ -201,7 +201,7 @@ $ releasedocmaker --project falcon --version 0.6 --sorttype issueid --sortorder 
 
 In the case of multiple projects given on the command line, the projects will be grouped and then sorted by issue id.
 
-# Backward Incompatible Changes
+## Backward Incompatible Changes
 
 To check if an issue is backward-incompatible the `releasedocmaker` script first checks the "Hadoop Flags" field in the
 issue. If this field is found to be blank then it searches for the 'backward-incompatible' label. You can override the
@@ -217,7 +217,7 @@ or equivalently using the shorter `-X` option
 $ releasedocmaker --project falcon --version 0.6 -X not-compatible
 ```
 
-# Lint Mode
+## Lint Mode
 
 In order to ensure proper formatting while using mvn site, `releasedocmaker` puts in periods (.) for fields that are empty or unassigned.  This can be unsightly and not proper for any given project.  There are also other things, such as missing release notes for incompatible changes, that are less than desirable.
 
@@ -229,7 +229,7 @@ $ releasedocmaker --project HBASE --version 1.0.0 --lint
 
 This will do the normal JIRA querying, looking for items it considers problematic.  It will print the information to the screen and then exit with either success or failure, depending upon if any issues were discovered.
 
-# Index Mode
+## Index Mode
 
 There is basic support for an autoindexer.  It will create two files that contain links to all directories that have a major.minor\*-style
 version numbering system.
@@ -238,7 +238,7 @@ For example directories with names like 0.6, 1.2.2, 1.2alpha etc. will all be li
 * `index.md`: a file suitable for conversion to HTML via mvn site
 * `README.md`: a file suitable for display on Github and other Markdown rendering websites
 
-# Release Version
+## Release Version
 
 You can find the version of the `releasedocmaker` that you are using by giving the `-V` option. This may be helpful in finding documentation for the version you are using.
 

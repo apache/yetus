@@ -21,28 +21,28 @@
 
 github
 
-# Category
+## Category
 
 Bug System
 
-# Description
+## Description
 
 Enables support for reading and writing back to [GitHub](https://github.com/) and compatible systems such as GitHub Enterprise.  See also the [Bugsystems](../../bugsystems) documentation for more information.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--github-annotations-limit=<int>` | Max number of GitHub Checks Annotations to attempt |
-| `--github-api-url=<url>` | REST API URL (for GitHub Enterprise) |
-| `--github-base-url=<url>` | Non-REST API URL (for GitHub Enterprise) |
-| `--github-repo=<repo>` | `username/repository` identifier |
-| `--github-status-use-htmlreport=<bool>` | Use htmlout for Github Status 'Details' link |
-| `--github-token=<token>` | Token used to perform read and write operations |
+| Option                                  | Notes                                              |
+| :-------------------------------------- | :------------------------------------------------- |
+| `--github-annotations-limit=<int>`      | Max number of GitHub Checks Annotations to attempt |
+| `--github-api-url=<url>`                | REST API URL (for GitHub Enterprise)               |
+| `--github-base-url=<url>`               | Non-REST API URL (for GitHub Enterprise)           |
+| `--github-repo=<repo>`                  | `username/repository` identifier                   |
+| `--github-status-use-htmlreport=<bool>` | Use htmlout for Github Status 'Details' link       |
+| `--github-token=<token>`                | Token used to perform read and write operations    |
 
 ## HTML Details LInk
 
@@ -51,10 +51,10 @@ a GitHub PR using the Github Multibranch Plug-in), the Details will link to the 
 the robot's console after the run is complete. The report file must either be relative to the normal `--patch-dir` or
 be forcibly set using the `--html-report-url`.
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 All of the command line settings may also be set via internal environment variables.  However care must be taken to not step on [robots](../../robots) that will also set some of these variables.

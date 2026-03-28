@@ -21,28 +21,28 @@
 
 jshint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Execute [jsint](https://jshint.com/) against JavaScript code.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option         | Notes               |
+| :------------- | :------------------ |
 | `--jshint-cmd` | Executable location |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

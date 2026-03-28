@@ -18,6 +18,8 @@
 yetus_task:
   container:
     image: ghcr.io/apache/yetus:main
+  env:
+    JAVA_HOME: /usr/lib/jvm/default-java
   test_script: >
              ${CIRRUS_WORKING_DIR}/precommit/src/main/shell/test-patch.sh
              --basedir="${CIRRUS_WORKING_DIR}"
@@ -26,7 +28,6 @@ yetus_task:
              --console-report-file=/tmp/yetus-out/console.txt
              --csv-report-file=/tmp/yetus-out/report.csv
              --html-report-file=/tmp/yetus-out/report.html
-             --java-home=/usr/lib/jvm/java-11-openjdk-amd64
              --junit-report-xml=/tmp/yetus-out/junit.xml
              --plugins=all
              --junit-report-xml=line

@@ -27,14 +27,14 @@
 
 <!-- /MarkdownTOC -->
 
-# Problem Statement
+## Problem Statement
 
 For CI systems that use GitHub outside of GitHub Actions, they may make available a GitHub Checks token.
 Unfortunately, as of this writing (2020-10-30), GitHub sets the expiry of such a token to 1 hour.
 For some users of Apache Yetus, their precommit job may take longer than one hour.  In order to workaround
 this limitation, the `github-status-recovery` program may be used.
 
-# Usage
+## Usage
 
 The usage is relatively simple:
 
@@ -45,6 +45,6 @@ $ github-status-recovery --patch-dir=<pre-existing patch directory> --github-tok
 If the previous run of `test-patch` failed to write the status, `github-status-recovery` will
 re-process the saved JSON files as well as write GitHub Checks Annotations if they exist.
 
-# Disabling Annotations
+## Disabling Annotations
 
 If for some reason you do not wish annotations to be written, they may be disabled with `--github-annotations=false`.

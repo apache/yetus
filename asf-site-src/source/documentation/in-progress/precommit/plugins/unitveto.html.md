@@ -21,32 +21,32 @@
 
 unitveto
 
-# Category
+## Category
 
 One or more of:
 
 Test
 
-# Description
+## Description
 
 Automatically fail a patch if matching files are touched.  This test is useful for code that absolutely requires human intervention.
 
-# Environment Variables
+## Environment Variables
 
-| Variable | Passed to Docker | Notes |
-|:---------|:-----------------|:------|
-| `UNITVETO_RE` | NO | Same as `--unitveto-re` |
+| Variable      | Passed to Docker | Notes                   |
+| :------------ | :--------------- | :---------------------- |
+| `UNITVETO_RE` | NO               | Same as `--unitveto-re` |
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                  | Notes                                                |
+| :---------------------- | :--------------------------------------------------- |
 | `--unitveto-re=<regex>` | Regular expression of the files/directories to fail. |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

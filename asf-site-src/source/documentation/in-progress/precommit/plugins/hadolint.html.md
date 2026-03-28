@@ -21,28 +21,28 @@
 
 hadolint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs [hadolint](https://github.com/hadolint/hadolint) when the presence of a Dockerfile  is found.
 
 * A locale with UTF-8 support is required.  If the locale is not UTF-8 compliant, the locale will be forcibly set to C.UTF-8.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None
