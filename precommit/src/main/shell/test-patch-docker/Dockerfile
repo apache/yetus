@@ -51,6 +51,7 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
         gpg \
         gpg-agent \
         libffi-dev \
+        libicu-dev \
         libxml2-utils \
         locales \
         patch \
