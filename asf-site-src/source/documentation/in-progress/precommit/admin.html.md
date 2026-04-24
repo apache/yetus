@@ -46,7 +46,7 @@ Additionally, the URL of the Jenkins server is expected to be in the `JENKINS_UR
 
 The very first run of the job should be done with the `--initialize` parameter to create the first `patch_tested.txt` file.  Otherwise, the job will fail because a previous version of it cannot be downloaded from previous runs.
 
-# Project-Specifc Builds
+## Project-Specifc Builds
 
 New builds are started via buildWithParameters call. Three parameters are added to the URL:
 
@@ -70,7 +70,7 @@ The job name can be overridden via the `--jenkins-project-template` option.  For
 
    .../job/PreCommit-YETUS-Build/buildwithParameters?...
 
-# Jenkins Job Tokens
+## Jenkins Job Tokens
 
 Currently, jenkins-admin supports the usage of Jenkins tokens for authentication via the `--jenkins-token` option.  This option provides two ways to do tokens
 

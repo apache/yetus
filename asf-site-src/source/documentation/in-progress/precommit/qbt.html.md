@@ -33,7 +33,7 @@ It is meant to be a way to easily get `test-patch`'s output on your
 current source tree.  It is suitable to be run as a regularly
 scheduled build as part of your overall development strategy.
 
-# Reporting
+## Reporting
 
 When using an automation tool, it may be useful to use the
 `--console-report-file` option to send the summary email to a
@@ -73,7 +73,7 @@ If your mailing lists do not allow HTML-formatted email, then the `--brief-repor
 
 NOTE: Be aware that ASF mailing lists do not allow HTML formatted email.
 
-# Archiving
+## Archiving
 
 It may be useful to save off certain files while qbt is running for more
 post-processing by another utility.  If the `rsync` command is available,

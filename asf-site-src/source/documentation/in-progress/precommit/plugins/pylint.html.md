@@ -21,33 +21,33 @@
 
 pylint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs [pylint](http://pylint.org/) against Python code.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--pylint=<file>` | Location of the `pylint` binary if it is not on the path.  Default is 'pylint'. |
-| `--pylint-ignore-bad-option-value=<bool>` | Ignore `bad-option-value` errors. Default is 'true' |
-| `--pylint-pip-cmd=<file>` | Location of the `pip` binary for install requirements.txt files.  Default is 'pip'. |
-| `--pylint-rcfile=<file>` | Location of the `.pylintrc` file to override `pylint` default. |
-| `--pylint-requirements=<bool>` | Process any `requirements.txt` file.  Default is 'false'. |
-| `--pylint-use-user=<bool>` | Use `--user` for processing the `requirements.txt` file.  Default is 'true'. |
+| Option                                    | Notes                                                                               |
+| :---------------------------------------- | :---------------------------------------------------------------------------------- |
+| `--pylint=<file>`                         | Location of the `pylint` binary if it is not on the path.  Default is 'pylint'.     |
+| `--pylint-ignore-bad-option-value=<bool>` | Ignore `bad-option-value` errors. Default is 'true'                                 |
+| `--pylint-pip-cmd=<file>`                 | Location of the `pip` binary for install requirements.txt files.  Default is 'pip'. |
+| `--pylint-rcfile=<file>`                  | Location of the `.pylintrc` file to override `pylint` default.                      |
+| `--pylint-requirements=<bool>`            | Process any `requirements.txt` file.  Default is 'false'.                           |
+| `--pylint-use-user=<bool>`                | Use `--user` for processing the `requirements.txt` file.  Default is 'true'.        |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

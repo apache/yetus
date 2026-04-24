@@ -21,31 +21,31 @@
 
 revive
 
-# Category
+## Category
 
 One or more of:
 
 Test
 
-# Description
+## Description
 
 [revive](https://revive.run/) is an advanced Go linter. It acts as a drop-in replacement for `golint` but with more features and allows for exceptions.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--revive=<file>` | Location of the `revive` binary if it is not on the path |
+| Option                   | Notes                                                                         |
+| :----------------------- | :---------------------------------------------------------------------------- |
+| `--revive=<file>`        | Location of the `revive` binary if it is not on the path                      |
 | `--revive-config=<path>` | Location of `revive`'s configuration file, if it is not in a default location |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

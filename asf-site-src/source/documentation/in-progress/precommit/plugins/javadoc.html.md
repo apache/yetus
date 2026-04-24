@@ -21,28 +21,28 @@
 
 javadoc
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Provides support for [Javadoc](https://java.net) testing.
 
 See the [javac](javac.html) plugin for more information.
 
-# Environment Variables
+## Environment Variables
 
 See the [javac](javac.html) plugin for more information.
 
-# Options
+## Options
 
 See the [javac](javac.html) plugin for more information.
 
-# Docker Notes
+## Docker Notes
 
 See the [javac](javac.html) plugin for more information.
 
-# Developer Notes
+## Developer Notes
 
 See the [javac](javac.html) plugin for more information.

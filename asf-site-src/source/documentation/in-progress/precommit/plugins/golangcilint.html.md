@@ -21,11 +21,11 @@
 
 golangcilint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 NOTE: This plug-in only supports Go using Go modules.
 
@@ -33,21 +33,21 @@ Provides support for
 [golangci-lint](https://github.com/golangci/golangci-lint).  This
 plug-in requires the [golang](../golang) plug-in to also be enabled.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--golangcilint=<file>` | Location of the `golangci-lint` binary if it is not on the path |
-| `--golangcilint-config=<file>` | Override the default location of the configuration file |
+| Option                         | Notes                                                           |
+| :----------------------------- | :-------------------------------------------------------------- |
+| `--golangcilint=<file>`        | Location of the `golangci-lint` binary if it is not on the path |
+| `--golangcilint-config=<file>` | Override the default location of the configuration file         |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

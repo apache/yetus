@@ -21,11 +21,11 @@
 
 javac
 
-# Category
+## Category
 
 Test (Compile)
 
-# Description
+## Description
 
 Provides support for [Java](https://java.net) compilation.
 
@@ -33,22 +33,22 @@ The location of Java must be configured either via the command line (--) or via 
 
 The `JAVA_HOME`/`--java-home` JDK is considered the base JDK and will always be used last when `--multijdk` options are used. Therefore, it should **always** be the earliest version so that bytecode remains compatible between versions.
 
-# Environment Variables
+## Environment Variables
 
 `JAVA_HOME` may be used to set the location of the JDK.
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--java-home` | The base JDK to use for Java work |
-| `--multijdkdirs=<dir1,dir2,..>` | Comma delimited list of directories to treat as JDKs |
+| Option                             | Notes                                                                                                 |
+| :--------------------------------- | :---------------------------------------------------------------------------------------------------- |
+| `--java-home`                      | The base JDK to use for Java work                                                                     |
+| `--multijdkdirs=<dir1,dir2,..>`    | Comma delimited list of directories to treat as JDKs                                                  |
 | `--multijdktests=<test1,test2,..>` | Comma delimited list of tests that support MultiJDK mode that should actually be run in MultiJDK mode |
 
-# Docker Notes
+## Docker Notes
 
 Locations should be local to the Docker container image.
 
-# Developer Notes
+## Developer Notes
 
 * Options are actually handled by `test-patch` directly due to intertwined nature of them.

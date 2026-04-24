@@ -21,28 +21,28 @@
 
 jsonlint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 [jsonlint](https://github.com/zaach/jsonlint) lints JSON.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option              | Notes                                                      |
+| :------------------ | :--------------------------------------------------------- |
 | `--jsonlint=<file>` | Location of the `jsonlint` binary if it is not on the path |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

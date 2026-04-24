@@ -28,7 +28,7 @@ annotation added to the build console if `buildkiteannotate` bugsystem is enable
 If `${ARTIFACTS_PATH}` is configured, then `--patch-dir` is set to the first listed directory path
 with a `/yetus` suffix. However, links to the location logs must still be configured manually.
 
-# Buildkite Annotations
+## Buildkite Annotations
 
 If precommit is running in a mode such that `buildkite-agent` isn't available (e.g., using the Apache Yetus container image)
 the `buildkite-annotation-recovery` tool may be used to send the annotations and artifacts to Buildkite:

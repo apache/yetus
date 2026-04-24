@@ -21,11 +21,11 @@
 
 blanks
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Provides a test to do two things:
 
@@ -34,21 +34,21 @@ Provides a test to do two things:
 
 By default, blanks will automatically ignore tabs in Makefiles and Go-related files.  However, if a file is provided, that file must also include the appropriate regexs for Makefiles and Go.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--blanks-eol-ignore-file=<file>` | File containing regexs of files/dirs to ignore EOL blanks. Defaults to `.yetus/blanks-eol.txt` |
-| `--blanks-tabs-ignore-file=<file>` | File containing regexs of files/dirs to ignore tabs. Defaults to `.yetus/blanks-tabs.txt` |
+| Option                             | Notes                                                                                          |
+| :--------------------------------- | :--------------------------------------------------------------------------------------------- |
+| `--blanks-eol-ignore-file=<file>`  | File containing regexs of files/dirs to ignore EOL blanks. Defaults to `.yetus/blanks-eol.txt` |
+| `--blanks-tabs-ignore-file=<file>` | File containing regexs of files/dirs to ignore tabs. Defaults to `.yetus/blanks-tabs.txt`      |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

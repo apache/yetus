@@ -45,7 +45,7 @@ were equally useful and in some cases followed a similar path should also be cop
 the Apache Yetus repository.  When it came time to split from Apache Hadoop, the
 `audience-annotations`, `releasedocmaker`, and `shelldocs` portions were also copied over.
 
-# Old Source
+## Old Source
 
 Due to coming from Apache Hadoop, the source repository history is extremely messy.  The
 project underwent many major changes that make following changes much more difficult,

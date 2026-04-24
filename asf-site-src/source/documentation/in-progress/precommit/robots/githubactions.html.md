@@ -68,39 +68,39 @@ jobs:
 Currently, not all arguments and parameters that can be set on the `test-patch` command line are available to set via the workflow action.
 Options currently supported are:
 
-| Option  |        Notes                 | Default | More Information |
-|:-------:|:----------------------------:|:-------:|:----------------:|
-| basedir | same as `--basedir`          | NONE    | [Usage Introduction](../../usage-intro) |
-| blankseolignorefile | same as `--blanks-eol-ignore-file`          | `.yetus/blanks-eol.txt`  | [blanks plug-in](../../plugins/blanks) |
-| blankstabsignorefile | same as `--blanks-tabs-ignore-file`          | `.yetus/blanks-tabs.txt`  | [blanks plug-in](../../plugins/blanks) |
-| bufbasedir | same as `--buf-basedir`      | `.`    | [buf plug-in](../../plugins/buf) |
-| buildtool | same as `--build-tool`     | `nobuild`  | [Build Tools](../../buildtools) |
-| continuousimprovement | same as `--continuous-improvement` | false  | [Robots](..) |
-| excludes | same as `--excludes`        | `.yetus/excludes.txt`  | [Usage Introduction](../../usage-intro) |
-| githubtoken | same as `--github-token` | NONE  | [GitHub plug-in](../../plugins/github) |
-| javahome | same as `--java-home`          | `/usr/lib/jvm/java-11-openjdk-amd64`  | [Java-related plug-ins](../../plugins/javac) |
-| patchdir | same as `--patch-dir`       | NONE  |[Usage Introduction](../../usage-intro) |
-| pip | same as `--pylint-pip`              | pip3  |  [pylint plug-in](../../plugins/pylint) |
-| plugins | same as `--plugins`             | all,-asflicense,-author,-findbugs,-gitlab,-jira,-shelldocs   | [Usage Introduction](../../usage-intro) |
-| project | same as `--project`             | Auto-set based upon the repository name  | [Usage Introduction](../../usage-intro) |
-| pylint | same as `--pylint`               | pylint3  | [pylint plug-in](../../plugins/pylint) |
-| reapermode | same as `--reapermode`       | kill  | [Advanced Usage](../../advanced) |
-| reviveconfig | same as `--revive-config`  | `.revive.toml`  | [revive plug-in](../../plugins/revive) |
-| testsfilter | same as `--tests-filter`  | '' | [Usage Introduction](../../usage-intro) |
+| Option                | Notes                               | Default                                                    | More Information                             |
+| :-------------------- | :---------------------------------- | :--------------------------------------------------------- | :------------------------------------------- |
+| basedir               | same as `--basedir`                 | NONE                                                       | [Usage Introduction](../../usage-intro)      |
+| blankseolignorefile   | same as `--blanks-eol-ignore-file`  | `.yetus/blanks-eol.txt`                                    | [blanks plug-in](../../plugins/blanks)       |
+| blankstabsignorefile  | same as `--blanks-tabs-ignore-file` | `.yetus/blanks-tabs.txt`                                   | [blanks plug-in](../../plugins/blanks)       |
+| bufbasedir            | same as `--buf-basedir`             | `.`                                                        | [buf plug-in](../../plugins/buf)             |
+| buildtool             | same as `--build-tool`              | `nobuild`                                                  | [Build Tools](../../buildtools)              |
+| continuousimprovement | same as `--continuous-improvement`  | false                                                      | [Robots](..)                                 |
+| excludes              | same as `--excludes`                | `.yetus/excludes.txt`                                      | [Usage Introduction](../../usage-intro)      |
+| githubtoken           | same as `--github-token`            | NONE                                                       | [GitHub plug-in](../../plugins/github)       |
+| javahome              | same as `--java-home`               | `/usr/lib/jvm/java-21-openjdk-amd64`                       | [Java-related plug-ins](../../plugins/javac) |
+| patchdir              | same as `--patch-dir`               | NONE                                                       | [Usage Introduction](../../usage-intro)      |
+| pip                   | same as `--pylint-pip`              | pip3                                                       | [pylint plug-in](../../plugins/pylint)       |
+| plugins               | same as `--plugins`                 | all,-asflicense,-author,-findbugs,-gitlab,-jira,-shelldocs | [Usage Introduction](../../usage-intro)      |
+| project               | same as `--project`                 | Auto-set based upon the repository name                    | [Usage Introduction](../../usage-intro)      |
+| pylint                | same as `--pylint`                  | pylint3                                                    | [pylint plug-in](../../plugins/pylint)       |
+| reapermode            | same as `--reapermode`              | kill                                                       | [Advanced Usage](../../advanced)             |
+| reviveconfig          | same as `--revive-config`           | `.revive.toml`                                             | [revive plug-in](../../plugins/revive)       |
+| testsfilter           | same as `--tests-filter`            | ''                                                         | [Usage Introduction](../../usage-intro)      |
 
 Items marked NONE *MUST* be provided in the workflow yaml file.
 
 Some options are hard-coded to make `test-patch` easier to use:
 
-| Argument | Value | More Information |
-|:--------:|:------:|:----------------:|
-| `--brief-report-file` | patchdir/brief.txt | [briefreport plug-in](../../plugins/briefreport) |
-| `--console-report-file` | patchdir/console.txt | [QBT](../../qbt) |
-| `--html-report-file` | patchdir/report.html | [htmlout plug-in](../../plugins/htmlout) |
-| `--ignore-unknown-options` | true | [Usage Introduction](../../usage-intro) |
-| `--junit-report-xml` | patchdir/junit-report.xml | [junit plug-in](../../plugins/junit-bugsystem) |
-| `--pylint-requirements` | true | [pylint plug-in](../../plugins/pylint) |
-| `--report-unknown-options` | false | [Usage Introduction](../../usage-intro) |
+| Argument                   | Value                     | More Information                                 |
+| :------------------------- | :------------------------ | :----------------------------------------------- |
+| `--brief-report-file`      | patchdir/brief.txt        | [briefreport plug-in](../../plugins/briefreport) |
+| `--console-report-file`    | patchdir/console.txt      | [QBT](../../qbt)                                 |
+| `--html-report-file`       | patchdir/report.html      | [htmlout plug-in](../../plugins/htmlout)         |
+| `--ignore-unknown-options` | true                      | [Usage Introduction](../../usage-intro)          |
+| `--junit-report-xml`       | patchdir/junit-report.xml | [junit plug-in](../../plugins/junit-bugsystem)   |
+| `--pylint-requirements`    | true                      | [pylint plug-in](../../plugins/pylint)           |
+| `--report-unknown-options` | false                     | [Usage Introduction](../../usage-intro)          |
 
 ## Manual Configuration
 

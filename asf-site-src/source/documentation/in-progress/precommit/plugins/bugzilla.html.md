@@ -21,30 +21,30 @@
 
 bugzilla
 
-# Category
+## Category
 
 Bug System
 
-# Description
+## Description
 
 Ability to read patch attachments from [Bugzilla](https://www.bugzilla.org/)-based systems.
 
 NOTE: It currently lacks the ability to write a response.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                      | Notes                         |
+| :-------------------------- | :---------------------------- |
 | `--bugzilla-base-url=<url>` | URL of the Bugzilla instance. |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

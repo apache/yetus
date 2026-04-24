@@ -21,32 +21,32 @@
 
 asflicense
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs the [Apache Creadur](http://creadur.apache.org) project's [Rat](http://creadur.apache.org/rat/) code to verify software licensing.
 Currently, `ant`, `gradle`, and `maven` have built-in support.  The Apache Yetus container image also provides the jar file in /opt/apache-rat.
 For other build tools/scenarios, the rat jar will need to be provided.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--asflicense-rat-excludes=<path>` | When running rat outside of a build tool, specify the location of the exclusion file |
-| `--asflicense-rat-globalexcludes=<bool>` | Apply the global excludes file after Apache Rat has run (default: true) |
-| `--asflicense-rat-jar=<path>` | When running rat outside of a build tool, specify the location of the Java jar file to execute. Defaults to /opt/apache-rat/apache-rat.jar |
+| Option                                   | Notes                                                                                                                                      |
+| :--------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| `--asflicense-rat-excludes=<path>`       | When running rat outside of a build tool, specify the location of the exclusion file                                                       |
+| `--asflicense-rat-globalexcludes=<bool>` | Apply the global excludes file after Apache Rat has run (default: true)                                                                    |
+| `--asflicense-rat-jar=<path>`            | When running rat outside of a build tool, specify the location of the Java jar file to execute. Defaults to /opt/apache-rat/apache-rat.jar |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

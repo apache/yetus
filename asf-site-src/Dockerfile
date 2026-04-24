@@ -48,7 +48,7 @@ RUN apt-get -q update \
 RUN echo "export GPG_TTY=\$(tty)" >>  /root/.bashrc
 # hadolint disable=DL3059
 RUN groupadd --non-unique -g "${GROUP_ID}" "${USER_NAME}" \
-    && useradd -l -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
+    && useradd --non-unique -l -g "${GROUP_ID}" -u "${USER_ID}" -k /root -m "${USER_NAME}"
 # hadolint disable=DL3059,SC2039,SC1117
 RUN echo -e "${USER_NAME}\\tALL=NOPASSWD: ALL" > "/etc/sudoers.d/yetus-build-${USER_ID}" # pragma: allowlist secret
 ENV HOME=/home/${USER_NAME}
@@ -79,10 +79,9 @@ ENV GEM_HOME=${BUNDLE_PATH}
 # pre-install most of the middleman stack to save time
 # on re-launches
 # hadolint ignore=DL3028
-RUN gem install bundler \
-        middleman:'4.5.0' \
+RUN gem install bundler:'4.0.8' \
+        middleman:'4.6.3' \
         middleman-syntax \
-        nokogiri:1.15.4 \
         sassc:2.4.0 \
         tzinfo-data
 

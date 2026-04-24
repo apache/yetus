@@ -28,14 +28,14 @@
 
 <!-- /MarkdownTOC -->
 
-# Description
+## Description
 
 `docker-cleanup` is a command to perform precommit's Docker cleanup functionality outside of patch and build testing.
 It is designed to be run as a regularly automated job on CI systems that do not have their own Docker cleanup
 facilities.  It is built from the perspective that nothing on the system is permanent.  It supports many of the same
 options as `test-patch`'s [docker](../docker)-mode. Please see that page for more details.
 
-# Usage
+## Usage
 
 ## Default Mode
 

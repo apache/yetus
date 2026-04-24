@@ -21,26 +21,26 @@
 
 nobuild
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 A stub build tool that does not do anything. Use this if you would like to enable static linting without getting Yetus to work with your project's build system.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

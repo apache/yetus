@@ -21,30 +21,30 @@
 
 ansiblelint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 When [Ansible](https://www.ansible.com/) playbooks are detected (a file matching the pattern
 `playbooks/*.yml` or `playbooks/*.yaml`), runs
 [ansiblelint](https://ansible-lint.readthedocs.io) against those files.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--ansiblelint=<path>` |  Location of `ansible-lint` executable |
+| Option                 | Notes                                 |
+| :--------------------- | :------------------------------------ |
+| `--ansiblelint=<path>` | Location of `ansible-lint` executable |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

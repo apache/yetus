@@ -21,11 +21,11 @@
 
 junit
 
-# Category
+## Category
 
 Test Format
 
-# Description
+## Description
 
 The `junit` test format attempts to process test data as documented in [junit](https://svn.apache.org/repos/asf/ant/core/trunk/src/main/org/apache/tools/ant/taskdefs/optional/junit/XMLJUnitResultFormatter.java) format.
 
@@ -33,21 +33,21 @@ NOTE:
 
 * there is no formal specification of the format so results parsing the output may be mixed.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--junit-test-output=<directory>` | Directory to search for the test output TEST-*.xml files, relative to the module directory |
-| `--junit-test-prefix=<prefix to trim>` | Prefix to trim from test names to reduce the amount of output |
+| Option                                 | Notes                                                                                      |
+| :------------------------------------- | :----------------------------------------------------------------------------------------- |
+| `--junit-test-output=<directory>`      | Directory to search for the test output TEST-*.xml files, relative to the module directory |
+| `--junit-test-prefix=<prefix to trim>` | Prefix to trim from test names to reduce the amount of output                              |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

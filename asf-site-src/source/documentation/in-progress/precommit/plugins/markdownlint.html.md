@@ -21,26 +21,26 @@
 
 markdownlint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) when the presence of Markdown files are found.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

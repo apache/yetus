@@ -22,7 +22,7 @@
 #
 ###############
 
-FROM ubuntu:jammy AS yetusbase
+FROM ubuntu:noble AS yetusbase
 
 ## NOTE to committers: if this gets moved from Xenial to something else, be
 ## sure to also fix the gpg link in asf-site-src as appropriate
@@ -104,22 +104,24 @@ RUN add-apt-repository -y ppa:longsleep/golang-backports \
 # Install Apache Creadur RAT jar
 ####
 FROM yetusbase AS yetusapacherat
-ARG APACHE_RAT_VERSION=0.14
+ARG APACHE_RAT_VERSION=0.18
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN mkdir -p /opt/apache-rat \
     && curl -f -s -L -o /tmp/rat.tgz \
         "https://archive.apache.org/dist/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz" \
-    && shasum -a 512 /tmp/rat.tgz \
-        | awk '$1!="17119289839dc573dd29039ca09bd86f729f1108308f6681292125418fd7bceeaf7d1a40b83eb01daf7d3dd66fbcc0a68d5431741314e748f7b878e8967459e9" {exit(1)}' \
+    && curl -f -s -L -o /tmp/rat.tgz.sha512 \
+        "https://archive.apache.org/dist/creadur/apache-rat-$APACHE_RAT_VERSION/apache-rat-$APACHE_RAT_VERSION-bin.tar.gz.sha512" \
+    && echo "$(cat /tmp/rat.tgz.sha512)  /tmp/rat.tgz" > /tmp/rat.tgz.verify \
+    && shasum -a 512 -c /tmp/rat.tgz.verify \
     && tar --strip-components 1 -C /opt/apache-rat -xpzf /tmp/rat.tgz \
-    && rm /tmp/rat.tgz \
-    && mv /opt/apache-rat/apache-rat-$APACHE_RAT_VERSION.jar /opt/apache-rat/apache-rat.jar
+    && rm /tmp/rat.tgz /tmp/rat.tgz.sha512 /tmp/rat.tgz.verify \
+    && mv "/opt/apache-rat/apache-rat-$APACHE_RAT_VERSION.jar" /opt/apache-rat/apache-rat.jar
 
 #####
 # Install SpotBugs
 #####
 FROM yetusbase AS yetusspotbugs
-ARG SPOTBUGS_VERSION=4.9.1
+ARG SPOTBUGS_VERSION=4.9.8
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz -o spotbugs.tgz \
     && curl -sSL https://repo.maven.apache.org/maven2/com/github/spotbugs/spotbugs/$SPOTBUGS_VERSION/spotbugs-$SPOTBUGS_VERSION.tgz.sha1 -o spotbugs.tgz.sha1 \
@@ -241,19 +243,20 @@ FROM yetusbase
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ####
-# Install java (first, since we want to dicate what form of Java)
+# Install java (first, since we want to dictate what form of Java)
 ####
 
 ####
-# OpenJDK 11
+# OpenJDK 21
 # NOTE: This default only works when Apache Yetus is launched
 # _in_ the container and not outside of it!
 ####
 # hadolint ignore=DL3008,DL3059
-RUN apt-get -q update && apt-get -q install --no-install-recommends -y default-jre-headless openjdk-11-jdk-headless \
+RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
+        default-jdk-headless \
+        openjdk-21-jdk-headless \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-# this var will get yetus_abs'd when run under precommit so should be relatively safe
+    && rm -rf /var/lib/apt/lists/* \
 ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV SPOTBUGS_HOME=/opt/spotbugs
 
@@ -284,13 +287,11 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y cmake \
 ###
 # Install docker
 ###
-# hadolint ignore=DL3059
-RUN curl -sSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
 # hadolint ignore=DL3008,DL3059
-RUN add-apt-repository -y \
-   "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable" \
+RUN mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu noble stable" \
+       > /etc/apt/sources.list.d/docker.list \
     && apt-get -q update && apt-get -q install --no-install-recommends -y docker-ce docker-compose-plugin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -329,57 +330,46 @@ RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
     && rm -rf /var/lib/apt/lists/*
 
 ######
-# Install python3 and pylint3
+# Install python3 and pylint3 (historical; most stuff uses "pylint" now)
 # astroid and pylint go hand-in-hand.  Upgrade both at the same time.
 ######
 #ARG PY3_ANSIBLE_VERSION=7.5.0
-ARG PY3_ANSIBLELINT_VERSION=25.1.2
-ARG PY3_ASTROID_VERSION=2.15.6
-ARG PY3_CODESPELL_VERSION=2.4.1
+ARG PY3_ANSIBLELINT_VERSION=26.3.0
+ARG PY3_ASTROID_VERSION=4.0.4
+ARG PY3_CODESPELL_VERSION=2.4.2
 ARG PY3_DETECT_SECRETS=1.5.0
-ARG PY3_PYLINT_VERSION=2.17.5
-ARG PY3_YAMLLINT_VERSION=1.35.1
+ARG PY3_PYLINT_VERSION=4.0.5
+ARG PY3_YAMLLINT_VERSION=1.38.0
 # hadolint ignore=DL3008
 RUN apt-get -q update && apt-get -q install --no-install-recommends -y \
-        python3 \
-        python3-bcrypt \
-        python3-cffi \
-        python3-cryptography \
-        python3-dateutil \
+        python3-full \
+        python3-pip \
+        python3-venv \
         python3-dev \
-        python3-isort \
+        python3-dateutil \
         python3-dockerpty \
-        python3-nacl \
-        python3-pyrsistent \
-        python3-setuptools \
-        python3-singledispatch \
-        python3-six \
-        python3-wheel \
-        python3-wrapt \
         python3-yaml \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py \
-    && python3 /tmp/get-pip.py \
-    && rm /usr/local/bin/pip /tmp/get-pip.py \
-    && pip3 install --no-cache-dir -v \
+    && python3 -m venv --copies /usr/local \
+    && /usr/local/bin/pip install --no-cache-dir -v \
+        python-dateutil \
         ansible-lint==$PY3_ANSIBLELINT_VERSION \
         astroid==$PY3_ASTROID_VERSION \
         codespell==$PY3_CODESPELL_VERSION \
         detect-secrets==$PY3_DETECT_SECRETS \
         pylint==$PY3_PYLINT_VERSION \
         yamllint==$PY3_YAMLLINT_VERSION \
-    && rm -rf /root/.cache \
-    && mv /usr/local/bin/pylint /usr/local/bin/pylint3 \
-    && ln -s /usr/local/bin/pylint3 /usr/local/bin/pylint \
-    && ln -s /usr/local/bin/pip3 /usr/local/bin/pip
+    && ln -sf /usr/local/bin/pylint /usr/local/bin/pylint3 \
+    && chmod -R a+w /usr/local/lib/python3.12/site-packages /usr/local/bin \
+    && rm -rf /root/.cache /root/.config /root/.local
 
 ####
 # Install ruby and associated bits
 ###
-ARG RUBY_BUNDLER_VERSION=2.5.23
+ARG RUBY_BUNDLER_VERSION=4.0.8
 ARG RUBY_RAKE_VERSION=13.2.1
-ARG RUBY_RUBOCOP_VERSION=1.71.2
+ARG RUBY_RUBOCOP_VERSION=1.86.0
 # hadolint ignore=DL3008
 RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && apt-get -q update && apt-get -q install --no-install-recommends -y \
@@ -390,7 +380,7 @@ RUN echo 'gem: --no-rdoc --no-ri' >> /root/.gemrc \
     && gem install bundler -v $RUBY_BUNDLER_VERSION \
     && gem install rake -v $RUBY_RAKE_VERSION \
     && gem install rubocop -v $RUBY_RUBOCOP_VERSION \
-    && rm -rf /root/.gem
+    && rm -rf /root/.gem /root/.config /root/.local
 # set some reasonable defaults for ruby
 # user's can always override these as needed
 ENV PATH=${PATH}:/var/tmp/.bundler-gems/bin
@@ -400,12 +390,12 @@ ENV BUNDLE_PATH=/var/tmp/.bundler-gems
 # Install npm and JSHint
 ###
 ARG JSHINT_VERSION=2.13.6
-ARG MARKDOWNLINTCLI_VERSION=0.44.0
-ARG JSONLINT_VERSION=1.6.3
+ARG MARKDOWNLINTCLI_VERSION=0.48.0
+ARG JSONLINT_VERSION=17.0.1
 # hadolint ignore=DL3008
 RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
        | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_22.x nodistro main" \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_24.x nodistro main" \
         > /etc/apt/sources.list.d/nodesource.list \
     && apt-get -q update \
     && apt-get -q install --no-install-recommends -y nodejs \
@@ -413,9 +403,9 @@ RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
     && rm -rf /var/lib/apt/lists/* \
     && npm install -g \
         jshint@$JSHINT_VERSION \
-        jsonlint@$JSONLINT_VERSION \
-        markdownlint-cli@0$MARKDOWNLINTCLI_VERSION \
-    && rm -rf /root/.npm
+        @prantlf/jsonlint@$JSONLINT_VERSION \
+        markdownlint-cli@$MARKDOWNLINTCLI_VERSION \
+    && rm -rf /root/.npm /root/.config /root/.local
 
 #####
 # Now all the stuff that was built in parallel

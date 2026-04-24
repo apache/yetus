@@ -29,7 +29,7 @@
 
 <!-- /MarkdownTOC -->
 
-# Intro
+## Intro
 
 `test-patch` works hand-in-hand with various CI and other automated build systems.  `test-patch` will attempt to auto-determine if it is running under such a system and change its defaults to match known configuration parameters automatically. When robots are activated, there is generally some additional/changed behavior:
 
@@ -42,7 +42,7 @@
 * activate Docker maintenance when `--docker` is passed
 * attempt to determine whether this is a full build (`qbt`) or testing a patch/merge request/pull request.
 
-# Automated Robot Detection
+## Automated Robot Detection
 
 The following systems are detected automatically when run in one of these environments:
 
@@ -56,7 +56,7 @@ The following systems are detected automatically when run in one of these enviro
 * [Semaphore CI](semaphoreci)
 * [Travis CI](travisci)
 
-# Manual Configuration
+## Manual Configuration
 
 For automated systems that are not directly supported, `--robot` tells `test-patch` that this is an automated system.  This will trigger many of the above settings.
 
@@ -75,13 +75,13 @@ $ test-patch --robot --instance=1
 
 If `--robot` is specified without an instance, a random number is generated and used.
 
-# Sentinel Mode
+## Sentinel Mode
 
 If stuck Docker containers are a problem, a more aggressive robot may be enabled with the `--sentinel` option.  This option
 enables killing containers that have been running for over 24 hours as well. See the documentation on [docker](../docker)
 for more information.
 
-# Continuous Improvement
+## Continuous Improvement
 
 It isn't unusual when adding a new linter to an existing source repository to be overwhelmed with new errors.
 Most projects want to start out where all new patches cannot add new errors, but the existing ones are

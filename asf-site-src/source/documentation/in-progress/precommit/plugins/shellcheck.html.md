@@ -21,11 +21,11 @@
 
 shellcheck
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs [shellcheck](https://www.shellcheck.net) when the presence of a shell script is found.
 
@@ -33,18 +33,18 @@ Runs [shellcheck](https://www.shellcheck.net) when the presence of a shell scrip
 * The `-x` option is always passed to `shellcheck` if the version is greater than 0.4.1.
 * Versions of `shellcheck` that are earlier than 0.3.5 will generate a warning that the tool is very buggy.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

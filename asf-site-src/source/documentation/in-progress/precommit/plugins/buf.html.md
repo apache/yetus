@@ -23,31 +23,31 @@ buf
 buflint
 bufcompat
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 [buf](https://github.com/bufbuild/buf) is a protobuf linter (`buflint`) and backward compatibility checker (`bufcompat`), version 0.34.0 or higher.
 In order to use either `buflint` or `bufcompat`, `buf` must also be enabled.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--buf=<file>` | path to `buf` executable if it is not on the path |
-| `--buf-basedir=<dir>` | set the starting dir to run buf |
-| `--buf-timeout=###u` | Set the buf timeout |
+| Option                | Notes                                             |
+| :-------------------- | :------------------------------------------------ |
+| `--buf=<file>`        | path to `buf` executable if it is not on the path |
+| `--buf-basedir=<dir>` | set the starting dir to run buf                   |
+| `--buf-timeout=###u`  | Set the buf timeout                               |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None
