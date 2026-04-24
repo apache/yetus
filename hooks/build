@@ -15,14 +15,14 @@
 # limitations under the License.
 
 if [[ -n "${DOCKER_MULTIARCH}" ]]; then
-
-  docker buildx create --name yetus-multiarch --driver docker-container --use \
+  BUILDER_NAME="yetus-multiarch-$(date +%s)"
+  docker buildx create --name "${BUILDER_NAME}" --driver docker-container --use \
     || docker buildx use yetus-multiarch \
     || exit 1
   docker buildx inspect --bootstrap || exit 1
 
   traphandler() {
-    docker buildx rm yetus-multiarch || true
+    docker buildx rm "${BUILDER_NAME}" || true
   }
 
   trap traphandler HUP INT QUIT TERM
@@ -111,6 +111,7 @@ BUILDERINSTANCE=$(docker buildx inspect --bootstrap | grep Driver)
 PLATARRAY=()
 
 if [[ "${BUILDERINSTANCE}" =~ docker-container ]]; then
+  PLATFORMS=()
   KNOWN_PLATFORMS=$(docker buildx inspect --bootstrap | grep Platforms)
 
   if [[ ${KNOWN_PLATFORMS} =~ linux/amd64 ]]; then
@@ -136,6 +137,7 @@ opencontainerslabels "base"
 
 # Build the -base image
 docker buildx build \
+  --no-cache \
   "${PLATARRAY[@]}" \
   "${LABELS[@]}" \
   --tag "${DOCKER_REPO}-base:${DOCKER_TAG}" \
@@ -146,6 +148,7 @@ opencontainerslabels "full"
 
 # Build the full image using base above
 docker buildx build \
+  --no-cache \
   "${PLATARRAY[@]}" \
   --label "org.opencontainers.image.base.name=${DOCKER_REPO}-base:${DOCKER_TAG}" \
   "${LABELS[@]}" \
