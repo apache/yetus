@@ -200,20 +200,14 @@ RUN curl -sSL \
 
 ####
 # checkmake (Makefile linter)
-#
-# requires go 1.15 as of 2021-03-02
-#
 ####
 FROM yetusbase AS yetuscheckmake
-ARG CHECKMAKE_VERSION=0.2.2
+ARG CHECKMAKE_VERSION=0.3.2
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-ENV BUILDER_NAME='Apache Yetus'
-ENV BUILDER_EMAIL='dev@apache.yetus.org'
-RUN git clone \
-      https://github.com/mrtazz/checkmake.git /tmp/checkmake \
-    && git -C /tmp/checkmake checkout $CHECKMAKE_VERSION \
-    && GOOS=linux CGO_ENABLED=0 make -C /tmp/checkmake binaries \
-    && make -C /tmp/checkmake test
+RUN curl -sSL \
+      https://github.com/checkmake/checkmake/releases/download/v$CHECKMAKE_VERSION/checkmake-v$CHECKMAKE_VERSION."$(go env GOOS)"."$(go env GOARCH)" \
+      -o /usr/local/bin/checkmake \
+    && chmod +x /usr/local/bin/checkmake
 
 ####
 # golangci-lint (Multi-tool golang linter)
@@ -430,7 +424,7 @@ COPY --from=yetusbats /opt/bats /opt/bats
 RUN ln -s /opt/bats/bin/bats /usr/local/bin/bats
 
 COPY --from=yetusrevive /usr/local/bin/revive /usr/local/bin
-COPY --from=yetuscheckmake /tmp/checkmake/checkmake /usr/local/bin
+COPY --from=yetuscheckmake /usr/local/bin/checkmake /usr/local/bin
 COPY --from=yetusgolangci /usr/local/bin/golangci-lint /usr/local/bin
 
 ####
