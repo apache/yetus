@@ -110,7 +110,6 @@ Automation and Isolation:
 * [Azure Pipelines](robots/azurepipelines)
 * [Buildkite](robots/buildkite)
 * [Circle CI](robots/circleci)
-* [Cirrus CI](robots/cirrusci)
 * [Docker](docker) version 1.7.0+
 * [Github Actions](robots/githubactions)
 * [Gitlab CI](robots/gitlabci)
