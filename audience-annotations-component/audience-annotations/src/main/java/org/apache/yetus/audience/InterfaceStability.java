@@ -40,6 +40,10 @@ import org.apache.yetus.audience.InterfaceAudience.Public;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class InterfaceStability {
+  /** Default constructor. */
+  public InterfaceStability() {
+  }
+
   /**
    * Can evolve while retaining compatibility for minor release boundaries.
    * can break compatibility only at major release (ie. at m.0).

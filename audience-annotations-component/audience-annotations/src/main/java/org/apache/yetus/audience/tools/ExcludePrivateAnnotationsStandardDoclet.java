@@ -37,6 +37,12 @@ import java.util.TreeSet;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
+  /** Default constructor. */
+  public ExcludePrivateAnnotationsStandardDoclet() {
+    super();
+  }
+
+  /** The doclet environment processor. */
   protected DocletEnvironmentProcessor processor = new DocletEnvironmentProcessor();
 
   @Override

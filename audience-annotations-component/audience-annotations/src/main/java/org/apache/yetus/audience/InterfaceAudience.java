@@ -61,6 +61,7 @@ public class InterfaceAudience {
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
   public @interface LimitedPrivate {
+    /** The list of projects with access. */
     String[] value();
   }
 
@@ -71,5 +72,6 @@ public class InterfaceAudience {
   @Retention(RetentionPolicy.RUNTIME)
   public @interface Private { }
 
-  private InterfaceAudience() { } // Audience can't exist on its own
+  /** Audience can't exist on its own. */
+  private InterfaceAudience() { }
 }

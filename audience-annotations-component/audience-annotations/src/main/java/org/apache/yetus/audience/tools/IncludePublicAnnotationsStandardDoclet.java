@@ -38,6 +38,11 @@ import java.util.Locale;
 @InterfaceStability.Evolving
 public class IncludePublicAnnotationsStandardDoclet
         extends ExcludePrivateAnnotationsStandardDoclet {
+  /** Default constructor. */
+  public IncludePublicAnnotationsStandardDoclet() {
+    super();
+  }
+
   @Override
   public void init(final Locale locale, final Reporter reporter) {
     processor.treatUnannotatedClassesAsPrivate();

@@ -34,6 +34,11 @@ import org.apache.yetus.audience.InterfaceStability;
 @InterfaceStability.Unstable
 public final class CreateDirsMojo extends AbstractMojo {
 
+  /** Default constructor. */
+  public CreateDirsMojo() {
+    super();
+  }
+
   /**
    * Location of the dirName.
    */
