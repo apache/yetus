@@ -61,7 +61,10 @@ public class InterfaceAudience {
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
   public @interface LimitedPrivate {
-    /** The list of projects with access. */
+    /**
+     * The list of projects with access.
+     * @return project names
+     */
     String[] value();
   }
 

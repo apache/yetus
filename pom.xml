@@ -152,6 +152,13 @@
         </plugin>
 
         <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <configuration>
+            <exportAntProperties>false</exportAntProperties>
+          </configuration>
+        </plugin>
+
+        <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <configuration>
             <failOnError>false</failOnError>
