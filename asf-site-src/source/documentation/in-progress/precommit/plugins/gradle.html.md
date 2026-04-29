@@ -21,29 +21,29 @@
 
 gradle
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 Provides support for the [Gradle](https://www.gradle.org/) environment.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--gradle-cmd=<file>` | Set the location of the `gradle` command |
+| Option                 | Notes                                     |
+| :--------------------- | :---------------------------------------- |
+| `--gradle-cmd=<file>`  | Set the location of the `gradle` command  |
 | `--gradlew-cmd=<file>` | Set the location of the `gradlew` command |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 See [build tools](../../buildtools) for more information.

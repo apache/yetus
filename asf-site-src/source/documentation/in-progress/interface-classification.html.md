@@ -31,7 +31,7 @@
 
 <!-- /MarkdownTOC -->
 
-# Motivation
+## Motivation
 
 The interface taxonomy classification provided by Apache Yetus annotations is for guidance to developers and users of interfaces. The classification guides a developer to declare the targeted audience or users of an interface and also its stability.
 
@@ -41,7 +41,7 @@ The interface taxonomy classification provided by Apache Yetus annotations is fo
   hence accidental impact on users or other components or system. This is
   particularly useful in large systems with many developers who may not all have a shared state/history of the project.
 
-# Interface Classification
+## Interface Classification
 
 Yetus provides the following interface classification, derived from the
 [OpenSolaris taxonomy](https://web.archive.org/web/20061013114610/http://opensolaris.org/os/community/arc/policies/interface-taxonomy/)
@@ -109,7 +109,7 @@ Examples of publicly visible interfaces that are unstable
 
 APIs that could potentially be removed in the future and should not be used.
 
-# How are the Classifications Recorded
+## How are the Classifications Recorded
 
 [//]: # (This section needs improvement. Refer YETUS-458)
 
@@ -122,7 +122,7 @@ How should the classification be recorded for the annotated APIs?
   audience of the package in which they are contained. Hence it is useful to
   declare the audience of each Java package as public or private (along with the private audience variations).
 
-# FAQ
+## FAQ
 
 * Why aren't the Java scopes (private, package private and public) good enough?
   * Java's scoping is not very complete. One is often forced to make a class public in order for other internal components to use it. It does not have friends or sub-package-private like C++.

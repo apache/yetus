@@ -31,7 +31,7 @@
 
 `smart-apply-patch` is a command to help apply patches easily.  It uses the same plug-ins and many of the same options as test-patch.  This means that it can, for example, fetch patches from JIRA and apply them to a local source tree.
 
-# Local File
+## Local File
 
 Its simplest form is used when a patch is stored in a local file:
 
@@ -41,7 +41,7 @@ $ smart-apply-patch patch
 
 This will cause the command to run through various ways to verify and then apply the patch to the current repo, including deducing a patch level.
 
-# Remote Files and Bug Systems
+## Remote Files and Bug Systems
 
 `smart-apply-patch` supports many of the same switches and configurations
 that `test-patch` does.  Using those switches means that, for example, it is possible to pull and apply a GitHub PR very easily:
@@ -52,7 +52,7 @@ $ smart-apply-patch --plugins=github --github-repo apache/yetus GH:3000
 
 `smart-apply-patch` will do all the work of downloading, verifying, and applying just as `test-patch` would.
 
-# Dry-run
+## Dry-run
 
 Perhaps you just want to see if the patch even applies without changing your local repo.  The `--dry-run` option will just test for applicability:
 
@@ -60,7 +60,7 @@ Perhaps you just want to see if the patch even applies without changing your loc
 $ smart-apply-patch --dry-run patch
 ```
 
-# Committer Mode
+## Committer Mode
 
 For committers of projects, there is a special mode:
 
@@ -74,7 +74,7 @@ that in addition to applying the patch will also attempt to:
 * add all newly created files in the repo
 * use `--signoff` and commit the change via git-am
 
-# Patch Reporting
+## Patch Reporting
 
 For speciality CI needs, it may be useful to just have access to Apache Yetus'
 ability to interpret changes and then do your own actions based upon that

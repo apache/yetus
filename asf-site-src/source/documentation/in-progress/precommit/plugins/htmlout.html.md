@@ -21,30 +21,30 @@
 
 htmlout
 
-# Category
+## Category
 
 Bug System
 
-# Description
+## Description
 
 This plug-in provides an HTML report snippet of the standard report for
 inclusion into a properly formatted HTML document.  [Example output](htmlout-example.html)
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--html-report-file=<file>` | Name of the output file |
-| `--html-report-url=<url>` | Override the default URL for using the HTML report |
+| Option                      | Notes                                              |
+| :-------------------------- | :------------------------------------------------- |
+| `--html-report-file=<file>` | Name of the output file                            |
+| `--html-report-url=<url>`   | Override the default URL for using the HTML report |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

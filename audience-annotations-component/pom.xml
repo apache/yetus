@@ -42,6 +42,7 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
+          <release combine.self="override"></release>
           <groups>
             <group>
               <packages>org.apache.yetus.audience.*</packages>

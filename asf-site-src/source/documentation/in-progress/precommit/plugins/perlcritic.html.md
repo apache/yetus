@@ -21,30 +21,30 @@
 
 perlcritic
 
-# Category
+## Category
 
 One or more of:
 
 Test
 
-# Description
+## Description
 
 Runs [perlcritic](http://perlcritic.com/) against Perl code.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                | Notes                                                        |
+| :-------------------- | :----------------------------------------------------------- |
 | `--perlcritic=<path>` | Location of the `perlcritic` binary if it is not on the path |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

@@ -21,30 +21,30 @@
 
 compile
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Enable the compile cycle and any enabled Compile-type tests of precommit. This plug-in must be turned on in order to activate any other plug-ins that are of type Compile.
 
-# Requirements
+## Requirements
 
 None
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

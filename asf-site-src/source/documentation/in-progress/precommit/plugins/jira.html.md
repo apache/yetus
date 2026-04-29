@@ -21,32 +21,32 @@
 
 jira
 
-# Category
+## Category
 
 Bug System
 
-# Description
+## Description
 
 Enables support for reading and writing back to [JIRA](https://www.atlassian.com/software/jira), both on-premise and in-cloud.  See also the [Bugsystems](../../bugsystems) documentation for more information.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--jira-base-url=<url>` | URL for the JIRA installation |
-| `--jira-issue-re=<expr>` | regular expression to use when trying to find a JIRA ref in the patch name |
-| `--jira-password=<pw>` | Password to use for authentication |
+| Option                    | Notes                                                                                           |
+| :------------------------ | :---------------------------------------------------------------------------------------------- |
+| `--jira-base-url=<url>`   | URL for the JIRA installation                                                                   |
+| `--jira-issue-re=<expr>`  | regular expression to use when trying to find a JIRA ref in the patch name                      |
+| `--jira-password=<pw>`    | Password to use for authentication                                                              |
 | `--jira-status-re=<expr>` | Grep regular expression representing the issue status whose patch is applicable to the codebase |
-| `--jira-user=<user>` | Username to use for authentication |
+| `--jira-user=<user>`      | Username to use for authentication                                                              |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

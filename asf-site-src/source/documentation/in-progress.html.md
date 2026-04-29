@@ -21,24 +21,24 @@
 
 The [Yetus Precommit build, patch, and CI suite](precommit) allows projects to codify their patch acceptance criteria and then evaluate incoming contributions prior to review by a committer.
 
-# Yetus Release Doc Maker
+## Yetus Release Doc Maker
 
 The Release Documentation Maker allows projects to generate nicely formatted Markdown Changelogs and Release Notes based upon JIRA. You can view that
-documentation [here](releasedocmaker).
+[Release Doc Maker documentation](releasedocmaker).
 
-# Yetus Shelldocs
+## Yetus Shelldocs
 
 Shelldocs provides generation of html formatted api documentation based on comments on Bash functions. Currently supports documenting API status (public / private) as well as parameters and return values.
 
 See the [shelldocs page](shelldocs) for more information on usage.
 
-# yetus-maven-plugin
+## yetus-maven-plugin
 
 The [yetus-maven-plugin documentation](yetus-maven-plugin/) provides useful utility functions that are missing from Maven.
 
-# Javadocs: Yetus Audience Annotations and more
+## Javadocs: Yetus Audience Annotations and more
 
 Audience Annotations allows you to use Java Annotations to denote which parts of your Java library is publicly consumable and which parts are reserved for a more restricted use. It also provides doclets and examples for generating javadocs limited by audience.
-You can refer the user documentation [here](interface-classification).
+You can refer to the [interface classification documentation](interface-classification).
 
-All javadocs (including audience annotations) are located [here](javadocs/).
+All javadocs (including audience annotations) are located in the [Javadocs section](javadocs/).

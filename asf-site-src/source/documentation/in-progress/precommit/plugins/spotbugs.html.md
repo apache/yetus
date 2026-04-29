@@ -21,31 +21,31 @@
 
 spotbugs
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs the Java-based [SpotBugs](https://spotbugs.github.io/) utility.
 
-# Environment Variables
+## Environment Variables
 
-| Variable | Passed to Docker | Notes |
-|:---------|:-----------------|:------|
-| `SPOTBUGS_HOME` | NO | Used to determine the location of the SpotBugs installation |
+| Variable        | Passed to Docker | Notes                                                       |
+| :-------------- | :--------------- | :---------------------------------------------------------- |
+| `SPOTBUGS_HOME` | NO               | Used to determine the location of the SpotBugs installation |
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--spotbugs-home==<dir>` | SpotBugs home directory. There is no default. |
+| Option                       | Notes                                                                                |
+| :--------------------------- | :----------------------------------------------------------------------------------- |
+| `--spotbugs-home==<dir>`     | SpotBugs home directory. There is no default.                                        |
 | `--spotbugs-strict-precheck` | Fail patch testing if `spotbugs` determines a failure before even applying the patch |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

@@ -21,26 +21,26 @@
 
 cc
 
-# Category
+## Category
 
 Compile
 
-# Description
+## Description
 
 Gives the ability to interpret C/C++ compiler errors.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

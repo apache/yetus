@@ -29,13 +29,13 @@
 
 <!-- /MarkdownTOC -->
 
-# Introduction
+## Introduction
 
 Apache Yetus a plug-in built for Apache Maven and compatible build tools.  This plug-in offers an easy way to integrate some of Apache Yetus' functionality in addition to offering a way to get some additional functionality that is missing from the base Maven environment.
 
     NOTE: This functionality should be considered experimental. Defaults, in particular, are likely to change in future revisions.
 
-# File Utility Goals
+## File Utility Goals
 
 As part of building Apache Yetus, we needed some portable functionality that we couldn't find elsewhere.  Just so others don't have to re-invent the wheel, we offer these goals as part of the plug-in:
 
@@ -73,15 +73,15 @@ exec "$(dirname -- "${BASH_SOURCE-0}")/../lib/shelldocs/shelldocs.py" "$@"
 
 The wrapper as written above makes sure that nearly all forms of referencing (relative, absolute, bash -x, etc.) locates the real executable, passing along any options.
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `basedir` | parent dir of `bindir` and `lib` to create relative paths | `${project.build.directory}/${project.artifactId}-${project.version}` |
-| `bindir` | where to create wrapper | `bin` |
-| `encoding` | encoding to use when reading license files | `${project.build.sourceEncoding}` |
-| `goal` | the goal to use when creating the wrappers | `package` |
-| `lib` | where the actual executable is located | `lib` |
-| `license` | the license to put into the wrapper. See below. | `ASL20` |
-| `wrapper` | the bash wrapper to actually use | `exec "$(dirname -- "${BASH_SOURCE-0}")/../"` |
+| Option     | Description                                               | Default                                                               |
+| :--------- | :-------------------------------------------------------- | :-------------------------------------------------------------------- |
+| `basedir`  | parent dir of `bindir` and `lib` to create relative paths | `${project.build.directory}/${project.artifactId}-${project.version}` |
+| `bindir`   | where to create wrapper                                   | `bin`                                                                 |
+| `encoding` | encoding to use when reading license files                | `${project.build.sourceEncoding}`                                     |
+| `goal`     | the goal to use when creating the wrappers                | `package`                                                             |
+| `lib`      | where the actual executable is located                    | `lib`                                                                 |
+| `license`  | the license to put into the wrapper. See below.           | `ASL20`                                                               |
+| `wrapper`  | the bash wrapper to actually use                          | `exec "$(dirname -- "${BASH_SOURCE-0}")/../"`                         |
 
 ### Licenses
 
@@ -117,13 +117,13 @@ Since Java 7, there has been a portable way to build symlinks.  Unfortunately, s
 
 Available configuration options:
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `basedir` | where to create the symlink, if `newLink` is not absolute | `${project.build.directory}` |
-| `goal` | the goal to use when to create the symlink | `package` |
-| `ignoreExist` | a boolean that determines whether the goal should fail if the `newLink` already exists. | `true`. |
-| `target` | the file or directory to link to | none |
-| `newLink` | the symlink to create | none |
+| Option        | Description                                                                             | Default                      |
+| :------------ | :-------------------------------------------------------------------------------------- | :--------------------------- |
+| `basedir`     | where to create the symlink, if `newLink` is not absolute                               | `${project.build.directory}` |
+| `goal`        | the goal to use when to create the symlink                                              | `package`                    |
+| `ignoreExist` | a boolean that determines whether the goal should fail if the `newLink` already exists. | `true`.                      |
+| `target`      | the file or directory to link to                                                        | none                         |
+| `newLink`     | the symlink to create                                                                   | none                         |
 
 ## parallel-mkdirs
 
@@ -149,10 +149,10 @@ Maven surefire (as of at least 2.x and earlier versions) has calculations to det
 
 Available configuration options:
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| `buildDir` | where to create the directories | `${project.build.directory}/test-dir` |
-| `forkCount` | the number of directories to create| see blow |
-| `goal` | the goal to use to create the directories | `generate-test-resources` |
+| Option      | Description                               | Default                               |
+| :---------- | :---------------------------------------- | :------------------------------------ |
+| `buildDir`  | where to create the directories           | `${project.build.directory}/test-dir` |
+| `forkCount` | the number of directories to create       | see blow                              |
+| `goal`      | the goal to use to create the directories | `generate-test-resources`             |
 
 By default, `forkCount` is inherited from surefire and therefore follows the same rules as described in its [documentation](https://maven.apache.org/surefire/maven-surefire-plugin/examples/fork-options-and-parallel-execution.html).  Of special note is that 'C' (aka core) values are honored.

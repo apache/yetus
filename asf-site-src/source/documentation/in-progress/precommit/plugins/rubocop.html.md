@@ -21,31 +21,31 @@
 
 rubocop
 
-# Category
+## Category
 
 One or more of:
 
 Test
 
-# Description
+## Description
 
 Runs [rubocop](https://rubocop.org/) against Ruby code.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--rubocop=<file>` | Location of the `rubocop` binary if it is not on the path |
+| Option                    | Notes                                                          |
+| :------------------------ | :------------------------------------------------------------- |
+| `--rubocop=<file>`        | Location of the `rubocop` binary if it is not on the path      |
 | `--rubocop-config=<path>` | Relative path to rubocop config in source tree [default: none] |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

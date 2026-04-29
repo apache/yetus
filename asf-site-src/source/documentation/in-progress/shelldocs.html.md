@@ -35,15 +35,15 @@
 
 <!-- /MarkdownTOC -->
 
-# Purpose
+## Purpose
 
 Some projects have complex shell functions that act as APIs. `shelldocs` provides an annotation system similar to JavaDoc. It allows a developer to auto-generate MultiMarkdown documentation files as input to other processing systems.
 
-# Requirements
+## Requirements
 
 * Python 3.8
 
-# Function Annotations
+## Function Annotations
 
 `shelldocs` works by doing simple parsing of shell scripts.  As such, it looks for code that matches these patterns:
 
@@ -92,14 +92,14 @@ functioname () {
 
 Note that the comment has two hash ('#') marks.  The content of the comment is key.  This is what `shelldocs` will turn into documentation.  The following annotations are supported:
 
-| Annotation | Required | Description | Acceptable Values | Default |
-|:---- |:---- |:--- |:--- |:-- |
-| @description | No | What this function does, intended purpose, etc. | text | None |
-| @audience | Yes | Who should use this function? | public, private,| None |
-| @stability | Yes | Is this function going to change? | stable, evolving | None |
-| @replaceable | No | Is this function safely 'monkeypatched'? |  yes or no | No |
-| @param | No | A single parameter| A single keyword. e.g., 'seconds' to specify that this function requires a time in seconds | None |
-| @return | No | What does this function return? | text | Nothing |
+| Annotation   | Required | Description                                     | Acceptable Values                                                                          | Default |
+| :----------- | :------- | :---------------------------------------------- | :----------------------------------------------------------------------------------------- | :------ |
+| @description | No       | What this function does, intended purpose, etc. | text                                                                                       | None    |
+| @audience    | Yes      | Who should use this function?                   | public, private,                                                                           | None    |
+| @stability   | Yes      | Is this function going to change?               | stable, evolving                                                                           | None    |
+| @replaceable | No       | Is this function safely 'monkeypatched'?        | yes or no                                                                                  | No      |
+| @param       | No       | A single parameter                              | A single keyword. e.g., 'seconds' to specify that this function requires a time in seconds | None    |
+| @return      | No       | What does this function return?                 | text                                                                                       | Nothing |
 
 ## Audience / Stability
 
@@ -133,7 +133,7 @@ function add_two_numbers() {
 }
 ```
 
-# Basic Usage
+## Basic Usage
 
 The `shelldocs` executable requires at least one input file and either an output file or to run in lint mode.  Lint mode is covered below.
 
@@ -143,7 +143,7 @@ $ shelldocs --output functions.md --input myshelldirectory
 
 This will process all of the files in `myshelldirectory` that end in `sh` and generate an output file called `functions.md`.  This file will contain a table of contents of all of the functions arranged by audience, stability, and replace-ability.
 
-# Skipping Files
+## Skipping Files
 
 When processing directories, it may be desirable to avoid certain files. This may be done by including a comment in the file:
 
@@ -153,7 +153,7 @@ When processing directories, it may be desirable to avoid certain files. This ma
 
 This comment tells `shelldocs` that this file should not be processed.
 
-# Avoiding Private or Non-Replaceable Functions
+## Avoiding Private or Non-Replaceable Functions
 
 Some functions are not meant to be used by 3rd parties or cannot be easily replaced.  These functions may be omitted from the documentation by using the `--skipprnorep` flag:
 
@@ -161,7 +161,7 @@ Some functions are not meant to be used by 3rd parties or cannot be easily repla
 $ shelldocs --skipprnorep --input directory --output file.md
 ```
 
-# Lint Mode
+## Lint Mode
 
 In order to ensure minimal documentation, `shelldocs` has a `--lint` mode that will point out functions that are missing required annotations:
 

@@ -21,28 +21,28 @@
 
 slack
 
-# Category
+## Category
 
 Bug System
 
-# Description
+## Description
 
 Send a notice to a [Slack](https://slack.com/) channel after executing.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                      | Notes                        |
+| :-------------------------- | :--------------------------- |
 | `--slack-webhook-url=<url>` | The URL of the Slack channel |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

@@ -21,28 +21,28 @@
 
 autoconf
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 Provides support for the [GNU Autoconf](https://www.gnu.org/software/autoconf/) environment.  It currently does not support file systems with spaces in the path.  It depends upon the `make` plug-in also being available.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                               | Notes                   |
+| :----------------------------------- | :---------------------- |
 | `--autoconf-configure-flags=<flags>` | Set `./configure` flags |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 See [build tools](../../buildtools) for more information.

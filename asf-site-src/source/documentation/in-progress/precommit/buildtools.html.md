@@ -61,7 +61,7 @@ test-patch has the ability to support multiple build tools and [personalities](.
 add_build_tool <pluginname>
 ```
 
-# Global Variables
+## Global Variables
 
 ## BUILDTOOLCWD
 
@@ -79,7 +79,7 @@ If pluginname\_modules\_worker is given a test type that is not supported by the
 
 For example, the gradle build tool does not have a standard way to execute checkstyle. So when checkstyle is requested, gradle\_modules\_worker sets UNSUPPORTED\_TEST to true and returns out of the routine.
 
-# Required Functions
+## Required Functions
 
 Note: In a personality, `pluginname` can be arbitrary.
 
@@ -103,7 +103,7 @@ Default method to determine how to enqueue modules for processing.  Note that pe
 
 Default method to determine which tests to trigger.  Note that personalities may override this function. Requires a single argument: the file in which the tests exist.
 
-# Optional Functions
+## Optional Functions
 
 ## pluginname\_parse\_args
 
@@ -138,7 +138,7 @@ If the build tool requires extra settings on the `docker run` command line (more
 
     **WARNING**: Be aware that directories that do not exist MAY be created by root by Docker itself under certain conditions.  It is HIGHLY recommend that [`pluginname_initialize`](#pluginname\_initialize) be used to create the necessary directories prior to use in the `docker run` command.
 
-# Apache Ant Specific
+## Apache Ant Specific
 
 ## Ant Command Arguments
 
@@ -148,7 +148,7 @@ test-patch always passes -noinput to Ant.  This forces ant to be non-interactive
 
 In Docker mode, the `${HOME}/.ivy2` directory is shared amongst all invocations.
 
-# autoconf Specific
+## autoconf Specific
 
 autoconf requires make to be enabled.  autoreconf is always used to rebuild the configure script.
 
@@ -156,21 +156,21 @@ autoconf requires make to be enabled.  autoreconf is always used to rebuild the 
 
 autoconf will always run configure with prefix set to a directory in the patch processing directory.  To configure other flags, set the AUTCONF_CONF_FLAGS environment variable.
 
-# CMAKE Specific
+## CMAKE Specific
 
 By default, cmake will create a 'build' directory and perform all work there.  This may be changed either on the command line or via a personality setting.  cmake requires make to be enabled.
 
-# Gradle Specific
+## Gradle Specific
 
 The gradle plug-in always rebuilds the gradlew file and uses gradlew as the method to execute commands.
 
 In Docker mode, the `${HOME}/.gradle` directory is shared amongst all invocations.
 
-# Make Specific
+## Make Specific
 
 No notes.
 
-# Apache Maven Specific
+## Apache Maven Specific
 
 ## Command Arguments
 

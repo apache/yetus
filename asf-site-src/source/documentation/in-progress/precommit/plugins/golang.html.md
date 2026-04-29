@@ -21,11 +21,11 @@
 
 golang
 
-# Category
+## Category
 
 Test (Compile)
 
-# Description
+## Description
 
 NOTE: Go support is experimental.
 
@@ -33,17 +33,17 @@ Provides support for [Go](https://golang.com) v1.12 and higher.  This support in
 
 Amongst other missing features, it does not support using Go as a [build tool](../../buildtools) or `go test` formatted output.   Additionally, if Go source is detected, `precommit` will use `git checkout` in addition to `git clean` to maintain the source tree as part of the compile cycle.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option              | Notes                                                |
+| :------------------ | :--------------------------------------------------- |
 | `--golang-go=<cmd>` | Location of the `go` binary if it is not on the path |
 
-# Docker Notes
+## Docker Notes
 
 The following standard Go compiler variables are passed onto the container environment:
 
@@ -52,6 +52,6 @@ The following standard Go compiler variables are passed onto the container envir
 * GO111MODULE
 * GOPATH
 
-# Developer Notes
+## Developer Notes
 
 None

@@ -21,11 +21,11 @@
 
 codespell
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs [codespell](https://github.com/codespell-project/codespell) on the repository.
 
@@ -33,20 +33,20 @@ Due to how `codespell` executes, `./` is prefixed onto paths at runtime.  This p
 to be a bit more consistent with how one would run it from the command line such
 that `.codespellrc` is easier to manage.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option                             | Notes                                                                            |
+| :--------------------------------- | :------------------------------------------------------------------------------- |
 | `--codespell-exclude-lines=<file>` | File of lines that codespell should ignore (defaults to `.codespellignorelines`) |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

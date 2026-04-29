@@ -21,29 +21,29 @@
 
 briefreport
 
-# Category
+## Category
 
 Bug System
 
-# Description
+## Description
 
 This plug-in provides a very no-nonsense, text-based report of a run.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--brief-report-file=<file>` | Name of the output file |
+| Option                          | Notes                                                                   |
+| :------------------------------ | :---------------------------------------------------------------------- |
+| `--brief-report-file=<file>`    | Name of the output file                                                 |
 | `--brief-report-long=<seconds>` | Seconds to use to determine if a test should be considered long running |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

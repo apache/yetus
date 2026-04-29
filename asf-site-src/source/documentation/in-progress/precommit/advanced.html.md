@@ -36,7 +36,7 @@
 
 <!-- /MarkdownTOC -->
 
-# Process Reaper
+## Process Reaper
 
 A common problem is the 'stuck' unit test. If bash v4.0 or higher is in use, Apache Yetus may be told to turn on the process reaper functionality.  Using the `--reapearmode` option, this feature may be configured to either report and even kill left over processes that match provided regular expressions.
 
@@ -44,7 +44,7 @@ A common problem is the 'stuck' unit test. If bash v4.0 or higher is in use, Apa
 
 The reaper will run after every 'external' command that is printed on the console.  This includes almost all build tool commands and individual test commands.
 
-# Plug-ins
+## Plug-ins
 
 test-patch allows one to add to its basic feature set via plug-ins.  There is a directory called plugins.d inside the directory where test-patch.sh lives.  Inside this directory one may place some bash shell fragments that, if setup with proper functions, will allow for test-patch to call it as necessary.  Different plug-ins have specific functions for that particular functionality.  In this document, the common functions available to all/most plug-ins are covered.  Test plugins are covered below. See other documentation for pertinent information for the other plug-in types.
 
@@ -140,7 +140,7 @@ add_test_type <pluginname>
 
   NOTE: If the plug-in has support for maven, the maven_add_install `pluginname` should be executed. See more information in Custom Maven Tests in the build tool documentation.
 
-# Personalities
+## Personalities
 
 It is impossible for any general framework to be predictive about what types of special rules any given project may have, especially when it comes to ordering and Maven profiles.  In order to direct test-patch to do the correct action, a project `personality` should be added that enacts these custom rules.
 
@@ -262,7 +262,7 @@ personality_plugins "all,-checkstyle,-spotbugs,-asflicense"
 
 This list is used if the user does not provide a list of plug-ins.
 
-# Important Variables
+## Important Variables
 
 There are a handful of extremely important system variables that make life easier for personality and plug-in writers.  Other variables may be provided by individual plug-ins.  Check their development documentation for more information.
 

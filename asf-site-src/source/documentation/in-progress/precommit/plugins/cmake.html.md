@@ -21,37 +21,37 @@
 
 cmake
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 Enables using [cmake](https://cmake.org/) as the build tool.  This plug-in has a dependency on the `make` plug-in.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--cmake-build-dir=<path>` | Relative to each module, the location of the build directory to use for storing built output |
-| `--cmake-cmd=<cmd>` | Location of `cmake`'s executable, if it is not on the path |
-| `--cmake-root-build=<bool>` | Enable/Disable module support if multiple CMakeLists.txt's are found |
+| Option                      | Notes                                                                                        |
+| :-------------------------- | :------------------------------------------------------------------------------------------- |
+| `--cmake-build-dir=<path>`  | Relative to each module, the location of the build directory to use for storing built output |
+| `--cmake-cmd=<cmd>`         | Location of `cmake`'s executable, if it is not on the path                                   |
+| `--cmake-root-build=<bool>` | Enable/Disable module support if multiple CMakeLists.txt's are found                         |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 There are two variables that personalities should probably set that correspond to two of the options above:
 
-| Variable | Option Equivalent |
-|:---------|:------|
-| CMAKE_BUILD_DIR | `--cmake-build-dir=<path>` |
+| Variable         | Option Equivalent           |
+| :--------------- | :-------------------------- |
+| CMAKE_BUILD_DIR  | `--cmake-build-dir=<path>`  |
 | CMAKE_ROOT_BUILD | `--cmake-root-build=<bool>` |
 
 See [build tools](../../buildtools) for more information.

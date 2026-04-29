@@ -41,7 +41,7 @@ Both images should be suitable to be used as a building block or even directly i
 
 Images are tagged such that 'main' represents the last successful Docker image build of the main branch.  Images based off of the official source releases are tagged with a matching version number (e.g., 0.9.0).  There is no 'latest' tagged image.  It is recommended that users choose a stable tag so as not to be surprised by incompatible changes.
 
-# File Access
+## File Access
 
 All of the executables that Apache Yetus provides requires access to one or more directories.  These directories should be provided on the command line via the volume flags to docker run. For example, to run shelldocs against test-patch.sh:
 
@@ -88,6 +88,6 @@ docker build -t project/build:0.9.0 -f .
 
 This example builds a docker image based off of Apache Yetus 0.9.0 but with the additions of clang, some development libraries, and valgrind.  Now project/build:0.9.0 can be used instead of ghcr.io/apache/yetus:0.14.0 since it has all of Apache Yetus and the additions needed by our project.
 
-# A Note About Precommit
+## A Note About Precommit
 
 test-patch and friends have direct support for Docker outside of the convenience images.  That information is covered in-depth in the[precommit-docker](/documentation/in-progress/precommit/docker/) section.

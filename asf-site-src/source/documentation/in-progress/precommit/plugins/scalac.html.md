@@ -21,26 +21,26 @@
 
 scalac
 
-# Category
+## Category
 
 Test (Compile)
 
-# Description
+## Description
 
 Provides support for [Scala](https://scala-lang.org/) compilation.
 
-# Environment Variables
+## Environment Variables
 
 See the [javac](javac.html) plugin for more information.
 
-# Options
+## Options
 
 See the [javac](javac.html) plugin for more information.
 
-# Docker Notes
+## Docker Notes
 
 See the [javac](javac.html) plugin for more information.
 
-# Developer Notes
+## Developer Notes
 
 See the [javac](javac.html) plugin for more information.

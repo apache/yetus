@@ -21,26 +21,26 @@
 
 yamllint
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Runs [yamllint](https://github.com/adrienverge/yamllint) against `.yml` or `.yaml` file extensions.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

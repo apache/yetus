@@ -51,7 +51,6 @@ jobs:
           --docker-cache-from=ghcr.io/apache/yetus-base:main
           --github-token="${{ secrets.GITHUB_TOKEN }}"
           --html-report-file="${GITHUB_WORKSPACE}/out/report.html"
-          --java-home=/usr/lib/jvm/java-11-openjdk-amd64
           --junit-report-xml="${GITHUB_WORKSPACE}/out/junit-report.xml"
           --patch-dir="${GITHUB_WORKSPACE}/out"
           --plugins=all

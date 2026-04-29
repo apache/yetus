@@ -21,11 +21,11 @@
 
 dupname
 
-# Category
+## Category
 
 Test
 
-# Description
+## Description
 
 Checks for file system objects in the git repository that conflict due to case.  For example, if the source repository contains:
 
@@ -39,18 +39,18 @@ All three would be flagged as only one could exist on a case insensitive file sy
 
 NOTE: This test is ALWAYS enabled.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

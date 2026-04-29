@@ -21,28 +21,28 @@
 
 xml
 
-# Category
+## Category
 
 One or more of:
 
 Test
 
-# Description
+## Description
 
 Verify if HTML and XML files can be parsed.  Requires `xmllint`.
 
-# Environment Variables
+## Environment Variables
 
 None
 
-# Options
+## Options
 
 None
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 None

@@ -21,33 +21,33 @@
 
 maven
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 Enables [Apache Maven](https://maven.apache.org) as the controlling build tool.
 
-# Environment Variables
+## Environment Variables
 
 `MAVEN_HOME` may be used to find the `mvn` executable.
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
-| `--mvn-cmd=<cmd>` | Executable location |
-| `--mvn-custom-repos` | Use custom Apache Maven repositories (generally `$WORKSPACE/yetus-m2`) instead of the default. |
-| `--mvn-custom-repos-dir=<dir>` | Override the default location that test-patch will use when `--mvn-custom-repos` is enabled |
-| `--mvn-deps-order=<bool>` | Disable the plug-ins auto-dependency module ordering detection |
-| `--mvn-settings=<file>` | Configuration the location of Maven\'s settings file |
+| Option                         | Notes                                                                                          |
+| :----------------------------- | :--------------------------------------------------------------------------------------------- |
+| `--mvn-cmd=<cmd>`              | Executable location                                                                            |
+| `--mvn-custom-repos`           | Use custom Apache Maven repositories (generally `$WORKSPACE/yetus-m2`) instead of the default. |
+| `--mvn-custom-repos-dir=<dir>` | Override the default location that test-patch will use when `--mvn-custom-repos` is enabled    |
+| `--mvn-deps-order=<bool>`      | Disable the plug-ins auto-dependency module ordering detection                                 |
+| `--mvn-settings=<file>`        | Configuration the location of Maven\'s settings file                                           |
 
-# Docker Notes
+## Docker Notes
 
 None
 
-# Developer Notes
+## Developer Notes
 
 The `maven` plug-in adds several API calls that other plug-ins may use to configure specific Apache Maven behavior, generally around Maven cache management.
 

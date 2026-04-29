@@ -33,7 +33,7 @@
 
 <!-- /MarkdownTOC -->
 
-# Purpose
+## Purpose
 
 Performing reviews can be an overwhelming process.  The more complex the base, the more comprehensive reviews end up.  Building that functionality into the build itself is a full time job. When a new check is added there is a good chance the existing code has problems and often maintainers just want to prevent new bits from making the existing problem worse.
 
@@ -41,7 +41,7 @@ This is where Apache Yetus' precommit utilities come into the picture.
 
 All patches to the source base go through a test that does some (relatively) light checking to make sure the proposed change does not break unit tests and/or passes some other prerequisites such as code formatting guidelines.  This is meant as a preliminary check for reviewers so that the basic patch is in a known state and for contributors to know if they have followed the project's guidelines.  This check may also be used by individual developers to verify a patch prior to sending to the QA systems.
 
-# Goals
+## Goals
 
 * Everyone's time is valuable.  The quicker contributors can get feedback and iterate, the more likely and faster their contribution will get checked in.  A committer should be able to focus on the core issues of a contribution rather than details that can be determined automatically.
 * Checks should be fast.  There is no value in testing parts of the source tree that are not immediately impacted by a change.  Unit testing is the target. They are not a replacement for full builds or integration tests.
@@ -49,7 +49,7 @@ All patches to the source base go through a test that does some (relatively) lig
 * Projects that use the same language will, with a high degree of certainty, benefit from the same types of checks.
 * Portability matters.  Tooling should be as operating system and language agnostic as possible.
 
-# Pre-requisites
+## Pre-requisites
 
 Almost all of the precommit components are written in bash for maximum portability.  As such, it mostly assumes the locations of commands to be in the file path. However, in many cases, this assumption may be overridden via command line options.
 
@@ -155,7 +155,7 @@ Language Support, Licensing, and more:
 * [shellcheck](plugins/shellcheck)
 * [SpotBugs](plugins/spotbugs)
 
-# Related Utilities
+## Related Utilities
 
 `precommit` also comes with some utilities that are useful in various
 capacities without needing to use the full `test-patch` runtime:
@@ -166,7 +166,7 @@ capacities without needing to use the full `test-patch` runtime:
 * [qbt](qbt) - Quality Build Tool, for branch-specific testing
 * [smart-apply-patch](smart-apply-patch) - CLI manipulation and query of patch files, PRs, and more
 
-# More information
+## More information
 
 * [Usage Introduction](usage-intro)
 * [Advanced Usage Guide](advanced)

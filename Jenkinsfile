@@ -95,7 +95,6 @@ pipeline {
                 # enable writing back to Github
                 YETUS_ARGS+=(--github-token="${GITHUB_TOKEN}")
 
-                YETUS_ARGS+=(--java-home=/usr/lib/jvm/java-11-openjdk-amd64)
 
                 # enable writing back to ASF JIRA
                 YETUS_ARGS+=(--jira-issue-re='^YETUS-[0-9]*$')
@@ -133,7 +132,7 @@ pipeline {
                 # run in docker mode and specifically point to our
                 # Dockerfile since we don't want to use the auto-pulled version.
                 if [[ "${USE_DOCKER_FLAG}" == true ]]; then
-                  docker pull ubuntu:jammy
+                  docker pull ubuntu:noble
                   YETUS_ARGS+=("--docker")
                   YETUS_ARGS+=("--dockerfile=${YETUS_DOCKERFILE}")
                   YETUS_ARGS+=("--docker-cache-from=ghcr.io/apache/yetus-base:main")

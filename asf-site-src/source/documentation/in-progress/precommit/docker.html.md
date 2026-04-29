@@ -41,13 +41,13 @@
 
 <!-- /MarkdownTOC -->
 
-# The Basics
+## The Basics
 
 By default, test-patch runs in the same shell where it was launched.  It can alternatively use Docker to launch itself in a Linux container by using the `--docker` parameter.  This is particularly useful if running under a QA environment that does not provide all the necessary binaries. For example, if the patch requires a newer version of Java than what is installed on a CI instance.
 
 Each run will spawn two Docker images, one that contains some sort of base image and one specific to each run.  The base image is described further in this text.  The run-specific image is a small one that passes parameters and settings that are dedicated to that run, with "tp-" as part of the Docker image tag.  It should be removed automatically after the run upon test-patch completion.
 
-# Docker Base Images
+## Docker Base Images
 
 ## Default Image
 
@@ -84,28 +84,28 @@ By default, precommit will use `/precommit` as the directory where it will store
 not provided by other flags in system (such as `--basedir` or `--patch-dir`).  If that directory conflicts with some other
 need, then the `--docker-work-dir` option may be provided to set a different path.
 
-# BuildKit
+## BuildKit
 
 By default, precommit will enable [Docker BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)
 unless told otherwise with `--docker-buildkit=false` or if the CI system has known limitations.
 
-# Resource Controls
+## Resource Controls
 
 Docker's `--memory` flag is supported via the `--dockermemlimit` option.  This enables the container's memory size to be limited.  This may be important to set to prevent things like broken unit tests bringing down the entire build server.  See [the Docker documentation](https://docs.docker.com/engine/admin/resource_constraints/) for more details. Apache Yetus also sets the `--oom-score-adj` to 500 in order to offer itself as the first processes to be killed if memory is low.
 
 Additionally, if bash v4 and Linux is in use, a separate process is launched to keep a rolling count of the maximum number of threads (not processes!) in use at one time. This number will be reported at the end of the test-patch run.  Depending upon the build, languages, features enabled, etc, this number may be helpful in determining what the value of `--proclimit`
 
-# Privileged Mode
+## Privileged Mode
 
 In some cases, the work being performed inside the Docker container requires extra permissions.  Using the `--docker-privd` option enables Docker's extended privileges to the container.
 
-# Docker in Docker
+## Docker in Docker
 
 With the usage of the `--dockerind` flag, test-patch will mount the `/var/run/docker.sock` UNIX socket into the container to enable Docker-in-Docker mode.  Additionally, the `--docker-socket` option will let one set the socket to mount in situations where that isn't the location of the socket, such as a dockerd proxy providing authentication.
 
     NOTE: Using --dockerind requires the availability of the `stat` command that supports either -c '%g' (GNU form) or -f '%g' (BSD form).
 
-# Cleaning the Docker Environment
+## Cleaning the Docker Environment
 
 With the growing use of Docker for CI purposes, so is the growing need to help manage the Docker environment.  Stale, large
 caches and stuck containers are a common problem when tests go haywire.  In order to help combat that, Apache Yetus includes
@@ -119,11 +119,11 @@ However if the system is in [Robot](../robots)-mode or `--sentinel` is used, car
 For container images, there are three modes.  Each mode increases the amount of coverage that Apache Yetus will use to
 remove images.
 
-| Mode | Images Types | Time Frame |
-|:----:|:------------:|:----------:|
-| default | all | NA |
-| `--robot` | dangling, label=org.apache.yetus | 1 week |
-| `--sentinel` | all | 1 week |
+| Mode         | Images Types                     | Time Frame |
+| :----------- | :------------------------------- | :--------- |
+| default      | all                              | NA         |
+| `--robot`    | dangling, label=org.apache.yetus | 1 week     |
+| `--sentinel` | all                              | 1 week     |
 
 Before it begins, Apache Yetus will show the contents of `docker images` so that there is a history of what was in
 the cache. This also helps determine what was deleted later.  Next, it finds images that fall within the time frame of
@@ -135,10 +135,10 @@ an idea of what is happening under the hood.
 
 For containers there are two modes:
 
-| Mode | Images Types | Time Frame |
-|:----:|:------------:|:----------:|
-| default | all | NA |
-| `--sentinel` | all | 24 hours |
+| Mode         | Images Types | Time Frame |
+| :----------- | :----------- | :--------- |
+| default      | all          | NA         |
+| `--sentinel` | all          | 24 hours   |
 
 Under just plain `--robot`, containers are left alone.  Under `--sentinel`, containers (regardless of state) are
 killed after 24 hours.

@@ -21,33 +21,33 @@
 
 ant
 
-# Category
+## Category
 
 Build Tool
 
-# Description
+## Description
 
 Provides support for the [Apache Ant](https://ant.apache.org) build tool.
 
-# Environment Variables
+## Environment Variables
 
-| Variable | Passed to Docker | Notes |
-|:---------|:-----------------|:------|
-| `ANT_ARGS` | YES | Additional arguments to `ant` |
-| `ANT_HOME` | YES | Used to determine the location of the `ant` binary if it is not on the path or provided via the `--ant-cmd` flag |
-| `ANT_OPTS` | YES | Additional options to the JVM that runs `ant` |
+| Variable   | Passed to Docker | Notes                                                                                                            |
+| :--------- | :--------------- | :--------------------------------------------------------------------------------------------------------------- |
+| `ANT_ARGS` | YES              | Additional arguments to `ant`                                                                                    |
+| `ANT_HOME` | YES              | Used to determine the location of the `ant` binary if it is not on the path or provided via the `--ant-cmd` flag |
+| `ANT_OPTS` | YES              | Additional options to the JVM that runs `ant`                                                                    |
 
-# Options
+## Options
 
-| Option | Notes |
-|:---------|:------|
+| Option      | Notes                                             |
+| :---------- | :------------------------------------------------ |
 | `--ant-cmd` | Specifically set the location of the `ant` binary |
 
-# Docker Notes
+## Docker Notes
 
 * `${HOME}/.ivy2` is mounted to `/home/${USER_NAME}/.ivy2` in the container.
 * `ANT_OPTS` and `ANT_ARGS` are populated into the container environment.
 
-# Developer Notes
+## Developer Notes
 
 See [build tools](../../buildtools) for more information.

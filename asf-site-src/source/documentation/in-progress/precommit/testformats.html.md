@@ -44,6 +44,6 @@ Given a path to the log file and tested module name, parse that file and store t
 
 Using the results stored by pluginname\_process\_tests, write them to the test result table and/or the footer table for reporting.
 
-# Example
+## Example
 
 For an example of how to write a test-format plugin, you can look at [junit plugin](https://github.com/apache/yetus/blob/main/precommit/plugins.d/junit.sh) bundled in Apache Yetus.
