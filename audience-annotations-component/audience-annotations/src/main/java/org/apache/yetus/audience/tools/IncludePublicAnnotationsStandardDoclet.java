@@ -43,12 +43,25 @@ public class IncludePublicAnnotationsStandardDoclet
     super();
   }
 
+  /**
+   * {@inheritDoc}
+   * Initializes the doclet, marking unannotated classes as private.
+   * Subclasses may override to apply additional initialization.
+   * @param locale the locale for messages
+   * @param reporter the reporter for messages
+   */
   @Override
   public void init(final Locale locale, final Reporter reporter) {
-    processor.treatUnannotatedClassesAsPrivate();
+    getProcessor().treatUnannotatedClassesAsPrivate();
     super.init(locale, reporter);
   }
 
+  /**
+   * {@inheritDoc}
+   * Returns the name of this doclet.
+   * Subclasses should override to return a distinct name.
+   * @return doclet name
+   */
   @Override
   public String getName() {
     return "IncludePublicAnnotationsStandard";
