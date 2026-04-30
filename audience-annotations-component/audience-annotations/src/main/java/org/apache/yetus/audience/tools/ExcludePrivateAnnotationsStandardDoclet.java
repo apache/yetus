@@ -25,7 +25,6 @@ import org.apache.yetus.audience.InterfaceStability;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * A {@link jdk.javadoc.doclet.Doclet}
@@ -33,26 +32,65 @@ import java.util.TreeSet;
  * {@link org.apache.yetus.audience.InterfaceAudience.Private} or
  * {@link org.apache.yetus.audience.InterfaceAudience.LimitedPrivate}.
  * It delegates to the Standard Doclet, and takes the same options.
+ * Subclasses may override {@link #getName()}, {@link #getSupportedOptions()},
+ * and {@link #run(DocletEnvironment)} to customize behavior.
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
-  protected DocletEnvironmentProcessor processor = new DocletEnvironmentProcessor();
+  /** Default constructor. */
+  public ExcludePrivateAnnotationsStandardDoclet() {
+    super();
+  }
 
+  /** The doclet environment processor. */
+  // CHECKSTYLE:OFF VisibilityModifier - protected for subclass API compatibility
+  protected DocletEnvironmentProcessor processor =
+      new DocletEnvironmentProcessor();
+  // CHECKSTYLE:ON VisibilityModifier
+
+  /**
+   * Returns the processor used to filter the doclet environment.
+   * @return the doclet environment processor
+   */
+  protected DocletEnvironmentProcessor getProcessor() {
+    return processor;
+  }
+
+  /**
+   * {@inheritDoc}
+   * Returns the name of this doclet.
+   * Subclasses should override to return a distinct name.
+   * @return doclet name
+   */
   @Override
   public String getName() {
     return "ExcludePrivateAnnotationsStandard";
   }
 
+  /**
+   * {@inheritDoc}
+   * Returns the supported options, including stability filter options.
+   * Subclasses may override to add or remove options.
+   * @return set of supported options
+   */
   @Override
   public Set<Option> getSupportedOptions() {
     Set<Option> options = new HashSet<>(super.getSupportedOptions());
-    Set<StabilityOption> stabilityOptions = EnumSet.allOf(StabilityOption.class);
+    Set<StabilityOption> stabilityOptions =
+        EnumSet.allOf(StabilityOption.class);
     stabilityOptions.forEach(o -> o.setProcessor(processor));
     options.addAll(stabilityOptions);
     return options;
   }
 
+  /**
+   * {@inheritDoc}
+   * Runs the doclet, wrapping the environment to filter private elements.
+   * Subclasses may override to apply additional filtering.
+   * @param environment the doclet environment
+   * @return true if successful
+   */
   @Override
   public boolean run(final DocletEnvironment environment) {
     return super.run(processor.wrap(environment));

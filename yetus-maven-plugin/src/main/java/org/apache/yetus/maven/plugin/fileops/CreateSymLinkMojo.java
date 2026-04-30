@@ -39,6 +39,11 @@ import org.apache.yetus.audience.InterfaceStability;
 @InterfaceStability.Unstable
 public final class CreateSymLinkMojo extends AbstractMojo {
 
+  /** Default constructor. */
+  public CreateSymLinkMojo() {
+    super();
+  }
+
   /**
    * Location of the target.
    */

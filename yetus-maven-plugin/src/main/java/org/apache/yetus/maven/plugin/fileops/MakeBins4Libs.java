@@ -45,6 +45,11 @@ import org.apache.yetus.audience.InterfaceStability;
 @InterfaceStability.Unstable
 public final class MakeBins4Libs extends AbstractMojo {
 
+  /** Default constructor. */
+  public MakeBins4Libs() {
+    super();
+  }
+
   /**
    * bin dir.
    */

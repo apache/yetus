@@ -145,8 +145,16 @@
           <version>${maven-javadoc-plugin.version}</version>
           <configuration>
             <notimestamp>true</notimestamp><!-- avoid noise for svn/gitpubsub -->
+            <release combine.self="override"></release>
             <additionalOptions>${jigsaw.avoidance}</additionalOptions>
             <additionalJOption>-J${jigsaw.avoidance}</additionalJOption>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <configuration>
+            <exportAntProperties>false</exportAntProperties>
           </configuration>
         </plugin>
 
@@ -308,7 +316,6 @@
               <additionalOptions>
                 <additionalOption>${jigsaw.avoidance}</additionalOption>
               </additionalOptions>
-
               <additionalJOption>-J${jigsaw.avoidance}</additionalJOption>
 
               <doclet>org.apache.yetus.audience.tools.ExcludePrivateAnnotationsStandardDoclet</doclet>

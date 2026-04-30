@@ -46,7 +46,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public class InterfaceAudience {
+public final class InterfaceAudience {
   /**
    * Intended for use by any project or application.
    */
@@ -61,6 +61,10 @@ public class InterfaceAudience {
   @Documented
   @Retention(RetentionPolicy.RUNTIME)
   public @interface LimitedPrivate {
+    /**
+     * The list of projects with access.
+     * @return project names
+     */
     String[] value();
   }
 
@@ -71,5 +75,6 @@ public class InterfaceAudience {
   @Retention(RetentionPolicy.RUNTIME)
   public @interface Private { }
 
-  private InterfaceAudience() { } // Audience can't exist on its own
+  /** Audience can't exist on its own. */
+  private InterfaceAudience() { }
 }
