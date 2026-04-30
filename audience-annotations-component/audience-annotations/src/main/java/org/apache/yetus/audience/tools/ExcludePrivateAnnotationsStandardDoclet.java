@@ -44,8 +44,10 @@ public class ExcludePrivateAnnotationsStandardDoclet extends StandardDoclet {
   }
 
   /** The doclet environment processor. */
-  private DocletEnvironmentProcessor processor =
+  // CHECKSTYLE:OFF VisibilityModifier - protected for subclass API compatibility
+  protected DocletEnvironmentProcessor processor =
       new DocletEnvironmentProcessor();
+  // CHECKSTYLE:ON VisibilityModifier
 
   /**
    * Returns the processor used to filter the doclet environment.
