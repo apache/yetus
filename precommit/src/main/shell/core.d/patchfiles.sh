@@ -346,14 +346,17 @@ function patchfile_dryrun_driver
 ## @stability    evolving
 function dryrun_both_files
 {
-  # always prefer the patch file since git format patch files support a lot more
-  if [[ -f "${INPUT_PATCH_FILE}" ]] && patchfile_dryrun_driver "${INPUT_PATCH_FILE}"; then
-    INPUT_APPLY_TYPE="patch"
-    INPUT_APPLIED_FILE="${INPUT_PATCH_FILE}"
-    return 0
-  elif [[ -f "${INPUT_DIFF_FILE}" ]] && patchfile_dryrun_driver "${INPUT_DIFF_FILE}"; then
+  # prefer the cumulative diff: it represents the PR's net change and avoids
+  # stale-file bugs when per-commit .patch stanzas add then rename/delete files
+  # (YETUS-983). Binary files are preserved when the diff is generated locally
+  # with --binary.
+  if [[ -f "${INPUT_DIFF_FILE}" ]] && patchfile_dryrun_driver "${INPUT_DIFF_FILE}"; then
     INPUT_APPLY_TYPE="diff"
     INPUT_APPLIED_FILE="${INPUT_DIFF_FILE}"
+    return 0
+  elif [[ -f "${INPUT_PATCH_FILE}" ]] && patchfile_dryrun_driver "${INPUT_PATCH_FILE}"; then
+    INPUT_APPLY_TYPE="patch"
+    INPUT_APPLIED_FILE="${INPUT_PATCH_FILE}"
     return 0
   else
     return 1

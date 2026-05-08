@@ -1441,10 +1441,7 @@ function apply_patch_file
 {
 
   if [[ "${INPUT_APPLIED_FILE}" ==  "${INPUT_DIFF_FILE}" ]]; then
-    add_vote_table_v2 '-0' patch "" "Used diff version of patch file. Binary files and potentially other changes not applied. Please rebase and squash commits if necessary."
-    if [[ "${GITHUB_ACTIONS}" == true ]]; then
-      echo "::warning::Used diff version. Binary files and potentially other changes not applied. Try a rebase and/or squashing commits."
-    fi
+    add_vote_table_v2 0 patch "" "Used cumulative diff to apply patch. Per-commit history not preserved."
     big_console_header "Applying diff to ${PATCH_BRANCH}"
   else
     big_console_header "Applying patch to ${PATCH_BRANCH}"

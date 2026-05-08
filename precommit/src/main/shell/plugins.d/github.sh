@@ -346,6 +346,7 @@ function github_determine_branch
 ## @param        PR number
 ## @param        patch output file
 ## @param        diff output file
+## @param        skip_patch (optional, default false) - skip format-patch generation
 ## @return       0 on success
 ## @return       1 on failure
 function github_generate_local_diff
@@ -353,6 +354,7 @@ function github_generate_local_diff
   declare input=$1
   declare patchout=$2
   declare diffout=$3
+  declare skip_patch=$4
   declare base_ref
   declare base_sha
   declare head_sha
@@ -415,16 +417,18 @@ function github_generate_local_diff
     return 1
   fi
 
-  echo "  Generating patch/diff locally via git"
-
-  if ! "${GIT}" format-patch --stdout "${merge_base}..${head_sha}" > "${patchout}" 2>/dev/null; then
-    yetus_debug "github: git format-patch failed"
-    popd >/dev/null || true
-    return 1
+  if [[ "${skip_patch}" != true ]]; then
+    echo "  Generating local patch via git format-patch"
+    if ! "${GIT}" format-patch --stdout "${merge_base}..${head_sha}" > "${patchout}" 2>/dev/null; then
+      yetus_debug "github: git format-patch failed"
+      popd >/dev/null || true
+      return 1
+    fi
   fi
 
-  if ! "${GIT}" diff "${merge_base}..${head_sha}" > "${diffout}" 2>/dev/null; then
-    yetus_debug "github: git diff failed"
+  echo "  Generating local binary diff via git diff --binary"
+  if ! "${GIT}" diff --binary "${merge_base}..${head_sha}" > "${diffout}" 2>/dev/null; then
+    yetus_debug "github: git diff --binary failed"
     popd >/dev/null || true
     return 1
   fi
@@ -480,10 +484,8 @@ function github_locate_pr_patch
     return 1
   fi
 
-  # we always pull both the .patch and .diff versions
-  # but set the default to be .patch so that binary files work.
-  # The downside of this is that the patch files are
-  # significantly larger and therefore take longer to process
+  # We pull both .patch and .diff versions. The diff is preferred
+  # (see dryrun_both_files / YETUS-983); .patch is kept as a fallback.
 
   apiurl="${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"
 
@@ -515,7 +517,7 @@ function github_locate_pr_patch
           "${GITHUB_AUTH[@]}" \
          "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${input}"; then
     yetus_debug "github_locate_patch: API patch download failed"
-    if ! github_generate_local_diff "${input}" "${patchout}" "${diffout}"; then
+    if ! github_generate_local_diff "${input}" "${patchout}" "${diffout}" false; then
       yetus_debug "github_locate_patch: local git fallback also failed"
       return 1
     fi
@@ -523,15 +525,17 @@ function github_locate_pr_patch
   fi
 
   if [[ "${diffgenerated}" != true ]]; then
-    echo "  Diff data at $(date)"
-    if ! "${CURL}" --silent --fail \
-            -H "Accept: application/vnd.github.v3.diff" \
-            --output "${diffout}" \
-            --location \
-            "${GITHUB_AUTH[@]}" \
-           "${apiurl}"; then
-      yetus_debug "github_locate_patch: cannot download diff"
-      return 1
+    if ! github_generate_local_diff "${input}" "${patchout}" "${diffout}" true; then
+      echo "  Local binary diff failed, falling back to API diff at $(date)"
+      if ! "${CURL}" --silent --fail \
+              -H "Accept: application/vnd.github.v3.diff" \
+              --output "${diffout}" \
+              --location \
+              "${GITHUB_AUTH[@]}" \
+             "${apiurl}"; then
+        yetus_debug "github_locate_patch: cannot download diff"
+        return 1
+      fi
     fi
   fi
 
