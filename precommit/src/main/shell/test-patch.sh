@@ -675,6 +675,7 @@ function yetus_usage
   yetus_add_option "--multijdktests=<list>" "Comma delimited tests to use when multijdkdirs is used. (default: '${jdktlist}')"
   yetus_add_option "--offline" "Avoid connecting to the network"
   yetus_add_option "--patch-dir=<dir>" "The directory for working and output files (default '/tmp/test-patch-${PROJECT_NAME}/pid')"
+  yetus_add_option "--patch-mode=<diff|patch>" "Try cumulative diff or per-commit patch first (default: '${PATCH_MODE}')"
   yetus_add_option "--personality=<file>" "The personality file to load"
   yetus_add_option "--plugins=<list>" "Specify which plug-ins to add/delete (comma delimited; use 'all' for all found) e.g. --plugins=all,-ant,-scalac (all plugins except ant and scalac)"
   yetus_add_option "--proclimit=<num>" "Limit on the number of processes (default: ${PROC_LIMIT})"

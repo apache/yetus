@@ -201,6 +201,11 @@ function common_args
         delete_parameter "${i}"
         PATCH=${i#*=}
       ;;
+      --patch-mode=*)
+        delete_parameter "${i}"
+        #shellcheck disable=SC2034
+        PATCH_MODE=${i#*=}
+      ;;
       --patch-dir=*)
         delete_parameter "${i}"
         PATCH_DIR=${i#*=}

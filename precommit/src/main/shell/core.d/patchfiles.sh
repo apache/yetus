@@ -26,6 +26,7 @@ PATCH_METHOD=""
 PATCH_METHODS=("gitapply" "patchcmd")
 PATCH_LEVEL=0
 PATCH_HINT=""
+PATCH_MODE="diff"
 
 ## @description Use curl to download the patch as a last resort
 ## @audience    private
@@ -340,23 +341,39 @@ function patchfile_dryrun_driver
   return 1
 }
 
-## @description  dryrun both PATCH and DIFF and determine which one to use
+## @description  dryrun both PATCH and DIFF and determine which one to use.
+## @description  PATCH_MODE controls try-order: "diff" (default) avoids stale-file
+## @description  bugs from per-commit .patch stanzas (YETUS-983); "patch" restores
+## @description  the pre-YETUS-983 behavior for repos that need it.
 ## @replaceable  no
 ## @audience     private
 ## @stability    evolving
 function dryrun_both_files
 {
-  # prefer the cumulative diff: it represents the PR's net change and avoids
-  # stale-file bugs when per-commit .patch stanzas add then rename/delete files
-  # (YETUS-983). Binary files are preserved when the diff is generated locally
-  # with --binary.
-  if [[ -f "${INPUT_DIFF_FILE}" ]] && patchfile_dryrun_driver "${INPUT_DIFF_FILE}"; then
-    INPUT_APPLY_TYPE="diff"
-    INPUT_APPLIED_FILE="${INPUT_DIFF_FILE}"
+  declare first_file
+  declare first_type
+  declare second_file
+  declare second_type
+
+  if [[ "${PATCH_MODE}" == "patch" ]]; then
+    first_file="${INPUT_PATCH_FILE}"
+    first_type="patch"
+    second_file="${INPUT_DIFF_FILE}"
+    second_type="diff"
+  else
+    first_file="${INPUT_DIFF_FILE}"
+    first_type="diff"
+    second_file="${INPUT_PATCH_FILE}"
+    second_type="patch"
+  fi
+
+  if [[ -f "${first_file}" ]] && patchfile_dryrun_driver "${first_file}"; then
+    INPUT_APPLY_TYPE="${first_type}"
+    INPUT_APPLIED_FILE="${first_file}"
     return 0
-  elif [[ -f "${INPUT_PATCH_FILE}" ]] && patchfile_dryrun_driver "${INPUT_PATCH_FILE}"; then
-    INPUT_APPLY_TYPE="patch"
-    INPUT_APPLIED_FILE="${INPUT_PATCH_FILE}"
+  elif [[ -f "${second_file}" ]] && patchfile_dryrun_driver "${second_file}"; then
+    INPUT_APPLY_TYPE="${second_type}"
+    INPUT_APPLIED_FILE="${second_file}"
     return 0
   else
     return 1
