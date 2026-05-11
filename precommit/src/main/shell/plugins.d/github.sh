@@ -1223,6 +1223,13 @@ function github_finalreport
 
   github_end_checkrun "${result}"
 
+  # Under GHA the per-sub-check detail is already in the PR comment and the
+  # step summary. Commit statuses encode severity in the context key, so a
+  # re-run that changes outcome never overwrites the old status (YETUS-1277).
+  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
+    return 0
+  fi
+
   if [[ "${ROBOTTYPE}" ]]; then
     header="Apache Yetus(${ROBOTTYPE})"
   else
