@@ -16,7 +16,12 @@
 ---
 name: Apache Yetus
 
-on: [push, pull_request, workflow_dispatch]  # yamllint disable-line rule:truthy
+on:  # yamllint disable-line rule:truthy
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
 
 permissions:
   statuses: write
