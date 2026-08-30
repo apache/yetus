@@ -1223,14 +1223,9 @@ function github_finalreport
 
   github_end_checkrun "${result}"
 
-  # Under GHA the per-sub-check detail is already in the PR comment and the
-  # step summary. Commit statuses encode severity in the context key, so a
-  # re-run that changes outcome never overwrites the old status (YETUS-1277).
-  if [[ "${ROBOTTYPE}" == 'githubactions' ]]; then
-    return 0
-  fi
-
-  if [[ "${ROBOTTYPE}" ]]; then
+  if [[ "${ROBOTTYPE}" == 'githubactions' && -n "${GITHUB_JOB}" ]]; then
+    header="Apache Yetus(${GITHUB_JOB})"
+  elif [[ "${ROBOTTYPE}" ]]; then
     header="Apache Yetus(${ROBOTTYPE})"
   else
     header="Apache Yetus"
@@ -1332,7 +1327,7 @@ function github_finalreport
         echo "{\"state\": \"${status}\", "
         echo "\"target_url\": \"${logurl}\","
         echo "\"description\": \"${comment}\","
-        echo "\"context\":\"${header} warning: ${subs}\"}"
+        echo "\"context\":\"${header}: ${subs}\"}"
       } > "${tempfile}"
       github_status_write "${tempfile}"
       rm "${tempfile}"
@@ -1341,7 +1336,7 @@ function github_finalreport
         echo "{\"state\": \"${status}\", "
         echo "\"target_url\": \"${logurl}\","
         echo "\"description\": \"${comment}\","
-        echo "\"context\":\"${header} error: ${subs}\"}"
+        echo "\"context\":\"${header}: ${subs}\"}"
       } > "${tempfile}"
       github_status_write "${tempfile}"
       rm "${tempfile}"
