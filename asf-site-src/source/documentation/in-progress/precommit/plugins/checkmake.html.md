@@ -27,7 +27,7 @@ Test
 
 ## Description
 
-Runs [checkmake](https://github.com/mrtazz/checkmake) when the presence of a Makefile is found.
+Runs [checkmake](https://github.com/checkmake/checkmake) when the presence of a Makefile is found.
 
 ## Environment Variables
 
