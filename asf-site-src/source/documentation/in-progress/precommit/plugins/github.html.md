@@ -43,6 +43,23 @@ None
 | `--github-repo=<repo>`                  | `username/repository` identifier                   |
 | `--github-status-use-htmlreport=<bool>` | Use htmlout for Github Status 'Details' link       |
 | `--github-token=<token>`                | Token used to perform read and write operations    |
+| `--github-update-comment[=<key>]`       | Update the PR comment instead of adding a new one  |
+| `--github-write-comment`                | Write the final report as a PR comment             |
+
+## Updating The PR Comment
+
+`--github-write-comment` adds a new comment with every run. `--github-update-comment` implies it, and instead
+updates the comment the same GitHub user previously wrote with the same key (default: `default`). The key may only
+contain `A-Z`, `a-z`, `0-9`, `.`, `_` and `-`. Use a different key per job when one build writes several reports,
+e.g., one per OS.
+
+1. The report carries a hidden `<!-- yetus-report:<key> -->` marker and a `Tested commit` row.
+1. The token's user comes from `GET /user`. Under GitHub Actions, where that call is denied, `github-actions[bot]`
+   is assumed.
+1. Hidden (minimized) comments are not updated.
+1. If the PR head moved past the tested commit, the comment is skipped so a slow build cannot replace the report of
+   a newer one. Statuses are still written.
+1. If looking up or updating the comment fails, a new comment is written.
 
 ## HTML Details LInk
 
