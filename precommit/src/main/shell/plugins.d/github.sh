@@ -39,6 +39,7 @@ GITHUB_USE_EMOJI_VOTE=false
 GITHUB_STATUS_RECOVERY_COUNTER=1
 GITHUB_STATUS_RECOVER_TOOL=false
 GITHUB_WRITE_COMMENT=false
+GITHUB_UPDATE_COMMENT=""
 GITHUB_ANNOTATION_LIMIT=50
 GITHUB_STATUS_USE_HTMLREPORT=${GITHUB_STATUS_USE_HTMLREPORT:-true}
 declare -a GITHUB_AUTH
@@ -54,6 +55,7 @@ function github_usage
   yetus_add_option "--github-repo=<repo>" "github repo to use (default:'${GITHUB_REPO}')"
   yetus_add_option "--github-token=<token>" "The token to use to read/write to github"
   yetus_add_option "--github-write-comment" "Write final report as github comment (default: '${GITHUB_WRITE_COMMENT}')"
+  yetus_add_option "--github-update-comment[=<key>]" "Write final report as github comment, updating the one previously written with the same key"
   yetus_add_option "--github-use-emoji-vote" "Whether to use emoji to represent the vote result on github [default: ${GITHUB_USE_EMOJI_VOTE}]"
   yetus_add_option "--github-status-use-htmlreport=<bool>" "Use htmlout for Github Status 'Details' link [default: ${GITHUB_STATUS_USE_HTMLREPORT}]"
 }
@@ -87,6 +89,19 @@ function github_parse_args
       --github-write-comment)
         delete_parameter "${i}"
         GITHUB_WRITE_COMMENT=true
+      ;;
+      --github-update-comment|--github-update-comment=*)
+        delete_parameter "${i}"
+        GITHUB_WRITE_COMMENT=true
+        GITHUB_UPDATE_COMMENT=default
+        if [[ "${i}" == *=* ]]; then
+          GITHUB_UPDATE_COMMENT=${i#*=}
+        fi
+        # the key goes into the JSON body unescaped
+        if [[ ! "${GITHUB_UPDATE_COMMENT}" =~ ^[A-Za-z0-9._-]+$ ]]; then
+          yetus_error "WARNING: --github-update-comment key must match [A-Za-z0-9._-]+. Writing a new comment instead."
+          GITHUB_UPDATE_COMMENT=""
+        fi
       ;;
       --github-use-emoji-vote)
         delete_parameter "${i}"
@@ -874,7 +889,142 @@ EOF
   rm "${tempfile}"
 }
 
+## @description  Print the PR head sha from a pull request JSON file
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        filename
+function github_pull_head_sha
+{
+  "${GREP}" \"sha\" "${1}" 2>/dev/null \
+    | head -1 \
+    | cut -f4 -d\"
+}
+
+## @description  Check if the PR head moved past the tested commit, so that
+## @description  a slow build of an older commit does not replace the report
+## @description  of a newer one
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       0 if the PR has a newer head
+function github_report_superseded
+{
+  declare latest="${PATCH_DIR}/github-pull-latest.json"
+  declare tested
+  declare current
+
+  tested=$(github_pull_head_sha "${PATCH_DIR}/github-pull.json")
+  if [[ -z "${tested}" ]]; then
+    return 1
+  fi
+
+  if ! "${CURL}" --silent --fail \
+       -H "Accept: application/vnd.github.v3+json" \
+       "${GITHUB_AUTH[@]}" \
+       --output "${latest}" \
+       --location \
+       "${GITHUB_API_URL}/repos/${GITHUB_REPO}/pulls/${GITHUB_ISSUE}" \
+       2>/dev/null; then
+    return 1
+  fi
+
+  current=$(github_pull_head_sha "${latest}")
+  [[ -n "${current}" && "${current}" != "${tested}" ]]
+}
+
+## @description  Print the login of the user that owns the token
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @return       1 if unknown
+function github_comment_login
+{
+  declare login
+
+  # shellcheck disable=SC2016
+  login=$("${CURL}" --silent --fail \
+       -H "Accept: application/vnd.github.v3+json" \
+       "${GITHUB_AUTH[@]}" \
+       --location \
+       "${GITHUB_API_URL}/user" 2>/dev/null \
+    | "${AWK}" -F\" '/^  "login": "/ {print $4; exit}')
+
+  # the GitHub Actions token cannot read /user
+  if [[ -z "${login}" && "${ROBOTTYPE}" == 'githubactions' ]]; then
+    login='github-actions[bot]'
+  fi
+
+  if [[ -z "${login}" ]]; then
+    return 1
+  fi
+  echo "${login}"
+}
+
+## @description  Print the id of the oldest visible PR comment written by
+## @description  the token's user that contains the marker
+## @audience     private
+## @stability    evolving
+## @replaceable  no
+## @param        marker
+## @return       1 if not found
+function github_find_comment
+{
+  declare marker=$1
+  declare pagefile="${PATCH_DIR}/github-comments.json"
+  declare login
+  declare id
+  declare -i page=1
+
+  if ! login=$(github_comment_login); then
+    yetus_error "WARNING: Cannot determine the GitHub user of the token."
+    return 1
+  fi
+
+  while [[ ${page} -le 100 ]]; do
+    if ! "${CURL}" --silent --fail \
+         -H "Accept: application/vnd.github.v3.raw+json" \
+         "${GITHUB_AUTH[@]}" \
+         --output "${pagefile}" \
+         --location \
+         "${GITHUB_API_URL}/repos/${GITHUB_REPO}/issues/${GITHUB_ISSUE}/comments?per_page=100&page=${page}" \
+         2>/dev/null; then
+      return 1
+    fi
+
+    # GitHub prints one field per line and keeps each body on a single
+    # line, so text in a body cannot fake these anchored lines.
+    # shellcheck disable=SC2016
+    id=$(MARKER="${marker}" LOGIN="${login}" "${AWK}" -F\" '
+      /^    "id": /        { id = $3; gsub(/[^0-9]/, "", id) }
+      /^      "login": "/  { who = $4 }
+      /^    "body": "/     { hit = index($0, ENVIRON["MARKER"]) > 0 }
+      /^    "minimized": / { hidden = ($0 !~ /: null,?$/) }
+      /^  }/ {
+        if (hit && !hidden && who == ENVIRON["LOGIN"]) {
+          print id
+          exit
+        }
+        id = ""; who = ""; hit = 0; hidden = 0
+      }' "${pagefile}")
+
+    if [[ -n "${id}" ]]; then
+      echo "${id}"
+      return 0
+    fi
+
+    # a short page is the last one
+    if [[ $("${GREP}" -c '^  }' "${pagefile}") -lt 100 ]]; then
+      return 1
+    fi
+    ((page=page+1))
+  done
+  return 1
+}
+
 ## @description Write the contents of a file to github
+## @description With --github-update-comment, update the comment
+## @description previously written with the same key instead.
 ## @param     filename
 ## @stability stable
 ## @audience  public
@@ -883,6 +1033,8 @@ function github_write_comment
   declare -r commentfile=${1}
   declare retval=0
   declare restfile="${PATCH_DIR}/ghcomment.$$"
+  declare marker=""
+  declare commentid
 
   if [[ "${OFFLINE}" == true ]]; then
     yetus_error "WARNING: Running offline, GitHub comment skipped."
@@ -894,18 +1046,42 @@ function github_write_comment
     return 0
   fi
 
+  if [[ -n "${GITHUB_UPDATE_COMMENT}" ]]; then
+    marker="yetus-report:${GITHUB_UPDATE_COMMENT} --"
+  fi
+
   {
     printf "{\"body\":\""
     "${SED}" -e 's,\\,\\\\,g' \
         -e 's,\",\\\",g' \
         -e 's,$,\\r\\n,g' "${commentfile}" \
     | tr -d '\n'
+    if [[ -n "${marker}" ]]; then
+      printf '<!-- %s>' "${marker}"
+    fi
     echo "\"}"
   } > "${restfile}"
 
   if [[ "${#GITHUB_AUTH[@]}" -lt 1 ]]; then
     yetus_error "ERROR: No GitHub credentials defined."
     return 0
+  fi
+
+  if [[ -n "${marker}" ]] \
+    && commentid=$(github_find_comment "${marker}"); then
+    if "${CURL}" --silent --fail -X PATCH \
+         -H "Accept: application/vnd.github.v3.full+json" \
+         -H "Content-Type: application/json" \
+         "${GITHUB_AUTH[@]}" \
+         -d @"${restfile}" \
+         --output "${PATCH_DIR}/github-comment-write-response.json" \
+         --location \
+         "${GITHUB_API_URL}/repos/${GITHUB_REPO}/issues/comments/${commentid}" \
+         >/dev/null; then
+      rm "${restfile}"
+      return 0
+    fi
+    yetus_error "WARNING: Cannot update GitHub comment ${commentid}. Writing a new one."
   fi
 
   "${CURL}" --silent --fail -X POST \
@@ -941,6 +1117,7 @@ function github_finalreport_as_comment
   declare calctime
   declare vote
   declare emoji
+  declare sha
 
   rm "${commentfile}" 2>/dev/null
 
@@ -952,6 +1129,11 @@ function github_finalreport_as_comment
   url=$(get_artifact_url)
 
   big_console_header "Adding comment to Github"
+
+  if [[ -n "${GITHUB_UPDATE_COMMENT}" ]] && github_report_superseded; then
+    yetus_error "WARNING: The PR has a newer commit than the one tested. Skipping GitHub comment."
+    return 0
+  fi
 
   if [[ ${result} == 0 ]]; then
     echo ":confetti_ball: **+1 overall**" >> "${commentfile}"
@@ -1060,6 +1242,15 @@ function github_finalreport_as_comment
     printf '%s\n' "${comment}" >> "${commentfile}"
     ((i=i+1))
   done
+
+  # an updated comment does not show which push it belongs to
+  if [[ -n "${GITHUB_UPDATE_COMMENT}" ]]; then
+    sha=$(github_pull_head_sha "${PATCH_DIR}/github-pull.json")
+    if [[ -n "${sha}" ]]; then
+      printf '| Tested commit | %s |\n' "${sha}" >> "${commentfile}"
+    fi
+  fi
+
   printf '\n\nThis message was automatically generated.\n\n' >> "${commentfile}"
 
   github_write_comment "${commentfile}"
